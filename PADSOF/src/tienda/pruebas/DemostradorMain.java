@@ -94,13 +94,9 @@ public class DemostradorMain {
 		imprimirEmpleado(empPedidos);
 		System.out.println(" Total empleados en tienda: " + tienda.obtenerEmpleadosTienda().size());
 
-		
-		
-		
-		
 		System.out.println("\n CARGA DE PRODUCTOS:");
 		System.out.println("Cargando productos desde fichero...");
-		empStock.cargarProductosFicheroTexto("ficheros/productos.txt");
+		empStock.cargarProductosFicheroTexto("src/tienda/ficheros/productos.txt");
 		System.out.println("  Productos tras fichero: " + tienda.getStockVentas().size());
 
 		empStock.añadirProducto_nuevo("C", "Watchmen", "Clasico del comic", "watchmen.jpg", 15.00, 10,
@@ -143,24 +139,23 @@ public class DemostradorMain {
 		ProductoVenta vader = tienda.buscarproductoPorNombre("Figura Darth Vader").get(0);
 		ProductoVenta link = tienda.buscarproductoPorNombre("Figura Link").get(0);
 		ProductoVenta watchmen = tienda.buscarproductoPorNombre("Watchmen").get(0);
-		
+
 		System.out.println("\n  Cargando productos2 desde fichero:");
 		System.out.println("  Stock watchmen antes: " + watchmen.getStockDisponible());
 		System.out.println("  Stock catan antes: " + catan.getStockDisponible());
 		System.out.println("  Stock akira antes: " + akira.getStockDisponible());
-		empStock.cargarProductosFicheroTexto("ficheros/productos2.txt");
+		empStock.cargarProductosFicheroTexto("src/tienda/ficheros/productos2.txt");
 		System.out.println("  Productos tras fichero2: " + tienda.getStockVentas().size());
 		System.out.println("  Stock watchmen despues: " + watchmen.getStockDisponible());
 		System.out.println("  Stock catan despues: " + catan.getStockDisponible());
 		System.out.println("  Stock akira despues: " + akira.getStockDisponible());
-		
-		
+
 		System.out.println("  Total productos en tienda: " + tienda.getStockVentas().size());
 		for (ProductoVenta p : tienda.getStockVentas()) {
 			System.out.println("  " + p.resumen());
 		}
 		System.out.println("REPONER STOCK:");
-		
+
 		empStock.reponerStockProducto(watchmen.getId(), 5);
 		System.out.println("MODIFICAR LA DESCRIPCION DE UN PRODUCTO:");
 		empStock.modificarDescripcionProducto(watchmen.getId(), "La obra maestra del noveno arte");
@@ -177,7 +172,6 @@ public class DemostradorMain {
 
 		System.out.println("\n CREAR PACKS");
 
-	
 		ArrayList<LineaPack> lineasGamer = construirLineasPack(new LineaPack(catan, 1), new LineaPack(figGoku, 1),
 				new LineaPack(akira, 1));
 		empStock.crearPack("Pack Gamer", "Pack con juego y figura", "pack.jpg", 70.00, 3, lineasGamer);
@@ -218,6 +212,15 @@ public class DemostradorMain {
 
 		System.out.println("  Pack en tienda: "
 				+ (tienda.buscarPackPorNombre("Pack Gamer") != null ? "SI" : "NO - eliminado correctamente"));
+
+		System.out.println("AÑadimos otro pack:");
+		ArrayList<LineaPack> lineasPack2 = construirLineasPack(
+				new LineaPack(tienda.buscarproductoPorNombre("Berserk Vol.1").get(0), 1),
+				new LineaPack(tienda.buscarproductoPorNombre("Vagabond Vol.1").get(0), 1));
+		empStock.crearPack("Pack Manga", "Pack con dos mangas de calidad", "pack_manga.jpg", 25.00, 5, lineasPack2);
+		Pack packManga = tienda.buscarPackPorNombre("Pack Manga");
+		packManga.resumenPrecios();
+		tienda.imprimirCatalogo();
 
 		System.out.println("\n REGISTRO Y LOGIN DE CLIENTES");
 		tienda.registrarNuevoCliente("alice", "Alice@1234", "11111111A");
@@ -268,12 +271,38 @@ public class DemostradorMain {
 		System.out.println("\nFLUJO DE COMPRA Y BUSQUEDA: ");
 
 		tienda.imprimirCatalogo();
+		// intentar comprar stock mayor del que hay
+		ProductoVenta dixit = tienda.buscarproductoPorNombre("Dixit").get(0);
+		System.out.println("\n  Intentar comprar mas unidades de las disponibles:");
+		System.out.println("  Stock de Dixit: " + dixit.getStockDisponible());
+		boolean sinStock = alice.añadirProductoCarrito(dixit, 999);
+		System.out.println("  Añadir 999 unidades -> " + (sinStock ? "OK" : "BLOQUEADO - stock insuficiente"));
 
-		
-		
-		
-		
-		
+		// Comprar justo el stock disponible
+		System.out.println("\n  Comprar justo el stock disponible (" + dixit.getStockDisponible() + " unidades):");
+		alice.añadirProductoCarrito(dixit, dixit.getStockDisponible());
+		alice.getCarritoActual().imprimirCarrito();
+		alice.reservarCarrito();
+
+		Pedido dixitpedido = alice.getHistorialPedidos().get(alice.getHistorialPedidos().size() - 1);
+		alice.pagarCarrito(dixitpedido, "1111222233334444", Date.valueOf("2029-01-01"), 111);
+		empPedidos.prepararPedido(dixitpedido.getIdPedido());
+
+		alice.solicitarRecogidaPedido(dixitpedido.getCodigoRecogida());
+		empPedidos.entregarPedido(dixitpedido.getCodigoRecogida());
+		System.out.println("  Stock dixit tras comprar todo: " + dixit.getStockDisponible());
+
+		// Comprobar que no aparece en busquedas con stock 0
+		System.out.println("\n  Buscar dixitcon stock 0 (no deberia aparecer):");
+		alice.buscarProductosPorNombre("Dixit");
+		System.out.println("\n  Intentar añadir al carrito con stock 0:");
+		boolean stockCero = bob.añadirProductoCarrito(dixit, 1);
+		System.out.println("  Resultado: " + (stockCero ? "OK" : "BLOQUEADO - stock agotado"));
+
+		System.out.println("Imprimir catalogo tienda: (Deberia aparecer pero con stock 0 porque no se borra");
+		tienda.imprimirCatalogo();
+		empStock.reponerStockProducto(dixit.getId(), 10);
+
 		// Alice busca por nombre y compra
 		System.out.println("\n  Alice busca 'watch':");
 		alice.buscarProductosPorNombre("watch");
@@ -284,8 +313,9 @@ public class DemostradorMain {
 		alice.añadirProductoCarrito(catan, 1);
 		System.out.println("  " + alice.getNickname() + " añade al carrito: '" + watchmen.getNombre() + "' y '"
 				+ catan.getNombre() + "'");
+		alice.getCarritoActual().imprimirCarrito();
 		alice.reservarCarrito();
-		Pedido pedidoAlice = alice.getHistorialPedidos().get(0);
+		Pedido pedidoAlice = alice.getHistorialPedidos().get(alice.getHistorialPedidos().size() - 1);
 		System.out.println("  Carrito reservado: pedido: " + pedidoAlice.getIdPedido() + " | total: "
 				+ pedidoAlice.getTotal() + "€" + " | estado: " + pedidoAlice.getEstado());
 
@@ -311,6 +341,7 @@ public class DemostradorMain {
 		bob.buscarProductosPorCategoria("Accion");
 
 		bob.añadirProductoCarrito(watchmen, 1);
+		bob.getCarritoActual().imprimirCarrito();
 		bob.reservarCarrito();
 		Pedido pedidoBob = bob.getHistorialPedidos().get(0);
 		System.out.println("  Pedido bob: " + pedidoBob.getIdPedido() + " | total: " + pedidoBob.getTotal() + "€"
@@ -324,6 +355,8 @@ public class DemostradorMain {
 			empPedidos.prepararPedido(pedidoBob.getIdPedido());
 			bob.solicitarRecogidaPedido(pedidoBob.getCodigoRecogida());
 			System.out.println("  Recogida solicitada: " + pedidoBob.isRecogida_solicitada());
+
+			empPedidos.entregarPedido(pedidoBob.getCodigoRecogida());
 			empPedidos.entregarPedido(pedidoBob.getCodigoRecogida());
 			System.out.println("  Pedido entregado -> estado: " + pedidoBob.getEstado());
 			bob.escribirReseña(watchmen, 7, "Muy bueno pero denso");
@@ -573,7 +606,6 @@ public class DemostradorMain {
 		System.out.println("  Resultado: " + intercambiosAliceCarlos.size() + " intercambio(s)");
 		// Crear descuentos en orden de prioridad
 		System.out.println("\n  Creando descuentos por orden de prioridad:");
-		System.out.println("\n  Creando descuentos:");
 
 		boolean d1 = gestor.crearDescuentoVolumen("Descuento Verano", 50.0, 10.0, LocalDateTime.now().minusMinutes(1),
 				LocalDateTime.now().plusHours(2));
@@ -590,7 +622,7 @@ public class DemostradorMain {
 		System.out.println("  Descuento regalo (>40€ -> figura link gratis): " + d4);
 		tienda.imprimirDescuentosActivos();
 
-		// - Alice compra mas de 50€ -> aplica volumen
+		// - Alice aÑade mas de 50€ -> aplica volumen
 		System.out.println("\n  Caso 1 - Alice compra mas de 50€ (watchmen + catan = 60€):");
 		alice.añadirProductoCarrito(watchmen, 1);
 		alice.añadirProductoCarrito(catan, 1);
@@ -598,7 +630,7 @@ public class DemostradorMain {
 		System.out.println("  Vaciando carrito:");
 		alice.getCarritoActual().vaciarCarrito();
 		alice.getCarritoActual().imprimirCarrito();
-		// Caso 2 - Bob compra Anime menos de 50€ -> aplica categoria
+		// Caso 2 - Bob añade Anime menos de 50€ -> aplica categoria
 		System.out.println("\n   Bob compra Anime menos de 50€ (akira = 12.99€):");
 		bob.añadirProductoCarrito(akira, 1);
 		bob.getCarritoActual().imprimirCarrito();
@@ -606,16 +638,15 @@ public class DemostradorMain {
 		bob.getCarritoActual().vaciarCarrito();
 		bob.getCarritoActual().imprimirCarrito();
 
-		// Caso 3 - Carlos compra 3 akiras -> aplica cantidad
 		System.out.println("\n  Carlos compra 3 akiras -> aplica Anime (antes que Cantidad en lista):");
 		carlos.añadirProductoCarrito(akira, 3);
 		carlos.getCarritoActual().imprimirCarrito();
 		System.out.println("  Vaciando carrito:");
 		carlos.getCarritoActual().vaciarCarrito();
 		carlos.getCarritoActual().imprimirCarrito();
-		// Caso 3b - Alice compra 3 watchmen -> no aplica volumen (45€ < 50€),
-		// no aplica Anime (no es de Anime), aplica Cantidad
-		System.out.println("\n  Caso 3b - Alice compra 3 watchmen (45€, no es Anime):");
+		// - Alice aÑade 3 watchmen no aplica volumen (45€ < 50€),
+		// aplica Cantidad
+		System.out.println("\n   Alice compra 3 watchmen (45€, no es Anime):");
 		System.out.println("  No aplica volumen (<50€), no aplica Anime, aplica Cantidad:");
 		alice.añadirProductoCarrito(watchmen, 3);
 		alice.getCarritoActual().imprimirCarrito();
@@ -623,7 +654,7 @@ public class DemostradorMain {
 		alice.getCarritoActual().vaciarCarrito();
 		alice.getCarritoActual().imprimirCarrito();
 
-		// Caso 4 - Alice compra entre 40€ y 50€ -> aplica regalo
+		// - Alice compra entre 40€ y 50€ -> aplica regalo
 		System.out.println("\n  Caso 4 - Alice compra entre 40€ y 50€ (catan = 45€) -> regalo:");
 		System.out.println("  Stock figura link antes: " + link.getStockDisponible());
 		alice.añadirProductoCarrito(catan, 1);
@@ -632,8 +663,8 @@ public class DemostradorMain {
 		alice.getCarritoActual().vaciarCarrito();
 		alice.getCarritoActual().imprimirCarrito();
 
-		// Caso 4 - Alice compra entre 40€ y 50€ -> aplica regalo
-		System.out.println("\n  Caso 4 - Alice compra entre 40€ y 50€ (catan = 45€) -> regalo:");
+		// - Alice compra entre 40€ y 50€ -> aplica regalo
+		System.out.println("\n  Alice compra entre 40€ y 50€ (catan = 45€) -> regalo:");
 		System.out.println("  Stock figura link antes: " + link.getStockDisponible());
 		alice.añadirProductoCarrito(catan, 1);
 		alice.getCarritoActual().imprimirCarrito();
@@ -695,6 +726,7 @@ public class DemostradorMain {
 		System.out.println("  Limpiar caducados:");
 		tienda.limpiarDescuentosCaducados();
 		tienda.imprimirDescuentosActivos();
+
 		/*
 		 * System.out.println("SIMULACION DE CADUCIDAD DE TIEMPOS:"); // ── Carrito
 		 * caducado ──────────────────────────────────────────────────────
@@ -798,6 +830,89 @@ public class DemostradorMain {
 		 * tienda.getTiempoMaxCarrito() + "min | Oferta: " + tienda.getTiempoMaxOferta()
 		 * + "min | Pago: " + tienda.getTiempoMaxPago() + "min");
 		 */
+
+		System.out.println("FORZAMOS MAS COMPRAS PARA OBTENER MAS DATOS EN ESTADISTICA Y RECOMENDADOR:");
+
+		System.out.println("\n  Carlos compra el Pack Manga:");
+		ProductoVenta packMangaPV = tienda.buscarProductoVentaPorId(packManga.getId());
+		carlos.añadirProductoCarrito(packMangaPV, 1);
+		carlos.reservarCarrito();
+		Pedido pedidoPackManga = carlos.getHistorialPedidos().get(carlos.getHistorialPedidos().size() - 1);
+		boolean pagadoPackManga = carlos.pagarCarrito(pedidoPackManga, "9999000011112222", Date.valueOf("2031-12-01"),
+				333);
+		System.out.println(
+				"  Pago -> " + (pagadoPackManga ? "PAGADO" : "FALLIDO") + " | estado: " + pedidoPackManga.getEstado());
+		if (pagadoPackManga) {
+			empPedidos.prepararPedido(pedidoPackManga.getIdPedido());
+			carlos.solicitarRecogidaPedido(pedidoPackManga.getCodigoRecogida());
+			empPedidos.entregarPedido(pedidoPackManga.getCodigoRecogida());
+			System.out.println("  Carlos recibe el Pack Manga");
+		}
+
+		// Bob compra Akira (Anime) - tiene Watchmen en comun con alice
+		// -> el recomendador sugerira a alice lo que compro bob
+		bob.añadirProductoCarrito(akira, 1);
+		bob.reservarCarrito();
+		Pedido pedidoBobAkira = bob.getHistorialPedidos().get(bob.getHistorialPedidos().size() - 1);
+		boolean pagadoBobAkira = bob.pagarCarrito(pedidoBobAkira, "5555666677778888", Date.valueOf("2030-06-01"), 222);
+		if (pagadoBobAkira) {
+			empPedidos.prepararPedido(pedidoBobAkira.getIdPedido());
+			bob.solicitarRecogidaPedido(pedidoBobAkira.getCodigoRecogida());
+			empPedidos.entregarPedido(pedidoBobAkira.getCodigoRecogida());
+			System.out.println("  Bob compra Akira Vol.1");
+		}
+		// Bob compra Vagabond (Anime) - mas compras similares con alice
+		bob.añadirProductoCarrito(tienda.buscarproductoPorNombre("Vagabond Vol.1").get(0), 1);
+		bob.reservarCarrito();
+		Pedido pedidoBobVagabond = bob.getHistorialPedidos().get(bob.getHistorialPedidos().size() - 1);
+		boolean pagadoBobVagabond = bob.pagarCarrito(pedidoBobVagabond, "5555666677778888", Date.valueOf("2030-06-01"),
+				222);
+		if (pagadoBobVagabond) {
+			empPedidos.prepararPedido(pedidoBobVagabond.getIdPedido());
+			bob.solicitarRecogidaPedido(pedidoBobVagabond.getCodigoRecogida());
+			empPedidos.entregarPedido(pedidoBobVagabond.getCodigoRecogida());
+			System.out.println("  Bob compra Vagabond Vol.1");
+		} // Carlos compra Pandemic (Familiar) - tiene Catan en comun con alice
+			// -> el recomendador sugerira a alice lo que compro carlos
+		carlos.añadirProductoCarrito(pandemic, 1);
+		carlos.reservarCarrito();
+		Pedido pedidoCarlosPandemic = carlos.getHistorialPedidos().get(carlos.getHistorialPedidos().size() - 1);
+		boolean pagadoCarlosPandemic = carlos.pagarCarrito(pedidoCarlosPandemic, "9999000011112222",
+				Date.valueOf("2031-12-01"), 333);
+		if (pagadoCarlosPandemic) {
+			empPedidos.prepararPedido(pedidoCarlosPandemic.getIdPedido());
+			carlos.solicitarRecogidaPedido(pedidoCarlosPandemic.getCodigoRecogida());
+			empPedidos.entregarPedido(pedidoCarlosPandemic.getCodigoRecogida());
+			System.out.println("  Carlos compra Pandemic");
+		}
+		// Alice compra One Piece (Anime) - para enriquecer sus compras
+		alice.añadirProductoCarrito(tienda.buscarproductoPorNombre("One Piece Vol.1").get(0), 1);
+		alice.reservarCarrito();
+		Pedido pedidoAliceOP = alice.getHistorialPedidos().get(alice.getHistorialPedidos().size() - 1);
+		boolean pagadoAliceOP = alice.pagarCarrito(pedidoAliceOP, "1111222233334444", Date.valueOf("2029-01-01"), 111);
+		if (pagadoAliceOP) {
+			empPedidos.prepararPedido(pedidoAliceOP.getIdPedido());
+			alice.solicitarRecogidaPedido(pedidoAliceOP.getCodigoRecogida());
+			empPedidos.entregarPedido(pedidoAliceOP.getCodigoRecogida());
+			System.out.println("  Alice compra One Piece Vol.1");
+		}
+
+		alice.añadirProductoCarrito(tienda.buscarproductoPorNombre("Monopoly").get(0), 1);
+		alice.reservarCarrito();
+		Pedido pedidoAliceMonopoly = alice.getHistorialPedidos().get(alice.getHistorialPedidos().size() - 1);
+		boolean pagadoAliceMonopoly = alice.pagarCarrito(pedidoAliceMonopoly, "1111222233334444",
+				Date.valueOf("2029-01-01"), 111);
+		if (pagadoAliceMonopoly) {
+			empPedidos.prepararPedido(pedidoAliceMonopoly.getIdPedido());
+			alice.solicitarRecogidaPedido(pedidoAliceMonopoly.getCodigoRecogida());
+			empPedidos.entregarPedido(pedidoAliceMonopoly.getCodigoRecogida());
+			System.out.println("  Alice compra Monopoly");
+		}
+		System.out.println("\n  Historial de pedidos actualizado:");
+		alice.verHistorialPedidos();
+		bob.verHistorialPedidos();
+		carlos.verHistorialPedidos();
+
 		System.out.println("\nESTADISTICAS");
 		System.out.println("\n  Rankings de clientes:");
 		gestor.verClientesTopCompras();
@@ -832,7 +947,15 @@ public class DemostradorMain {
 		} catch (AnioInvalidoException e) {
 			System.out.println("  Error año: " + e.getMessage());
 		}
-
+		System.out.println("\n  Reseñas adicionales:");
+		bob.escribirReseña(akira, 9, "Obra maestra del manga");
+		bob.escribirReseña(tienda.buscarproductoPorNombre("Vagabond Vol.1").get(0), 8, "Historicamente impresionante");
+		carlos.escribirReseña(pandemic, 7, "Muy divertido en grupo");
+		carlos.escribirReseña(tienda.buscarProductoVentaPorId(packManga.getId()), 9,
+				"Pack increible, muy recomendable");
+		alice.escribirReseña(tienda.buscarproductoPorNombre("One Piece Vol.1").get(0), 8, "Inicio epico de la saga");
+		alice.escribirReseña(tienda.buscarproductoPorNombre("Monopoly").get(0), 6, "Clasico pero largo");
+		alice.escribirReseña(tienda.buscarproductoPorNombre("Dixit").get(0), 10, "El mejor juego de mesa");
 		System.out.println("RECOMENDADOR:");
 		Recomendador rec = tienda.getRecomendador();
 		try {
@@ -851,15 +974,21 @@ public class DemostradorMain {
 			// Solo por valoracion
 			rec.setPesos(1, 0, 0);
 			System.out.println("\n  Sugerencias solo por valoracion (1,0,0):");
+			System.out.println("  (ordena por puntuacion, excluyendo lo que ya compraron)");
 			rec.imprimirSugerencias(alice);
-
+			rec.imprimirSugerencias(bob);
+			rec.imprimirSugerencias(carlos);
 			// Solo por categoria favorita
 			rec.setPesos(0, 0, 1);
 			System.out.println("\n  Sugerencias solo por categoria favorita (0,0,1):");
+			System.out.println(
+					"Alice compró Dixit (Familiar), Catan (Familiar), Monopoly (Familiar) : categoría favorita es Familiar");
 			rec.imprimirSugerencias(alice);
 
 			// Solo por compras similares
 			rec.setPesos(0, 1, 0);
+			System.out.println(
+					"Alice y bob tienen Watchmen en común : alice debería recibir sugerencias de lo que compró bob: Akira, Vagabond");
 			System.out.println("\n  Sugerencias solo por compras similares (0,1,0):");
 			rec.imprimirSugerencias(alice);
 
@@ -889,8 +1018,6 @@ public class DemostradorMain {
 			System.out.println("  Error recomendador: " + e.getMessage());
 		}
 
-		
-		
 		System.out.println("  Total productos en tienda: " + tienda.getStockVentas().size());
 		for (ProductoVenta p : tienda.getStockVentas()) {
 			System.out.println("  " + p.resumen());

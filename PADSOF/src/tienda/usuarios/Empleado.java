@@ -540,7 +540,7 @@ public class Empleado extends UsuarioRegistrado {
 		}
 		Tienda tienda = Tienda.getInstancia();
 		for (Pedido ped : tienda.getHistorialVentas()) {
-			if (ped.getCodigoRecogida().equals(codigoRecogida) && (ped.getEstado() == EstadoPedido.LISTO_PARA_RECOGER)
+			if (codigoRecogida != null && codigoRecogida.equals(ped.getCodigoRecogida()) && (ped.getEstado() == EstadoPedido.LISTO_PARA_RECOGER)
 					&& ped.isRecogida_solicitada()) {
 				ped.marcarEntregado();
 				ped.getCliente().recibirNotificacionTipo(

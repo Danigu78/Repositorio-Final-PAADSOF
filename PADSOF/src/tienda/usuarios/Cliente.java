@@ -425,20 +425,21 @@ public class Cliente extends UsuarioRegistrado {
 	public boolean añadirProductoCarrito(ProductoVenta p, int cantidad) {
 		if (!Tienda.getInstancia().isSistemaTiemposConfigurando()) {
 			System.out.println(
-					"Error. Los aprametros del sistema de tiempos no está configurados. Hay que esperar hasta que el gestor de la tienda lo configure");
+					"Error. Los parametros del sistema de tiempos no está configurados. Hay que esperar hasta que el gestor de la tienda lo configure");
 			return false;
 		}
 
 		if (p == null) {
-			System.out.println("El producto no puede ser null.");
+			System.out.println(" El producto no puede ser null.");
 			return false;
 		}
 		if (cantidad <= 0) {
-			System.out.println("La cantidad debe ser mayor que 0.");
+			System.out.println(" La cantidad debe ser mayor que 0.");
 			return false;
 		}
 		if (p.getStockDisponible() < cantidad) {
-			System.out.println("No hay suficientes unidades en la tienda de este producto");
+			System.out.println(" No hay suficientes unidades en la tienda del producto [" + p.getId() + "] "
+					+ p.getNombre() + " en la tienda.");
 			return false;
 		}
 		if (this.carritoActual == null) {
@@ -576,8 +577,8 @@ public class Cliente extends UsuarioRegistrado {
 		}
 		System.out.println("  Historial de pedidos de " + getNickname() + " (" + historialPedidos.size() + "):");
 		for (Pedido p : historialPedidos) {
-			System.out.println(
-					"   [" + p.getIdPedido() + "]" + " | total: " + p.getTotal() + "€" + " | estado: " + p.getEstado());
+			System.out.println("   [" + p.getIdPedido() + "]" + " | total: " + String.format("%.2f", p.getTotal()) + "€"
+					+ " | estado: " + p.getEstado());
 			for (LineaPedido l : p.getLineas()) {
 				System.out.println("     -> " + l.getProducto().getNombre() + " x" + l.getCantidad());
 			}
