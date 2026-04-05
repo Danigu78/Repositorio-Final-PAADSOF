@@ -9,7 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale.Category;
 
-import Excepcion.AnioInvalidoException;
+import Excepcion.AñoInvalidoException;
 import Excepcion.RangoFechasInvalidoException;
 //import com.sun.xml.internal.stream.events.AttributeImpl;
 import ventas.*;
@@ -514,7 +514,7 @@ public class Gestor extends UsuarioRegistrado {
 		return total;
 	}
 
-	public double[] consultarIngresosPorMeses(int año) throws AnioInvalidoException, RangoFechasInvalidoException {
+	public double[] consultarIngresosPorMeses(int año) throws AñoInvalidoException, RangoFechasInvalidoException {
 		double[] porMeses = motorEstadistico.calcularIngresosMesesAño(año);
 		String[] meses = { "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic" };
 		System.out.println("  Ingresos por mes del año " + año + ":");
@@ -526,7 +526,7 @@ public class Gestor extends UsuarioRegistrado {
 		return porMeses;
 	}
 
-	public double[] consultarIngresosPorMesesActual() throws AnioInvalidoException, RangoFechasInvalidoException {
+	public double[] consultarIngresosPorMesesActual() throws AñoInvalidoException, RangoFechasInvalidoException {
 		return consultarIngresosPorMeses(LocalDate.now().getYear());
 	}
 

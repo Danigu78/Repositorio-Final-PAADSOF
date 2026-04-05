@@ -26,7 +26,7 @@ public class Estadistica {
 	private int nDescuentos = 1;
 	private int nIntercambiosFinalizados = 1;
 	private int nCategorias = 1;
-	private int nCarritos = 1;
+	private int nCarritos = 1; 
 	private int nReseñas = 1;
 	private int nTasacionesCobradas = 0;
 	private int nNotificaciones = 1;

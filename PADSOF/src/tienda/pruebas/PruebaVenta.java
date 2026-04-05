@@ -22,7 +22,7 @@ import ventas.*;
  */
 public class PruebaVenta {
 
-	// ----------------------------------------------------------------
+	// ----------------------------------------- -----------------------
 	// Utilidades de prueba
 	// ----------------------------------------------------------------
 
@@ -66,7 +66,7 @@ public class PruebaVenta {
 		gestor = tienda.getGestor();
 
 		// Configurar tiempos del sistema (necesario para que el cliente pueda comprar)
-		gestor.setTiemposSistema(60, 60, 60); // oferta=60min, carrito=60min, pago=60min
+		gestor.configurarTiemposSistema(60, 60, 60); // oferta=60min, carrito=60min, pago=60min
 
 		// Registrar cliente
 		cliente = tienda.registrarNuevoCliente("clienteTest", "Pass@1234", "12345678A");
@@ -105,25 +105,6 @@ public class PruebaVenta {
 		}
 	}
 
-	private static void forzarFechaCreacionCarrito(Carrito carrito, LocalDateTime nuevaFecha) {
-		try {
-			Field f = Carrito.class.getDeclaredField("fechaCreacion");
-			f.setAccessible(true);
-			f.set(carrito, nuevaFecha);
-		} catch (Exception e) {
-			throw new RuntimeException("No se pudo forzar la fecha de creación del carrito", e);
-		}
-	}
-
-	private static void forzarFechaCreacionPedido(Pedido pedido, LocalDateTime nuevaFecha) {
-		try {
-			Field f = Pedido.class.getDeclaredField("fechaCreacion");
-			f.setAccessible(true);
-			f.set(pedido, nuevaFecha);
-		} catch (Exception e) {
-			throw new RuntimeException("No se pudo forzar la fecha de creación del pedido", e);
-		}
-	}
 
 	private static void invocarRevisionCarritosCaducados(GestorTiempo gt) {
 		try {

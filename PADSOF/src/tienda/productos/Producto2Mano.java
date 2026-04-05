@@ -27,7 +27,7 @@ public class Producto2Mano extends Producto {
 		this.bloqueado = bloqueado;
 		this.visible = visible;
 		est.setnProducto2Mano(est.getnProducto2Mano() + 1);
-	}
+	} 
 
 	public Producto2Mano(Cliente propietario, String nombre, String descripcion, String imagenRuta) {
 		super(nombre, descripcion, imagenRuta);

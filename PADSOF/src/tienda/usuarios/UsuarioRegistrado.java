@@ -24,13 +24,7 @@ public abstract class UsuarioRegistrado {
 	private FiltroVenta filtroVenta;
 	private FiltroSegundaMano filtro2Mano;
 
-	/*
-	 * public UsuarioRegistrado(String nickname, String password, String email) {
-	 * Estadistica est = Estadistica.getInstancia(); this.id = "USERREG-" +
-	 * String.valueOf(est.getnUsuarioRegistrado()); this.nickname = nickname;
-	 * this.password = password; this.email = email;
-	 * est.setnUsuarioRegistrado(est.getnUsuarioRegistrado() + 1); }
-	 */
+	
 
 	public UsuarioRegistrado(String nickname, String password) {
 		Estadistica est = Estadistica.getInstancia();
@@ -43,12 +37,7 @@ public abstract class UsuarioRegistrado {
 		this.filtroVenta = new FiltroVenta();
 	}
 
-	/*
-	 * public List<ProductoVenta> navegarCatalogoNuevos() {
-	 * System.out.println("Visitante " + sessionId +
-	 * " consultando catálogo de productos nuevos."); return
-	 * Tienda.getInstancia().getStockNuevos(); }
-	 */
+	
 	public void logout() {
 		this.sesionIniciada = false;
 		this.filtroVenta = new FiltroVenta();

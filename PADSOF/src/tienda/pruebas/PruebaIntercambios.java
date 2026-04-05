@@ -1,6 +1,8 @@
 package pruebas;
 
 import java.util.*;
+
+import Excepcion.ValoracionInvalidaException;
 import intercambios.*;
 import productos.*;
 import tienda.*;
@@ -43,7 +45,7 @@ public class PruebaIntercambios {
 		}
 
 		// El sistema de tiempos debe estar configurado para que proponerOferta funcione
-		gestor.setTiemposSistema(60, 30, 30); // oferta=60min, carrito=30min, pago=30min
+		gestor.configurarTiemposSistema(60, 30, 30); // oferta=60min, carrito=30min, pago=30min
 		gestor.setPrecioTasacion(10.0);
 
 		List<TipoPermisos> permisosTasador = new ArrayList<>();
@@ -51,7 +53,9 @@ public class PruebaIntercambios {
 		permisosTasador.add(TipoPermisos.CONFIRMACION_INTERCAMBIO);
 		gestor.darDeAltaEmpleados_Permisos("tasador", "Tasador@1", permisosTasador);
 		Empleado tasador = tienda.obtenerEmpleadosTienda().get(0);
-
+		tasador.login("Tasador@1"); 
+		
+		
 		Cliente alice  = new Cliente("alice",  "Alice@1234", "11111111A");
 		Cliente bob    = new Cliente("bob",    "Bob@1234",   "22222222B");
 		Cliente carlos = new Cliente("carlos", "Carlos@123", "33333333C");
@@ -110,7 +114,7 @@ public class PruebaIntercambios {
 		check("p_alice aparece en pendientes de tasacion",
 			tienda.getPendientesTasacion().contains(p_alice));
 
-		// El tasador valora los productos
+		
 		boolean valoradoAlice = p_alice.valorar(20.0, EstadoProducto.MUY_BUENO, tasador);
 		 p_bob1.valorar(15.0, EstadoProducto.PERFECTO,   tasador);
 		 p_bob2.valorar(12.0, EstadoProducto.USO_LIGERO, tasador);
@@ -139,20 +143,29 @@ public class PruebaIntercambios {
 		check("producto NO_ACEPTADO sigue sin ser visible",   !p_carlos.isVisible());
 		check("producto NO_ACEPTADO sigue bloqueado",          p_carlos.isBloqueado());
 
-		// Errores en valorar
-		check("valorar con estado null devuelve false",
-			!p_carlos.valorar(5.0, null, tasador));
-		check("valorar con empleado null devuelve false",
-			!p_carlos.valorar(5.0, EstadoProducto.MUY_BUENO, null));
-		check("valorar con precio negativo devuelve false",
-			!p_carlos.valorar(-1.0, EstadoProducto.MUY_BUENO, tasador));
+		// Error: estado null
+		try {
+		    p_carlos.valorar(5.0, null, tasador);
+		    check("valorar con estado null lanza excepcion", false);
+		} catch (ValoracionInvalidaException e) {
+		    check("valorar con estado null lanza excepcion", true);
+		}
 
+		// Error: empleado null
+		try {
+		    p_carlos.valorar(5.0, EstadoProducto.MUY_BUENO, null);
+		    check("valorar con empleado null lanza excepcion", false);
+		} catch (ValoracionInvalidaException e) {
+		    check("valorar con empleado null lanza excepcion", true);
+		}
 
-		/*
-		 * Comprobamos verCarteraCliente: alice puede ver la cartera de bob
-		 * (solo los productos visibles y no bloqueados).
-		 * Carlos no puede ver la suya propia con este metodo.
-		 */
+		// Error: precio negativo
+		try {
+		    p_carlos.valorar(-1.0, EstadoProducto.MUY_BUENO, tasador);
+		    check("valorar con precio negativo lanza excepcion", false);
+		} catch (ValoracionInvalidaException e) {
+		    check("valorar con precio negativo lanza excepcion", true);
+		}
 		System.out.println("\n============= ver cartera de otro cliente =============");
 
 		List<Producto2Mano> carteraBobVisible = alice.verCarteraCliente("bob");

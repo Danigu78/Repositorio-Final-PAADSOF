@@ -297,7 +297,7 @@ public class PruebaMotorEstadistico {
 				}
 			}
 			check("El resto de meses tienen 0.0", otrosMesesVacios);
-		} catch (AnioInvalidoException | RangoFechasInvalidoException e) {
+		} catch (AñoInvalidoException | RangoFechasInvalidoException e) {
 			fallos++;
 		}
 
@@ -336,7 +336,7 @@ public class PruebaMotorEstadistico {
 				}
 			}
 			check("Todos los meses de 2099 son 0.0", anio2099Vacio);
-		} catch (AnioInvalidoException | RangoFechasInvalidoException e) {
+		} catch (AñoInvalidoException | RangoFechasInvalidoException e) {
 			fallos++;
 		}
 
@@ -344,7 +344,7 @@ public class PruebaMotorEstadistico {
 		try {
 			gestor.consultarIngresosPorMeses(0);
 			check("Anio 0 lanza excepcion", false);
-		} catch (AnioInvalidoException e) {
+		} catch (AñoInvalidoException e) {
 			check("Anio 0 lanza excepcion", true);
 		} catch (RangoFechasInvalidoException e) {
 			fallos++;
@@ -353,7 +353,7 @@ public class PruebaMotorEstadistico {
 		try {
 			gestor.consultarIngresosPorMeses(-99);
 			check("Anio negativo lanza excepcion", false);
-		} catch (AnioInvalidoException e) {
+		} catch (AñoInvalidoException e) {
 			check("Anio negativo lanza excepcion", true);
 		} catch (RangoFechasInvalidoException e) {
 			fallos++;

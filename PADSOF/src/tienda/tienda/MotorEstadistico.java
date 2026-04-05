@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import Excepcion.AnioInvalidoException;
+import Excepcion.AñoInvalidoException;
 import Excepcion.RangoFechasInvalidoException;
 import intercambios.*;
 import usuarios.*;
@@ -103,10 +103,10 @@ public class MotorEstadistico {
 		return this.calcularIngresosVentaRango(inicio, fin) + this.calcularTasacionesEnRango(inicio, fin);
 	}
 
-	public double[] calcularIngresosMesesAño(int año) throws AnioInvalidoException, RangoFechasInvalidoException {
+	public double[] calcularIngresosMesesAño(int año) throws AñoInvalidoException, RangoFechasInvalidoException {
 		double[] ingresosPorMes = new double[12];
 		if (año <= 0) {
-			throw new AnioInvalidoException(año);
+			throw new AñoInvalidoException(año);
 		}
 
 		for (int mes = 1; mes <= 12; mes++) {
@@ -119,7 +119,7 @@ public class MotorEstadistico {
 		return ingresosPorMes;
 	}
 
-	public double[] calcularIngresosMesesAñoActual() throws AnioInvalidoException, RangoFechasInvalidoException {
+	public double[] calcularIngresosMesesAñoActual() throws AñoInvalidoException, RangoFechasInvalidoException {
 		return this.calcularIngresosMesesAño(LocalDate.now().getYear());
 	}
 

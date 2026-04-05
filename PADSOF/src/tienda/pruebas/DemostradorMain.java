@@ -98,7 +98,7 @@ public class DemostradorMain {
 		System.out.println("Cargando productos desde fichero...");
 		empStock.cargarProductosFicheroTexto("src/tienda/ficheros/productos.txt");
 		System.out.println("  Productos tras fichero: " + tienda.getStockVentas().size());
-
+ 
 		empStock.añadirProducto_nuevo("C", "Watchmen", "Clasico del comic", "watchmen.jpg", 15.00, 10,
 				tienda.seleccionarCategorias("Accion", "Anime"), 400, "DC Comics", 1987, 0, 0, 0, null, null, 0, 0, 0,
 				0, null);
@@ -938,13 +938,13 @@ public class DemostradorMain {
 			System.out.println("\n  Intentar consultar año invalido (-1):");
 			try {
 				gestor.consultarIngresosPorMeses(-1);
-			} catch (AnioInvalidoException e) {
+			} catch (AñoInvalidoException e) {
 				System.out.println("  Error capturado: " + e.getMessage());
 			}
 
 		} catch (RangoFechasInvalidoException e) {
 			System.out.println("  Error rango: " + e.getMessage());
-		} catch (AnioInvalidoException e) {
+		} catch (AñoInvalidoException e) {
 			System.out.println("  Error año: " + e.getMessage());
 		}
 		System.out.println("\n  Reseñas adicionales:");

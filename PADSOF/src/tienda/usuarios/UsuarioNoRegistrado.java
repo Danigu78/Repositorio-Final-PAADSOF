@@ -33,9 +33,6 @@ public class UsuarioNoRegistrado {
 		return Tienda.getInstancia().buscarProductoPorCategoria(nombreCategoria);
 	}
 
-	public List<Producto2Mano> buscarProductosSegundaMano() {
-		return Tienda.getInstancia().buscarSegundaMano();
-	}
 
 	public Cliente registrarse(String nickname, String password, String dni) {
 		return Tienda.getInstancia().registrarNuevoCliente(nickname, password, dni);
