@@ -1,14 +1,19 @@
 package Excepcion;
 
-//Cuando se intenta hace runa oferta con un producto bloqueado
-public class ProductoBloqueadoException {
-	private String idProducto;
 
-	public ProductoBloqueadoException(String idProducto) {
-		this.idProducto = idProducto;
-	}
+public class ProductoBloqueadoException extends CheckPointException {
+    
+    
+    private static final long serialVersionUID = 1L;
+    private String idProducto;
 
-	public String toString() {
-		return "El producto " + idProducto + " esta bloqueado porque esta ofrecido en otra oferta";
-	}
+    public ProductoBloqueadoException(String idProducto) {
+       
+        super("El producto " + idProducto + " está bloqueado porque está ofrecido en otra oferta");
+        this.idProducto = idProducto;
+    }
+
+    public String getIdProducto() {
+        return idProducto;
+    }
 }

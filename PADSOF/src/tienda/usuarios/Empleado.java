@@ -91,7 +91,7 @@ public class Empleado extends UsuarioRegistrado {
 		for (Producto2Mano p : Tienda.getInstancia().getPendientesTasacion()) {
 			if (p.getId().equals(idProducto))
 				return p;
-		}
+		} 
 		System.out.println("No existe ningún producto pendiente de tasación con id: " + idProducto);
 		return null;
 	}

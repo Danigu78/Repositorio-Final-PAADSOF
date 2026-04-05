@@ -1,11 +1,12 @@
 package Excepcion;
 
-import java.lang.invoke.StringConcatFactory;
+public class PagoFallidoException extends CheckPointException {
+    
+    
+    private static final long serialVersionUID = 1L;
 
-public abstract class PagoFallidoException {
-
-	@Override
-	public String toString() {
-		return "El pago ha fallado.";
-	}
+   
+    public PagoFallidoException() {
+        super("El pago ha fallado.");
+    }
 }

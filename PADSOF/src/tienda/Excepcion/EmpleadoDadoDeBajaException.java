@@ -1,15 +1,16 @@
 package Excepcion;
 
-public class EmpleadoDadoDeBajaException {
-	private String nickname;
+public class EmpleadoDadoDeBajaException extends CheckPointException {
+    private static final long serialVersionUID = 1L;
+    private String nickname;
 
-	public EmpleadoDadoDeBajaException(String nickname) {
-		this.nickname = nickname;
-	}
+    public EmpleadoDadoDeBajaException(String nickname) {
+        // ERROR SOLUCIONADO: Ahora le pasamos el mensaje a la clase padre
+        super("El empleado " + nickname + " está dado de baja y no puede iniciar sesión.");
+        this.nickname = nickname;
+    }
 
-	@Override
-	public String toString() {
-		return "El empleado " + nickname + " está dado de baja y no puede iniciar sesion en la aplicacion.";
-	}
-
+    public String getNickname() {
+        return nickname;
+    }
 }

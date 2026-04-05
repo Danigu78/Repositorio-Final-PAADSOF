@@ -10,5 +10,5 @@ public class AñoInvalidoException extends CheckPointException {
         this.año = año;
     }
 
-    public int getAnio() { return año; }
+    public int getAño() { return año; }
 }

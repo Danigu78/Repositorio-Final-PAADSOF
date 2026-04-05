@@ -1,8 +1,10 @@
 package Excepcion;
 
+
 public class FicheroFormatoInvalidoException extends CheckPointException {
-    private final int numeroLinea;
-    private final String linea;
+    private static final long serialVersionUID = 1L;
+    private int numeroLinea;
+    private String linea;
 
     public FicheroFormatoInvalidoException(int numeroLinea, String linea, String mensaje) {
         super(mensaje);
@@ -12,6 +14,7 @@ public class FicheroFormatoInvalidoException extends CheckPointException {
 
     @Override
     public String getMessage() {
+        
         return "Error en línea " + numeroLinea + ": " + super.getMessage();
     }
 }
