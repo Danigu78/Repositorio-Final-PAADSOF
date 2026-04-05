@@ -24,8 +24,6 @@ public abstract class UsuarioRegistrado {
 	private FiltroVenta filtroVenta;
 	private FiltroSegundaMano filtro2Mano;
 
-	
-
 	public UsuarioRegistrado(String nickname, String password) {
 		Estadistica est = Estadistica.getInstancia();
 		this.id = "USERREG-" + String.valueOf(est.getnUsuarioRegistrado());
@@ -37,7 +35,6 @@ public abstract class UsuarioRegistrado {
 		this.filtroVenta = new FiltroVenta();
 	}
 
-	
 	public void logout() {
 		this.sesionIniciada = false;
 		this.filtroVenta = new FiltroVenta();
@@ -228,7 +225,7 @@ public abstract class UsuarioRegistrado {
 			System.out.println("  Ningun producto de segunda mano cumple el filtro: " + filtro2Mano);
 			return resultado;
 		}
-	
+
 		for (Producto2Mano p : resultado) {
 			System.out.println("  " + p.resumen());
 		}
@@ -261,37 +258,38 @@ public abstract class UsuarioRegistrado {
 		buscarProductos2ManoFiltrados();
 		filtro2Mano.resetear();
 	}
-	//ver la cartera de un clinte
+
+	// ver la cartera de un clinte
 	public List<Producto2Mano> verCarteraCliente(String nickname) {
-	    if (nickname == null || nickname.isBlank()) {
-	        System.out.println("  El nickname no puede estar vacio.");
-	        return null;
-	    }
-	    Cliente c = Tienda.getInstancia().buscarClientePorNickname(nickname);
-	    if (c == null) {
-	    	
-	        return new ArrayList<>();
-	       
-	    }
-	    if (c.getNickname().equalsIgnoreCase(this.nickname)) {
-	        System.err.println("  Para ver tu propia cartera usa verMiCartera().");
-	        return new ArrayList<>();
-	    }
-	    List<Producto2Mano> resultado = new ArrayList<>();
-	    for (Producto2Mano p : c.getCarteraIntercambio()) {
-	        if (p.isVisible()) {
-	            resultado.add(p);
-	        }
-	    }
-	    if (resultado.isEmpty()) {
-	        System.out.println("  " + nickname + " no tiene productos visibles en su cartera.");
-	        return resultado;
-	    }
-	    System.out.println("  Cartera visible de " + nickname + " (" + resultado.size() + " productos):");
-	    for (Producto2Mano p : resultado) {
-	        System.out.println("  " + p.resumen());
-	    }
-	    return resultado;
+		if (nickname == null || nickname.isBlank()) {
+			System.out.println("  El nickname no puede estar vacio.");
+			return null;
+		}
+		Cliente c = Tienda.getInstancia().buscarClientePorNickname(nickname);
+		if (c == null) {
+
+			return new ArrayList<>();
+
+		}
+		if (c.getNickname().equalsIgnoreCase(this.nickname)) {
+			System.err.println("  Para ver tu propia cartera usa verMiCartera().");
+			return new ArrayList<>();
+		}
+		List<Producto2Mano> resultado = new ArrayList<>();
+		for (Producto2Mano p : c.getCarteraIntercambio()) {
+			if (p.isVisible()) {
+				resultado.add(p);
+			}
+		}
+		if (resultado.isEmpty()) {
+			System.out.println("  " + nickname + " no tiene productos visibles en su cartera.");
+			return resultado;
+		}
+		System.out.println("  Cartera visible de " + nickname + " (" + resultado.size() + " productos):");
+		for (Producto2Mano p : resultado) {
+			System.out.println("  " + p.resumen());
+		}
+		return resultado;
 	}
 
 //Getters públicos: Todos necesitan saber quién es quién [cite: 325]

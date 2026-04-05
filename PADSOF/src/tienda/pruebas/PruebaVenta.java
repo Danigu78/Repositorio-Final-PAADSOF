@@ -106,9 +106,9 @@ public class PruebaVenta {
 	}
 
 
-	private static void invocarRevisionCarritosCaducados(GestorTiempo gt) {
+	private static void invocarRevisionCarritosCaducados(ComprobadorTiempos gt) {
 		try {
-			Method m = GestorTiempo.class.getDeclaredMethod("revisarCarritosCaducados");
+			Method m = ComprobadorTiempos.class.getDeclaredMethod("revisarCarritosCaducados");
 			m.setAccessible(true);
 			m.invoke(gt);
 		} catch (Exception e) {
@@ -116,9 +116,9 @@ public class PruebaVenta {
 		}
 	}
 
-	private static void invocarRevisionPedidosCaducados(GestorTiempo gt) {
+	private static void invocarRevisionPedidosCaducados(ComprobadorTiempos gt) {
 		try {
-			Method m = GestorTiempo.class.getDeclaredMethod("revisarPedidosPendientesCaducados");
+			Method m = ComprobadorTiempos.class.getDeclaredMethod("revisarPedidosPendientesCaducados");
 			m.setAccessible(true);
 			m.invoke(gt);
 		} catch (Exception e) {
@@ -799,7 +799,7 @@ public class PruebaVenta {
 	private static void probarGestorTiempo() {
 		titulo("BLOQUE 18 — GestorTiempo: registro, pedido, pago, cancelación y limpieza");
 
-		GestorTiempo gt = new GestorTiempo();
+		ComprobadorTiempos gt = new ComprobadorTiempos();
 
 		try {
 			// Datos propios de este bloque para no depender del estado global
@@ -905,7 +905,7 @@ public class PruebaVenta {
 	private static void probarGestorTiempoCaducidades() {
 		titulo("BLOQUE 19 — GestorTiempo: caducidad real de carritos y pedidos");
 
-		GestorTiempo gt = new GestorTiempo();
+		ComprobadorTiempos gt = new ComprobadorTiempos();
 
 		try {
 			// Datos propios para aislar el bloque

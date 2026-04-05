@@ -7,8 +7,10 @@ import usuarios.Cliente;
 import usuarios.Empleado;
 import usuarios.Gestor;
 import usuarios.TipoPermisos;
+import usuarios.UsuarioNoRegistrado;
 import usuarios.UsuarioRegistrado;
 import ventas.Carrito;
+import ventas.ComprobadorTiempos;
 import ventas.Descuento;
 import ventas.Pedido;
 import ventas.Regalo;
@@ -36,6 +38,7 @@ public class Tienda {
 	// esta variable estatica, el constructor privado y el segundo metodo
 	// sirven para asegurar la existencia de una tienda unica y comun.
 	private static Tienda instancia;
+	private ComprobadorTiempos comprobadorTiempos;
 
 	private Tienda() {
 		this.nombre = "CheckPoint";
@@ -60,7 +63,10 @@ public class Tienda {
 		this.usuariosConSesionActiva.add(gestor);
 		this.historialNotificaciones = new ArrayList<>();
 		this.historialProductos2Mano=new ArrayList<>();
-	}
+	
+		}
+		
+	
 
 	public static Tienda getInstancia() {
 		if (instancia == null)
@@ -81,7 +87,9 @@ public class Tienda {
 		System.err.println("Error: No se ha encontrado al Gestor en el sistema.");
 		return null;
 	}
-
+	public UsuarioNoRegistrado nuevoUsuarioNoRegistrado() {
+	    return new UsuarioNoRegistrado();
+	}
 	public boolean existeUsuarioConNickname(String nickname) {
 		if (nickname == null || nickname.isBlank()) {
 			System.out.println("El nickname no puede estar vacio.");
@@ -144,6 +152,7 @@ public class Tienda {
 				productos.add(p);
 			}
 		}
+		this.imprimirCatalogo();
 		return productos;
 	}
 
@@ -754,6 +763,12 @@ public class Tienda {
 
 	public void setHistorialProductos2Mano(List<Producto2Mano> historialProductos2Mano) {
 		this.historialProductos2Mano = historialProductos2Mano;
+	}
+	public ComprobadorTiempos getComprobadorTiempos() {
+	    if (comprobadorTiempos == null) {
+	        comprobadorTiempos = new ComprobadorTiempos();
+	    }
+	    return comprobadorTiempos;
 	}
 
 }

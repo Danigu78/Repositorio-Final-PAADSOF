@@ -12,13 +12,13 @@ import java.util.concurrent.TimeUnit;
 import tienda.Tienda;
 import usuarios.Cliente;
 
-public class GestorTiempo {
+public class ComprobadorTiempos {
 
 	private final Map<String, Carrito> carritosPorUsuario;
 	private final Map<String, List<Pedido>> pedidosPendientesPorUsuario;
 	private final ScheduledExecutorService scheduler;
 
-	public GestorTiempo() {
+	public ComprobadorTiempos() {
 		this.carritosPorUsuario = new ConcurrentHashMap<>();
 		this.pedidosPendientesPorUsuario = new ConcurrentHashMap<>();
 		this.scheduler = Executors.newSingleThreadScheduledExecutor();
@@ -54,7 +54,7 @@ public class GestorTiempo {
 		}, tiempoRevision, tiempoRevision, TimeUnit.MINUTES);
 	}
 
-	private void revisarCarritosCaducados() {
+	public void revisarCarritosCaducados() {
 		Iterator<Map.Entry<String, Carrito>> it = carritosPorUsuario.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry<String, Carrito> entry = it.next();
@@ -66,7 +66,7 @@ public class GestorTiempo {
 		}
 	}
 
-	private void revisarPedidosPendientesCaducados() {
+	public void revisarPedidosPendientesCaducados() {
 		Iterator<Map.Entry<String, List<Pedido>>> itMapa = pedidosPendientesPorUsuario.entrySet().iterator();
 		while (itMapa.hasNext()) {
 			Map.Entry<String, List<Pedido>> entry = itMapa.next();
