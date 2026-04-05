@@ -1,0 +1,61 @@
+package productos;
+
+import Excepcion.ProductoInvalidoException;
+import usuarios.Cliente;
+import tienda.Estadistica;
+import java.time.*;
+
+public class Reseña {
+	private String idReseña;
+	private Cliente autor;
+	private ProductoVenta producto;
+	private double puntuacion; // 0-10
+	private String comentario;
+	private LocalDate fecha;
+
+	public Reseña(Cliente autor, ProductoVenta productoV, double puntuacion, String comentario) {
+		Estadistica est = Estadistica.getInstancia();
+		this.idReseña = "RESEÑA-" + String.valueOf(est.getnReseñas());
+		est.setnReseñas(est.getnReseñas() + 1);
+		this.autor = autor;
+		this.producto = null;
+
+		if (puntuacion < 0 || puntuacion > 10) {
+			throw new ProductoInvalidoException("La puntuación de la reseña debe estar entre 0 y 10.");
+		}
+		this.puntuacion = puntuacion;
+
+		this.comentario = (comentario == null) ? "" : comentario;
+		this.fecha = LocalDate.now();
+
+		if (productoV != null) {
+			productoV.addReseña(this);
+		}
+	}
+
+	public LocalDate getFecha() {
+		return this.fecha;
+	}
+
+	public double getPuntuacion() {
+		return this.puntuacion;
+	}
+
+	public boolean setProducto(ProductoVenta p) {
+		if (p == null) {
+			throw new ProductoInvalidoException("El producto de la reseña no puede ser null.");
+		}
+		this.producto = p;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "[" + this.idReseña + "] " + (this.autor != null ? this.autor.getNickname() : "null") + " | "
+				+ this.fecha + " | " + this.puntuacion + " | " + this.comentario + " |";
+	}
+
+	public Cliente getAutor() {
+		return autor;
+	}
+}

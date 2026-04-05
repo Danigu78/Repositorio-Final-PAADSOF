@@ -1,0 +1,204 @@
+package productos;
+
+import java.util.*;
+
+import Excepcion.ProductoInvalidoException;
+import Excepcion.ProductoYaEnCategoriaException;
+import Excepcion.ReseñaDuplicadaException;
+import tienda.Estadistica;
+
+public abstract class ProductoVenta extends Producto {
+	protected double precioOficial;
+	protected int stockDisponible;
+	protected ArrayList<Reseña> reseñas;
+	protected ArrayList<Categoria> categorias;
+
+	/* CONSTRUCTORES DEL PRODUCTO CON DIFERENTES PARAMETROS */
+
+	public ProductoVenta(String nombre, String descripcion, String imagenRuta, double precioOficial,
+			int stockDisponible) {
+
+		super(nombre, descripcion, imagenRuta);
+
+		if (precioOficial < 0) {
+			throw new ProductoInvalidoException("El precio oficial no puede ser negativo.");
+		}
+		if (stockDisponible < 0) {
+			throw new ProductoInvalidoException("El stock disponible no puede ser negativo.");
+		}
+
+		Estadistica est = Estadistica.getInstancia();
+		this.id = "PV-" + est.getnProductosVentas();
+		est.setnProductosVentas(est.getnProductosVentas() + 1);
+		this.precioOficial = precioOficial;
+		this.stockDisponible = stockDisponible;
+		this.reseñas = new ArrayList<Reseña>();
+		this.categorias = new ArrayList<Categoria>();
+	}
+
+	public double getMediaPuntuacion() {
+		double suma = 0;
+		if (this.reseñas.size() == 0) {
+			return 0;
+		}
+
+		for (Reseña r : this.reseñas) {
+			suma += r.getPuntuacion();
+		}
+
+		suma = suma / this.reseñas.size();
+
+		return suma;
+	}
+
+	public ArrayList<Reseña> getReseñas() {
+		return this.reseñas;
+	}
+
+	public int getStockDisponible() {
+		return this.stockDisponible;
+	}
+
+	public void setStockDisponible(int cantidad) {
+		if (cantidad < 0) {
+			throw new ProductoInvalidoException("El stock disponible no puede ser negativo.");
+		}
+		this.stockDisponible = cantidad;
+	}
+
+	public ArrayList<Categoria> getCategorias() {
+		return this.categorias;
+	}
+
+	public boolean addCategoria(Categoria c) {
+		if (c == null) {
+			return false;
+		}
+		if (this.categorias.contains(c)) {
+			throw new ProductoYaEnCategoriaException(
+					"El producto " + this.getNombre() + " ya pertenece a la categoría " + c.getNombre() + ".");
+		}
+
+		this.categorias.add(c);
+		c.addProductoInterno(this);
+		return true;
+	}
+
+	public boolean deleteCategoria(Categoria c) {
+		if (c == null) {
+			return false;
+		}
+		if (!this.categorias.contains(c)) {
+			return false;
+		}
+
+		this.categorias.remove(c);
+		c.deleteProductoInterno(this);
+		return true;
+	}
+
+	protected boolean addCategoriaInterno(Categoria c) {
+		if (c == null || this.categorias.contains(c)) {
+			return false;
+		}
+		this.categorias.add(c);
+		return true;
+	}
+
+	protected boolean deleteCategoriaInterno(Categoria c) {
+		if (c == null || !this.categorias.contains(c)) {
+			return false;
+		}
+		this.categorias.remove(c);
+		return true;
+	}
+
+	public boolean addReseña(Reseña r) {
+		if (r == null)
+			return false;
+		if (this.reseñas.contains(r))
+			return false;
+
+		for (Reseña existente : this.reseñas) {
+			if (existente.getAutor() != null && existente.getAutor().equals(r.getAutor())) {
+				throw new ReseñaDuplicadaException("Este cliente ya ha reseñado este producto.");
+			}
+		}
+
+		this.reseñas.add(r);
+		r.setProducto(this);
+		return true;
+	}
+
+	public boolean deleteReseña(Reseña r) {
+		if (r == null) {
+			return false;
+		}
+		if (!this.reseñas.contains(r)) {
+			return false;
+		}
+
+		this.reseñas.remove(r);
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		String tipo = "Producto";
+		if (this instanceof Comic)
+			tipo = "CÓMIC";
+		else if (this instanceof Figura)
+			tipo = "FIGURA";
+		else if (this instanceof JuegoMesa)
+			tipo = "JUEGO";
+		else if (this instanceof Pack)
+			tipo = "PACK";
+
+		String cats = "";
+		for (Categoria c : categorias)
+			cats += c.getNombre() + " ";
+
+		String valoracion = reseñas.isEmpty() ? "Sin reseñas" : String.format("%.1f", getMediaPuntuacion()) + "/5";
+
+		return "[" + tipo + "][" + id + "] " + nombre + " | Precio: " + precioOficial + "€" + " | Stock: "
+				+ stockDisponible + " | Puntuación: " + valoracion + " | Categorías: "
+				+ (cats.isBlank() ? "ninguna" : cats);
+	}
+
+	public double getPrecioOficial() {
+		return precioOficial;
+	}
+
+	public boolean setPrecioOficial(double precioOficial) {
+		if (precioOficial < 0) {
+			throw new ProductoInvalidoException("El precio oficial no puede ser negativo.");
+		}
+		this.precioOficial = precioOficial;
+		return true;
+	}
+
+	public String resumen() {
+		String cats = "";
+		for (Categoria c : categorias)
+			cats += c.getNombre() + " ";
+
+		String valoracion = reseñas.isEmpty() ? "Sin reseñas" : String.format("%.1f", getMediaPuntuacion()) + "/10";
+
+		return "[" + id + "] " + nombre + " | Precio: " + precioOficial + "€" + " | Stock: " + stockDisponible
+				+ " | Puntuacion: " + valoracion + " | Categorias: " + (cats.isBlank() ? "ninguna" : cats.trim());
+	}
+
+	public void imprimirCategorias() {
+		if (categorias.isEmpty()) {
+			System.out.println("  [" + id + "] " + nombre + " -> sin categorias");
+			return;
+		}
+		String cats = "";
+		for (Categoria c : categorias) {
+			if (!cats.equals(""))
+				cats += ", ";
+			cats += c.getNombre();
+		}
+		System.out.println("  [" + id + "] " + nombre + " -> " + cats);
+	}
+}
