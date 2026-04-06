@@ -565,12 +565,16 @@ public class DemostradorMain {
 
 		Oferta oferta = alice.getOfertasPendientes().get(0);
 		oferta.imprimirResumen();
-
+		System.out.println("  pAlice bloqueado: " + pAlice.isBloqueado());
+		System.out.println("  pAlice2 bloqueado: " + pAlice2.isBloqueado());
+		System.out.println("  pBob1 bloqueado: " + pBob1.isBloqueado());
+		System.out.println("  pBob2 bloqueado: " + pBob2.isBloqueado());
 		System.out.println("\n  Casos de error en ofertas:");
 		System.out.println("  Alice intenta proponerse oferta a si misma:");
 		alice.proponerOferta(alice, alice.crearListaProductos2Mano(pAlice, pAlice2),
 				alice.crearListaProductos2Mano(pBob1, pBob2));
 
+		
 		System.out.println("  Alice intenta ofertar productos ya bloqueados:");
 		try {
 			alice.proponerOferta(bob, alice.crearListaProductos2Mano(pAlice, pAlice2),
@@ -1061,7 +1065,15 @@ public class DemostradorMain {
 			rec.imprimirSugerencias(alice);
 
 			// Caso error - pesos invalidos
-			System.out.println("\n  Intentar pesos invalidos (negativos):");
+			System.out.println("\n  Ie intenta ofertar producto sin tasar:\n"
+					+ "Producto subido correctamente a tu cartera personal de objetos de sgeunda mano.\n"
+					+ "No existe ningún cliente con nickname: alice\n"
+					+ "Producto subido correctamente a tu cartera personal de objetos de sgeunda mano.\n"
+					+ "[Notificación Empleado]: Hay un nuevo producto para valorar: Producto Bob Temp\n"
+					+ "[Notificación Cliente]: El producto Producto Bob Temp ha sido tasado con éxito.Ya es visible para los demas clientes\n"
+					+ "Exception in thread \"main\" Excepcion.ProductoBloqueadoException: El producto P2M6 está bloqueado porque está ofrecido en otra oferta\n"
+					+ "	at usuarios.Cliente.proponerOferta(Cliente.java:168)\n"
+					+ "	at pruebas.DemostradorMain.main(DemostradorMain.java:572)ntentar pesos invalidos (negativos):");
 			try {
 				rec.setPesos(-1, 0, 0);
 			} catch (PesosInvalidosException e) {
@@ -1243,7 +1255,6 @@ public class DemostradorMain {
 		System.out.println("  Sesion empTasador: " + empTasador.isSesionIniciada());
 		System.out.println("  Sesion empPedidos: " + empPedidos.isSesionIniciada());
 		tienda.imprimirUsuariosConSesionActiva();
-
 	}
 
 }

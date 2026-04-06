@@ -451,6 +451,7 @@ public class Cliente extends UsuarioRegistrado {
 			this.carritoActual = new Carrito(this);
 			Tienda.getInstancia().getComprobadorTiempos().registrarCarrito(this.getId(), this.carritoActual);
 		}
+		
 		this.getCarritoActual().añadirProducto(p, cantidad);
 		return true;
 	}

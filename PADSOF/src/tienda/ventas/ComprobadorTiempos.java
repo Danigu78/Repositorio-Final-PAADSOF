@@ -26,6 +26,8 @@ public class ComprobadorTiempos {
 		iniciarRevisionPeriodica();
 	}
 
+	
+	
 	private void iniciarRevisionPeriodica() {
 		Tienda tienda = Tienda.getInstancia();
 

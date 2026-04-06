@@ -764,6 +764,7 @@ public class Tienda {
 	public void setHistorialProductos2Mano(List<Producto2Mano> historialProductos2Mano) {
 		this.historialProductos2Mano = historialProductos2Mano;
 	}
+	
 	public ComprobadorTiempos getComprobadorTiempos() {
 	    if (comprobadorTiempos == null) {
 	        comprobadorTiempos = new ComprobadorTiempos();
