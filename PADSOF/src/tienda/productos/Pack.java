@@ -24,7 +24,7 @@ public class Pack extends ProductoVenta {
 		}
 	}
 
-	// AÑADIR OTRO TIPO DE PRODUCTO AL PACK
+	
 	public boolean addLinea(LineaPack lp) {
 		if (lp == null) {
 			throw new ProductoInvalidoException("La línea del pack no puede ser null.");

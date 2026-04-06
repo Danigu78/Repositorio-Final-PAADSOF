@@ -165,6 +165,10 @@ public class DemostradorMain {
 		empStock.añadirProductoACategoria(watchmen.getId(), "Familiar");
 		System.out.println("  Categorias tras añadir:");
 		watchmen.imprimirCategorias();
+		// Caso de error: producto ya en la categoria excepcion
+		System.out.println("  Intentar añadir watchmen a Retro-Gaming (ya está en esa categoria):");
+		boolean yaEnCategoria = empStock.añadirProductoACategoria(watchmen.getId(), "Retro-Gaming");
+		System.out.println("  Resultado: " + (yaEnCategoria ? "OK" : "FALLIDO - producto ya estaba en la categoria"));
 		System.out.println("ELIMINAR CATEGORIAS DE PRODUCTOS");
 		empStock.eliminarProductoDeCategoria(watchmen.getId(), "Anime");
 		System.out.println("  Categorias del producto tras eliminar Anime:");
@@ -183,6 +187,14 @@ public class DemostradorMain {
 		boolean añadido = empStock.añadirProductoaPack(pandemic.getId(), packGamer.getId(), 1);
 		System.out.println("  Resultado: " + (añadido ? "OK" : "FALLIDO"));
 		imprimirStockPack(packGamer);
+
+		System.out.println("\n  Intentar añadir producto que ya esta en el pack (Catan):");
+		boolean yaEnPack = empStock.añadirProductoaPack(catan.getId(), packGamer.getId(), 1);
+		System.out.println("  Resultado: " + (yaEnPack ? "OK" : "FALLIDO - producto ya estaba en el pack"));
+
+		System.out.println("\n  Intentar añadir producto con stock insuficiente al pack:");
+		boolean stockInsuficiente = empStock.añadirProductoaPack(pandemic.getId(), packGamer.getId(), 999);
+		System.out.println("  Resultado: " + (stockInsuficiente ? "OK" : "FALLIDO - stock insuficiente"));
 
 		// modificar unidades de producto que ya estaba (Akira)
 		System.out.println("\n  Modificar unidades de Akira en el pack (de 1 a 2):");
@@ -205,7 +217,7 @@ public class DemostradorMain {
 		boolean eliminadoNoExiste = empStock.eliminarProductoDePack(packGamer.getId(), pandemic.getId());
 		System.out.println("  Resultado: " + (eliminadoNoExiste ? "OK" : "FALLIDO - producto no estaba en el pack"));
 
-		// Caso 6: eliminar el pack entero
+		// eliminar el pack entero
 		System.out.println("\n  Eliminar pack :");
 		boolean eliminadoPack = empStock.eliminarPack(packGamer.getId());
 		System.out.println("  Resultado: " + (eliminadoPack ? "OK" : "FALLIDO"));
@@ -304,7 +316,7 @@ public class DemostradorMain {
 		// Comprar justo el stock disponible
 		System.out.println("\n  Comprar justo el stock disponible (" + dixit.getStockDisponible() + " unidades):");
 		alice.añadirProductoCarrito(dixit, dixit.getStockDisponible());
-		alice.getCarritoActual().imprimirCarrito();
+		alice.imprimirCarritoActual();
 		alice.reservarCarrito();
 
 		Pedido dixitpedido = alice.getHistorialPedidos().get(alice.getHistorialPedidos().size() - 1);
@@ -336,7 +348,7 @@ public class DemostradorMain {
 		alice.añadirProductoCarrito(catan, 1);
 		System.out.println("  " + alice.getNickname() + " añade al carrito: '" + watchmen.getNombre() + "' y '"
 				+ catan.getNombre() + "'");
-		alice.getCarritoActual().imprimirCarrito();
+		alice.imprimirCarritoActual();
 		alice.reservarCarrito();
 		Pedido pedidoAlice = alice.getHistorialPedidos().get(alice.getHistorialPedidos().size() - 1);
 		System.out.println("  Carrito reservado: pedido: " + pedidoAlice.getIdPedido() + " | total: "
@@ -358,13 +370,19 @@ public class DemostradorMain {
 		} else {
 			System.out.println("  Pago rechazado por el banco. Estado: " + pedidoAlice.getEstado());
 		}
+		System.out.println("  Alice intenta reseñar watchmen dos veces:");
+		try {
+			alice.escribirReseña(watchmen, 5, "Segunda reseña no permitida");
+		} catch (ReseñaDuplicadaException e) {
+			System.out.println("  Error capturado: " + e.getMessage());
+		}
 
 		// Bob busca por categoria y compra
 		System.out.println("\n  Bob busca productos de la categoria 'Accion':");
 		bob.buscarProductosPorCategoria("Accion");
 
 		bob.añadirProductoCarrito(watchmen, 1);
-		bob.getCarritoActual().imprimirCarrito();
+		bob.imprimirCarritoActual();
 		bob.reservarCarrito();
 		Pedido pedidoBob = bob.getHistorialPedidos().get(0);
 		System.out.println("  Pedido bob: " + pedidoBob.getIdPedido() + " | total: " + pedidoBob.getTotal() + "€"
@@ -482,7 +500,7 @@ public class DemostradorMain {
 		System.out.println("  Pendientes de tasacion: " + tienda.getPendientesTasacion().size());
 
 		// Casos de error en tasacion
-		System.out.println("\n  Casos de error en la solicius de tasacion:");
+		System.out.println("\n  Casos de error en la solicitud de tasacion:");
 		System.out.println("  Alice intenta tasar producto que no es suyo:");
 		alice.solicitarTasacion(pBob1, "1111222233334444", 111, Date.valueOf("2029-01-01"));
 		System.out.println("  Alice intenta tasar producto ya tasado:");
@@ -495,6 +513,8 @@ public class DemostradorMain {
 		alice.solicitarTasacion(pAlice2, "1111222233334444", 111, Date.valueOf("2029-01-01"));
 
 		System.out.println("\n  Empleado tasa los productos pendientes:");
+		System.out.println("  Empleado intenta tasar con valor aproximado  negativo:");
+		empTasador.tasarProducto(pAlice.getId(), -1.0, EstadoProducto.MUY_BUENO);
 
 		empTasador.tasarProducto(pAlice.getId(), 20.0, EstadoProducto.MUY_BUENO);
 		empTasador.tasarProducto(pBob1.getId(), 15.0, EstadoProducto.PERFECTO);
@@ -538,6 +558,11 @@ public class DemostradorMain {
 		alice.verCarteraCliente("alice");
 
 		System.out.println("INTERCAMBIOS: ");
+		
+		
+		
+		
+
 
 		boolean ofertaCreada = alice.proponerOferta(bob, alice.crearListaProductos2Mano(pAlice, pAlice2),
 				alice.crearListaProductos2Mano(pBob1, pBob2));
@@ -552,8 +577,12 @@ public class DemostradorMain {
 				alice.crearListaProductos2Mano(pBob1, pBob2));
 
 		System.out.println("  Alice intenta ofertar productos ya bloqueados:");
-		alice.proponerOferta(bob, alice.crearListaProductos2Mano(pAlice, pAlice2),
-				alice.crearListaProductos2Mano(pBob1, pBob2));
+		try {
+			alice.proponerOferta(bob, alice.crearListaProductos2Mano(pAlice, pAlice2),
+					alice.crearListaProductos2Mano(pBob1, pBob2));
+		} catch (ProductoBloqueadoException e) {
+			System.out.println("  Error capturado: " + e.getMessage());
+		}
 		// Bob acepta
 		System.out.println("\n  Bob acepta la oferta:");
 		bob.confirmarIntercambio(oferta);
@@ -628,6 +657,7 @@ public class DemostradorMain {
 		List<Oferta> intercambiosAliceCarlos = alice.verIntercambioscon(carlos);
 		System.out.println("  Resultado: " + intercambiosAliceCarlos.size() + " intercambio(s)");
 		// Crear descuentos en orden de prioridad
+		System.out.println("DESCUENTOS");
 		System.out.println("\n  Creando descuentos por orden de prioridad:");
 
 		boolean d1 = gestor.crearDescuentoVolumen("Descuento Verano", 50.0, 10.0, LocalDateTime.now().minusMinutes(1),
@@ -649,49 +679,52 @@ public class DemostradorMain {
 		System.out.println("\n  Caso 1 - Alice compra mas de 50€ (watchmen + catan = 60€):");
 		alice.añadirProductoCarrito(watchmen, 1);
 		alice.añadirProductoCarrito(catan, 1);
-		alice.getCarritoActual().imprimirCarrito();
+		alice.imprimirCarritoActual();
 		System.out.println("  Vaciando carrito:");
+		System.out.println("  Carrito antes de vaciar: " + alice.getCarritoActual());
 		alice.getCarritoActual().vaciarCarrito();
-		alice.getCarritoActual().imprimirCarrito();
+		alice.imprimirCarritoActual();
+		
+		
+		
 		// Caso 2 - Bob añade Anime menos de 50€ -> aplica categoria
 		System.out.println("\n   Bob compra Anime menos de 50€ (akira = 12.99€):");
 		bob.añadirProductoCarrito(akira, 1);
-		bob.getCarritoActual().imprimirCarrito();
+		bob.imprimirCarritoActual();
 		System.out.println("  Vaciando carrito:");
 		bob.getCarritoActual().vaciarCarrito();
-		bob.getCarritoActual().imprimirCarrito();
+		bob.imprimirCarritoActual();
 
 		System.out.println("\n  Carlos compra 3 akiras -> aplica Anime (antes que Cantidad en lista):");
-		carlos.añadirProductoCarrito(akira, 2);
-carlos.reservarCarrito();
-		carlos.getCarritoActual().imprimirCarrito();
+		carlos.añadirProductoCarrito(akira, 3);
+		carlos.imprimirCarritoActual();
 		System.out.println("  Vaciando carrito:");
 		carlos.getCarritoActual().vaciarCarrito();
-		carlos.getCarritoActual().imprimirCarrito();
+		carlos.imprimirCarritoActual();
 		// - Alice aÑade 3 watchmen no aplica volumen (45€ < 50€),
 		// aplica Cantidad
 		System.out.println("\n   Alice compra 3 watchmen (45€, no es Anime):");
 		System.out.println("  No aplica volumen (<50€), no aplica Anime, aplica Cantidad:");
 		alice.añadirProductoCarrito(watchmen, 3);
-		alice.getCarritoActual().imprimirCarrito();
+		alice.imprimirCarritoActual();
 		System.out.println("  Vaciando carrito:");
 		alice.getCarritoActual().vaciarCarrito();
-		alice.getCarritoActual().imprimirCarrito();
+		alice.imprimirCarritoActual();
 
 		// - Alice compra entre 40€ y 50€ -> aplica regalo
 		System.out.println("\n  Caso 4 - Alice compra entre 40€ y 50€ (catan = 45€) -> regalo:");
 		System.out.println("  Stock figura link antes: " + link.getStockDisponible());
 		alice.añadirProductoCarrito(catan, 1);
-		alice.getCarritoActual().imprimirCarrito();
+		alice.imprimirCarritoActual();
 		System.out.println("  Vaciando carrito:");
 		alice.getCarritoActual().vaciarCarrito();
-		alice.getCarritoActual().imprimirCarrito();
+		alice.imprimirCarritoActual();
 
 		// - Alice compra entre 40€ y 50€ -> aplica regalo
 		System.out.println("\n  Alice compra entre 40€ y 50€ (catan = 45€) -> regalo:");
 		System.out.println("  Stock figura link antes: " + link.getStockDisponible());
 		alice.añadirProductoCarrito(catan, 1);
-		alice.getCarritoActual().imprimirCarrito();
+		alice.imprimirCarritoActual();
 		alice.reservarCarrito();
 		Pedido pedidoRegalo = alice.getHistorialPedidos().get(alice.getHistorialPedidos().size() - 1);
 		System.out.println("  Stock figura link tras reservar: " + link.getStockDisponible());
@@ -713,10 +746,10 @@ carlos.reservarCarrito();
 
 		System.out.println("\n Bob compra menos de 20€ sin categoria con descuento (watchmen = 15€):");
 		bob.añadirProductoCarrito(watchmen, 1);
-		bob.getCarritoActual().imprimirCarrito();
+		bob.imprimirCarritoActual();
 		System.out.println("  Vaciando carrito:");
 		bob.getCarritoActual().vaciarCarrito();
-		bob.getCarritoActual().imprimirCarrito();
+		bob.imprimirCarritoActual();
 
 		// Limpiar caducados y eliminar
 		System.out.println("\n  Crear descuento caducado:");
@@ -758,7 +791,7 @@ carlos.reservarCarrito();
 				+ tienda.getTiempoMaxOferta() + "min | Pago: " + tienda.getTiempoMaxPago() + "min");
 		System.out.println("  Alice añade watchmen al carrito:");
 		alice.añadirProductoCarrito(watchmen, 1);
-		alice.getCarritoActual().imprimirCarrito();
+		alice.imprimirCarritoActual();
 		System.out.println("  Stock watchmen antes de caducar: " + watchmen.getStockDisponible());
 
 		System.out.println("  Esperando 61 segundos para que caduque el carrito...");
@@ -775,19 +808,28 @@ carlos.reservarCarrito();
 
 		System.out.println("\n  Caso carrito olvidado:");
 		System.out.println("  Carlos añade productos al carrito pero nunca reserva:");
-		alice.añadirProductoCarrito(akira, 2);
-		alice.getCarritoActual().imprimirCarrito(); // imprime ANTES de esperar
+		carlos.añadirProductoCarrito(akira, 2);
+		Carrito carritoOlvidado = carlos.getCarritoActual();
+		if (carritoOlvidado != null) {
+			carritoOlvidado.imprimirCarrito();
+		} else {
+			System.out.println("  El carrito ya fue caducado automaticamente por el ComprobadorTiempos.");
+		}
 		System.out.println("  Stock akira antes: " + akira.getStockDisponible());
-
 		System.out.println("  Esperando 61 segundos para que caduque el carrito...");
-		try { Thread.sleep(61000); } catch (InterruptedException e) { e.printStackTrace(); }
+		try {
+			Thread.sleep(61000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
 		System.out.println("  ComprobadorTiempos revisa y caduca carritos olvidados:");
 		tienda.getComprobadorTiempos().revisarCarritosCaducados();
 		System.out.println("  Stock akira recuperado: " + akira.getStockDisponible());
-		System.out.println("  Carrito carlos: " + (carlos.getCarritoActual() == null || carlos.getCarritoActual().estaVacio()
-		    ? "VACIO - caducado correctamente"
-		    : "aun tiene productos"));
+		System.out.println(
+				"  Carrito carlos: " + (carlos.getCarritoActual() == null || carlos.getCarritoActual().estaVacio()
+						? "VACIO - caducado correctamente"
+						: "aun tiene productos"));
 		gestor.setTiempoMaxCarrito(60);
 		System.out.println("  Tiempo max carrito restaurado: " + tienda.getTiempoMaxCarrito() + "min"); // ── Pedido
 																										// caducado

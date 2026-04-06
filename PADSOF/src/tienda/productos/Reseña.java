@@ -5,6 +5,8 @@ import usuarios.Cliente;
 import tienda.Estadistica;
 import java.time.*;
 
+
+
 public class Reseña {
 	private String idReseña;
 	private Cliente autor;
@@ -57,5 +59,10 @@ public class Reseña {
 
 	public Cliente getAutor() {
 		return autor;
+	}
+
+	public ProductoVenta getProducto() {
+		// TODO Auto-generated method stub
+		return producto;
 	}
 }

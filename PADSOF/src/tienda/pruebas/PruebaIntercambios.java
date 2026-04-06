@@ -2,6 +2,7 @@ package pruebas;
 
 import java.util.*;
 
+import Excepcion.ProductoBloqueadoException;
 import Excepcion.ValoracionInvalidaException;
 import intercambios.*;
 import productos.*;
@@ -225,9 +226,13 @@ public class PruebaIntercambios {
 
 		// Producto ya bloqueado (p_alice ya esta en una oferta)
 		List<Producto2Mano> ofrecidosBloqueados = new ArrayList<>(Arrays.asList(p_alice));
-		check("no se puede ofertar un producto ya bloqueado",
-			!alice.proponerOferta(bob, ofrecidosBloqueados, solicitados));
-
+		try {
+		    alice.proponerOferta(bob, ofrecidosBloqueados, solicitados);
+		    check("no se puede ofertar un producto ya bloqueado", false);
+		} catch (ProductoBloqueadoException e) {
+		    check("no se puede ofertar un producto ya bloqueado", true);
+		}
+		
 		// Destinatario null
 		check("proponerOferta con destinatario null devuelve false",
 			!alice.proponerOferta(null, ofrecidos, solicitados));

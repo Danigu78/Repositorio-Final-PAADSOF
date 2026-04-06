@@ -760,7 +760,7 @@ public class Tienda {
 	public List<Producto2Mano> getHistorialProductos2Mano() {
 		return historialProductos2Mano;
 	}
-
+ 
 	public void setHistorialProductos2Mano(List<Producto2Mano> historialProductos2Mano) {
 		this.historialProductos2Mano = historialProductos2Mano;
 	}

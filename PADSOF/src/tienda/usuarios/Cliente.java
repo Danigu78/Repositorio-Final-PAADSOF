@@ -13,7 +13,9 @@ import java.util.List;
 import java.util.Map;
 
 import Excepcion.OfertaNoDisponibleException;
+import Excepcion.ProductoBloqueadoException;
 import Excepcion.ProductoNoTasadoException;
+import Excepcion.ReseñaDuplicadaException;
 import intercambios.*;
 import productos.Producto2Mano;
 
@@ -162,20 +164,18 @@ public class Cliente extends UsuarioRegistrado {
 				System.out.println("El producto " + p.getId() + " no está en tu cartera.");
 				return false;
 			}
-			if (p.isBloqueado()) {
-				System.out.println("El producto " + p.getId() + " está bloqueado en otra oferta.");
-				return false;
-			}
+			 if (p.isBloqueado()) {
+			        throw new ProductoBloqueadoException(p.getId());
+			    }
 		}
 		for (Producto2Mano p : susProductos) {
 			if (!destinatario.tieneProductoenSuCartera(p)) {
 				System.out.println("El producto " + p.getId() + " no está en la cartera del destinatario.");
 				return false;
 			}
-			if (p.isBloqueado()) {
-				System.out.println("El producto " + p.getId() + " está bloqueado en otra oferta.");
-				return false;
-			}
+			 if (p.isBloqueado()) {
+			        throw new ProductoBloqueadoException(p.getId());
+			    }
 		}
 		try {
 			Oferta nuevaOferta = new Oferta(this, destinatario, misProductos, susProductos);
@@ -297,15 +297,20 @@ public class Cliente extends UsuarioRegistrado {
 	}
 
 	public boolean escribirReseña(ProductoVenta p, int pts, String texto) {
-		if (this.productoHasidoPedidoYentregado(p)) {
-			Reseña res = new Reseña(this, p, pts, texto);
-			this.reseñas.add(res);
-
-			System.out.println("Reseña creada y añadida con exito ");
-			return true;
-		}
-		System.out.println("No ha sido posible crear la reseña.");
-		return false;
+	    if (this.productoHasidoPedidoYentregado(p)) {
+	        // Comprobar si ya tiene una reseña de ese producto
+	        for (Reseña r : this.reseñas) {
+	            if (r.getProducto().equals(p)) {
+	                throw new ReseñaDuplicadaException();
+	            }
+	        }
+	        Reseña res = new Reseña(this, p, pts, texto);
+	        this.reseñas.add(res);
+	        System.out.println("Reseña creada y añadida con exito ");
+	        return true;
+	    }
+	    System.out.println("No ha sido posible crear la reseña.");
+	    return false;
 	}
 
 	public Categoria determinarCategoriaFavorita() {
@@ -444,6 +449,7 @@ public class Cliente extends UsuarioRegistrado {
 		}
 		if (this.carritoActual == null) {
 			this.carritoActual = new Carrito(this);
+			Tienda.getInstancia().getComprobadorTiempos().registrarCarrito(this.getId(), this.carritoActual);
 		}
 		this.getCarritoActual().añadirProducto(p, cantidad);
 		return true;
@@ -689,6 +695,13 @@ public class Cliente extends UsuarioRegistrado {
 				System.out.println("  " + n);
 			}
 		}
+	}
+	public void imprimirCarritoActual() {
+	    if (carritoActual == null) {
+	        System.out.println("  No hay carrito activo.");
+	        return;
+	    }
+	    carritoActual.imprimirCarrito();
 	}
 	// --- GETTERS ---
 

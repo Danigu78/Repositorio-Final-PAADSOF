@@ -19,7 +19,12 @@ import javax.print.DocFlavor.STRING;
 
 import Excepcion.FicheroFormatoInvalidoException;
 import Excepcion.OfertaNoDisponibleException;
+import Excepcion.ProductoInvalidoException;
+import Excepcion.ProductoYaEnCategoriaException;
+import Excepcion.ProductoYaEnPackException;
+import Excepcion.StockInsuficienteParaPackException;
 import Excepcion.TipoProductoDesconocidoException;
+import Excepcion.ValoracionInvalidaException;
 import intercambios.*;
 
 import ventas.*;
@@ -91,7 +96,7 @@ public class Empleado extends UsuarioRegistrado {
 		for (Producto2Mano p : Tienda.getInstancia().getPendientesTasacion()) {
 			if (p.getId().equals(idProducto))
 				return p;
-		} 
+		}
 		System.out.println("No existe ningún producto pendiente de tasación con id: " + idProducto);
 		return null;
 	}
@@ -245,7 +250,15 @@ public class Empleado extends UsuarioRegistrado {
 			System.out.println("El producto " + idProducto + " no está pendiente de tasación.");
 			return;
 		}
-		boolean aceptado = p.valorar(precio, estado, this);
+
+		boolean aceptado;
+		try {
+			aceptado = p.valorar(precio, estado, this);
+		} catch (ValoracionInvalidaException e) {
+			System.out.println("  Error en tasacion: " + e.getMessage());
+			return;
+		}
+
 		Tienda.getInstancia().getPendientesTasacion().remove(p);
 
 		if (!aceptado && estado == EstadoProducto.NO_ACEPTADO) {
@@ -317,7 +330,7 @@ public class Empleado extends UsuarioRegistrado {
 			return false;
 		}
 
-		// 2. Validar letra ANTES de comprobar existencia
+		// Validar letra ANTES de comprobar existencia
 		if (letra == null || letra.length() != 1) {
 			this.recibirNotificacion(
 					"El tipo de producto que has intentado crear no es correcta. Deben ser Comics(C), Figuras(F) o Juegos(J)");
@@ -334,9 +347,11 @@ public class Empleado extends UsuarioRegistrado {
 					añoPublicacion);
 			tienda.añadirProducto(comic);
 			for (Categoria cats : categorias) {
-
-				cats.addProducto(comic);
-
+				try {
+					cats.addProducto(comic);
+				} catch (ProductoYaEnCategoriaException e) {
+					System.out.println("  Aviso: " + e.getMessage());
+				}
 			}
 			this.recibirNotificacion("Has añadido el comic " + comic.getNombre() + " a la tienda");
 			return true;
@@ -362,9 +377,11 @@ public class Empleado extends UsuarioRegistrado {
 					maxNumjugadores, minEdad, maxEdad, Estilo);
 			tienda.añadirProducto(juego);
 			for (Categoria cats : categorias) {
-
-				cats.addProducto(juego);
-
+				try {
+					cats.addProducto(juego);
+				} catch (ProductoYaEnCategoriaException e) {
+					System.out.println("  Aviso: " + e.getMessage());
+				}
 			}
 			this.recibirNotificacion("Has añadido el juego " + juego.getNombre() + " a la tienda");
 			return true; // <-- faltaba el return Y el break
@@ -386,9 +403,11 @@ public class Empleado extends UsuarioRegistrado {
 					material, marca);
 			tienda.añadirProducto(figura);
 			for (Categoria cats : categorias) {
-
-				cats.addProducto(figura);
-
+				try {
+					cats.addProducto(figura);
+				} catch (ProductoYaEnCategoriaException e) {
+					System.out.println("  Aviso: " + e.getMessage());
+				}
 			}
 			this.recibirNotificacion("Has añadido la figura " + figura.getNombre() + " a la tienda");
 			return true;
@@ -540,8 +559,8 @@ public class Empleado extends UsuarioRegistrado {
 		}
 		Tienda tienda = Tienda.getInstancia();
 		for (Pedido ped : tienda.getHistorialVentas()) {
-			if (codigoRecogida != null && codigoRecogida.equals(ped.getCodigoRecogida()) && (ped.getEstado() == EstadoPedido.LISTO_PARA_RECOGER)
-					&& ped.isRecogida_solicitada()) {
+			if (codigoRecogida != null && codigoRecogida.equals(ped.getCodigoRecogida())
+					&& (ped.getEstado() == EstadoPedido.LISTO_PARA_RECOGER) && ped.isRecogida_solicitada()) {
 				ped.marcarEntregado();
 				ped.getCliente().recibirNotificacionTipo(
 						"Tu pedido con codigo de recogida " + ped.getCodigoRecogida() + " ha sido entregado con exito",
@@ -577,17 +596,21 @@ public class Empleado extends UsuarioRegistrado {
 			return false;
 		}
 
-		boolean añadido = c.addProducto(p);
-		if (añadido) {
-			System.out.println("Se ha añadido el producto con id " + idProducto + " a la categoria " + nombreCat + ".");
-			for (Cliente cliente : Tienda.getInstancia().obtenerClientesTienda()) {
-
-				cliente.notificarProductoNuevoCategoria(
-						"Nuevo producto en la categoria " + c.getNombre() + ": " + p.getNombre() + ".", nombreCat);
+		try {
+			boolean añadido = c.addProducto(p);
+			if (añadido) {
+				System.out.println(
+						"Se ha añadido el producto con id " + idProducto + " a la categoria " + nombreCat + ".");
+				for (Cliente cliente : Tienda.getInstancia().obtenerClientesTienda()) {
+					cliente.notificarProductoNuevoCategoria(
+							"Nuevo producto en la categoria " + c.getNombre() + ": " + p.getNombre() + ".", nombreCat);
+				}
 			}
+			return añadido;
+		} catch (ProductoYaEnCategoriaException e) {
+			System.out.println("  Error: " + e.getMessage());
+			return false;
 		}
-		return añadido;
-
 	}
 
 	public boolean eliminarProductoDeCategoria(String idProducto, String nombreCat) {
@@ -679,7 +702,18 @@ public class Empleado extends UsuarioRegistrado {
 			System.out.println("No exxiste ningun producto en el catalogo de la tienda con id " + idProducto + ".");
 			return false;
 		}
-		return ((Pack) pack).addProducto(producto, unidades);
+		try {
+			return ((Pack) pack).addProducto(producto, unidades);
+		} catch (ProductoYaEnPackException e) {
+			System.out.println("  Error: " + e.getMessage());
+			return false;
+		} catch (ProductoInvalidoException e) {
+			System.out.println("  Error: " + e.getMessage());
+			return false;
+		} catch (StockInsuficienteParaPackException e) {
+			System.out.println("  Error: " + e.getMessage());
+			return false;
+		}
 	}
 
 	public boolean modificarUnidadesProductoEnPack(String idProducto, String idPack, int nuevasUnidades) {

@@ -132,6 +132,9 @@ public class Carrito {
 		}
 		this.lineas.clear();
 		this.descuentoAplicado = null;
+		if (this.propietario != null) {
+			Tienda.getInstancia().getComprobadorTiempos().eliminarCarrito(this.propietario.getId());
+		}
 	}
 
 	public double calcularSubtotal() {
@@ -187,21 +190,19 @@ public class Carrito {
 	public Cliente getPropietario() {
 		return propietario;
 	}
+
 	public void imprimirCarrito() {
-	    if (lineas.isEmpty()) {
-	        System.out.println("  Carrito vacio.");
-	        return;
-	    }
-	    System.out.println("  Carrito [" + idCarrito + "]:");
-	    for (LineaCarrito l : lineas) {
-	        System.out.println("   -> " + l.getProducto().getNombre()
-	            + " x" + l.getCantidad()
-	            + " | " + l.getProducto().getPrecioOficial() + "€/ud"
-	            + " | subtotal: " + l.getSubtotal() + "€");
-	    }
-	    System.out.println("  Subtotal: " + calcularSubtotal() + "€");
-	    System.out.println("  Descuento: " + (descuentoAplicado != null
-	        ? descuentoAplicado.getNombre() : "ninguno"));
-	    System.out.println("  Total: " + getTotal() + "€");
+		if (lineas.isEmpty()) {
+			System.out.println("  Carrito vacio.");
+			return;
+		}
+		System.out.println("  Carrito [" + idCarrito + "]:");
+		for (LineaCarrito l : lineas) {
+			System.out.println("   -> " + l.getProducto().getNombre() + " x" + l.getCantidad() + " | "
+					+ l.getProducto().getPrecioOficial() + "€/ud" + " | subtotal: " + l.getSubtotal() + "€");
+		}
+		System.out.println("  Subtotal: " + calcularSubtotal() + "€");
+		System.out.println("  Descuento: " + (descuentoAplicado != null ? descuentoAplicado.getNombre() : "ninguno"));
+		System.out.println("  Total: " + getTotal() + "€");
 	}
 }

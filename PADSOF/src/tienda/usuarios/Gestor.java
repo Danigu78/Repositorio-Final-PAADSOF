@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Locale.Category;
 
 import Excepcion.AñoInvalidoException;
+import Excepcion.ProductoYaEnCategoriaException;
 import Excepcion.RangoFechasInvalidoException;
 //import com.sun.xml.internal.stream.events.AttributeImpl;
 import ventas.*;
@@ -423,7 +424,12 @@ public class Gestor extends UsuarioRegistrado {
 			System.out.println("No existe ninguna categoría con nombre: " + nombreCat);
 			return false;
 		}
-		return c.addProducto(p);
+		try {
+		    return c.addProducto(p);
+		} catch (ProductoYaEnCategoriaException e) {
+		    System.out.println("  Error: " + e.getMessage());
+		    return false;
+		}
 	}
 
 	public boolean eliminarProductoDeCategoria(String idProducto, String nombreCat) {
