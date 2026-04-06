@@ -126,15 +126,15 @@ public class Carrito {
 	}
 
 	public void vaciarCarrito() {
-		for (LineaCarrito l : this.lineas) {
-			ProductoVenta p = l.getProducto();
-			p.setStockDisponible(p.getStockDisponible() + l.getCantidad());
-		}
-		this.lineas.clear();
-		this.descuentoAplicado = null;
-		if (this.propietario != null) {
-			Tienda.getInstancia().getComprobadorTiempos().eliminarCarrito(this.propietario.getId());
-		}
+	    for (LineaCarrito l : this.lineas) {
+	        ProductoVenta p = l.getProducto();
+	        p.setStockDisponible(p.getStockDisponible() + l.getCantidad());
+	    }
+	    this.lineas.clear();
+	    this.descuentoAplicado = null;
+	    if (this.propietario != null) {
+	        Tienda.getInstancia().getComprobadorTiempos().quitarCarrito(this.propietario.getId());
+	    }
 	}
 
 	public double calcularSubtotal() {

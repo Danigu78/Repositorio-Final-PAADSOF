@@ -558,11 +558,6 @@ public class DemostradorMain {
 		alice.verCarteraCliente("alice");
 
 		System.out.println("INTERCAMBIOS: ");
-		
-		
-		
-		
-
 
 		boolean ofertaCreada = alice.proponerOferta(bob, alice.crearListaProductos2Mano(pAlice, pAlice2),
 				alice.crearListaProductos2Mano(pBob1, pBob2));
@@ -676,18 +671,15 @@ public class DemostradorMain {
 		tienda.imprimirDescuentosActivos();
 
 		// - Alice aÑade mas de 50€ -> aplica volumen
-		System.out.println("\n  Caso 1 - Alice compra mas de 50€ (watchmen + catan = 60€):");
+		System.out.println("\n   Alice compra mas de 50€ (watchmen + catan = 60€):");
 		alice.añadirProductoCarrito(watchmen, 1);
 		alice.añadirProductoCarrito(catan, 1);
 		alice.imprimirCarritoActual();
 		System.out.println("  Vaciando carrito:");
-		System.out.println("  Carrito antes de vaciar: " + alice.getCarritoActual());
 		alice.getCarritoActual().vaciarCarrito();
 		alice.imprimirCarritoActual();
-		
-		
-		
-		// Caso 2 - Bob añade Anime menos de 50€ -> aplica categoria
+
+		// - Bob añade Anime menos de 50€ -> aplica categoria
 		System.out.println("\n   Bob compra Anime menos de 50€ (akira = 12.99€):");
 		bob.añadirProductoCarrito(akira, 1);
 		bob.imprimirCarritoActual();
