@@ -9,6 +9,20 @@ public class Figura extends ProductoVenta {
 	private String material;
 	private String marca;
 
+	/**
+	 * Constructor de la clase Figura
+	 *
+	 * @param nombre          el nombre de la figura
+	 * @param descripcion     breve descripción de la figura
+	 * @param imagenRuta      la ruta de la imagen asociada a la figura
+	 * @param precioOficial   el precio oficial de la figura
+	 * @param stockDisponible la cantidad disponible en stock
+	 * @param altura          la altura de la figura
+	 * @param ancho           el ancho de la figura
+	 * @param largo           el largo de la figura
+	 * @param material        el material del que está hecha la figura
+	 * @param marca           la marca de la figura
+	 */
 	public Figura(String nombre, String descripcion, String imagenRuta, double precioOficial, int stockDisponible,
 			double altura, double ancho, double largo, String material, String marca) {
 		super(nombre, descripcion, imagenRuta, precioOficial, stockDisponible);
@@ -36,6 +50,11 @@ public class Figura extends ProductoVenta {
 		this.marca = marca;
 	}
 
+	/**
+	 * Devuelve un string con información del objeto relevante
+	 *
+	 * @return la cadena de caracteres con la información de la figura
+	 */
 	@Override
 	public String toString() {
 		return super.toString() + " | Altura: " + this.altura + " | Ancho: " + this.ancho + " | Largo: " + this.largo

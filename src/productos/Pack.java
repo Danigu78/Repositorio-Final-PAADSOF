@@ -9,11 +9,30 @@ import Excepcion.StockInsuficienteParaPackException;
 public class Pack extends ProductoVenta {
 	private ArrayList<LineaPack> lineas;
 
+	/**
+	 * Constructor de la clase Pack
+	 *
+	 * @param nombre          el nombre del pack
+	 * @param descripcion     una breve descripción del pack
+	 * @param imagenRuta      la ruta de la imagen asociada
+	 * @param precioOficial   el precio fijado para el pack
+	 * @param stockDisponible las unidades disponibles del pack
+	 */
 	public Pack(String nombre, String descripcion, String imagenRuta, double precioOficial, int stockDisponible) {
 		super(nombre, descripcion, imagenRuta, precioOficial, stockDisponible);
 		this.lineas = new ArrayList<>();
 	}
 
+	/**
+	 * Constructor de la clase Pack con sus líneas ya incluidas
+	 *
+	 * @param nombre          el nombre del pack
+	 * @param descripcion     una breve descripción del pack
+	 * @param imagenRuta      la ruta de la imagen asociada
+	 * @param precioOficial   el precio fijado para el pack
+	 * @param stockDisponible las unidades disponibles del pack
+	 * @param lineas          las líneas de productos que formarán parte del pack
+	 */
 	public Pack(String nombre, String descripcion, String imagenRuta, double precioOficial, int stockDisponible,
 			ArrayList<LineaPack> lineas) {
 		super(nombre, descripcion, imagenRuta, precioOficial, stockDisponible);
@@ -24,7 +43,12 @@ public class Pack extends ProductoVenta {
 		}
 	}
 
-	
+	/**
+	 * Añade una línea nueva al pack
+	 *
+	 * @param lp la línea que se quiere incorporar
+	 * @return true si se añade correctamente
+	 */
 	public boolean addLinea(LineaPack lp) {
 		if (lp == null) {
 			throw new ProductoInvalidoException("La línea del pack no puede ser null.");
@@ -48,6 +72,12 @@ public class Pack extends ProductoVenta {
 		return true;
 	}
 
+	/**
+	 * Quita del pack la línea asociada a un producto
+	 *
+	 * @param p el producto cuya línea se quiere eliminar
+	 * @return true si se elimina, false si no se encuentra o el producto es null
+	 */
 	public boolean eliminarLinea(ProductoVenta p) {
 		if (p == null)
 			return false;
@@ -69,6 +99,14 @@ public class Pack extends ProductoVenta {
 		return true;
 	}
 
+	/**
+	 * Cambia las unidades de un producto dentro del pack
+	 *
+	 * @param p              el producto a modificar
+	 * @param nuevasUnidades la nueva cantidad de unidades
+	 * @return true si el cambio se realiza correctamente, false si el producto no
+	 *         está
+	 */
 	public boolean modificarUnidades(ProductoVenta p, int nuevasUnidades) {
 		if (p == null) {
 			throw new ProductoInvalidoException("El producto no puede ser null.");
@@ -120,6 +158,13 @@ public class Pack extends ProductoVenta {
 		return true;
 	}
 
+	/**
+	 * Añade un producto al pack indicando cuántas unidades tendrá
+	 *
+	 * @param p        el producto que se quiere añadir
+	 * @param unidades las unidades de ese producto dentro del pack
+	 * @return true si se añade correctamente
+	 */
 	public boolean addProducto(ProductoVenta p, int unidades) {
 		if (p == null) {
 			throw new ProductoInvalidoException("El producto no puede ser null.");
@@ -138,6 +183,12 @@ public class Pack extends ProductoVenta {
 		return addLinea(lp);
 	}
 
+	/**
+	 * Añade un producto al pack con una sola unidad
+	 *
+	 * @param p el producto que se quiere incorporar
+	 * @return true si se añade correctamente
+	 */
 	public boolean addProducto_conunaUnidad(ProductoVenta p) {
 		if (p == null) {
 			throw new ProductoInvalidoException("El producto no puede ser null.");
@@ -151,6 +202,12 @@ public class Pack extends ProductoVenta {
 		return addProducto(p, 1);
 	}
 
+	/**
+	 * Comprueba si un producto ya forma parte del pack
+	 *
+	 * @param p el producto a buscar
+	 * @return true si ya está incluido, false en caso contrario
+	 */
 	public boolean contieneProducto(ProductoVenta p) {
 		if (p == null)
 			return false;
@@ -161,6 +218,11 @@ public class Pack extends ProductoVenta {
 		return false;
 	}
 
+	/**
+	 * Suma el importe de todos los productos que componen el pack
+	 *
+	 * @return el total de los subtotales de sus líneas
+	 */
 	public double calcularSumaProductos() {
 		double suma = 0;
 		for (LineaPack lp : this.lineas) {
@@ -169,10 +231,21 @@ public class Pack extends ProductoVenta {
 		return suma;
 	}
 
+	/**
+	 * Obtiene el precio final del pack
+	 *
+	 * @return el precio actual del pack
+	 */
 	public double calcularPrecioFinal() {
 		return this.precioOficial;
 	}
 
+	/**
+	 * Cambia el precio oficial del pack
+	 *
+	 * @param nuevoPrecio el nuevo precio que se quiere establecer
+	 * @return true si se actualiza correctamente
+	 */
 	public boolean setPrecioOficial(double nuevoPrecio) {
 		if (nuevoPrecio <= 0) {
 			throw new ProductoInvalidoException("El precio del pack debe ser mayor que 0.");
@@ -185,11 +258,21 @@ public class Pack extends ProductoVenta {
 		return true;
 	}
 
+	/**
+	 * Recupera el precio oficial del pack
+	 *
+	 * @return el precio final del pack
+	 */
 	@Override
 	public double getPrecioOficial() {
 		return calcularPrecioFinal();
 	}
 
+	/**
+	 * Devuelve un resumen del pack con su precio, stock y productos incluidos
+	 *
+	 * @return una cadena con los datos principales del pack
+	 */
 	@Override
 	public String toString() {
 		String textoLineas = this.lineas.isEmpty() ? "sin productos" : "";
@@ -203,14 +286,27 @@ public class Pack extends ProductoVenta {
 				+ textoLineas + "|";
 	}
 
+	/**
+	 * Recupera las líneas que forman el pack
+	 *
+	 * @return la lista de líneas del pack
+	 */
 	public ArrayList<LineaPack> getLineas() {
 		return lineas;
 	}
 
+	/**
+	 * Sustituye las líneas actuales del pack
+	 *
+	 * @param lineas la nueva lista de líneas
+	 */
 	public void setLineas(ArrayList<LineaPack> lineas) {
 		this.lineas = lineas;
 	}
 
+	/**
+	 * Muestra por pantalla un pequeño resumen de precios del pack
+	 */
 	public void resumenPrecios() {
 		System.out.println("Resumen de precios:");
 		System.out.println(" Suma productos: " + this.calcularSumaProductos() + "€");

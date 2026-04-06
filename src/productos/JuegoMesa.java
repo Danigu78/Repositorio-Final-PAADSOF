@@ -9,6 +9,20 @@ public class JuegoMesa extends ProductoVenta {
 	private int maxEdad;
 	private String tipoJuego;
 
+	/**
+	 * Constructor de la clase JuegoMesa
+	 *
+	 * @param nombre          el nombre del juego de mesa
+	 * @param descripcion     breve descripción del juego
+	 * @param imagenRuta      la ruta de la imagen asociada al juego
+	 * @param precioOficial   el precio oficial del juego
+	 * @param stockDisponible la cantidad disponible en stock
+	 * @param minJugadores    el número mínimo de jugadores
+	 * @param maxJugadores    el número máximo de jugadores
+	 * @param minEdad         la edad mínima recomendada
+	 * @param maxEdad         la edad máxima recomendada
+	 * @param tipoJuego       el tipo o categoría del juego
+	 */
 	public JuegoMesa(String nombre, String descripcion, String imagenRuta, double precioOficial, int stockDisponible,
 			int minJugadores, int maxJugadores, int minEdad, int maxEdad, String tipoJuego) {
 		super(nombre, descripcion, imagenRuta, precioOficial, stockDisponible);
@@ -36,6 +50,11 @@ public class JuegoMesa extends ProductoVenta {
 		this.tipoJuego = tipoJuego;
 	}
 
+	/**
+	 * Devuelve un string con información del objeto relevante
+	 *
+	 * @return la cadena de caracteres con la información del juego de mesa
+	 */
 	@Override
 	public String toString() {
 		return super.toString() + " | MinJugadores: " + this.minJugadores + " | MaxJugadores: " + this.maxJugadores
