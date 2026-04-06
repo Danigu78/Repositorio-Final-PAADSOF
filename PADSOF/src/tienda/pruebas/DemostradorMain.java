@@ -66,7 +66,7 @@ public class DemostradorMain {
 			if (!nombres.equals("")) {
 				nombres += ", ";
 			}
-			nombres += c.getNombre();
+			nombres += c.getNombre(); 
 		}
 		System.out.println("Categorias creadas: " + tienda.getCategorias().size() + " -> " + nombres);
 
