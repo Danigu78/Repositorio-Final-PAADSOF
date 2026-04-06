@@ -112,6 +112,18 @@ public class ComprobadorTiempos {
 
 		carritosPorUsuario.put(idUsuario, carrito);
 	}
+	public void registrarPedido(String idUsuario, Pedido pedido) {
+	   
+	    List<Pedido> lista = pedidosPendientesPorUsuario.get(idUsuario);
+
+	  
+	    if (lista == null) {
+	        lista = new ArrayList<>();
+	        pedidosPendientesPorUsuario.put(idUsuario, lista);
+	    }
+
+	    lista.add(pedido);
+	}
 
 	public void eliminarCarrito(String idUsuario) {
 		Carrito carrito = carritosPorUsuario.remove(idUsuario);

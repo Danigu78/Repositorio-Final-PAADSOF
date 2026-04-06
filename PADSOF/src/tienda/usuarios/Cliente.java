@@ -347,7 +347,7 @@ public class Cliente extends UsuarioRegistrado {
 			return;
 		}
 		this.notificaciones.add(new Notificacion(mensaje, tipo));
-		System.out.println("[Notificación Cliente" + nickname+"]: " + mensaje);
+		System.out.println("[Notificación Cliente: " + nickname+"]: " + mensaje);
 
 	}
 
@@ -476,6 +476,7 @@ public class Cliente extends UsuarioRegistrado {
 			Pedido pedido = new Pedido(this, this.carritoActual);
 			this.getHistorialPedidos().add(pedido);
 			Tienda.getInstancia().registrarVenta(pedido);
+			Tienda.getInstancia().getComprobadorTiempos().registrarPedido(this.getId(), pedido); 
 			this.carritoActual = null;
 			System.out.println("El cliente " + this.getNickname()
 					+ " ha reservado correctamente su carrito. Debe pagarlo antes de que se cumplan "
@@ -735,7 +736,10 @@ public class Cliente extends UsuarioRegistrado {
 	}
 
 	
-
+/**
+ * 
+ * @param carritoActual 
+ */
 	public void setCarritoActual(Carrito carritoActual) {
 		this.carritoActual = carritoActual;
 	}
