@@ -96,7 +96,7 @@ public class DemostradorMain {
 
 		System.out.println("\n CARGA DE PRODUCTOS:");
 		System.out.println("Cargando productos desde fichero...");
-		empStock.cargarProductosFicheroTexto("src/tienda/ficheros/productos.txt");
+		empStock.cargarProductosFicheroTexto("ficheros/productos.txt");
 		System.out.println("  Productos tras fichero: " + tienda.getStockVentas().size());
 
 		empStock.añadirProducto_nuevo("C", "Watchmen", "Clasico del comic", "watchmen.jpg", 15.00, 10,
@@ -144,7 +144,7 @@ public class DemostradorMain {
 		System.out.println("  Stock watchmen antes: " + watchmen.getStockDisponible());
 		System.out.println("  Stock catan antes: " + catan.getStockDisponible());
 		System.out.println("  Stock akira antes: " + akira.getStockDisponible());
-		empStock.cargarProductosFicheroTexto("src/tienda/ficheros/productos2.txt");
+		empStock.cargarProductosFicheroTexto("ficheros/productos2.txt");
 		System.out.println("  Productos tras fichero2: " + tienda.getStockVentas().size());
 		System.out.println("  Stock watchmen despues: " + watchmen.getStockDisponible());
 		System.out.println("  Stock catan despues: " + catan.getStockDisponible());
