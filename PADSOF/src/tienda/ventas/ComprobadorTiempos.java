@@ -124,6 +124,7 @@ public class ComprobadorTiempos {
 	public void quitarCarrito(String idUsuario) {
 	    carritosPorUsuario.remove(idUsuario);
 	}
+	
 	public Pedido crearPedidoDesdeCarrito(Cliente cliente) {
 		if (cliente == null)
 			throw new IllegalArgumentException("cliente no puede ser null");
@@ -220,6 +221,9 @@ public class ComprobadorTiempos {
 	}
 
 	public void cerrarGestorTiempo() {
-		scheduler.shutdown();
+	    scheduler.shutdownNow();
+	}
+	public void limpiarCarritos() {
+	    carritosPorUsuario.clear();
 	}
 }

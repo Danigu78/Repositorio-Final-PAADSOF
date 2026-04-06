@@ -36,7 +36,7 @@ public class GestorTest {
         assertFalse(gestor.darDeBajaAEmpleado(idCliente), "No debe dejar dar de baja a un Cliente como empleado");
         
     }
-    
+     
     
     @Test
     void testDarDeBaja_ExitoCompletoYRetirarPermisos() {

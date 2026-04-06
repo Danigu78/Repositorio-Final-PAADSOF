@@ -347,7 +347,7 @@ public class Cliente extends UsuarioRegistrado {
 			return;
 		}
 		this.notificaciones.add(new Notificacion(mensaje, tipo));
-		System.out.println("[Notificación Cliente]: " + mensaje);
+		System.out.println("[Notificación Cliente" + nickname+"]: " + mensaje);
 
 	}
 
@@ -734,7 +734,7 @@ public class Cliente extends UsuarioRegistrado {
 		return notificaciones;
 	}
 
-	// --- SETTERS ---
+	
 
 	public void setCarritoActual(Carrito carritoActual) {
 		this.carritoActual = carritoActual;
@@ -743,7 +743,7 @@ public class Cliente extends UsuarioRegistrado {
 	public String getDni() {
 		return dni;
 	}
-
+	
 	public void setDni(String dni) {
 		this.dni = dni;
 	}

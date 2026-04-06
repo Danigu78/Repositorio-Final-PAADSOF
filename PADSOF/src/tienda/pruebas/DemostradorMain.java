@@ -149,17 +149,15 @@ public class DemostradorMain {
 		System.out.println("  Stock watchmen despues: " + watchmen.getStockDisponible());
 		System.out.println("  Stock catan despues: " + catan.getStockDisponible());
 		System.out.println("  Stock akira despues: " + akira.getStockDisponible());
-
 		System.out.println("  Total productos en tienda: " + tienda.getStockVentas().size());
+
 		for (ProductoVenta p : tienda.getStockVentas()) {
 			System.out.println("  " + p.resumen());
 		}
 		System.out.println("REPONER STOCK:");
-
 		empStock.reponerStockProducto(watchmen.getId(), 5);
 		System.out.println("MODIFICAR LA DESCRIPCION DE UN PRODUCTO:");
 		empStock.modificarDescripcionProducto(watchmen.getId(), "La obra maestra del noveno arte");
-
 		System.out.println("AÑADIR PRODUCTOS A CATEGORIA:");
 		empStock.añadirProductoACategoria(watchmen.getId(), "Retro-Gaming");
 		empStock.añadirProductoACategoria(watchmen.getId(), "Familiar");
@@ -574,7 +572,6 @@ public class DemostradorMain {
 		alice.proponerOferta(alice, alice.crearListaProductos2Mano(pAlice, pAlice2),
 				alice.crearListaProductos2Mano(pBob1, pBob2));
 
-		
 		System.out.println("  Alice intenta ofertar productos ya bloqueados:");
 		try {
 			alice.proponerOferta(bob, alice.crearListaProductos2Mano(pAlice, pAlice2),
@@ -780,11 +777,14 @@ public class DemostradorMain {
 		tienda.limpiarDescuentosCaducados();
 		tienda.imprimirDescuentosActivos();
 
-		System.out.println("SIMULACION DE CADUCIDAD DE TIEMPOS:"); // ── Carrito
+		System.out.println("SIMULACION DE CADUCIDAD DE TIEMPOS:");
+
+		// ── Carrito caducado ──────────────────────────────────────────────────────
 		System.out.println("\n  Configuramos tiempo max carrito a 1 minuto:");
 		gestor.setTiempoMaxCarrito(1);
 		System.out.println("  Tiempos -> Carrito: " + tienda.getTiempoMaxCarrito() + "min | Oferta: "
 				+ tienda.getTiempoMaxOferta() + "min | Pago: " + tienda.getTiempoMaxPago() + "min");
+
 		System.out.println("  Alice añade watchmen al carrito:");
 		alice.añadirProductoCarrito(watchmen, 1);
 		alice.imprimirCarritoActual();
@@ -802,17 +802,31 @@ public class DemostradorMain {
 		System.out.println("  Resultado: " + (reservado ? "OK" : "BLOQUEADO - carrito caducado"));
 		System.out.println("  Stock watchmen recuperado: " + watchmen.getStockDisponible());
 
+		// Cerramos el scheduler para que no interfiera
+
+		// ── Carrito olvidado ──────────────────────────────────────────────────────
+		tienda.getComprobadorTiempos().cerrarGestorTiempo();
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		tienda.getComprobadorTiempos().limpiarCarritos();
+		if (carlos.getCarritoActual() != null) {
+			carlos.getCarritoActual().vaciarCarrito();
+			carlos.setCarritoActual(null);
+		}
+		
 		System.out.println("\n  Caso carrito olvidado:");
 		System.out.println("  Carlos añade productos al carrito pero nunca reserva:");
 		carlos.añadirProductoCarrito(akira, 2);
 		Carrito carritoOlvidado = carlos.getCarritoActual();
 		if (carritoOlvidado != null) {
 			carritoOlvidado.imprimirCarrito();
-		} else {
-			System.out.println("  El carrito ya fue caducado automaticamente por el ComprobadorTiempos.");
 		}
 		System.out.println("  Stock akira antes: " + akira.getStockDisponible());
-		System.out.println("  Esperando 61 segundos para que caduque el carrito...");
+
+		System.out.println("  Esperando 61 segundos...");
 		try {
 			Thread.sleep(61000);
 		} catch (InterruptedException e) {
@@ -822,14 +836,13 @@ public class DemostradorMain {
 		System.out.println("  ComprobadorTiempos revisa y caduca carritos olvidados:");
 		tienda.getComprobadorTiempos().revisarCarritosCaducados();
 		System.out.println("  Stock akira recuperado: " + akira.getStockDisponible());
-		System.out.println(
-				"  Carrito carlos: " + (carlos.getCarritoActual() == null || carlos.getCarritoActual().estaVacio()
-						? "VACIO - caducado correctamente"
-						: "aun tiene productos"));
-		gestor.setTiempoMaxCarrito(60);
-		System.out.println("  Tiempo max carrito restaurado: " + tienda.getTiempoMaxCarrito() + "min"); // ── Pedido
-																										// caducado
+		System.out.println("  Carrito carlos: "
+				+ (carlos.getCarritoActual() == null ? "VACIO - caducado correctamente" : "aun tiene productos"));
 
+		gestor.setTiempoMaxCarrito(60);
+		System.out.println("  Tiempo max carrito restaurado: " + tienda.getTiempoMaxCarrito() + "min");
+
+		
 		System.out.println("\n  Configuramos tiempo max pago a 1 minuto:");
 		gestor.setTiempoMaxPago(1);
 		System.out.println("  Tiempos -> Carrito: " + tienda.getTiempoMaxCarrito() + "min | Oferta: "
@@ -856,27 +869,29 @@ public class DemostradorMain {
 		System.out.println("  Stock watchmen recuperado: " + watchmen.getStockDisponible());
 
 		gestor.setTiempoMaxPago(30);
-		System.out.println("  Tiempo max pago restaurado: " + tienda.getTiempoMaxPago() + "min"); // ── Oferta caducada
+		System.out.println("  Tiempo max pago restaurado: " + tienda.getTiempoMaxPago() + "min");
 
+		// ── Oferta caducada ───────────────────────────────────────────────────────
 		System.out.println("\n  Configuramos tiempo max oferta a 1 minuto:");
 		gestor.setTiempoMaxOferta(1);
 		System.out.println("  Tiempos -> Carrito: " + tienda.getTiempoMaxCarrito() + "min | Oferta: "
 				+ tienda.getTiempoMaxOferta() + "min | Pago: " + tienda.getTiempoMaxPago() + "min");
 
 		carlos.subirProducto("Digimon Vol.1", "Buen estado", "digimon.jpg");
-		Producto2Mano pCarlosNuevo = carlos.getCarteraIntercambio().get(carlos.getCarteraIntercambio().size() - 1);
-		boolean tasacionNueva = carlos.solicitarTasacion(pCarlosNuevo, "9999000011112222", 333,
-				Date.valueOf("2031-12-01"));
-		empTasador.tasarProducto(pCarlosNuevo.getId(), 8.0, EstadoProducto.MUY_BUENO);
+		Producto2Mano pCarlosOfertaCaducada = carlos.getCarteraIntercambio()
+				.get(carlos.getCarteraIntercambio().size() - 1);
+		carlos.solicitarTasacion(pCarlosOfertaCaducada, "9999000011112222", 333, Date.valueOf("2031-12-01"));
+		empTasador.tasarProducto(pCarlosOfertaCaducada.getId(), 8.0, EstadoProducto.MUY_BUENO);
 
-		// Alice sube producto nuevo para la prueba de oferta caducada
 		alice.subirProducto("Bleach Vol.1", "Como nuevo", "bleach.jpg");
-		Producto2Mano pAliceNuevo = alice.getCarteraIntercambio().get(alice.getCarteraIntercambio().size() - 1);
-		alice.solicitarTasacion(pAliceNuevo, "1111222233334444", 111, Date.valueOf("2029-01-01"));
-		empTasador.tasarProducto(pAliceNuevo.getId(), 10.0, EstadoProducto.MUY_BUENO);
+		Producto2Mano pAliceOfertaCaducada = alice.getCarteraIntercambio()
+				.get(alice.getCarteraIntercambio().size() - 1);
+		alice.solicitarTasacion(pAliceOfertaCaducada, "1111222233334444", 111, Date.valueOf("2029-01-01"));
+		empTasador.tasarProducto(pAliceOfertaCaducada.getId(), 10.0, EstadoProducto.MUY_BUENO);
 
-		boolean ofertaCaducadaCreada = carlos.proponerOferta(alice, carlos.crearListaProductos2Mano(pCarlosNuevo),
-				alice.crearListaProductos2Mano(pAliceNuevo));
+		boolean ofertaCaducadaCreada = carlos.proponerOferta(alice,
+				carlos.crearListaProductos2Mano(pCarlosOfertaCaducada),
+				alice.crearListaProductos2Mano(pAliceOfertaCaducada));
 
 		if (!ofertaCaducadaCreada) {
 			System.out.println("  La oferta no se pudo crear.");
@@ -903,6 +918,9 @@ public class DemostradorMain {
 		System.out.println("  Tiempos restaurados -> Carrito: " + tienda.getTiempoMaxCarrito() + "min | Oferta: "
 				+ tienda.getTiempoMaxOferta() + "min | Pago: " + tienda.getTiempoMaxPago() + "min");
 
+		// Apagar ComprobadorTiempos al finalizar
+		tienda.getComprobadorTiempos().cerrarGestorTiempo();
+		System.out.println("  ComprobadorTiempos apagado correctamente.");
 		System.out.println("FORZAMOS MAS COMPRAS PARA OBTENER MAS DATOS EN ESTADISTICA Y RECOMENDADOR:");
 
 		System.out.println("\n  Carlos compra el Pack Manga:");
