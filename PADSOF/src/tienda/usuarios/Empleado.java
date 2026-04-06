@@ -31,18 +31,36 @@ import ventas.*;
 
 import java.util.*;
 
+/**
+ * Clase que representa a un empleado del sistema de la tienda.
+ * 
+ * Un empleado puede gestionar el inventario, tramitar pedidos, realizar
+ * tasaciones de productos, confirmar intercambios, administrar categorías y
+ * packs, así como gestionar notificaciones.
+ * 
+ * Dependiendo de sus permisos, podrá realizar distintas tareas dentro del
+ * sistema. Además, un empleado puede ser despedido, en cuyo caso no podrá
+ * operar.
+ * 
+ * @author Daniel Gonzalez Ureta
+ * @version 1.0
+ */
 public class Empleado extends UsuarioRegistrado {
-
+	/** Lista de notificaciones del empleado */
 	protected List<Notificacion> notificaciones;
+	/** Lista de notificaciones del empleado */
 	private Set<TipoPermisos> permisos;
+	/** Indica si el empleado ha sido despedido */
 	private boolean despedido;
+	/** Valoraciones realizadas por el empleado */
 	private List<Valoracion> valoraciones;
-	/*
-	 * public Empleado(String nickname, String password, String email) {
-	 * super(nickname, password, email); this.valoraciones = new ArrayList<>();
-	 * this.permisos = new TreeSet<>(); }
-	 */
 
+	/**
+	 * Constructor de la clase Empleado
+	 * 
+	 * @param nickname Nombre de usuario
+	 * @param password Contraseña
+	 */
 	public Empleado(String nickname, String password) {
 		super(nickname, password);
 		this.valoraciones = new ArrayList<>();
@@ -50,32 +68,34 @@ public class Empleado extends UsuarioRegistrado {
 		this.despedido = false;
 		this.notificaciones = new ArrayList<>();
 	}
+	/*
+	 * @Override public void mostrarPanelPrincipal() { int i = 5;
+	 * System.out.println("--- PANEL DE CONTROL: EMPLEADO ---");
+	 * 
+	 * System.out.println("1. Gestionar Inventario (Añadir/Modificar productos)");
+	 * System.out.println("2. Tramitar Pedidos Pendientes");
+	 * 
+	 * System.out.println("3. Marcar Pedido como Entregado (Recogida en tienda)");
+	 * 
+	 * System.out.println("4. Generar Informe de Ventas Mensual"); if
+	 * (this.permisos.contains(TipoPermisos.VALORACION_PRODUCTOS)) {
+	 * System.out.println(i + ". Tasación de Productos (Peticiones de clientes)");
+	 * i++; }
+	 * 
+	 * if (this.permisos.contains(TipoPermisos.CONFIRMACION_INTERCAMBIO)) {
+	 * System.out.println(i + ". Confirmar Intercambios Acordados"); i++; }
+	 * 
+	 * System.out.println(i + ". Cerrar Sesión");
+	 * 
+	 * }
+	 */
 
-	@Override
-	public void mostrarPanelPrincipal() {
-		int i = 5;
-		System.out.println("--- PANEL DE CONTROL: EMPLEADO ---");
-
-		System.out.println("1. Gestionar Inventario (Añadir/Modificar productos)");
-		System.out.println("2. Tramitar Pedidos Pendientes");
-
-		System.out.println("3. Marcar Pedido como Entregado (Recogida en tienda)");
-
-		System.out.println("4. Generar Informe de Ventas Mensual");
-		if (this.permisos.contains(TipoPermisos.VALORACION_PRODUCTOS)) {
-			System.out.println(i + ". Tasación de Productos (Peticiones de clientes)");
-			i++;
-		}
-
-		if (this.permisos.contains(TipoPermisos.CONFIRMACION_INTERCAMBIO)) {
-			System.out.println(i + ". Confirmar Intercambios Acordados");
-			i++;
-		}
-
-		System.out.println(i + ". Cerrar Sesión");
-
-	}
-
+	/**
+	 * Comprueba si el empleado puede realizar una tarea según su permiso.
+	 * 
+	 * @param permiso Permiso requerido para la tarea
+	 * @return true si el empleado tiene permiso y no ha sido despedido
+	 */
 	public boolean puedeRealizarTarea(TipoPermisos permiso) {
 		if (isDespedido()) {
 			System.out.println("El empleado " + this.getNickname() + " ha sido despedido y no puede realizar tareas.");
@@ -88,6 +108,12 @@ public class Empleado extends UsuarioRegistrado {
 		return this.permisos.contains(permiso);
 	}
 
+	/**
+	 * Busca un producto de segunda mano pendiente de tasación por su ID.
+	 * 
+	 * @param idProducto ID del producto a buscar
+	 * @return el producto si se encuentra, null en caso contrario
+	 */
 	private Producto2Mano buscarProductoPendientePorId(String idProducto) {
 		if (idProducto == null || idProducto.isBlank()) {
 			System.out.println("El id del producto no puede estar vacío.");
@@ -101,6 +127,12 @@ public class Empleado extends UsuarioRegistrado {
 		return null;
 	}
 
+	/**
+	 * Busca un pedido por su ID en el historial de ventas de la tienda.
+	 * 
+	 * @param idPedido ID del pedido
+	 * @return el pedido si se encuentra, null si no existe
+	 */
 	private Pedido buscarPedidoPorId(String idPedido) {
 		if (idPedido == null || idPedido.isBlank()) {
 			System.out.println("El id del pedido no puede estar vacío.");
@@ -114,6 +146,18 @@ public class Empleado extends UsuarioRegistrado {
 		return null;
 	}
 
+	/**
+	 * Actualiza el stock de un producto existente según los datos de una línea de
+	 * fichero.
+	 * 
+	 * @param tipoProducto Tipo del producto (C, J, F)
+	 * @param id           ID del producto
+	 * @param partes       Array con los campos de la línea
+	 * @param numLinea     Número de línea en el fichero
+	 * @param linea        Contenido completo de la línea
+	 * @throws FicheroFormatoInvalidoException Si ocurre algún error de formato o
+	 *                                         tipo
+	 */
 	private void actualizarStockDesdeLinea(String tipoProducto, String id, String[] partes, int numLinea, String linea)
 			throws FicheroFormatoInvalidoException {
 		ProductoVenta existente = this.buscarProductoPorId(id);
@@ -144,6 +188,17 @@ public class Empleado extends UsuarioRegistrado {
 		}
 	}
 
+	/**
+	 * Procesa la creación de un nuevo producto a partir de los datos del fichero.
+	 * 
+	 * @param tipo     Tipo de producto (C, J, F)
+	 * @param nombre   Nombre del producto
+	 * @param partes   Array con los campos de la línea del fichero
+	 * @param numLinea Número de línea
+	 * @param linea    Contenido completo de la línea
+	 * @return true si el producto se creó o se actualizó correctamente
+	 * @throws FicheroFormatoInvalidoException Si los datos no son válidos
+	 */
 	private boolean procesarNuevoProducto(String tipo, String nombre, String[] partes, int numLinea, String linea)
 			throws FicheroFormatoInvalidoException {
 		// Verificación de longitud total (las 21 columnas)
@@ -239,6 +294,13 @@ public class Empleado extends UsuarioRegistrado {
 		}
 	}
 
+	/**
+	 * Realiza la tasación de un producto de segunda mano.
+	 * 
+	 * @param idProducto ID del producto
+	 * @param precio     Precio tasado
+	 * @param estado     Estado del producto
+	 */
 	public void tasarProducto(String idProducto, double precio, EstadoProducto estado) {
 
 		if (!puedeRealizarTarea(TipoPermisos.VALORACION_PRODUCTOS)) {
@@ -273,6 +335,12 @@ public class Empleado extends UsuarioRegistrado {
 		}
 	}
 
+	/**
+	 * Confirma un intercambio entre usuarios si el empleado tiene permisos.
+	 * 
+	 * @param o Oferta a confirmar
+	 * @return true si la confirmación fue exitosa
+	 */
 	public boolean confirmarIntercambio(Oferta o) {
 		if (!puedeRealizarTarea(TipoPermisos.CONFIRMACION_INTERCAMBIO)) {
 			System.out.println(
@@ -294,9 +362,31 @@ public class Empleado extends UsuarioRegistrado {
 		return true;
 	}
 
-//Hay que ver la cantidad supongio que habra una funcion de que si contine sacarlo rapido y ahi modificas la cantidad
-
-	/// Funcion para añadir un nuevo producto a la tienda
+	/**
+	 * Añade un nuevo producto a la tienda según su tipo y atributos.
+	 * 
+	 * @param letra           Tipo de producto (C, J, F)
+	 * @param nombre          Nombre del producto
+	 * @param descripcion     Descripción del producto
+	 * @param imagen          Ruta de imagen
+	 * @param precioOficial   Precio oficial
+	 * @param Stock           Stock inicial
+	 * @param categorias      Categorías asociadas
+	 * @param numpaginas      Número de páginas (solo cómics)
+	 * @param editorial       Editorial (solo cómics)
+	 * @param añoPublicacion  Año de publicación (solo cómics)
+	 * @param altura          Altura del producto (solo figuras)
+	 * @param ancho           Ancho del producto (solo figuras)
+	 * @param largo           Largo del producto (solo figuras)
+	 * @param material        Material (solo figuras)
+	 * @param marca           Marca (solo figuras)
+	 * @param minNumjugadores Mínimo jugadores (solo juegos)
+	 * @param maxNumjugadores Máximo jugadores (solo juegos)
+	 * @param minEdad         Edad mínima (solo juegos)
+	 * @param maxEdad         Edad máxima (solo juegos)
+	 * @param Estilo          Estilo del juego (solo juegos)
+	 * @return true si el producto se creó correctamente
+	 */
 	public boolean añadirProducto_nuevo(String letra, String nombre, String descripcion, String imagen,
 			double precioOficial, int Stock, ArrayList<Categoria> categorias, int numpaginas, String editorial,
 			int añoPublicacion, double altura, double ancho, double largo, String material, String marca,
@@ -419,6 +509,13 @@ public class Empleado extends UsuarioRegistrado {
 		}
 	}
 
+	/**
+	 * Reposición de stock para un producto existente.
+	 * 
+	 * @param id       ID del producto
+	 * @param cantidad Cantidad a añadir
+	 * @return true si se repuso correctamente
+	 */
 	public boolean reponerStockProducto(String id, int cantidad) {
 		if (!puedeRealizarTarea(TipoPermisos.GESTION_STOCK)) {
 			System.out.println("No tienes permiso para trabajar con productos");
@@ -445,6 +542,12 @@ public class Empleado extends UsuarioRegistrado {
 		return false;
 	}
 
+	/**
+	 * Carga productos desde un fichero de texto.
+	 * 
+	 * @param path Ruta del fichero
+	 * @return true si se cargaron los productos correctamente
+	 */
 	public boolean cargarProductosFicheroTexto(String path) {
 
 		if (!puedeRealizarTarea(TipoPermisos.GESTION_STOCK)) {
@@ -528,6 +631,12 @@ public class Empleado extends UsuarioRegistrado {
 		}
 	}
 
+	/**
+	 * Prepara un pedido para su recogida en tienda.
+	 * 
+	 * @param idPedido ID del pedido
+	 * @return true si el pedido se preparó correctamente
+	 */
 	public boolean prepararPedido(String idPedido) {
 		if (!puedeRealizarTarea(TipoPermisos.GESTION_PEDIDOS))
 			return false;
@@ -551,6 +660,12 @@ public class Empleado extends UsuarioRegistrado {
 		return ok;
 	}
 
+	/**
+	 * Entrega un pedido al cliente mediante código de recogida.
+	 * 
+	 * @param codigoRecogida Código de recogida del pedido
+	 * @return true si el pedido se entregó correctamente
+	 */
 	public boolean entregarPedido(String codigoRecogida) {
 
 		if (!puedeRealizarTarea(TipoPermisos.ENTREGA_PEDIDOS)) {
@@ -574,6 +689,13 @@ public class Empleado extends UsuarioRegistrado {
 		return false;
 	}
 
+	/**
+	 * Añade un producto a una categoría existente.
+	 * 
+	 * @param idProducto ID del producto
+	 * @param nombreCat  Nombre de la categoría
+	 * @return true si el producto se añadió correctamente
+	 */
 	public boolean añadirProductoACategoria(String idProducto, String nombreCat) {
 		if (idProducto == null || nombreCat == null) {
 			System.out.println("El id del producto o el nombre de la categoría no pueden ser null.");
@@ -613,6 +735,13 @@ public class Empleado extends UsuarioRegistrado {
 		}
 	}
 
+	/**
+	 * Elimina un producto de una categoría existente.
+	 * 
+	 * @param idProducto ID del producto
+	 * @param nombreCat  Nombre de la categoría
+	 * @return true si se eliminó correctamente
+	 */
 	public boolean eliminarProductoDeCategoria(String idProducto, String nombreCat) {
 		if (idProducto == null || nombreCat == null) {
 			System.out.println("El id del producto o el nombre de la categoría no pueden ser null.");
@@ -649,6 +778,17 @@ public class Empleado extends UsuarioRegistrado {
 		return eliminado;
 	}
 
+	/**
+	 * Crea un pack de productos en la tienda.
+	 * 
+	 * @param nombre        Nombre del pack
+	 * @param descripcion   Descripción
+	 * @param imagen        Ruta de imagen
+	 * @param precioOficial Precio del pack
+	 * @param stock         Stock del pack
+	 * @param lineas        Lista de líneas de productos del pack
+	 * @return true si el pack se creó correctamente
+	 */
 	public boolean crearPack(String nombre, String descripcion, String imagen, double precioOficial, int stock,
 			ArrayList<LineaPack> lineas) {
 		if (!puedeRealizarTarea(TipoPermisos.GESTION_PACKS)) {
@@ -674,6 +814,14 @@ public class Empleado extends UsuarioRegistrado {
 		return true;
 	}
 
+	/**
+	 * Añade un producto a un pack existente en la tienda.
+	 *
+	 * @param idProducto el ID del producto a añadir
+	 * @param idPack     el ID del pack al que se añadirá el producto
+	 * @param unidades   la cantidad de unidades a añadir
+	 * @return true si el producto se añadió correctamente, false en caso contrario
+	 */
 	public boolean añadirProductoaPack(String idProducto, String idPack, int unidades) {
 		if (!puedeRealizarTarea(TipoPermisos.GESTION_PACKS)) {
 			System.out.println("El empleado " + this.getNickname() + " no tiene permiso para trabajar con packs.");
@@ -716,6 +864,15 @@ public class Empleado extends UsuarioRegistrado {
 		}
 	}
 
+	/**
+	 * Modifica la cantidad de unidades de un producto dentro de un pack.
+	 *
+	 * @param idProducto     el ID del producto a modificar
+	 * @param idPack         el ID del pack donde se encuentra el producto
+	 * @param nuevasUnidades el nuevo número de unidades del producto
+	 * @return true si la modificación se realizó correctamente, false en caso
+	 *         contrario
+	 */
 	public boolean modificarUnidadesProductoEnPack(String idProducto, String idPack, int nuevasUnidades) {
 		if (!puedeRealizarTarea(TipoPermisos.GESTION_PACKS)) {
 			System.out.println("El empleado " + this.getNickname() + " no tiene permiso para trabajar con packs.");
@@ -746,6 +903,14 @@ public class Empleado extends UsuarioRegistrado {
 		return ((Pack) pack).modificarUnidades(producto, nuevasUnidades);
 	}
 
+	/**
+	 * Elimina un producto de un pack existente.
+	 *
+	 * @param idPack     el ID del pack
+	 * @param idProducto el ID del producto a eliminar
+	 * @return true si se eliminó correctamente, false si no existe el pack o el
+	 *         producto
+	 */
 	public boolean eliminarProductoDePack(String idPack, String idProducto) {
 		if (!puedeRealizarTarea(TipoPermisos.GESTION_PACKS))
 			return false;
@@ -763,6 +928,13 @@ public class Empleado extends UsuarioRegistrado {
 		return ((Pack) pack).eliminarLinea(producto);
 	}
 
+	/**
+	 * Modifica el precio oficial de un pack.
+	 *
+	 * @param idPack      el ID del pack
+	 * @param nuevoPrecio el nuevo precio a establecer
+	 * @return true si se modificó correctamente, false si no existe el pack
+	 */
 	public boolean modificarPrecioPack(String idPack, double nuevoPrecio) {
 		if (!puedeRealizarTarea(TipoPermisos.GESTION_PACKS))
 			return false;
@@ -775,6 +947,14 @@ public class Empleado extends UsuarioRegistrado {
 		return ((Pack) pack).setPrecioOficial(nuevoPrecio);
 	}
 
+	/**
+	 * Elimina un pack de la tienda, liberando el stock de los productos que
+	 * contiene.
+	 *
+	 * @param idpack el ID del pack a eliminar
+	 * @return true si se eliminó correctamente, false si no existe el pack o no se
+	 *         tienen permisos
+	 */
 	public boolean eliminarPack(String idpack) {
 		if (!puedeRealizarTarea(TipoPermisos.GESTION_PACKS)) {
 			System.out.println("El empleado " + nickname + " no pude modificar packs");
@@ -794,6 +974,14 @@ public class Empleado extends UsuarioRegistrado {
 		return true;
 	}
 
+	/**
+	 * Modifica la descripción de un producto.
+	 *
+	 * @param idProducto  el ID del producto a modificar
+	 * @param descripcion la nueva descripción
+	 * @return true si se modificó correctamente, false si no se tiene permiso o el
+	 *         producto no existe
+	 */
 	public boolean modificarDescripcionProducto(String idProducto, String descripcion) {
 		if (idProducto == null || descripcion == null) {
 			System.out.println("El id del producto o la descripción no pueden ser null.");
@@ -811,6 +999,14 @@ public class Empleado extends UsuarioRegistrado {
 		return true;
 	}
 
+	/**
+	 * Modifica la ruta de la imagen de un producto.
+	 *
+	 * @param idProducto el ID del producto a modificar
+	 * @param imagen     la nueva ruta de la imagen
+	 * @return true si se modificó correctamente, false si no se tiene permiso o el
+	 *         producto no existe
+	 */
 	public boolean modificarImagenProducto(String idProducto, String imagen) {
 		if (idProducto == null || imagen == null) {
 			System.out.println("El id del producto o la imagen no pueden ser null.");
@@ -828,6 +1024,10 @@ public class Empleado extends UsuarioRegistrado {
 		return true;
 	}
 
+	/**
+	 * Muestra todas las notificaciones del empleado, separando las leídas de las no
+	 * leídas. Marca como leídas las notificaciones que se muestran como no leídas.
+	 */
 	public void verMisNotificaciones() {
 		if (notificaciones.isEmpty()) {
 			System.out.println("  " + getNickname() + " no tiene notificaciones.");
@@ -866,6 +1066,13 @@ public class Empleado extends UsuarioRegistrado {
 		}
 	}
 
+	/**
+	 * Muestra las notificaciones del empleado filtradas por tipo, separando las
+	 * leídas de las no leídas. Marca como leídas las notificaciones que se muestran
+	 * como no leídas.
+	 *
+	 * @param tipo el tipo de notificación a mostrar
+	 */
 	public void verMisNotificacionesPorTipo(TipoNotificacion tipo) {
 		List<Notificacion> noLeidas = new ArrayList<>();
 		List<Notificacion> leidas = new ArrayList<>();
@@ -907,59 +1114,122 @@ public class Empleado extends UsuarioRegistrado {
 		}
 	}
 
+	/**
+	 * Asigna un permiso al empleado.
+	 *
+	 * @param p el permiso a asignar
+	 */
 	public void asignarPermiso(TipoPermisos p) {
 		this.permisos.add(p);
 	}
 
+	/**
+	 * Quita un permiso al empleado.
+	 *
+	 * @param p el permiso a quitar
+	 */
 	public void quitarPermiso(TipoPermisos p) {
 		this.permisos.remove(p);
 	}
 
+	/**
+	 * Comprueba si el empleado tiene un permiso específico.
+	 *
+	 * @param p el permiso a verificar
+	 * @return true si el empleado tiene el permiso, false en caso contrario
+	 */
 	public boolean tienePermiso(TipoPermisos p) {
 		return this.permisos.contains(p);
 	}
 
+	/**
+	 * Recibe una notificación para el empleado.
+	 *
+	 * @param mensaje el mensaje de la notificación
+	 */
 	public void recibirNotificacion(String mensaje) {
 		this.notificaciones.add(new Notificacion(mensaje));
 		System.out.println("[Notificación Empleado]: " + mensaje);
 	}
 
-	/*
-	 * public void asignarTodosLosPermisos() { this.permisos =
-	 * EnumSet.allOf(Permiso.class); }
+	/**
+	 * Obtiene la lista de notificaciones del empleado.
+	 *
+	 * @return lista de notificaciones
 	 */
 	public List<Notificacion> getNotificaciones() {
 		return notificaciones;
 	}
 
+	/**
+	 * Establece la lista de notificaciones del empleado.
+	 *
+	 * @param notificaciones lista de notificaciones a asignar
+	 */
 	public void setNotificaciones(List<Notificacion> notificaciones) {
 		this.notificaciones = notificaciones;
 	}
 
+	/**
+	 * Obtiene el conjunto de permisos del empleado.
+	 *
+	 * @return conjunto de permisos
+	 */
 	public Set<TipoPermisos> getPermisos() {
 		return permisos;
 	}
 
+	/**
+	 * Establece el conjunto de permisos del empleado.
+	 *
+	 * @param permisos conjunto de permisos a asignar
+	 */
 	public void setPermisos(Set<TipoPermisos> permisos) {
 		this.permisos = permisos;
 	}
 
+	/**
+	 * Obtiene la lista de valoraciones asociadas al empleado.
+	 *
+	 * @return lista de valoraciones
+	 */
 	public List<Valoracion> getValoraciones() {
 		return valoraciones;
 	}
 
+	/**
+	 * Establece la lista de valoraciones del empleado.
+	 *
+	 * @param valoraciones lista de valoraciones a asignar
+	 */
 	public void setValoraciones(List<Valoracion> valoraciones) {
 		this.valoraciones = valoraciones;
 	}
 
+	/**
+	 * Comprueba si el empleado está despedido.
+	 *
+	 * @return true si el empleado está despedido, false en caso contrario
+	 */
 	public boolean isDespedido() {
 		return despedido;
 	}
 
+	/**
+	 * Establece el estado de despido del empleado.
+	 *
+	 * @param despedido true si se desea marcar al empleado como despedido, false en
+	 *                  caso contrario
+	 */
 	public void setDespedido(boolean despedido) {
 		this.despedido = despedido;
 	}
 
+	/**
+	 * Devuelve una representación en cadena del empleado.
+	 *
+	 * @return cadena con el ID y nickname del empleado
+	 */
 	@Override
 	public String toString() {
 		return "Empleado [id=" + getId() + ", nickname=" + getNickname() + "]";

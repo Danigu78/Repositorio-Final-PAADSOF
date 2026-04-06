@@ -21,6 +21,14 @@ import productos.Producto2Mano;
 
 import ventas.*;
 
+/**
+ * Clase que representa a un cliente registrado en el sistema. Un cliente puede
+ * realizar pedidos, gestionar su carrito, intercambiar productos, escribir
+ * reseñas y recibir notificaciones.
+ *
+ * @author Daniel
+ * @version 1.0
+ */
 public class Cliente extends UsuarioRegistrado {
 	// private double saldoPuntos;
 
@@ -34,7 +42,14 @@ public class Cliente extends UsuarioRegistrado {
 	protected List<Notificacion> notificaciones;
 	private PreferenciaNotificacion preferencias;
 
-	// Constructor//
+	/**
+	 * Constructor de la clase Cliente. Inicializa las listas y preferencias del
+	 * cliente.
+	 *
+	 * @param nickname nombre de usuario del cliente
+	 * @param password contraseña del cliente
+	 * @param dni      documento identificativo del cliente
+	 */
 	public Cliente(String nickname, String password, String dni) {
 		super(nickname, password);
 		this.dni = dni;
@@ -47,12 +62,25 @@ public class Cliente extends UsuarioRegistrado {
 		this.notificaciones = new ArrayList<>();
 	}
 
+	/**
+	 * Permite al cliente subir un producto de segunda mano a su cartera.
+	 *
+	 * @param nombre        nombre del producto
+	 * @param descripString descripción del producto
+	 * @param imagen        ruta o identificador de la imagen
+	 */
 	public void subirProducto(String nombre, String descripString, String imagen) {
 		Producto2Mano product = new Producto2Mano(this, nombre, descripString, imagen);
 		carteraIntercambio.add(product);
 		System.out.println("Producto subido correctamente a tu cartera personal de objetos de sgeunda mano.");
 	}
 
+	/**
+	 * Cuenta el número de pedidos completados del cliente. Se consideran
+	 * completados los pedidos pagados, listos para recoger o entregados.
+	 *
+	 * @return número de pedidos completados
+	 */
 	public int contarPedidosCompletados() {
 		int count = 0;
 		for (Pedido p : historialPedidos) {
@@ -64,6 +92,11 @@ public class Cliente extends UsuarioRegistrado {
 		return count;
 	}
 
+	/**
+	 * Cuenta el número de pedidos cancelados del cliente.
+	 *
+	 * @return número de pedidos cancelados
+	 */
 	public int contarPedidosCancelados() {
 		int count = 0;
 		for (Pedido p : historialPedidos) {
@@ -74,10 +107,21 @@ public class Cliente extends UsuarioRegistrado {
 		return count;
 	}
 
+	/**
+	 * Devuelve el número total de intercambios realizados.
+	 *
+	 * @return número de intercambios
+	 */
 	public int contarIntercambios() {
 		return historialIntercambios.size();
 	}
 
+	/**
+	 * Comprueba si un producto está en la cartera del cliente.
+	 *
+	 * @param p producto a comprobar
+	 * @return true si el producto está en la cartera, false en caso contrario
+	 */
 	public boolean tieneProductoenSuCartera(Producto2Mano p) {
 		if (p == null) {
 			return false;
@@ -85,6 +129,17 @@ public class Cliente extends UsuarioRegistrado {
 		return this.carteraIntercambio.contains(p);
 	}
 
+	/**
+	 * Solicita la tasación de un producto de segunda mano. Realiza el pago
+	 * correspondiente y añade el producto a la lista de pendientes.
+	 *
+	 * @param p         producto a tasar
+	 * @param tarjeta   número de tarjeta
+	 * @param CVV       código de seguridad
+	 * @param caducidad fecha de caducidad de la tarjeta
+	 * @return true si la solicitud se realiza correctamente, false en caso
+	 *         contrario
+	 */
 	public boolean solicitarTasacion(Producto2Mano p, String tarjeta, int CVV, Date caducidad) {
 		if (p == null) {
 			System.out.println("El producto no puede ser null");
@@ -116,6 +171,11 @@ public class Cliente extends UsuarioRegistrado {
 		return true;
 	}
 
+	/**
+	 * Obtiene las ofertas pendientes que el cliente debe aceptar o rechazar.
+	 *
+	 * @return lista de ofertas para decidir
+	 */
 	public List<Oferta> getOfertasParaDecidir() {
 		List<Oferta> paraDecidir = new ArrayList<>();
 		for (Oferta o : ofertasPendientes) {
@@ -128,7 +188,12 @@ public class Cliente extends UsuarioRegistrado {
 		return paraDecidir;
 	}
 
-//Ofertas que yo he mandado
+	/**
+	 * Obtiene las ofertas enviadas por el cliente que aún no han sido respondidas
+	 * por los otros clientes.
+	 *
+	 * @return lista de ofertas en espera
+	 */
 	public List<Oferta> getOfertasEnEspera() {
 		List<Oferta> enEspera = new ArrayList<>();
 		for (Oferta o : ofertasPendientes) {
@@ -140,6 +205,14 @@ public class Cliente extends UsuarioRegistrado {
 		return enEspera;
 	}
 
+	/**
+	 * Permite proponer una oferta de intercambio a otro cliente.
+	 *
+	 * @param destinatario cliente al que se le envía la oferta
+	 * @param misProductos productos ofrecidos
+	 * @param susProductos productos solicitados
+	 * @return true si la oferta se crea correctamente, false en caso contrario
+	 */
 	public boolean proponerOferta(Cliente destinatario, List<Producto2Mano> misProductos,
 			List<Producto2Mano> susProductos) {
 		if (!Tienda.getInstancia().isSistemaTiemposConfigurando()) {
@@ -164,18 +237,18 @@ public class Cliente extends UsuarioRegistrado {
 				System.out.println("El producto " + p.getId() + " no está en tu cartera.");
 				return false;
 			}
-			 if (p.isBloqueado()) {
-			        throw new ProductoBloqueadoException(p.getId());
-			    }
+			if (p.isBloqueado()) {
+				throw new ProductoBloqueadoException(p.getId());
+			}
 		}
 		for (Producto2Mano p : susProductos) {
 			if (!destinatario.tieneProductoenSuCartera(p)) {
 				System.out.println("El producto " + p.getId() + " no está en la cartera del destinatario.");
 				return false;
 			}
-			 if (p.isBloqueado()) {
-			        throw new ProductoBloqueadoException(p.getId());
-			    }
+			if (p.isBloqueado()) {
+				throw new ProductoBloqueadoException(p.getId());
+			}
 		}
 		try {
 			Oferta nuevaOferta = new Oferta(this, destinatario, misProductos, susProductos);
@@ -202,7 +275,11 @@ public class Cliente extends UsuarioRegistrado {
 		}
 	}
 
-//aceptar Oferta
+	/**
+	 * Acepta una oferta de intercambio si está disponible.
+	 *
+	 * @param oferta oferta a aceptar
+	 */
 	public void confirmarIntercambio(Oferta oferta) {
 		if (this.getOfertasParaDecidir().contains(oferta)) {
 			try {
@@ -215,6 +292,12 @@ public class Cliente extends UsuarioRegistrado {
 		System.out.println("Esta oferta no se encuentra  disponible");
 	}
 
+	/**
+	 * Devuelve la lista de intercambios realizados con otro cliente.
+	 *
+	 * @param c cliente con el que se quieren ver los intercambios
+	 * @return lista de ofertas intercambiadas o null si el cliente es null
+	 */
 	public List<Oferta> verIntercambioscon(Cliente c) {
 		List<Oferta> intercambios = new ArrayList<>();
 		if (c == null) {
@@ -228,6 +311,9 @@ public class Cliente extends UsuarioRegistrado {
 		return intercambios;
 	}
 
+	/**
+	 * Muestra por pantalla las ofertas enviadas pendientes de respuesta.
+	 */
 	public void verMisOfertasEnviadas() {
 		List<Oferta> enviadas = getOfertasEnEspera();
 		if (enviadas.isEmpty()) {
@@ -240,6 +326,9 @@ public class Cliente extends UsuarioRegistrado {
 		}
 	}
 
+	/**
+	 * Muestra por pantalla las ofertas que el cliente debe responder.
+	 */
 	public void verMisOfertasPorResponder() {
 		List<Oferta> porResponder = getOfertasParaDecidir();
 		if (porResponder.isEmpty()) {
@@ -252,6 +341,9 @@ public class Cliente extends UsuarioRegistrado {
 		}
 	}
 
+	/**
+	 * Muestra el historial de intercambios finalizados del cliente.
+	 */
 	public void verMiHistorialIntercambios() {
 		if (historialIntercambios.isEmpty()) {
 			System.out.println("  " + getNickname() + " no tiene intercambios finalizados.");
@@ -284,6 +376,12 @@ public class Cliente extends UsuarioRegistrado {
 		}
 	}
 
+	/**
+	 * Comprueba si un producto ha sido pedido y entregado al cliente.
+	 *
+	 * @param p producto a comprobar
+	 * @return true si ha sido entregado, false en caso contrario
+	 */
 	public boolean productoHasidoPedidoYentregado(ProductoVenta p) {
 		if (p == null) {
 			return false;
@@ -296,23 +394,36 @@ public class Cliente extends UsuarioRegistrado {
 		return false;
 	}
 
+	/**
+	 * Permite escribir una reseña sobre un producto comprado previamente.
+	 *
+	 * @param p     producto a reseñar
+	 * @param pts   puntuación otorgada
+	 * @param texto comentario de la reseña
+	 * @return true si se crea correctamente, false en caso contrario
+	 */
 	public boolean escribirReseña(ProductoVenta p, int pts, String texto) {
-	    if (this.productoHasidoPedidoYentregado(p)) {
-	        // Comprobar si ya tiene una reseña de ese producto
-	        for (Reseña r : this.reseñas) {
-	            if (r.getProducto().equals(p)) {
-	                throw new ReseñaDuplicadaException();
-	            }
-	        }
-	        Reseña res = new Reseña(this, p, pts, texto);
-	        this.reseñas.add(res);
-	        System.out.println("Reseña creada y añadida con exito ");
-	        return true;
-	    }
-	    System.out.println("No ha sido posible crear la reseña.");
-	    return false;
+		if (this.productoHasidoPedidoYentregado(p)) {
+			// Comprobar si ya tiene una reseña de ese producto
+			for (Reseña r : this.reseñas) {
+				if (r.getProducto().equals(p)) {
+					throw new ReseñaDuplicadaException();
+				}
+			}
+			Reseña res = new Reseña(this, p, pts, texto);
+			this.reseñas.add(res);
+			System.out.println("Reseña creada y añadida con exito ");
+			return true;
+		}
+		System.out.println("No ha sido posible crear la reseña.");
+		return false;
 	}
 
+	/**
+	 * Determina la categoría más frecuente en los pedidos del cliente.
+	 *
+	 * @return categoría favorita o null si no hay datos
+	 */
 	public Categoria determinarCategoriaFavorita() {
 		int maxApariciones = 0;
 		Categoria favorita = null;
@@ -339,18 +450,28 @@ public class Cliente extends UsuarioRegistrado {
 		return favorita;
 	}
 
-	// Notificaciones de tipoq ue se envian dependiendo de si el cliente quiere que
-	// se le envien o no
+	/**
+	 * Recibe una notificación si está habilitada en las preferencias del cliente.
+	 *
+	 * @param mensaje contenido de la notificación
+	 * @param tipo    tipo de notificación
+	 */
 
 	public void recibirNotificacionTipo(String mensaje, TipoNotificacion tipo) {
 		if (!this.preferencias.debeRecibirNotificacion(tipo)) {
 			return;
 		}
 		this.notificaciones.add(new Notificacion(mensaje, tipo));
-		System.out.println("[Notificación Cliente: " + nickname+"]: " + mensaje);
+		System.out.println("[Notificación Cliente: " + nickname + "]: " + mensaje);
 
 	}
 
+	/**
+	 * Notifica al cliente sobre un nuevo producto en una categoría de interés.
+	 *
+	 * @param mensaje         contenido de la notificación
+	 * @param nombreCategoria categoría del producto
+	 */
 	public void notificarProductoNuevoCategoria(String mensaje, String nombreCategoria) {
 		if (!this.preferencias.NotificacionesProductosNUevosCategoriasInteres(nombreCategoria)) {
 			return;
@@ -362,6 +483,11 @@ public class Cliente extends UsuarioRegistrado {
 		return;
 	}
 
+	/**
+	 * Obtiene las notificaciones no leídas del cliente.
+	 *
+	 * @return lista de notificaciones no leídas
+	 */
 	public List<Notificacion> getNotificacionesNoLeidas() {
 		List<Notificacion> resultado = new ArrayList<>();
 		for (Notificacion n : notificaciones) {
@@ -371,6 +497,11 @@ public class Cliente extends UsuarioRegistrado {
 		return resultado;
 	}
 
+	/**
+	 * Marca una notificación como leída si pertenece al cliente.
+	 *
+	 * @param n notificación a marcar como leída
+	 */
 	public void verNotificacion(Notificacion n) {
 		if (n == null) {
 			return;
@@ -383,6 +514,12 @@ public class Cliente extends UsuarioRegistrado {
 		return;
 	}
 
+	/**
+	 * Obtiene las notificaciones de un tipo concreto.
+	 *
+	 * @param tipo tipo de notificación
+	 * @return lista de notificaciones del tipo indicado
+	 */
 	public List<Notificacion> getNotificacionesdeTipo(TipoNotificacion tipo) {
 		List<Notificacion> notif = new ArrayList<>();
 		for (Notificacion n : notificaciones) {
@@ -392,7 +529,12 @@ public class Cliente extends UsuarioRegistrado {
 		return notif;
 	}
 
-	// La borras del cliente el ya no la podra ver pero en la tienda sigue presente,
+	/**
+	 * Elimina una notificación del cliente.
+	 *
+	 * @param n notificación a eliminar
+	 * @return true si se elimina correctamente, false en caso contrario
+	 */
 	public boolean eliminarNotifacion(Notificacion n) {
 		if (n == null) {
 			return false;
@@ -405,7 +547,12 @@ public class Cliente extends UsuarioRegistrado {
 		return true;
 	}
 
-	// Se desbloquean los productos y se quita la oferta del cliente.
+	/**
+	 * Elimina una oferta pendiente rechazándola previamente.
+	 *
+	 * @param o oferta a eliminar
+	 * @return true si se elimina correctamente, false en caso contrario
+	 */
 	public boolean eliminarOfertadeOfertasPendientes(Oferta o) {
 		if (o == null || !this.getOfertasPendientes().contains(o)) {
 			return false;
@@ -419,6 +566,12 @@ public class Cliente extends UsuarioRegistrado {
 		return true;
 	}
 
+	/**
+	 * Elimina un producto de la cartera de intercambio del cliente.
+	 *
+	 * @param p producto a eliminar
+	 * @return true si se elimina correctamente, false en caso contrario
+	 */
 	public boolean eliminarProductodeCategoria(Producto2Mano p) {
 		if (!this.getCarteraIntercambio().contains(p)) {
 			return false;
@@ -427,6 +580,13 @@ public class Cliente extends UsuarioRegistrado {
 		return true;
 	}
 
+	/**
+	 * Añade un producto al carrito del cliente.
+	 *
+	 * @param p        producto a añadir
+	 * @param cantidad unidades del producto
+	 * @return true si se añade correctamente, false en caso contrario
+	 */
 	public boolean añadirProductoCarrito(ProductoVenta p, int cantidad) {
 		if (!Tienda.getInstancia().isSistemaTiemposConfigurando()) {
 			System.out.println(
@@ -451,11 +611,17 @@ public class Cliente extends UsuarioRegistrado {
 			this.carritoActual = new Carrito(this);
 			Tienda.getInstancia().getComprobadorTiempos().registrarCarrito(this.getId(), this.carritoActual);
 		}
-		
+
 		this.getCarritoActual().añadirProducto(p, cantidad);
 		return true;
 	}
 
+	/**
+	 * Convierte el carrito actual en un pedido pendiente de pago.
+	 *
+	 * @return true si la operación se realiza correctamente, false en caso
+	 *         contrario
+	 */
 	public boolean reservarCarrito() {
 		{
 			if (!Tienda.getInstancia().isSistemaTiemposConfigurando()) {
@@ -476,7 +642,7 @@ public class Cliente extends UsuarioRegistrado {
 			Pedido pedido = new Pedido(this, this.carritoActual);
 			this.getHistorialPedidos().add(pedido);
 			Tienda.getInstancia().registrarVenta(pedido);
-			Tienda.getInstancia().getComprobadorTiempos().registrarPedido(this.getId(), pedido); 
+			Tienda.getInstancia().getComprobadorTiempos().registrarPedido(this.getId(), pedido);
 			this.carritoActual = null;
 			System.out.println("El cliente " + this.getNickname()
 					+ " ha reservado correctamente su carrito. Debe pagarlo antes de que se cumplan "
@@ -489,6 +655,15 @@ public class Cliente extends UsuarioRegistrado {
 		}
 	}
 
+	/**
+	 * Realiza el pago de un pedido.
+	 *
+	 * @param p             pedido a pagar
+	 * @param numeroTarjeta número de tarjeta
+	 * @param fechaTarjeta  fecha de caducidad
+	 * @param CVV           código de seguridad
+	 * @return true si el pago es correcto, false en caso contrario
+	 */
 	public boolean pagarCarrito(Pedido p, String numeroTarjeta, Date fechaTarjeta, int CVV) {
 		if (p == null) {
 			System.out.println("El pedido no puede ser null");
@@ -512,6 +687,12 @@ public class Cliente extends UsuarioRegistrado {
 		return p.pagar(numeroTarjeta, CVV, fechaTarjeta);
 	}
 
+	/**
+	 * Solicita la recogida de un pedido listo para recoger.
+	 *
+	 * @param codigoRecogida código de recogida del pedido
+	 * @return true si la solicitud es correcta, false en caso contrario
+	 */
 	public boolean solicitarRecogidaPedido(String codigoRecogida) {
 		Tienda tienda = Tienda.getInstancia();
 
@@ -526,7 +707,13 @@ public class Cliente extends UsuarioRegistrado {
 		return false;
 	}
 
-	// MEWTODOS DE PREFERENCIA DE NOTIFICACIONES
+	/**
+	 * Configura las preferencias de notificación del cliente.
+	 *
+	 * @param tipo  tipo de notificación
+	 * @param valor true para activar, false para desactivar
+	 * @return true si se modifica correctamente
+	 */
 
 	public boolean configurarPreferenciaNotificacion(TipoNotificacion tipo, boolean valor) {
 		if (tipo == null) {
@@ -537,18 +724,42 @@ public class Cliente extends UsuarioRegistrado {
 		return true;
 	}
 
+	/**
+	 * Añade una categoría de interés para recibir notificaciones.
+	 *
+	 * @param nombreCategoria nombre de la categoría
+	 * @return true si se añade correctamente
+	 */
 	public boolean añadirCategoriaInteresParaRecibirInfo(String nombreCategoria) {
 		return this.preferencias.añadirCategoriaInteres(nombreCategoria);
 	}
 
+	/**
+	 * Elimina una categoría de interés del cliente.
+	 *
+	 * @param nombreCategoria nombre de la categoría
+	 * @return true si se elimina correctamente
+	 */
 	public boolean eliminarCategoriaInteres(String nombreCategoria) {
 		return this.preferencias.eliminarCategoriaInteres(nombreCategoria);
 	}
 
+	/**
+	 * Devuelve las preferencias de notificación del cliente.
+	 *
+	 * @return objeto de preferencias
+	 */
 	public PreferenciaNotificacion getPreferencias() {
 		return preferencias;
 	}
 
+	/**
+	 * Modifica el perfil del cliente (nickname y contraseña).
+	 *
+	 * @param nuevoNickname nuevo nombre de usuario
+	 * @param nuevoPass     nueva contraseña
+	 * @return true si la modificación es correcta, false en caso contrario
+	 */
 	public boolean modificarPerfil(String nuevoNickname, String nuevoPass) {
 
 		if (nuevoNickname == null || nuevoNickname.isBlank()) {
@@ -573,11 +784,17 @@ public class Cliente extends UsuarioRegistrado {
 		return true;
 	}
 
+	/**
+	 * Muestra por pantalla las preferencias de notificación del cliente.
+	 */
 	public void verMisPreferencias() {
 		System.out.println("Preferencias de " + this.getNickname() + ": ");
 		System.out.println(this.preferencias);
 	}
 
+	/**
+	 * Muestra el historial de pedidos del cliente.
+	 */
 	public void verHistorialPedidos() {
 		if (historialPedidos.isEmpty()) {
 			System.out.println("  " + getNickname() + " no tiene pedidos.");
@@ -593,6 +810,9 @@ public class Cliente extends UsuarioRegistrado {
 		}
 	}
 
+	/**
+	 * Muestra los productos de la cartera de intercambio del cliente.
+	 */
 	public void verMiCartera() {
 		if (carteraIntercambio.isEmpty()) {
 			System.out.println("  " + getNickname() + " no tiene productos en su cartera.");
@@ -612,6 +832,13 @@ public class Cliente extends UsuarioRegistrado {
 		}
 	}
 
+	/**
+	 * Crea una lista de productos de segunda mano a partir de un número variable de
+	 * argumentos.
+	 *
+	 * @param productos productos a añadir
+	 * @return lista de productos
+	 */
 	public List<Producto2Mano> crearListaProductos2Mano(Producto2Mano... productos) {
 		List<Producto2Mano> lista = new ArrayList<>();
 		for (Producto2Mano p : productos) {
@@ -620,6 +847,9 @@ public class Cliente extends UsuarioRegistrado {
 		return lista;
 	}
 
+	/**
+	 * Muestra todas las notificaciones del cliente, separando leídas y no leídas.
+	 */
 	public void verMisNotificaciones() {
 		if (notificaciones.isEmpty()) {
 			System.out.println("  " + getNickname() + " no tiene notificaciones.");
@@ -658,6 +888,11 @@ public class Cliente extends UsuarioRegistrado {
 		}
 	}
 
+	/**
+	 * Muestra las notificaciones de un tipo concreto.
+	 *
+	 * @param tipo tipo de notificación
+	 */
 	public void verMisNotificacionesPorTipo(TipoNotificacion tipo) {
 		List<Notificacion> noLeidas = new ArrayList<>();
 		List<Notificacion> leidas = new ArrayList<>();
@@ -698,60 +933,108 @@ public class Cliente extends UsuarioRegistrado {
 			}
 		}
 	}
+
+	/**
+	 * Muestra el contenido del carrito actual del cliente.
+	 */
 	public void imprimirCarritoActual() {
-	    if (carritoActual == null) {
-	        System.out.println("  No hay carrito activo.");
-	        return;
-	    }
-	    carritoActual.imprimirCarrito();
+		if (carritoActual == null) {
+			System.out.println("  No hay carrito activo.");
+			return;
+		}
+		carritoActual.imprimirCarrito();
 	}
-	// --- GETTERS ---
 
 	public List<Pedido> getHistorialPedidos() {
 		return this.historialPedidos;
 	}
 
+	/**
+	 * Devuelve el carrito actual del cliente.
+	 *
+	 * @return carrito actual
+	 */
 	public Carrito getCarritoActual() {
 		return carritoActual;
 	}
 
+	/**
+	 * Devuelve la cartera de intercambio del cliente.
+	 *
+	 * @return lista de productos de segunda mano
+	 */
 	public List<Producto2Mano> getCarteraIntercambio() {
 		return carteraIntercambio;
 	}
 
+	/**
+	 * Devuelve las ofertas pendientes del cliente.
+	 *
+	 * @return lista de ofertas pendientes
+	 */
 	public List<Oferta> getOfertasPendientes() {
 		return ofertasPendientes;
 	}
 
+	/**
+	 * Devuelve el historial de intercambios del cliente.
+	 *
+	 * @return lista de intercambios
+	 */
 	public List<Oferta> getHistorialIntercambios() {
 		return historialIntercambios;
 	}
 
+	/**
+	 * Devuelve las reseñas realizadas por el cliente.
+	 *
+	 * @return lista de reseñas
+	 */
 	public List<Reseña> getReseñas() {
 		return reseñas;
 	}
 
+	/**
+	 * Devuelve las notificaciones del cliente.
+	 *
+	 * @return lista de notificaciones
+	 */
 	public List<Notificacion> getNotificaciones() {
 		return notificaciones;
 	}
 
-	
-/**
- * 
- * @param carritoActual 
- */
+	/**
+	 * Modifica el carrito actual del cliente
+	 * 
+	 * @param carritoActual
+	 */
 	public void setCarritoActual(Carrito carritoActual) {
 		this.carritoActual = carritoActual;
 	}
 
+	/**
+	 * Devuelve el DNI del cliente.
+	 *
+	 * @return dni del cliente
+	 */
 	public String getDni() {
 		return dni;
 	}
-	
+
+	/**
+	 * Establece el DNI del cliente.
+	 *
+	 * @param dni nuevo dni
+	 */
 	public void setDni(String dni) {
 		this.dni = dni;
 	}
 
+	/**
+	 * Establece las preferencias de notificación del cliente.
+	 *
+	 * @param preferencias nuevas preferencias
+	 */
 	public void setPreferencias(PreferenciaNotificacion preferencias) {
 		this.preferencias = preferencias;
 	}

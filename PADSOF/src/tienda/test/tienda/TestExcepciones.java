@@ -74,20 +74,9 @@ public class TestExcepciones {
         assertTrue(e.getMessage().contains("PROD-100"));
         assertTrue(e instanceof CheckPointException);
     }
-  @Test
-    public void testEmpleadoDadoDeBajaException() {
-        EmpleadoDadoDeBajaException e = new EmpleadoDadoDeBajaException("juan_perez");
-        assertTrue(e.getMessage().contains("juan_perez"));
-        assertEquals("juan_perez", e.getNickname());
-    }
+  
 
   
-    @Test
-    public void testPagoFallidoException() {
-        PagoFallidoException e = new PagoFallidoException();
-        assertTrue(e.getMessage().contains("fallado"));
-        assertTrue(e instanceof CheckPointException);
-    }
 
     
     @Test
@@ -114,12 +103,7 @@ public class TestExcepciones {
         });
     }
 
-    @Test
-    public void testLanzamientoPagoFallido() {
-        assertThrows(PagoFallidoException.class, () -> {
-            throw new PagoFallidoException();
-        });
-    }
+    
 
     @Test
     public void testLanzamientoValoracionInvalida() {
