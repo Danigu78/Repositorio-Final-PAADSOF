@@ -1062,6 +1062,17 @@ public class DemostradorMain {
 		bob.verHistorialPedidos();
 		carlos.verHistorialPedidos();
 
+		System.out.println("Cambiamos el precio de tasacion para ver que se recoge perfectamente en las estadisticas y que el gestor puede cambiar el precio en cualquir momento.");
+		
+		gestor.setPrecioTasacion(12);
+		alice.subirProducto("Monopoly", "Como nuevo", "bleach.jpg");
+		Producto2Mano proMOnopoly = alice.getCarteraIntercambio()
+				.get(alice.getCarteraIntercambio().size() - 1);
+		alice.solicitarTasacion(proMOnopoly, "1111222233334444", 111, Date.valueOf("2029-01-01"));
+		empTasador.tasarProducto(proMOnopoly.getId(), 10.0, EstadoProducto.MUY_BUENO);
+
+		
+		
 		System.out.println("\nESTADISTICAS");
 		System.out.println("\n  Rankings de clientes:");
 		gestor.verClientesTopCompras();
