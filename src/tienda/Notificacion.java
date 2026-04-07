@@ -2,6 +2,10 @@ package tienda;
 
 import java.time.LocalDateTime;
 
+/**
+ * @author Antonino Albarrán
+ * @version 1.0
+ */
 public class Notificacion {
 
 	private String id;

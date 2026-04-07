@@ -2,9 +2,7 @@ package productos;
 
 import java.util.*;
 
-import Excepcion.ProductoInvalidoException;
-import Excepcion.ProductoYaEnCategoriaException;
-import Excepcion.ReseñaDuplicadaException;
+import Excepcion.*;
 import tienda.Estadistica;
 
 /**

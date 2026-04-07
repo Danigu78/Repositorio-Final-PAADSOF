@@ -1,6 +1,6 @@
 package productos;
 
-import Excepcion.ProductoInvalidoException;
+import Excepcion.*;
 import usuarios.Cliente;
 import tienda.Estadistica;
 import java.time.*;

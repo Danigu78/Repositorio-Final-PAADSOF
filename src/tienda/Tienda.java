@@ -16,7 +16,12 @@ import ventas.Pedido;
 import ventas.Regalo;
 import productos.*;
 
+/**
+ * @author Antonino Albarrán
+ * @version 1.0
+ */
 public class Tienda {
+
 	private String nombre;
 	private List<UsuarioRegistrado> usuarios;
 	private List<ProductoVenta> stockVentas;
@@ -36,10 +41,12 @@ public class Tienda {
 	private List<Notificacion> historialNotificaciones = new ArrayList<>();
 	private List<Producto2Mano> historialProductos2Mano = new ArrayList<Producto2Mano>();
 	// esta variable estatica, el constructor privado y el segundo metodo
-	// sirven para asegurar la existencia de una tienda unica y comun.
 	private static Tienda instancia;
 	private ComprobadorTiempos comprobadorTiempos;
 
+	/**
+	 * Constructor del objeto que es Singleton de la tienda
+	 */
 	private Tienda() {
 		this.nombre = "CheckPoint";
 		this.usuarios = new ArrayList<>();
@@ -66,15 +73,22 @@ public class Tienda {
 
 	}
 
+	/**
+	 * Recupera la instancia del objeto único de tienda
+	 *
+	 * @return la instancia de tienda (Singleton)
+	 */
 	public static Tienda getInstancia() {
 		if (instancia == null)
 			instancia = new Tienda();
 		return instancia;
 	}
 
-	// METODOS GLOBALES
-	// --- añadir cosas
-
+	/**
+	 * Recupera el gestor de la tienda
+	 *
+	 * @return el objeto gestor de la tienda
+	 */
 	public Gestor getGestor() {
 		if (usuarios != null && !usuarios.isEmpty()) {
 			UsuarioRegistrado u = usuarios.get(0);
@@ -86,10 +100,21 @@ public class Tienda {
 		return null;
 	}
 
+	/**
+	 * Regustra un nuevo Usuario No Registrado
+	 *
+	 * @return devuelve el usuario no registrado
+	 */
 	public UsuarioNoRegistrado nuevoUsuarioNoRegistrado() {
 		return new UsuarioNoRegistrado();
 	}
 
+	/**
+	 * Comprueba si existe un usuario en base al nick proporcionado
+	 *
+	 * @param nickname del usuario a buscar
+	 * @return true si existe el usuario, false en cualquier otro caso
+	 */
 	public boolean existeUsuarioConNickname(String nickname) {
 		if (nickname == null || nickname.isBlank()) {
 			System.out.println("El nickname no puede estar vacio.");
@@ -103,6 +128,12 @@ public class Tienda {
 		return false;
 	}
 
+	/**
+	 * Recupera el objeto cliente en base a su id
+	 *
+	 * @param id del usuario a buscar
+	 * @return el objeto cliente si existe, null en cualquier otro caso
+	 */
 	public Cliente buscarCLientePorId(String id) {
 		if (id == null || id.isBlank()) {
 			System.out.println("El id no puede estar vacio");
@@ -117,6 +148,12 @@ public class Tienda {
 		return null;
 	}
 
+	/**
+	 * Busca clientes en base al nick dado devolviendo su objeto
+	 *
+	 * @param nickname del cliente a buscar
+	 * @return el cliente si existe, null en cualquier otro caso
+	 */
 	public Cliente buscarClientePorNickname(String nickname) {
 		if (nickname == null || nickname.isBlank()) {
 			return null;
@@ -130,6 +167,12 @@ public class Tienda {
 		return null;
 	}
 
+	/**
+	 * Devuelve si existe o no un usuario con el dni proporcionado
+	 *
+	 * @param dni del usuario a buscar
+	 * @return true si el usuario existe, false en cualquier otro caso
+	 */
 	public boolean existeUsuarioConDNI(String dni) {
 		if (dni == null || dni.isBlank())
 			return false;
@@ -144,7 +187,12 @@ public class Tienda {
 		return false;
 	}
 
-	// FUNCIONES DE BUSQUEDA.
+	/**
+	 * Imprime el catálogo de productos con stock disponible en la tienda
+	 *
+	 * @return la lista de todos los productos con stock
+	 */
+
 	public List<ProductoVenta> buscarProductoVenta() {
 		List<ProductoVenta> productos = new ArrayList<>();
 		for (ProductoVenta p : stockVentas) {
@@ -156,6 +204,9 @@ public class Tienda {
 		return productos;
 	}
 
+	/**
+	 * Imprime el catálogo de productos de la tienda
+	 */
 	public void imprimirCatalogo() {
 		System.out.println("   CATÁLOGO DE PRODUCTOS (" + stockVentas.size() + ") ");
 		for (ProductoVenta p : stockVentas) {
@@ -163,7 +214,12 @@ public class Tienda {
 		}
 	}
 
-	// Busca por id iterando la lista — robusto aunque haya huecos en los indices
+	/**
+	 * Buscar un producto venta en base al id proporcionado
+	 *
+	 * @param idProducto del producto a buscar
+	 * @return el producto venta si existe, null en cualquier otro caso
+	 */
 	public ProductoVenta buscarProductoVentaPorId(String idProducto) {
 		if (idProducto == null || idProducto.isBlank())
 			return null;
@@ -174,6 +230,12 @@ public class Tienda {
 		return null;
 	}
 
+	/**
+	 * Busca la categoría de un producto en base al nombre de este
+	 *
+	 * @param nombre el nombre del producto
+	 * @return la categoría al que pertenece, null en cualquier otro caso
+	 */
 	public Categoria buscarCategoriaPorNombre(String nombre) {
 		if (nombre == null || nombre.isBlank())
 			return null;
@@ -185,6 +247,12 @@ public class Tienda {
 		return null;
 	}
 
+	/**
+	 * Lista todos los productos con el nombre especificado(completo o parcial)
+	 *
+	 * @param nombre el nombre parcial o completo a buscar
+	 * @return la lista de los productos que coincida, null en cualquier otro caso
+	 */
 	public List<ProductoVenta> buscarproductoPorNombre(String nombre) {
 		if (nombre == null || nombre.isBlank()) {
 			System.out.println("El nombre no puede estar vacio.");
@@ -199,6 +267,12 @@ public class Tienda {
 		return productos;
 	}
 
+	/**
+	 * Busca un pack en base a su nombre
+	 *
+	 * @param nombre del pack a buscar
+	 * @return el pack si existe, sino null
+	 */
 	public Pack buscarPackPorNombre(String nombre) {
 		if (nombre == null || nombre.isBlank())
 			return null;
@@ -211,6 +285,9 @@ public class Tienda {
 		return null;
 	}
 
+	/**
+	 * Imprime todos los usuarios con sesión activa, especificando el tipo
+	 */
 	public void imprimirUsuariosConSesionActiva() {
 		System.out.println("  Usuarios con sesion activa: " + usuariosConSesionActiva.size());
 		for (UsuarioRegistrado u : usuariosConSesionActiva) {
@@ -219,6 +296,12 @@ public class Tienda {
 		}
 	}
 
+	/**
+	 * Busca productos en base a la categoría a la que pertenecen
+	 *
+	 * @param nombreCategoria el nombre de la categoría por la cual se busca
+	 * @return la lista de los productos que pertenecen a esa categoría
+	 */
 	public List<ProductoVenta> buscarProductoPorCategoria(String nombreCategoria) {
 		Categoria cat = buscarCategoriaPorNombre(nombreCategoria);
 		if (cat == null) {
@@ -231,6 +314,11 @@ public class Tienda {
 		return productos;
 	}
 
+	/**
+	 * Devuelve los productos de segunda mano que están disponibles
+	 *
+	 * @return la lista de productos visibles y no bloqueados
+	 */
 	// BuscarSegundaMano
 	public List<Producto2Mano> buscarSegundaMano() {
 		List<Producto2Mano> resultado = new ArrayList<>();
@@ -241,6 +329,12 @@ public class Tienda {
 		return resultado;
 	}
 
+	/**
+	 * Busca productos de segunda mano por nombre
+	 *
+	 * @param nombre el nombre que se quiere buscar
+	 * @return la lista de productos que coinciden
+	 */
 	public List<Producto2Mano> buscarSegundaManoPorNombre(String nombre) {
 		if (nombre == null || nombre.isBlank())
 			return new ArrayList<>();
@@ -253,6 +347,12 @@ public class Tienda {
 		return resultado;
 	}
 
+	/**
+	 * Busca un producto de segunda mano a partir de su id
+	 *
+	 * @param id el id del producto
+	 * @return el producto encontrado o null si no existe
+	 */
 	// Busca por id iterando la lista — robusto aunque haya huecos en los indices
 	public Producto2Mano buscarSegundaManoPorId(String id) {
 		if (id == null || id.isBlank())
@@ -264,6 +364,12 @@ public class Tienda {
 		return null;
 	}
 
+	/**
+	 * Busca productos de venta aplicando un filtro
+	 *
+	 * @param filtro el filtro que se quiere usar en la búsqueda
+	 * @return la lista de productos que cumplen el filtro
+	 */
 	// BuscarConFiltros
 	public List<ProductoVenta> buscarProductosFiltrados(FiltroVenta filtro) {
 		List<ProductoVenta> productos = new ArrayList<>();
@@ -275,6 +381,12 @@ public class Tienda {
 		return productos;
 	}
 
+	/**
+	 * Busca productos de segunda mano según el filtro indicado
+	 *
+	 * @param filtro el filtro que se aplica a la búsqueda
+	 * @return la lista de productos que lo cumplen
+	 */
 	public List<Producto2Mano> buscarSegundaManoFiltrado(FiltroSegundaMano filtro) {
 		List<Producto2Mano> resultado = new ArrayList<>();
 		for (Producto2Mano p : catalogoIntercambio) {
@@ -285,6 +397,14 @@ public class Tienda {
 		return resultado;
 	}
 
+	/**
+	 * Intenta iniciar sesión con el nickname, la contraseña y el tipo indicado
+	 *
+	 * @param nickname el nombre del usuario
+	 * @param password la contraseña introducida
+	 * @param tipo     el tipo de usuario con el que se quiere acceder
+	 * @return el usuario si el acceso es correcto, null en caso contrario
+	 */
 	public UsuarioRegistrado login(String nickname, String password, String tipo) {
 		for (UsuarioRegistrado u : usuarios) {
 			if (u.getNickname().equals(nickname)) {
@@ -318,6 +438,13 @@ public class Tienda {
 		return null;
 	}
 
+	/**
+	 * Inicia sesión directamente como gestor
+	 *
+	 * @param nickname el nickname del gestor
+	 * @param password la contraseña del gestor
+	 * @return el gestor si el acceso va bien, null si falla
+	 */
 	// metodos para evitar casteos en el main
 	public Gestor loginGestor(String nickname, String password) {
 		UsuarioRegistrado u = login(nickname, password, "GESTOR");
@@ -327,6 +454,13 @@ public class Tienda {
 		return null;
 	}
 
+	/**
+	 * Inicia sesión directamente como empleado
+	 *
+	 * @param nickname el nickname del empleado
+	 * @param password la contraseña del empleado
+	 * @return el empleado si se identifica bien, null en caso contrario
+	 */
 	public Empleado loginEmpleado(String nickname, String password) {
 		UsuarioRegistrado u = login(nickname, password, "EMPLEADO");
 		if (u instanceof Empleado) {
@@ -335,6 +469,13 @@ public class Tienda {
 		return null;
 	}
 
+	/**
+	 * Inicia sesión directamente como cliente
+	 *
+	 * @param nickname el nickname del cliente
+	 * @param password la contraseña del cliente
+	 * @return el cliente si el acceso es correcto, null si no lo es
+	 */
 	public Cliente loginCliente(String nickname, String password) {
 		UsuarioRegistrado u = login(nickname, password, "CLIENTE");
 		if (u instanceof Cliente) {
@@ -343,11 +484,21 @@ public class Tienda {
 		return null;
 	}
 
+	/**
+	 * Guarda una notificación en el historial de la tienda
+	 *
+	 * @param n la notificación que se quiere registrar
+	 */
 	// Notificaciones
 	public void registrarNotificacion(Notificacion n) {
 		historialNotificaciones.add(n);
 	}
 
+	/**
+	 * Devuelve las notificaciones que todavía no han sido leídas
+	 *
+	 * @return la lista de notificaciones pendientes de leer
+	 */
 	public List<Notificacion> getNotificacionesNoLeidas() {
 		List<Notificacion> resultado = new ArrayList<>();
 		for (Notificacion n : historialNotificaciones) {
@@ -357,6 +508,12 @@ public class Tienda {
 		return resultado;
 	}
 
+	/**
+	 * Recupera las notificaciones de un tipo concreto
+	 *
+	 * @param tipo el tipo de notificación que se quiere buscar
+	 * @return la lista de notificaciones de ese tipo
+	 */
 	public List<Notificacion> getNotificacionesPorTipo(TipoNotificacion tipo) {
 		List<Notificacion> resultado = new ArrayList<>();
 		for (Notificacion n : historialNotificaciones) {
@@ -366,6 +523,11 @@ public class Tienda {
 		return resultado;
 	}
 
+	/**
+	 * Envía una notificación de descuento a los clientes que la tengan activada
+	 *
+	 * @param d el descuento que se quiere comunicar
+	 */
 	public void notificarDescuento(Descuento d) {
 		for (Cliente c : obtenerClientesTienda()) {
 			if (c.getPreferencias().debeRecibirNotificacion(TipoNotificacion.DESCUENTO)) {
@@ -374,6 +536,14 @@ public class Tienda {
 		}
 	}
 
+	/**
+	 * Registra un nuevo cliente si los datos son válidos
+	 *
+	 * @param nickname el nickname del nuevo cliente
+	 * @param password la contraseña elegida
+	 * @param dni      el dni del cliente
+	 * @return el cliente creado o null si no se pudo registrar
+	 */
 	public Cliente registrarNuevoCliente(String nickname, String password, String dni) {
 		if (!dni.matches("\\d{8}[A-Za-z]")) {
 			System.out.println("El DNI no tiene el formato correcto (8 dígitos y 1 letra).");
@@ -399,12 +569,22 @@ public class Tienda {
 		return nuevo;
 	}
 
+	/**
+	 * Guarda un intercambio ya completado y retira sus productos del catálogo
+	 *
+	 * @param oferta la oferta que ha terminado realizándose
+	 */
 	public void registrarIntercambioFinalizado(Oferta oferta) {
 		this.intercambiosFinalizados.add(oferta);
 		this.catalogoIntercambio.removeAll(oferta.getProductosOfertados());
 		this.catalogoIntercambio.removeAll(oferta.getProductosSolicitados());
 	}
 
+	/**
+	 * Obtiene la lista de empleados de la tienda
+	 *
+	 * @return la lista de empleados registrados
+	 */
 	public List<Empleado> obtenerEmpleadosTienda() {
 		List<Empleado> listaEmpleados = new ArrayList<>();
 		for (UsuarioRegistrado usuario : usuarios) {
@@ -415,6 +595,11 @@ public class Tienda {
 		return listaEmpleados;
 	}
 
+	/**
+	 * Obtiene la lista de clientes de la tienda
+	 *
+	 * @return la lista de clientes registrados
+	 */
 	public List<Cliente> obtenerClientesTienda() {
 		List<Cliente> listaClientes = new ArrayList<>();
 		for (UsuarioRegistrado u : usuarios) {
@@ -425,6 +610,11 @@ public class Tienda {
 		return listaClientes;
 	}
 
+	/**
+	 * Añade un producto al stock de venta
+	 *
+	 * @param nuevo el producto que se quiere añadir
+	 */
 	public void añadirProducto(ProductoVenta nuevo) {
 		if (this.getStockVentas().contains(nuevo))
 			return;
@@ -438,6 +628,11 @@ public class Tienda {
 		}
 	}
 
+	/**
+	 * Registra una solicitud de tasación para un producto de segunda mano
+	 *
+	 * @param p el producto que queda pendiente de valorar
+	 */
 	public void solicitarTasacion(Producto2Mano p) {
 		this.pendientes_Tasacion.add(p);
 		if (!historialProductos2Mano.contains(p)) {
@@ -450,6 +645,11 @@ public class Tienda {
 		}
 	}
 
+	/**
+	 * Añade un descuento a la tienda
+	 *
+	 * @param d el descuento que se quiere registrar
+	 */
 	// - DESCUENTOS
 	public void agregarDescuento(Descuento d) {
 		if (d.estaActivo()) {
@@ -458,6 +658,9 @@ public class Tienda {
 		this.historialDescuentos.add(d);
 	}
 
+	/**
+	 * Elimina de la lista activa los descuentos que ya han terminado
+	 */
 	public void limpiarDescuentosCaducados() {
 		List<Descuento> descuentos_finalizados = new ArrayList<>();
 		for (Descuento d : this.descuentosActivos) {
@@ -468,6 +671,11 @@ public class Tienda {
 		this.descuentosActivos.removeAll(descuentos_finalizados);
 	}
 
+	/**
+	 * Publica un producto de segunda mano para intercambio
+	 *
+	 * @param p el producto que se quiere poner en el catálogo de intercambio
+	 */
 	public void publicarParaIntercambio(Producto2Mano p) {
 		if (p.getValoracion() != null && !this.getCatalogoIntercambio().contains(p)) {
 			p.setBloqueado(false);
@@ -485,6 +693,11 @@ public class Tienda {
 	 * resultados.add(p); } } return resultados; }
 	 */
 
+	/**
+	 * Aplica al carrito el descuento más conveniente entre los activos
+	 *
+	 * @param carrito el carrito sobre el que se revisan los descuentos
+	 */
 	public void aplicarDescuentoPrioritario(Carrito carrito) {
 		for (Descuento descuento : this.descuentosActivos) {
 			if (!descuento.estaActivo()) {
@@ -508,6 +721,9 @@ public class Tienda {
 		carrito.setDescuentoAplicado(null);
 	}
 
+	/**
+	 * Muestra por pantalla los descuentos que están activos
+	 */
 	public void imprimirDescuentosActivos() {
 		if (descuentosActivos.isEmpty()) {
 			System.out.println("  No hay descuentos activos.");
@@ -521,6 +737,9 @@ public class Tienda {
 		}
 	}
 
+	/**
+	 * Muestra por pantalla el historial completo de descuentos
+	 */
 	public void imprimirHistorialDescuentos() {
 		if (historialDescuentos.isEmpty()) {
 			System.out.println("  No hay descuentos en el historial.");
@@ -534,150 +753,328 @@ public class Tienda {
 		}
 	}
 
+	/**
+	 * Guarda una venta en el historial de la tienda
+	 *
+	 * @param pedido el pedido que se quiere registrar
+	 */
 	// --- GESTIÓN DE VENTAS NUEVAS
 	public void registrarVenta(Pedido pedido) {
 		this.historialVentas.add(pedido);
 	}
 
-	// GETTERS Y SETTERS
-
+	/**
+	 * Devuelve la lista de usuarios registrados en la tienda
+	 *
+	 * @return la lista de usuarios
+	 */
 	public List<UsuarioRegistrado> getUsuarios() {
 		return usuarios;
 	}
 
+	/**
+	 * Sustituye la lista de usuarios actual
+	 *
+	 * @param usuarios la nueva lista de usuarios
+	 */
 	public void setUsuarios(List<UsuarioRegistrado> usuarios) {
 		this.usuarios = usuarios;
 	}
 
+	/**
+	 * Recupera los productos que están pendientes de tasación
+	 *
+	 * @return la lista de productos pendientes de valorar
+	 */
 	// getPendientesTasacion eliminado por ser duplicado de getPendientes_Tasacion
 	public List<Producto2Mano> getPendientesTasacion() {
 		return pendientes_Tasacion;
 	}
 
+	/**
+	 * Cambia la lista de productos pendientes de tasación
+	 *
+	 * @param pendientes_Tasacion la nueva lista de productos pendientes
+	 */
 	public void setPendientes_Tasacion(List<Producto2Mano> pendientes_Tasacion) {
 		this.pendientes_Tasacion = pendientes_Tasacion;
 	}
 
+	/**
+	 * Devuelve el recomendador de la tienda
+	 *
+	 * @return el recomendador actual
+	 */
 	public Recomendador getRecomendador() {
 		return this.recomendador;
 	}
 
+	/**
+	 * Cambia el recomendador de la tienda
+	 *
+	 * @param recomendador el nuevo recomendador
+	 */
 	public void setRecomendador(Recomendador recomendador) {
 		this.recomendador = recomendador;
 	}
 
+	/**
+	 * Recupera el nombre de la tienda
+	 *
+	 * @return el nombre de la tienda
+	 */
 	public String getNombre() {
 		return nombre;
 	}
 
+	/**
+	 * Cambia el nombre de la tienda
+	 *
+	 * @param nombre el nuevo nombre
+	 */
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
 
+	/**
+	 * Devuelve el catálogo de productos para intercambio
+	 *
+	 * @return la lista de productos del catálogo de intercambio
+	 */
 	public List<Producto2Mano> getCatalogoIntercambio() {
 		return catalogoIntercambio;
 	}
 
+	/**
+	 * Sustituye el catálogo de intercambio actual
+	 *
+	 * @param catalogoIntercambio la nueva lista de productos
+	 */
 	public void setCatalogoIntercambio(List<Producto2Mano> catalogoIntercambio) {
 		this.catalogoIntercambio = catalogoIntercambio;
 	}
 
+	/**
+	 * Recupera el historial de ventas de la tienda
+	 *
+	 * @return la lista de ventas registradas
+	 */
 	public List<Pedido> getHistorialVentas() {
 		return historialVentas;
 	}
 
+	/**
+	 * Cambia el historial de ventas
+	 *
+	 * @param historialVentas la nueva lista de ventas
+	 */
 	public void setHistorialVentas(List<Pedido> historialVentas) {
 		this.historialVentas = historialVentas;
 	}
 
+	/**
+	 * Devuelve los descuentos que están activos ahora mismo
+	 *
+	 * @return la lista de descuentos activos
+	 */
 	public List<Descuento> getDescuentosActivos() {
 		return descuentosActivos;
 	}
 
+	/**
+	 * Cambia la lista de descuentos activos
+	 *
+	 * @param descuentosActivos la nueva lista de descuentos
+	 */
 	public void setDescuentosActivos(List<Descuento> descuentosActivos) {
 		this.descuentosActivos = descuentosActivos;
 	}
 
+	/**
+	 * Recupera los intercambios que ya se han completado
+	 *
+	 * @return la lista de intercambios finalizados
+	 */
 	public List<Oferta> getIntercambiosFinalizados() {
 		return intercambiosFinalizados;
 	}
 
+	/**
+	 * Cambia la lista de intercambios finalizados
+	 *
+	 * @param intercambiosFinalizados la nueva lista de intercambios
+	 */
 	public void setIntercambiosFinalizados(List<Oferta> intercambiosFinalizados) {
 		this.intercambiosFinalizados = intercambiosFinalizados;
 	}
 
+	/**
+	 * Devuelve las categorías registradas en la tienda
+	 *
+	 * @return la lista de categorías
+	 */
 	public List<Categoria> getCategorias() {
 		return categorias;
 	}
 
+	/**
+	 * Sustituye la lista de categorías
+	 *
+	 * @param categorias la nueva lista de categorías
+	 */
 	public void setCategorias(List<Categoria> categorias) {
 		this.categorias = categorias;
 	}
 
+	/**
+	 * Cambia la instancia única de la tienda
+	 *
+	 * @param instancia la nueva instancia
+	 */
 	public static void setInstancia(Tienda instancia) {
 		Tienda.instancia = instancia;
 	}
 
+	/**
+	 * Recupera el stock de productos de venta
+	 *
+	 * @return la lista de productos en stock
+	 */
 	public List<ProductoVenta> getStockVentas() {
 		return stockVentas;
 	}
 
+	/**
+	 * Cambia la lista de productos en stock
+	 *
+	 * @param stockVentas la nueva lista de productos
+	 */
 	public void setStockVentas(List<ProductoVenta> stockVentas) {
 		this.stockVentas = stockVentas;
 	}
 
+	/**
+	 * Devuelve el tiempo máximo permitido para un carrito
+	 *
+	 * @return el tiempo máximo del carrito
+	 */
 	public int getTiempoMaxCarrito() {
 		return tiempoMaxCarrito;
 	}
 
+	/**
+	 * Cambia el tiempo máximo de un carrito
+	 *
+	 * @param tiempoMaxCarrito el nuevo tiempo máximo
+	 */
 	public void setTiempoMaxCarrito(int tiempoMaxCarrito) {
 		this.tiempoMaxCarrito = tiempoMaxCarrito;
 	}
 
+	/**
+	 * Recupera el tiempo máximo de una oferta
+	 *
+	 * @return el tiempo máximo de la oferta
+	 */
 	public int getTiempoMaxOferta() {
 		return tiempoMaxOferta;
 	}
 
+	/**
+	 * Cambia el tiempo máximo de una oferta
+	 *
+	 * @param tiempoMaxOferta el nuevo tiempo máximo
+	 */
 	public void setTiempoMaxOferta(int tiempoMaxOferta) {
 		this.tiempoMaxOferta = tiempoMaxOferta;
 	}
 
+	/**
+	 * Devuelve el tiempo máximo permitido para pagar un pedido
+	 *
+	 * @return el tiempo máximo de pago
+	 */
 	public int getTiempoMaxPago() {
 		return tiempoMaxPago;
 	}
 
+	/**
+	 * Cambia el tiempo máximo para realizar el pago
+	 *
+	 * @param tiempoMaxPago el nuevo tiempo máximo
+	 */
 	public void setTiempoMaxPago(int tiempoMaxPago) {
 		this.tiempoMaxPago = tiempoMaxPago;
 	}
 
+	/**
+	 * Recupera el historial completo de descuentos
+	 *
+	 * @return la lista del historial de descuentos
+	 */
 	public List<Descuento> getHistorialDescuentos() {
 		return historialDescuentos;
 	}
 
+	/**
+	 * Cambia el historial de descuentos
+	 *
+	 * @param historialDescuentos la nueva lista del historial
+	 */
 	public void setHistorialDescuentos(List<Descuento> historialDescuentos) {
 		this.historialDescuentos = historialDescuentos;
 	}
 
+	/**
+	 * Indica si los tiempos del sistema están configurados
+	 *
+	 * @return true si los tres tiempos son mayores que 0, false en caso contrario
+	 */
 	public boolean isSistemaTiemposConfigurando() {
 		return this.tiempoMaxCarrito > 0 && this.tiempoMaxOferta > 0 && this.tiempoMaxPago > 0;
 	}
 
+	/**
+	 * Devuelve los usuarios que tienen la sesión iniciada
+	 *
+	 * @return la lista de usuarios con sesión activa
+	 */
 	public List<UsuarioRegistrado> getUsuariosConSesionActiva() {
 		return usuariosConSesionActiva;
 	}
 
+	/**
+	 * Cambia la lista de usuarios con sesión activa
+	 *
+	 * @param usuariosConSesionActiva la nueva lista de usuarios conectados
+	 */
 	public void setUsuariosConSesionActiva(List<UsuarioRegistrado> usuariosConSesionActiva) {
 		this.usuariosConSesionActiva = usuariosConSesionActiva;
 	}
 
+	/**
+	 * Recupera el historial de notificaciones
+	 *
+	 * @return la lista de notificaciones registradas
+	 */
 	public List<Notificacion> getHistorialNotificaciones() {
 		return historialNotificaciones;
 	}
 
+	/**
+	 * Devuelve el precio actual de la tasación
+	 *
+	 * @return el precio de la tasación
+	 */
 	public double getPrecioTasacion() {
 		return precioValoracion;
 	}
 
+	/**
+	 * Cambia el precio de la tasación
+	 *
+	 * @param precioTasacion el nuevo precio
+	 */
 	public void setPrecioTasacion(double precioTasacion) {
 		if (precioTasacion <= 5) {
 			return;
@@ -685,6 +1082,9 @@ public class Tienda {
 		this.precioValoracion = precioTasacion;
 	}
 
+	/**
+	 * Reinicia la tienda y deja sus datos preparados para los tests
+	 */
 	// Metodo para los test
 	public void vaciarTienda() {
 		Estadistica est = Estadistica.getInstancia();
@@ -747,6 +1147,12 @@ public class Tienda {
 
 	}
 
+	/**
+	 * Busca varias categorías a partir de sus nombres
+	 *
+	 * @param nombres los nombres de las categorías que se quieren buscar
+	 * @return la lista de categorías encontradas
+	 */
 	public ArrayList<Categoria> seleccionarCategorias(String... nombres) {
 		ArrayList<Categoria> lista = new ArrayList<>();
 		for (String nombre : nombres) {
@@ -757,14 +1163,29 @@ public class Tienda {
 		return lista;
 	}
 
+	/**
+	 * Devuelve el historial de productos de segunda mano
+	 *
+	 * @return la lista de productos guardados en el historial
+	 */
 	public List<Producto2Mano> getHistorialProductos2Mano() {
 		return historialProductos2Mano;
 	}
 
+	/**
+	 * Cambia el historial de productos de segunda mano
+	 *
+	 * @param historialProductos2Mano la nueva lista del historial
+	 */
 	public void setHistorialProductos2Mano(List<Producto2Mano> historialProductos2Mano) {
 		this.historialProductos2Mano = historialProductos2Mano;
 	}
 
+	/**
+	 * Devuelve el comprobador de tiempos de la tienda
+	 *
+	 * @return el comprobador de tiempos actual
+	 */
 	public ComprobadorTiempos getComprobadorTiempos() {
 		if (comprobadorTiempos == null) {
 			comprobadorTiempos = new ComprobadorTiempos();
@@ -772,8 +1193,10 @@ public class Tienda {
 		return comprobadorTiempos;
 	}
 
+	/**
+	 * Crea de nuevo el comprobador de tiempos
+	 */
 	public void reiniciarComprobadorTiempos() {
 		this.comprobadorTiempos = new ComprobadorTiempos();
 	}
-
 }

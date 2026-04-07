@@ -1,10 +1,8 @@
 package productos;
 
-import Excepcion.ProductoInvalidoException;
-import Excepcion.ValoracionInvalidaException;
-import usuarios.Cliente;
-import usuarios.Empleado;
-import tienda.Estadistica;
+import Excepcion.*;
+import usuarios.*;
+import tienda.*;
 
 /**
  * @author Lucas Manuel Blanco Rodríguez

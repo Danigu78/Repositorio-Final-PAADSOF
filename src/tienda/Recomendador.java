@@ -8,6 +8,10 @@ import productos.*;
 import usuarios.*;
 import ventas.*;
 
+/**
+ * @author Antonino Albarrán
+ * @version 1.0
+ */
 public class Recomendador {
 
 	private int limiteMaximo = 5;

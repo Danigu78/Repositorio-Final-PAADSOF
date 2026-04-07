@@ -2,9 +2,7 @@ package productos;
 
 import java.util.ArrayList;
 
-import Excepcion.ProductoInvalidoException;
-import Excepcion.ProductoYaEnPackException;
-import Excepcion.StockInsuficienteParaPackException;
+import Excepcion.*;
 
 /**
  * @author Lucas Manuel Blanco Rodríguez
