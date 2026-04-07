@@ -8,6 +8,10 @@ import tienda.TipoNotificacion;
 import usuarios.Cliente;
 import productos.ProductoVenta;
 
+/**
+ * @author Lucas Manuel Blanco Rodríguez
+ * @version 1.0
+ */
 public class Carrito {
 	private final String idCarrito;
 	private final List<LineaCarrito> lineas;

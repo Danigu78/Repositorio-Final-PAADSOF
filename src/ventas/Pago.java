@@ -4,6 +4,10 @@ import java.time.LocalDateTime;
 import java.util.*;
 import es.uam.eps.padsof.telecard.*;
 
+/**
+ * @author Lucas Manuel Blanco Rodríguez
+ * @version 1.0
+ */
 public class Pago {
 	private String numeroTarjeta;
 	private LocalDateTime fechaTransaccion;

@@ -8,6 +8,10 @@ import tienda.Tienda;
 import usuarios.Empleado;
 import ventas.Pago;
 
+/**
+ * @author Lucas Manuel Blanco Rodríguez
+ * @version 1.0
+ */
 public class Valoracion {
 	private LocalDateTime fecha;
 	private EstadoProducto estadoProducto;

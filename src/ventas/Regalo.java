@@ -3,6 +3,10 @@ package ventas;
 import java.time.LocalDateTime;
 import productos.ProductoVenta;
 
+/**
+ * @author Lucas Manuel Blanco Rodríguez
+ * @version 1.0
+ */
 public class Regalo extends Descuento {
 	private double umbral;
 	private ProductoVenta producto;

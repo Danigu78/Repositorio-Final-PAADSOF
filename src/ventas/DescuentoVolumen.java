@@ -2,6 +2,10 @@ package ventas;
 
 import java.time.LocalDateTime;
 
+/**
+ * @author Lucas Manuel Blanco Rodríguez
+ * @version 1.0
+ */
 public class DescuentoVolumen extends Descuento {
 	private double umbralMinimo;
 	private double porcentaje;

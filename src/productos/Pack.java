@@ -6,6 +6,10 @@ import Excepcion.ProductoInvalidoException;
 import Excepcion.ProductoYaEnPackException;
 import Excepcion.StockInsuficienteParaPackException;
 
+/**
+ * @author Lucas Manuel Blanco Rodríguez
+ * @version 1.0
+ */
 public class Pack extends ProductoVenta {
 	private ArrayList<LineaPack> lineas;
 

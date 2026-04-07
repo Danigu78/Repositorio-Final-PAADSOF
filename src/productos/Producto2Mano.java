@@ -6,6 +6,10 @@ import usuarios.Cliente;
 import usuarios.Empleado;
 import tienda.Estadistica;
 
+/**
+ * @author Lucas Manuel Blanco Rodríguez
+ * @version 1.0
+ */
 public class Producto2Mano extends Producto {
 	private Valoracion valoracion = null;
 	private Cliente propietario = null;
@@ -197,5 +201,4 @@ public class Producto2Mano extends Producto {
 		return this.valoracion.getEstadoValoracion();
 	}
 
-	
 }

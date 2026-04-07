@@ -7,6 +7,10 @@ import Excepcion.ProductoYaEnCategoriaException;
 import Excepcion.ReseñaDuplicadaException;
 import tienda.Estadistica;
 
+/**
+ * @author Lucas Manuel Blanco Rodríguez
+ * @version 1.0
+ */
 public abstract class ProductoVenta extends Producto {
 	protected double precioOficial;
 	protected int stockDisponible;

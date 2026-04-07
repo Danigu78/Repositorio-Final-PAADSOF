@@ -2,6 +2,10 @@ package ventas;
 
 import java.time.LocalDateTime;
 
+/**
+ * @author Lucas Manuel Blanco Rodríguez
+ * @version 1.0
+ */
 public class DescuentoCantidad extends Descuento {
 	private int cantidadMinima;
 	private double porcentaje;

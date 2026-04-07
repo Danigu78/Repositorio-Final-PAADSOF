@@ -4,6 +4,10 @@ import java.time.LocalDateTime;
 
 import tienda.Estadistica;
 
+/**
+ * @author Lucas Manuel Blanco Rodríguez
+ * @version 1.0
+ */
 public abstract class Descuento {
 	protected String id;
 	protected String nombre;

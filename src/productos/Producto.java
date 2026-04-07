@@ -2,6 +2,10 @@ package productos;
 
 import Excepcion.ProductoInvalidoException;
 
+/**
+ * @author Lucas Manuel Blanco Rodríguez
+ * @version 1.0
+ */
 public abstract class Producto {
 	protected String id;
 	protected String nombre;

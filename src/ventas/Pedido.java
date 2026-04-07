@@ -9,6 +9,10 @@ import tienda.Tienda;
 import tienda.TipoNotificacion;
 import usuarios.Cliente;
 
+/**
+ * @author Lucas Manuel Blanco Rodríguez
+ * @version 1.0
+ */
 public class Pedido {
 	private boolean recogidaSolicitada;
 	private final String idPedido;

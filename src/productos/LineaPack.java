@@ -2,6 +2,10 @@ package productos;
 
 import Excepcion.ProductoInvalidoException;
 
+/**
+ * @author Lucas Manuel Blanco Rodríguez
+ * @version 1.0
+ */
 public class LineaPack {
 	private ProductoVenta producto;
 	private int unidades;

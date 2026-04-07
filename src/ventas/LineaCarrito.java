@@ -2,6 +2,10 @@ package ventas;
 
 import productos.ProductoVenta;
 
+/**
+ * @author Lucas Manuel Blanco Rodríguez
+ * @version 1.0
+ */
 public class LineaCarrito {
 	private ProductoVenta producto;
 	private int cantidad;

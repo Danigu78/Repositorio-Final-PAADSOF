@@ -5,6 +5,10 @@ import usuarios.Cliente;
 import tienda.Estadistica;
 import java.time.*;
 
+/**
+ * @author Lucas Manuel Blanco Rodríguez
+ * @version 1.0
+ */
 public class Reseña {
 	private String idReseña;
 	private Cliente autor;

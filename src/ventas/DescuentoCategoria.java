@@ -3,6 +3,10 @@ package ventas;
 import java.time.LocalDateTime;
 import productos.Categoria;
 
+/**
+ * @author Lucas Manuel Blanco Rodríguez
+ * @version 1.0
+ */
 public class DescuentoCategoria extends Descuento {
 	private Categoria categoria;
 	private double porcentaje;

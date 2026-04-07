@@ -12,6 +12,10 @@ import java.util.concurrent.TimeUnit;
 import tienda.Tienda;
 import usuarios.Cliente;
 
+/**
+ * @author Lucas Manuel Blanco Rodríguez
+ * @version 1.0
+ */
 public class ComprobadorTiempos {
 
 	private final Map<String, Carrito> carritosPorUsuario;

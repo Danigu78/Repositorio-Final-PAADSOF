@@ -3,6 +3,11 @@ package productos;
 import java.util.*;
 import Excepcion.ProductoYaEnCategoriaException;
 
+
+/**
+ * @author Lucas Manuel Blanco Rodríguez
+ * @version 1.0
+ */
 public class Categoria {
 
 	private String nombre;
