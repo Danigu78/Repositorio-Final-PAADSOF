@@ -328,7 +328,7 @@ public class PruebaMotorEstadistico {
 			double[] porMesActual = gestor.consultarIngresosPorMesesActual();
 			double[] porMesAnioActual = gestor.consultarIngresosPorMeses(anioActual);
 
-			check("Array del anio actual tiene 12 posiciones", porMesAnioActual != null && porMesAnioActual.length == 12);
+			check("Array del año actual tiene 12 posiciones", porMesAnioActual != null && porMesAnioActual.length == 12);
 			check("consultarIngresosPorMeses(anioActual) coincide con consultarIngresosPorMesesActual()",
 					Arrays.equals(porMesActual, porMesAnioActual));
 
