@@ -10,21 +10,45 @@ import productos.Categoria;
 import productos.Producto2Mano;
 import productos.ProductoVenta;
 
-public class UsuarioNoRegistrado {
-	protected String sessionId;
-	private FiltroVenta filtroVenta;
-	
+/**
+ * Representa a un usuario no registrado (invitado). Puede consultar productos y
+ * registrarse en el sistema.
+ * 
+ * @author Daniel Gonzalez Ureta
+ * @version 1.0
+ */
 
+public class UsuarioNoRegistrado {
+	/** Identificador de sesión del usuario */
+	protected String sessionId;
+	/** Identificador de sesión del usuario */
+	private FiltroVenta filtroVenta;
+
+	/**
+	 * Constructor del usuario no registrado. Genera un identificador de sesión
+	 * único.
+	 */
 	public UsuarioNoRegistrado() {
 		Estadistica est = Estadistica.getInstancia();
 		this.sessionId = "INVITADO-" + String.valueOf(est.getnUsuarioNoRegistrado());
 		est.setnUsuarioNoRegistrado(est.getnUsuarioNoRegistrado() + 1);
 	}
 
+	/**
+	 * Devuelve todos los productos de venta.
+	 *
+	 * @return lista de productos
+	 */
 	public List<ProductoVenta> buscarProductos() {
 		return Tienda.getInstancia().buscarProductoVenta();
 	}
 
+	/**
+	 * Busca productos por nombre.
+	 *
+	 * @param nombre nombre del producto
+	 * @return lista de productos encontrados
+	 */
 	public List<ProductoVenta> buscarProductosPorNombre(String nombre) {
 		List<ProductoVenta> resultado = Tienda.getInstancia().buscarproductoPorNombre(nombre);
 		if (resultado == null || resultado.isEmpty()) {
@@ -38,6 +62,12 @@ public class UsuarioNoRegistrado {
 		return resultado;
 	}
 
+	/**
+	 * Busca un producto por su id.
+	 *
+	 * @param id identificador del producto
+	 * @return producto encontrado o null si no existe
+	 */
 	public ProductoVenta buscarProductoPorId(String id) {
 		ProductoVenta p = Tienda.getInstancia().buscarProductoVentaPorId(id);
 		if (p == null) {
@@ -49,6 +79,12 @@ public class UsuarioNoRegistrado {
 		return p;
 	}
 
+	/**
+	 * Busca productos por categoría.
+	 *
+	 * @param nombreCategoria nombre de la categoría
+	 * @return lista de productos encontrados
+	 */
 	public List<ProductoVenta> buscarProductosPorCategoria(String nombreCategoria) {
 		List<ProductoVenta> resultado = Tienda.getInstancia().buscarProductoPorCategoria(nombreCategoria);
 		if (resultado == null || resultado.isEmpty()) {
@@ -62,8 +98,11 @@ public class UsuarioNoRegistrado {
 		return resultado;
 	}
 
-
-
+	/**
+	 * Busca productos aplicando un filtro.
+	 *
+	 * @return lista de productos filtrados
+	 */
 	public List<ProductoVenta> buscarProductosVentaFiltrados() {
 		List<ProductoVenta> resultado = Tienda.getInstancia().buscarProductosFiltrados(filtroVenta);
 		if (resultado.isEmpty()) {
@@ -75,11 +114,24 @@ public class UsuarioNoRegistrado {
 		}
 		return resultado;
 	}
-		
+
+	/**
+	 * Registra un nuevo cliente en el sistema.
+	 *
+	 * @param nickname nombre de usuario
+	 * @param password contraseña
+	 * @param dni      documento de identidad
+	 * @return cliente registrado
+	 */
 	public Cliente registrarse(String nickname, String password, String dni) {
 		return Tienda.getInstancia().registrarNuevoCliente(nickname, password, dni);
 	}
 
+	/**
+	 * Devuelve el id de sesión del usuario.
+	 *
+	 * @return id de sesión
+	 */
 	public String getSessionId() {
 		return sessionId;
 	}
