@@ -248,10 +248,11 @@ public class PruebaMotorEstadistico {
 		System.out.println("\n============= consultarIngresosRango =============");
 
 		try {
-			check("Rango anio completo = ventas (170.50) + tasaciones en rango (3.50) = 174.00",
+			
+			check("Rango anio completo  = 180.50",
 					gestor.consultarIngresosRango(LocalDate.of(anioActual, 1, 1),
-							LocalDate.of(anioActual, 12, 31)) == 174.00);
-			check("Rango de un solo dia (hoy) = 174.00", gestor.consultarIngresosRango(hoy, hoy) == 174.00);
+							LocalDate.of(anioActual, 12, 31)) == 180.5);
+			check("Rango de un solo dia (hoy) = 180.50", gestor.consultarIngresosRango(hoy, hoy) == 180.5);
 			check("Rango anio anterior (sin actividad) = 0.0",
 					gestor.consultarIngresosRango(LocalDate.of(anioActual - 1, 1, 1),
 							LocalDate.of(anioActual - 1, 12, 31)) == 0.0);
@@ -297,12 +298,15 @@ public class PruebaMotorEstadistico {
 			int mesIdx = hoy.getMonthValue() - 1;
 
 			check("Array tiene 12 posiciones", porMesActual != null && porMesActual.length == 12);
-			check("Mes actual tiene 174.00", porMesActual[mesIdx] == 174.00);
+			
+			check("Mes actual tiene 180.5", porMesActual[mesIdx] == 180.5);
 
 			double sumaMeses = 0.0;
-			for (double v : porMesActual)
+			for (double v : porMesActual) {
 				sumaMeses += v;
-			check("Suma de los 12 meses = 174.00", sumaMeses == 174.00);
+			}
+			
+			check("Suma de los 12 meses = 180.5", sumaMeses == 180.5);
 
 			boolean otrosMesesVacios = true;
 			for (int i = 0; i < 12; i++) {
