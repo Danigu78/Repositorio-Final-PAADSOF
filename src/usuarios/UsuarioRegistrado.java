@@ -2,12 +2,7 @@ package usuarios;
 
 import java.util.*;
 
-import productos.Categoria;
-import productos.EstadoProducto;
-import productos.Producto2Mano;
-import productos.ProductoVenta;
-import productos.Reseña;
-
+import productos.*;
 import tienda.*;
 
 /**

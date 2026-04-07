@@ -245,6 +245,7 @@ public class DemostradorMain {
 		System.out.println("  Productos visibles: " + catalogo.size());
 
 		System.out.println("  Invitado busca 'Akira':");
+		@SuppressWarnings("unused")
 		List<ProductoVenta> resultados = invitado.buscarProductosPorNombre("Akira");
 
 		System.out.println("  Invitado busca por categoria 'Anime':");
@@ -328,6 +329,7 @@ public class DemostradorMain {
 
 		// Intentar desactivar notificacion obligatoria
 		System.out.println("Intento de desactivar una notificacion que es obligatoria: ");
+		@SuppressWarnings("unused")
 		boolean resultado = alice.configurarPreferenciaNotificacion(TipoNotificacion.PAGO_EXITOSO, false);
 
 		System.out.println("\nFLUJO DE COMPRA Y BUSQUEDA: ");

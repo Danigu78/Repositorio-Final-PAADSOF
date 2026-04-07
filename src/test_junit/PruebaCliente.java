@@ -23,6 +23,7 @@ public class PruebaCliente {
 	private Cliente bob;
 	private Cliente carlos;
 	private ProductoVenta watchmen;
+	@SuppressWarnings("unused")
 	private ProductoVenta akira;
 	private Empleado empTasador;
 	private Empleado empPedidos;
@@ -396,40 +397,40 @@ public class PruebaCliente {
 	@Test
 	@DisplayName("getOfertasParaDecidir identifica correctamente al destinatario")
 	void testOfertasParaDecidir() {
-	    
-	    alice.getCarteraIntercambio().clear();
-	    bob.getCarteraIntercambio().clear();
-	    alice.getOfertasPendientes().clear();
-	    bob.getOfertasPendientes().clear();
 
-	   
-	    alice.subirProducto("Comic A", "Desc", "img.jpg");
-	    bob.subirProducto("Comic B", "Desc", "img.jpg");
+		alice.getCarteraIntercambio().clear();
+		bob.getCarteraIntercambio().clear();
+		alice.getOfertasPendientes().clear();
+		bob.getOfertasPendientes().clear();
 
-	    Producto2Mano pa = alice.getCarteraIntercambio().get(0);
-	    Producto2Mano pb = bob.getCarteraIntercambio().get(0);
+		alice.subirProducto("Comic A", "Desc", "img.jpg");
+		bob.subirProducto("Comic B", "Desc", "img.jpg");
 
-	    pa.valorar(10.0, EstadoProducto.MUY_BUENO, empTasador);
-	    pb.valorar(10.0, EstadoProducto.MUY_BUENO, empTasador);
-	
-	    pa.setVisible(true);
-	    pb.setVisible(true);
-	    pa.setBloqueado(false);
-	    pb.setBloqueado(false);
+		Producto2Mano pa = alice.getCarteraIntercambio().get(0);
+		Producto2Mano pb = bob.getCarteraIntercambio().get(0);
 
-	    List<Producto2Mano> misProd = new ArrayList<>();
-	    misProd.add(pa);
-	    List<Producto2Mano> susProd = new ArrayList<>();
-	    susProd.add(pb);
+		pa.valorar(10.0, EstadoProducto.MUY_BUENO, empTasador);
+		pb.valorar(10.0, EstadoProducto.MUY_BUENO, empTasador);
 
-	    boolean enviado = alice.proponerOferta(bob, misProd, susProd);
+		pa.setVisible(true);
+		pb.setVisible(true);
+		pa.setBloqueado(false);
+		pb.setBloqueado(false);
 
-	   
-	    assertTrue(enviado, "La oferta NO se envió. Revisa si proponerOferta devuelve false.");
-	   
-	    assertEquals(1, bob.getOfertasParaDecidir().size(), "Bob debería tener 1 oferta por decidir (él es el destino)");
-	    assertEquals(1, alice.getOfertasEnEspera().size(), "Alice debería tener 1 oferta en espera (ella es la origen)");
-	}	
+		List<Producto2Mano> misProd = new ArrayList<>();
+		misProd.add(pa);
+		List<Producto2Mano> susProd = new ArrayList<>();
+		susProd.add(pb);
+
+		boolean enviado = alice.proponerOferta(bob, misProd, susProd);
+
+		assertTrue(enviado, "La oferta NO se envió. Revisa si proponerOferta devuelve false.");
+
+		assertEquals(1, bob.getOfertasParaDecidir().size(),
+				"Bob debería tener 1 oferta por decidir (él es el destino)");
+		assertEquals(1, alice.getOfertasEnEspera().size(),
+				"Alice debería tener 1 oferta en espera (ella es la origen)");
+	}
 
 	@Test
 	@DisplayName("No se puede proponer oferta con producto bloqueado")
@@ -737,7 +738,6 @@ public class PruebaCliente {
 		assertFalse(
 				alice.proponerOferta(carlos, alice.crearListaProductos2Mano(pa), alice.crearListaProductos2Mano(pb)));
 	}
-
 
 	@DisplayName("verIntercambioscon con intercambio realizado devuelve la oferta")
 	void testVerIntercambiosConOk() {
