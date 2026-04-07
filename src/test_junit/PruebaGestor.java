@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Excepcion.*;
+import intercambios.Oferta;
 import productos.*;
 import tienda.*;
 import usuarios.*;
@@ -26,6 +27,7 @@ public class PruebaGestor {
 	@BeforeEach
 	void setUp() {
 		tienda = Tienda.getInstancia();
+		tienda.vaciarTienda();
 		gestor = tienda.getGestor();
 		gestor.configurarTiemposSistema(60, 30, 30);
 		gestor.setPrecioTasacion(10.0);
@@ -509,7 +511,6 @@ public class PruebaGestor {
 		assertTrue(gestor.setTiempoMaxOferta(120));
 		assertEquals(120, Tienda.getInstancia().getTiempoMaxOferta());
 	}
-	
 
 	@Test
 	@DisplayName("consultarIngresosPorMeses: Año inválido lanza AñoInvalidoException")
@@ -601,56 +602,139 @@ public class PruebaGestor {
 		double totalVentas = gestor.consultarIngresosVenta();
 		assertTrue(totalVentas >= 0);
 	}
+
 	@Test
-    @DisplayName("verClientesConMasPedidosCancelados: Tienda sin clientes")
-    void testClientesCanceladosVacio() {
-        // 1. Limpiamos los clientes de la tienda para forzar la lista vacía
-        Tienda.getInstancia().getUsuarios().clear();
-        
-        // 2. Ejecución
-        List<Cliente> resultado = gestor.verClientesConMasPedidosCancelados();
-        
-        // 3. Verificación (Cubre el return new ArrayList<>())
-        assertNotNull(resultado);
-        assertTrue(resultado.isEmpty());
-    }
-/*
+	@DisplayName("verClientesConMasPedidosCancelados: Tienda sin clientes")
+	void testClientesCanceladosVacio() {
+		// 1. Limpiamos los clientes de la tienda para forzar la lista vacía
+		Tienda.getInstancia().getUsuarios().clear();
+
+		// 2. Ejecución
+		List<Cliente> resultado = gestor.verClientesConMasPedidosCancelados();
+
+		// 3. Verificación (Cubre el return new ArrayList<>())
+		assertNotNull(resultado);
+		assertTrue(resultado.isEmpty());
+	}
+
 	@Test
 	@DisplayName("verClientesConMasPedidosCancelados: Ordenación correcta con flujo real")
 	void testClientesCanceladosOrden() {
-	    // 1. SETUP DE CLIENTES
-	    tienda.registrarNuevoCliente("malo", "Pass@1234", "11111111M");
-	    Cliente malo = tienda.loginCliente("malo", "Pass@1234");
-	    
-	    tienda.registrarNuevoCliente("bueno", "Pass@1234", "22222222B");
-	    Cliente bueno = tienda.loginCliente("bueno", "Pass@1234");
 
-	    // 2. ESCENARIO CLIENTE "MALO" (2 Pedidos Cancelados)
-	    // Pedido 1
-	    malo.añadirAlCarrito(watchmen, 1);
-	    malo.tramitarPedido(); // Esto crea el objeto Pedido y lo mete en su historial
-	    // Cancelamos el último pedido creado usando el método oficial de la clase Pedido
-	    malo.getHistorialPedidos().get(malo.getHistorialPedidos().size() - 1).cancelarPedido();
+		tienda.registrarNuevoCliente("malo", "Pass@1234", "11111111M");
+		Cliente malo = tienda.loginCliente("malo", "Pass@1234");
 
-	    // Pedido 2
-	    malo.añadirAlCarrito(akira, 1);
-	    malo.tramitarPedido();
-	    malo.getHistorialPedidos().get(malo.getHistorialPedidos().size() - 1).cancelarPedido();
+		tienda.registrarNuevoCliente("bueno", "Pass@1234", "22222222B");
+		Cliente bueno = tienda.loginCliente("bueno", "Pass@1234");
 
-	    // 3. ESCENARIO CLIENTE "BUENO" (1 Pedido Cancelado)
-	    bueno.añadirAlCarrito(figura, 1);
-	    bueno.tramitarPedido();
-	    bueno.getHistorialPedidos().get(bueno.getHistorialPedidos().size() - 1).cancelarPedido();
+		malo.añadirProductoCarrito(watchmen, 1);
+		malo.reservarCarrito();
 
-	    // 4. EJECUCIÓN
-	    List<Cliente> ranking = gestor.verClientesConMasPedidosCancelados();
+		malo.getHistorialPedidos().get(malo.getHistorialPedidos().size() - 1).cancelarPedido();
 
-	    // 5. VERIFICACIONES
-	    assertNotNull(ranking);
-	    assertFalse(ranking.isEmpty());
-	    
-	    // El primero debe ser 'malo' (2 cancelados) y el segundo 'bueno' (1 cancelado)
-	    assertEquals("malo", ranking.get(0).getNickname(), "El cliente con más cancelaciones debe ir primero");
-	    assertEquals("bueno", ranking.get(1).getNickname(), "El cliente con menos cancelaciones debe ir después");
-	}*/
+		malo.añadirProductoCarrito(akira, 1);
+		malo.reservarCarrito();
+		malo.getHistorialPedidos().get(malo.getHistorialPedidos().size() - 1).cancelarPedido();
+
+		// ESCENARIO CLIENTE "BUENO" (1 Pedido Cancelado)
+		bueno.añadirProductoCarrito(figura, 1);
+		bueno.reservarCarrito();
+		bueno.getHistorialPedidos().get(bueno.getHistorialPedidos().size() - 1).cancelarPedido();
+
+		List<Cliente> ranking = gestor.verClientesConMasPedidosCancelados();
+
+		assertNotNull(ranking, "La lista de ranking no debe ser null");
+		assertFalse(ranking.isEmpty(), "La lista no debe estar vacía");
+
+		// Verificamos que 'malo' (2 pedidos) está por delante de 'bueno' (1 pedido)
+		assertEquals("malo", ranking.get(0).getNickname(),
+				"El cliente con más cancelaciones (malo) debe ser el primero");
+		assertEquals("bueno", ranking.get(1).getNickname(),
+				"El cliente con menos cancelaciones (bueno) debe ser el segundo");
+	}
+
+	@Test
+	@DisplayName("verClientesTopCompras: Ranking de clientes con pedidos completados")
+	void testClientesTopComprasOrden() {
+
+		tienda.registrarNuevoCliente("comprador_oro", "Pass@1234", "11111111G");
+		Cliente primero = tienda.loginCliente("comprador_oro", "Pass@1234");
+
+		tienda.registrarNuevoCliente("comprador_plata", "Pass@1234", "22222222S");
+		Cliente segundo = tienda.loginCliente("comprador_plata", "Pass@1234");
+
+		primero.añadirProductoCarrito(watchmen, 1);
+		primero.reservarCarrito();
+		primero.getHistorialPedidos().get(0).setEstado(EstadoPedido.PAGADO);
+
+		primero.añadirProductoCarrito(akira, 1);
+		primero.reservarCarrito();
+		primero.getHistorialPedidos().get(1).setEstado(EstadoPedido.ENTREGADO);
+
+		segundo.añadirProductoCarrito(figura, 1);
+		segundo.reservarCarrito();
+		segundo.getHistorialPedidos().get(0).setEstado(EstadoPedido.LISTO_PARA_RECOGER);
+
+		List<Cliente> ranking = gestor.verClientesTopCompras();
+
+		assertNotNull(ranking);
+		assertEquals(2, ranking.size(), "Debería haber 2 clientes en el ranking");
+
+		// Verificamos el orden (oro primero por tener 2 vs 1)
+		assertEquals("comprador_oro", ranking.get(0).getNickname());
+		assertEquals("comprador_plata", ranking.get(1).getNickname());
+	}
+
+	@Test
+	@DisplayName("verClientesTopCompras: Lista vacía si no hay clientes")
+	void testClientesTopComprasVacio() {
+		tienda.getUsuarios().clear();
+		List<Cliente> resultado = gestor.verClientesTopCompras();
+		assertTrue(resultado.isEmpty(), "La lista debería estar vacía si no hay clientes registrados");
+	}
+	@Test
+    @DisplayName("verClientesTopIntercambios: Ranking de intercambios finalizados")
+    void testClientesTopIntercambiosOrden() {
+        
+        tienda.registrarNuevoCliente("intercambiador_1", "Pass@1234", "11111111A");
+        Cliente c1 = tienda.loginCliente("intercambiador_1", "Pass@1234");
+        
+        tienda.registrarNuevoCliente("intercambiador_2", "Pass@1234", "22222222B");
+        Cliente c2 = tienda.loginCliente("intercambiador_2", "Pass@1234");
+
+       
+        
+       
+        Oferta intercambio = new Oferta(c1, c2, new ArrayList<>(), new ArrayList<>());
+        
+     
+        tienda.getIntercambiosFinalizados().add(intercambio);
+
+        
+        List<Cliente> ranking = gestor.verClientesTopIntercambios();
+
+     
+        assertNotNull(ranking);
+        assertFalse(ranking.isEmpty());
+        
+      
+        assertTrue(ranking.contains(c1));
+        assertTrue(ranking.contains(c2));
+        
+  
+        int countC1 = 0;
+        for (Oferta o : tienda.getIntercambiosFinalizados()) {
+            if (o.getOrigen().equals(c1) || o.getDestino().equals(c1)) countC1++;
+        }
+        assertEquals(1, countC1, "El cliente 1 debería tener 1 intercambio contabilizado");
+    }
+
+    @Test
+    @DisplayName("verClientesTopIntercambios: Lista vacía sin clientes")
+    void testClientesTopIntercambiosVacio() {
+     
+        tienda.getUsuarios().clear();
+        List<Cliente> resultado = gestor.verClientesTopIntercambios();
+        assertTrue(resultado.isEmpty());
+    }
 }
