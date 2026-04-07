@@ -1,35 +1,15 @@
 package usuarios;
 
-import tienda.*;
-import productos.*;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.invoke.StringConcatFactory;
-import java.rmi.server.UnicastRemoteObject;
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.print.DocFlavor.STRING;
-
-import Excepcion.FicheroFormatoInvalidoException;
-import Excepcion.OfertaNoDisponibleException;
-import Excepcion.ProductoInvalidoException;
-import Excepcion.ProductoYaEnCategoriaException;
-import Excepcion.ProductoYaEnPackException;
-import Excepcion.StockInsuficienteParaPackException;
-import Excepcion.TipoProductoDesconocidoException;
-import Excepcion.ValoracionInvalidaException;
-import intercambios.*;
-
-import ventas.*;
-
 import java.util.*;
+
+import Excepcion.*;
+import intercambios.*;
+import ventas.*;
+import tienda.*;
+import productos.*;
 
 /**
  * Clase que representa a un empleado del sistema de la tienda.

@@ -1,14 +1,8 @@
 package usuarios;
 
-import java.util.List;
-import java.util.ArrayList;
-import tienda.Estadistica;
-import tienda.FiltroSegundaMano;
-import tienda.Tienda;
-import tienda.FiltroVenta;
-import productos.Categoria;
-import productos.Producto2Mano;
-import productos.ProductoVenta;
+import java.util.*;
+import tienda.*;
+import productos.*;
 
 /**
  * Representa a un usuario no registrado (invitado). Puede consultar productos y

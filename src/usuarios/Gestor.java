@@ -1,65 +1,53 @@
 package usuarios;
 
-import java.security.PublicKey;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.IllegalFormatFlagsException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale.Category;
+import java.time.*;
+import java.util.*;
 
-import Excepcion.AñoInvalidoException;
-import Excepcion.ProductoYaEnCategoriaException;
-import Excepcion.RangoFechasInvalidoException;
-//import com.sun.xml.internal.stream.events.AttributeImpl;
+import Excepcion.*;
 import ventas.*;
-import productos.Categoria;
-import productos.Pack;
-import productos.ProductoVenta;
+import productos.*;
 import tienda.*;
+
 /**
- * Representa al gestor de la tienda.
- * El gestor puede administrar empleados, productos, descuentos,
- * categorías y consultar estadísticas.
+ * Representa al gestor de la tienda. El gestor puede administrar empleados,
+ * productos, descuentos, categorías y consultar estadísticas.
  * 
- *@author Daniel Gonzalez Ureta
+ * @author Daniel Gonzalez Ureta
  * @version 1.0
  */
- 
+
 public class Gestor extends UsuarioRegistrado {
-	 /** Nickname inicial del gestor */
+	/** Nickname inicial del gestor */
 	private static final String NICKNAME_INICIAL = "admin_Gestor";
-	 /** Contraseña inicial del gestor */
+	/** Contraseña inicial del gestor */
 	private static final String PASSWORD_INICIAL = "Admin@1234";
 	/** Motor encargado de calcular estadísticas */
 	private MotorEstadistico motorEstadistico;
 
-    /**
-     * Constructor del gestor.
-     * Inicializa el gestor con valores por defecto y sesión iniciada.
-     */
+	/**
+	 * Constructor del gestor. Inicializa el gestor con valores por defecto y sesión
+	 * iniciada.
+	 */
 	public Gestor() {
 		super(NICKNAME_INICIAL, PASSWORD_INICIAL);
 		this.motorEstadistico = new MotorEstadistico();
 		this.sesionIniciada = true;
 	}
-/*
-	// @Override
-	public void mostrarPanelPrincipal() {
-		System.out.println("--- PANEL DE CONTROL DEL GESTOR ---");
-		System.out.println("1. Gestionar Empleados y Permisos");
-		System.out.println("2. Configurar Parámetros del Sistema");
-		System.out.println("3. Gestión de Descuentos y Precios");
-		System.out.println("4. Ver Estadísticas de Rendimiento");
-	}
-*/ 
+
+	/*
+	 * // @Override public void mostrarPanelPrincipal() {
+	 * System.out.println("--- PANEL DE CONTROL DEL GESTOR ---");
+	 * System.out.println("1. Gestionar Empleados y Permisos");
+	 * System.out.println("2. Configurar Parámetros del Sistema");
+	 * System.out.println("3. Gestión de Descuentos y Precios");
+	 * System.out.println("4. Ver Estadísticas de Rendimiento"); }
+	 */
 	/**
-     * Busca un empleado por su id.
-    *
-    * @param id identificador del empleado
-    * @return el empleado si existe, null en caso contrario
-    */
+	 * Busca un empleado por su id.
+	 *
+	 * @param id identificador del empleado
+	 * @return el empleado si existe, null en caso contrario
+	 */
 	private Empleado buscarEmpleadoporId(String id) {
 		if (id == null || id.isBlank()) {
 			return null;
@@ -71,13 +59,14 @@ public class Gestor extends UsuarioRegistrado {
 		}
 		return null;
 	}
+
 	/**
-     * Valida un rango de fechas.
-     *
-     * @param inicio fecha de inicio
-     * @param fin fecha de fin
-     * @return true si el rango es válido, false en caso contrario
-     */
+	 * Valida un rango de fechas.
+	 *
+	 * @param inicio fecha de inicio
+	 * @param fin    fecha de fin
+	 * @return true si el rango es válido, false en caso contrario
+	 */
 	private boolean validarFechas(LocalDateTime inicio, LocalDateTime fin) {
 		if (inicio == null || fin == null) {
 			System.out.println("Las fechas no pueden ser null");
@@ -90,12 +79,12 @@ public class Gestor extends UsuarioRegistrado {
 		return true;
 	}
 
-    /**
-     * Busca una categoría por su nombre.
-     *
-     * @param name nombre de la categoría
-     * @return la categoría si existe, null si no se encuentra
-     */
+	/**
+	 * Busca una categoría por su nombre.
+	 *
+	 * @param name nombre de la categoría
+	 * @return la categoría si existe, null si no se encuentra
+	 */
 	public Categoria buscarCategoriaPorNombre(String name) {
 		if (name == null || name.isBlank()) {
 			System.out.println("El nombre de la categoria no puede estar vacio");
@@ -109,16 +98,14 @@ public class Gestor extends UsuarioRegistrado {
 		System.out.println("No hay ninguna categoria de productos con ese nombre");
 		return null;
 	}
-	
 
-	
-	 /**
-     * Da de alta un nuevo empleado.
-     *
-     * @param nickname nombre del empleado
-     * @param password contraseña del empleado
-     * @return true si se crea correctamente, false si hay error
-     */
+	/**
+	 * Da de alta un nuevo empleado.
+	 *
+	 * @param nickname nombre del empleado
+	 * @param password contraseña del empleado
+	 * @return true si se crea correctamente, false si hay error
+	 */
 	public boolean darDeAltaEmpleados(String nickname, String password) {
 		if (nickname == null || password == null) {
 			System.out.println("Error en la creacion del empleado. Los parametros son null.");
@@ -136,12 +123,12 @@ public class Gestor extends UsuarioRegistrado {
 		return true;
 	}
 
-    /**
-     * Crea una lista de permisos.
-     *
-     * @param permisos permisos a añadir
-     * @return lista con los permisos indicados
-     */
+	/**
+	 * Crea una lista de permisos.
+	 *
+	 * @param permisos permisos a añadir
+	 * @return lista con los permisos indicados
+	 */
 	public List<TipoPermisos> crearListaPermisos(TipoPermisos... permisos) {
 		List<TipoPermisos> lista = new ArrayList<>();
 		for (TipoPermisos p : permisos) {
@@ -149,14 +136,15 @@ public class Gestor extends UsuarioRegistrado {
 		}
 		return lista;
 	}
-	   /**
-     * Da de alta un empleado con permisos.
-     *
-     * @param nickname nombre del empleado
-     * @param password contraseña
-     * @param permisos lista de permisos
-     * @return true si se crea correctamente
-     */
+
+	/**
+	 * Da de alta un empleado con permisos.
+	 *
+	 * @param nickname nombre del empleado
+	 * @param password contraseña
+	 * @param permisos lista de permisos
+	 * @return true si se crea correctamente
+	 */
 	public boolean darDeAltaEmpleados_Permisos(String nickname, String password, List<TipoPermisos> permisos) {
 		if (nickname == null || password == null) {
 			System.out.println("Error. El nombre y la contraseña que se le quiere asignar no pueden ser null");
@@ -183,12 +171,13 @@ public class Gestor extends UsuarioRegistrado {
 		System.out.println("Empleado '" + nickname + "' dado de alta con id " + nuevo.getId() + ".");
 		return true;
 	}
-	 /**
-     * Da de baja (despide) a un empleado.
-     *
-     * @param idEmpleado id del empleado
-     * @return true si se realiza correctamente
-     */
+
+	/**
+	 * Da de baja (despide) a un empleado.
+	 *
+	 * @param idEmpleado id del empleado
+	 * @return true si se realiza correctamente
+	 */
 	public boolean darDeBajaAEmpleado(String idEmpleado) {
 		Empleado e = buscarEmpleadoporId(idEmpleado);
 		if (e == null) {
@@ -204,13 +193,14 @@ public class Gestor extends UsuarioRegistrado {
 		System.out.println("El empleado " + e.getNickname() + "ha sido despedido de la tienda.");
 		return true;
 	}
-	 /**
-     * Asigna un permiso a un empleado.
-     *
-     * @param idEmpleado id del empleado
-     * @param permiso permiso a asignar
-     * @return true si se asigna correctamente
-     */
+
+	/**
+	 * Asigna un permiso a un empleado.
+	 *
+	 * @param idEmpleado id del empleado
+	 * @param permiso    permiso a asignar
+	 * @return true si se asigna correctamente
+	 */
 	public boolean asignarPermiso(String idEmpleado, TipoPermisos permiso) {
 		if (permiso == null) {
 			System.out.println("El permiso no puede ser null.");
@@ -229,13 +219,14 @@ public class Gestor extends UsuarioRegistrado {
 		empleado.asignarPermiso(permiso);
 		return true;
 	}
-	 /**
-     * Retira un permiso a un empleado.
-     *
-     * @param idEmpleado id del empleado
-     * @param permiso permiso a retirar
-     * @return true si se retira correctamente
-     */
+
+	/**
+	 * Retira un permiso a un empleado.
+	 *
+	 * @param idEmpleado id del empleado
+	 * @param permiso    permiso a retirar
+	 * @return true si se retira correctamente
+	 */
 	public boolean retirarPermiso(String idEmpleado, TipoPermisos permiso) {
 		Empleado empleado = buscarEmpleadoporId(idEmpleado);
 		if (empleado == null) {
@@ -252,15 +243,15 @@ public class Gestor extends UsuarioRegistrado {
 	}
 
 	// GESTION DE LOS TIEMPOS MAXIMOS DE LA APLICACION Y PRECIO VALORACION
-	
-	 /**
-     * Configura los tiempos del sistema.
-     *
-     * @param tOferta tiempo máximo de oferta
-     * @param tCarrito tiempo máximo de carrito
-     * @param tPago tiempo máximo de pago
-     * @return true si se configura correctamente
-     */
+
+	/**
+	 * Configura los tiempos del sistema.
+	 *
+	 * @param tOferta  tiempo máximo de oferta
+	 * @param tCarrito tiempo máximo de carrito
+	 * @param tPago    tiempo máximo de pago
+	 * @return true si se configura correctamente
+	 */
 	public boolean configurarTiemposSistema(int tOferta, int tCarrito, int tPago) {
 		if (tOferta <= 0 || tCarrito <= 0 || tPago <= 0) {
 			System.out.println("Todos los tiempos deben ser mayores que 0");
@@ -271,6 +262,7 @@ public class Gestor extends UsuarioRegistrado {
 		Tienda.getInstancia().setTiempoMaxPago(tPago);
 		return true;
 	}
+
 	/**
 	 * Establece el tiempo máximo de oferta.
 	 *
@@ -315,6 +307,7 @@ public class Gestor extends UsuarioRegistrado {
 		Tienda.getInstancia().setTiempoMaxPago(tiempo);
 		return true;
 	}
+
 	/**
 	 * Establece el precio de tasación.
 	 *
@@ -335,7 +328,7 @@ public class Gestor extends UsuarioRegistrado {
 	 * Modifica el precio de un producto.
 	 *
 	 * @param idProductoVenta id del producto
-	 * @param nuevoPrecio nuevo precio
+	 * @param nuevoPrecio     nuevo precio
 	 * @return true si se modifica correctamente
 	 */
 	public boolean modificarPrecioProducto(String idProductoVenta, double nuevoPrecio) {
@@ -373,12 +366,12 @@ public class Gestor extends UsuarioRegistrado {
 	/**
 	 * Crea un descuento por cantidad.
 	 *
-	 * @param nombre nombre del descuento
-	 * @param idProducto id del producto
+	 * @param nombre         nombre del descuento
+	 * @param idProducto     id del producto
 	 * @param cantidadMinima cantidad mínima requerida
-	 * @param porcentaje porcentaje de descuento
-	 * @param inicio fecha de inicio
-	 * @param fin fecha de fin
+	 * @param porcentaje     porcentaje de descuento
+	 * @param inicio         fecha de inicio
+	 * @param fin            fecha de fin
 	 * @return true si se crea correctamente
 	 */
 	public boolean crearDescuentoCantidad(String nombre, String idProducto, int cantidadMinima, double porcentaje,
@@ -406,15 +399,16 @@ public class Gestor extends UsuarioRegistrado {
 				.println("Descuento por cantidad agregado correctamente sobre el producto con id:" + idProducto + ". ");
 		return true;
 	}
+
 	/**
 	 * Crea un descuento por cantidad.
 	 *
-	 * @param nombre nombre del descuento
-	 * @param idProducto id del producto
+	 * @param nombre         nombre del descuento
+	 * @param idProducto     id del producto
 	 * @param cantidadMinima cantidad mínima requerida
-	 * @param porcentaje porcentaje de descuento
-	 * @param inicio fecha de inicio
-	 * @param fin fecha de fin
+	 * @param porcentaje     porcentaje de descuento
+	 * @param inicio         fecha de inicio
+	 * @param fin            fecha de fin
 	 * @return true si se crea correctamente
 	 */
 	public boolean crearDescuentoVolumen(String nombre, double precioMinimo, double porcentaje, LocalDateTime inicio,
@@ -437,14 +431,15 @@ public class Gestor extends UsuarioRegistrado {
 		System.out.println("Se ha creado un descuento por volumen de gasto superior a " + precioMinimo);
 		return true;
 	}
+
 	/**
 	 * Crea un descuento por categoría.
 	 *
-	 * @param nombre nombre del descuento
+	 * @param nombre          nombre del descuento
 	 * @param nombreCategoria categoría afectada
-	 * @param porcentaje porcentaje de descuento
-	 * @param inicio fecha de inicio
-	 * @param fin fecha de fin
+	 * @param porcentaje      porcentaje de descuento
+	 * @param inicio          fecha de inicio
+	 * @param fin             fecha de fin
 	 * @return true si se crea correctamente
 	 */
 	public boolean crearDescuentoCategoria(String nombre, String nombreCategoria, double porcentaje,
@@ -472,14 +467,15 @@ public class Gestor extends UsuarioRegistrado {
 				.println("Descuento para los productos de la categoria " + cat.getNombre() + " creado correctamente.");
 		return true;
 	}
+
 	/**
 	 * Crea un descuento de tipo regalo.
 	 *
-	 * @param nombre nombre del descuento
+	 * @param nombre             nombre del descuento
 	 * @param idProductoRegalado producto regalado
-	 * @param gastoNecesario gasto mínimo requerido
-	 * @param inicio fecha de inicio
-	 * @param fin fecha de fin
+	 * @param gastoNecesario     gasto mínimo requerido
+	 * @param inicio             fecha de inicio
+	 * @param fin                fecha de fin
 	 * @return true si se crea correctamente
 	 */
 	public boolean crearDescuentoRegalo(String nombre, String idProductoRegalado, double gastoNecesario,
@@ -509,6 +505,7 @@ public class Gestor extends UsuarioRegistrado {
 		System.out.println("Descuento regalo '" + nombre + "' creado correctamente.");
 		return true;
 	}
+
 	/**
 	 * Elimina un descuento.
 	 *
@@ -533,7 +530,7 @@ public class Gestor extends UsuarioRegistrado {
 	/**
 	 * Crea una nueva categoría.
 	 *
-	 * @param nombre nombre de la categoría
+	 * @param nombre      nombre de la categoría
 	 * @param descripcion descripción
 	 * @return true si se crea correctamente
 	 */
@@ -551,11 +548,12 @@ public class Gestor extends UsuarioRegistrado {
 		System.out.println("La categoria " + nombre + " ha sido creada y añadida correctamente.");
 		return true;
 	}
+
 	/**
 	 * Añade un producto a una categoría.
 	 *
 	 * @param idProducto id del producto
-	 * @param nombreCat nombre de la categoría
+	 * @param nombreCat  nombre de la categoría
 	 * @return true si se añade correctamente
 	 */
 	public boolean añadirProductoACategoria(String idProducto, String nombreCat) {
@@ -575,17 +573,18 @@ public class Gestor extends UsuarioRegistrado {
 			return false;
 		}
 		try {
-		    return c.addProducto(p);
+			return c.addProducto(p);
 		} catch (ProductoYaEnCategoriaException e) {
-		    System.out.println("  Error: " + e.getMessage());
-		    return false;
+			System.out.println("  Error: " + e.getMessage());
+			return false;
 		}
 	}
+
 	/**
 	 * Elimina un producto de una categoría.
 	 *
 	 * @param idProducto id del producto
-	 * @param nombreCat nombre de la categoría
+	 * @param nombreCat  nombre de la categoría
 	 * @return true si se elimina correctamente
 	 */
 	public boolean eliminarProductoDeCategoria(String idProducto, String nombreCat) {
@@ -606,8 +605,6 @@ public class Gestor extends UsuarioRegistrado {
 		}
 		return c.deleteProducto(p);
 	}
-
-	
 
 	/**
 	 * Modifica el perfil del gestor (nickname y contraseña).
@@ -641,10 +638,8 @@ public class Gestor extends UsuarioRegistrado {
 		return true;
 	}
 
-	
 	// ESTADÍSTICAS
-	
-	
+
 	/**
 	 * Devuelve los clientes con más compras.
 	 *
@@ -658,6 +653,7 @@ public class Gestor extends UsuarioRegistrado {
 		}
 		return lista;
 	}
+
 	/**
 	 * Devuelve los clientes con más intercambios.
 	 *
@@ -671,6 +667,7 @@ public class Gestor extends UsuarioRegistrado {
 		}
 		return lista;
 	}
+
 	/**
 	 * Devuelve los clientes con más pedidos cancelados.
 	 *
@@ -679,11 +676,12 @@ public class Gestor extends UsuarioRegistrado {
 	public List<Cliente> verClientesConMasPedidosCancelados() {
 		return motorEstadistico.obtenerClientesConMasPedidosCaducados();
 	}
+
 	/**
 	 * Consulta los ingresos en un rango de fechas.
 	 *
 	 * @param inicio fecha inicial
-	 * @param fin fecha final
+	 * @param fin    fecha final
 	 * @return ingresos totales
 	 * @throws RangoFechasInvalidoException si el rango es incorrecto
 	 */
@@ -691,13 +689,14 @@ public class Gestor extends UsuarioRegistrado {
 		double total = motorEstadistico.calcularIngresosRangoFechas(inicio, fin);
 		System.out.println("  Ingresos desde " + inicio + " hasta " + fin + ": " + String.format("%.2f", total) + "€");
 		return total;
-	} 
+	}
+
 	/**
 	 * Consulta los ingresos por meses de un año.
 	 *
 	 * @param año año a consultar
 	 * @return array con ingresos por mes
-	 * @throws AñoInvalidoException si el año no es válido
+	 * @throws AñoInvalidoException         si el año no es válido
 	 * @throws RangoFechasInvalidoException si hay error en fechas
 	 */
 	public double[] consultarIngresosPorMeses(int año) throws AñoInvalidoException, RangoFechasInvalidoException {
@@ -711,17 +710,19 @@ public class Gestor extends UsuarioRegistrado {
 		}
 		return porMeses;
 	}
+
 	/**
 	 * Consulta los ingresos por meses de un año.
 	 *
 	 * @param año año a consultar
 	 * @return array con ingresos por mes
-	 * @throws AñoInvalidoException si el año no es válido
+	 * @throws AñoInvalidoException         si el año no es válido
 	 * @throws RangoFechasInvalidoException si hay error en fechas
 	 */
 	public double[] consultarIngresosPorMesesActual() throws AñoInvalidoException, RangoFechasInvalidoException {
 		return consultarIngresosPorMeses(LocalDate.now().getYear());
 	}
+
 	/**
 	 * Consulta los ingresos totales por ventas.
 	 *
@@ -732,6 +733,7 @@ public class Gestor extends UsuarioRegistrado {
 		System.out.println("  Ingresos totales ventas: " + String.format("%.2f", total) + "€");
 		return total;
 	}
+
 	/**
 	 * Consulta los ingresos por tasación.
 	 *

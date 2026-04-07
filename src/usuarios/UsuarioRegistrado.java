@@ -1,17 +1,12 @@
 package usuarios;
 
-import java.util.List;
+import java.util.*;
 
 import productos.Categoria;
 import productos.EstadoProducto;
 import productos.Producto2Mano;
 import productos.ProductoVenta;
 import productos.Reseña;
-
-import java.io.FileReader;
-import java.lang.annotation.ElementType;
-import java.security.PublicKey;
-import java.util.ArrayList;
 
 import tienda.*;
 

@@ -25,7 +25,7 @@ public class Pago {
 	 * @param CVV           el código de seguridad de la tarjeta
 	 */
 	public Pago(String numeroTarjeta, double importe, Date fechaTarjeta, int CVV) {
-		this.fechaTransaccion = LocalDateTime.now();
+		this.setFechaTransaccion(LocalDateTime.now());
 		this.fechaTarjeta = fechaTarjeta;
 		this.CVV = CVV;
 		this.importe = importe;
@@ -77,5 +77,13 @@ public class Pago {
 	 */
 	public boolean getExito() {
 		return this.exito;
+	}
+
+	public LocalDateTime getFechaTransaccion() {
+		return fechaTransaccion;
+	}
+
+	public void setFechaTransaccion(LocalDateTime fechaTransaccion) {
+		this.fechaTransaccion = fechaTransaccion;
 	}
 }

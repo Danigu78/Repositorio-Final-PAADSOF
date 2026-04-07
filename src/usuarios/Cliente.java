@@ -1,23 +1,15 @@
 package usuarios;
 
-import tienda.*;
-import productos.*;
-
-import java.security.PublicKey;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.IllegalFormatCodePointException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import Excepcion.OfertaNoDisponibleException;
-import Excepcion.ProductoBloqueadoException;
-import Excepcion.ProductoNoTasadoException;
-import Excepcion.ReseñaDuplicadaException;
+import tienda.*;
+import productos.*;
+import Excepcion.*;
 import intercambios.*;
-import productos.Producto2Mano;
 
 import ventas.*;
 
