@@ -16,6 +16,10 @@ import ventas.Pedido;
 import ventas.Regalo;
 import productos.*;
 
+/**
+ * @author Antonino Albarrán
+ * @version 1.0
+ */
 public class Tienda {
 
 	private String nombre;

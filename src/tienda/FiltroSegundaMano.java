@@ -3,6 +3,10 @@ package tienda;
 import productos.EstadoProducto;
 import productos.Producto2Mano;
 
+/**
+ * @author Antonino Albarrán
+ * @version 1.0
+ */
 public class FiltroSegundaMano {
 
 	private double valorMinimo;

@@ -1,5 +1,9 @@
 package tienda;
 
+/**
+ * @author Antonino Albarrán
+ * @version 1.0
+ */
 public class Estadistica {
 
 	private static Estadistica instancia;

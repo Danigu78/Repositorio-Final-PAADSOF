@@ -13,6 +13,10 @@ import usuarios.*;
 import ventas.*;
 import productos.*;
 
+/**
+ * @author Antonino Albarrán
+ * @version 1.0
+ */
 public class MotorEstadistico {
 
 	/**

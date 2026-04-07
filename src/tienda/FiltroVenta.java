@@ -5,6 +5,10 @@ import java.util.List;
 import productos.Categoria;
 import productos.ProductoVenta;
 
+/**
+ * @author Antonino Albarrán
+ * @version 1.0
+ */
 public class FiltroVenta {
 
 	private double precioMinimo;
