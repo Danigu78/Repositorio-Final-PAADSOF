@@ -78,15 +78,7 @@ public class Gestor extends UsuarioRegistrado {
 		System.out.println("No hay ninguna categoria de productos con ese nombre");
 		return null;
 	}
-	/*
-	 * private ProductoVenta buscarProductoporID(String id) { if
-	 * (id==null||id.isBlank()) { return null; } for (ProductoVenta pro:
-	 * Tienda.getInstancia().getStockVentas()) { if (pro.get) {
-	 * 
-	 * }
-	 * 
-	 * } }
-	 */
+	
 
 	// GESTION DE LOS EMPLEADOS
 

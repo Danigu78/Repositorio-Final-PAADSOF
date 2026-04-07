@@ -40,9 +40,13 @@ public class DemostradorMain {
 
 	public static void main(String[] args) {
 		System.out.println("Bienvenido al demostrado de la tienda CHECKPOINT");
+		System.out.println(
+				"INSTRUCCIONES: El main demostrador imprime una terminal demasiado larga que no cabe en el tamaño predeterminado de eclipse. ");
+		System.out.println(
+				"Para poder verlo entero :Window > Preferences> Busca run/debug > console y desmarcar la opcion Limit console output.");
 		Tienda tienda = Tienda.getInstancia();
 		Gestor gestor = tienda.getGestor();
-		System.out.println("CONFIGURACION DE LOS TIEMPOS DE LA APLICACION");
+		System.out.println("\nCONFIGURACION DE LOS TIEMPOS DE LA APLICACION");
 
 		gestor.configurarTiemposSistema(60, 30, 30);
 		System.out.println(" Tiempos configurados -> Carrito: " + tienda.getTiempoMaxCarrito() + "min | Oferta: "
@@ -66,7 +70,7 @@ public class DemostradorMain {
 			if (!nombres.equals("")) {
 				nombres += ", ";
 			}
-			nombres += c.getNombre(); 
+			nombres += c.getNombre();
 		}
 		System.out.println("Categorias creadas: " + tienda.getCategorias().size() + " -> " + nombres);
 
@@ -355,7 +359,7 @@ public class DemostradorMain {
 		Date fechaTarjeta = new Date(System.currentTimeMillis() + 100000000L);
 		boolean pagado = alice.pagarCarrito(pedidoAlice, "1234567890123456", fechaTarjeta, 123);
 		System.out.println("  Pago -> " + (pagado ? "PAGADO" : "FALLIDO") + " | estado: " + pedidoAlice.getEstado());
-                  
+
 		if (pagado) {
 			empPedidos.prepararPedido(pedidoAlice.getIdPedido());
 			alice.verHistorialPedidos();
@@ -378,7 +382,7 @@ public class DemostradorMain {
 		// Bob busca por categoria y compra
 		System.out.println("\n  Bob busca productos de la categoria 'Accion':");
 		bob.buscarProductosPorCategoria("Accion");
-  
+
 		bob.añadirProductoCarrito(watchmen, 1);
 		bob.imprimirCarritoActual();
 		bob.reservarCarrito();
@@ -816,7 +820,7 @@ public class DemostradorMain {
 			carlos.getCarritoActual().vaciarCarrito();
 			carlos.setCarritoActual(null);
 		}
-		
+
 		System.out.println("\n  Caso carrito olvidado:");
 		System.out.println("  Carlos añade productos al carrito pero nunca reserva:");
 		carlos.añadirProductoCarrito(akira, 2);
@@ -842,28 +846,30 @@ public class DemostradorMain {
 		gestor.setTiempoMaxCarrito(60);
 		System.out.println("  Tiempo max carrito restaurado: " + tienda.getTiempoMaxCarrito() + "min");
 
-		
-		
 		// ── Pedido caducado (intento de pagar) ───────────────────────────────────
 		System.out.println("\n  Configuramos tiempo max pago a 1 minuto:");
 		gestor.setTiempoMaxPago(1);
 		System.out.println("  Tiempos -> Carrito: " + tienda.getTiempoMaxCarrito() + "min | Oferta: "
-		    + tienda.getTiempoMaxOferta() + "min | Pago: " + tienda.getTiempoMaxPago() + "min");
+				+ tienda.getTiempoMaxOferta() + "min | Pago: " + tienda.getTiempoMaxPago() + "min");
 
 		System.out.println("  Bob crea un pedido y no lo paga:");
 		bob.añadirProductoCarrito(watchmen, 1);
 		bob.reservarCarrito();
 		Pedido pedidoCaducado = bob.getHistorialPedidos().get(bob.getHistorialPedidos().size() - 1);
 		System.out.println("  Pedido: " + pedidoCaducado.getIdPedido() + " | estado: " + pedidoCaducado.getEstado()
-		    + " | stock watchmen: " + watchmen.getStockDisponible());
+				+ " | stock watchmen: " + watchmen.getStockDisponible());
 
 		System.out.println("  Esperando 61 segundos para que caduque el pedido...");
-		try { Thread.sleep(61000); } catch (InterruptedException e) { e.printStackTrace(); }
+		try {
+			Thread.sleep(61000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
 		System.out.println("  Intentando pagar pedido caducado:");
 		boolean pagadoCaducado = bob.pagarCarrito(pedidoCaducado, "5555666677778888", Date.valueOf("2030-06-01"), 222);
-		System.out.println("  Resultado: " + (pagadoCaducado ? "PAGADO" : "BLOQUEADO - pedido caducado")
-		    + " | estado: " + pedidoCaducado.getEstado());
+		System.out.println("  Resultado: " + (pagadoCaducado ? "PAGADO" : "BLOQUEADO - pedido caducado") + " | estado: "
+				+ pedidoCaducado.getEstado());
 		System.out.println("  Stock watchmen recuperado: " + watchmen.getStockDisponible());
 
 		// ── Pedido olvidado (ComprobadorTiempos lo cancela) ───────────────────────
@@ -873,10 +879,14 @@ public class DemostradorMain {
 		alice.reservarCarrito();
 		Pedido pedidoOlvidado = alice.getHistorialPedidos().get(alice.getHistorialPedidos().size() - 1);
 		System.out.println("  Pedido: " + pedidoOlvidado.getIdPedido() + " | estado: " + pedidoOlvidado.getEstado()
-		    + " | stock watchmen: " + watchmen.getStockDisponible());
+				+ " | stock watchmen: " + watchmen.getStockDisponible());
 
 		System.out.println("  Esperando 61 segundos para que caduque el pedido...");
-		try { Thread.sleep(61000); } catch (InterruptedException e) { e.printStackTrace(); }
+		try {
+			Thread.sleep(61000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
 		System.out.println("  ComprobadorTiempos revisa y cancela pedidos olvidados:");
 		tienda.getComprobadorTiempos().revisarPedidosPendientesCaducados();

@@ -92,7 +92,7 @@ public class Producto2Mano extends Producto {
 		}
 
 		this.visible = true;
-		this.bloqueado = true;
+		this.bloqueado = false;
 		return true;
 	}
 

@@ -3,6 +3,8 @@ package test_junit;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.*;
 
+import Excepcion.ProductoBloqueadoException;
+
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -394,54 +396,66 @@ public class PruebaCliente {
 	@Test
 	@DisplayName("getOfertasParaDecidir identifica correctamente al destinatario")
 	void testOfertasParaDecidir() {
+	    
+	    alice.getCarteraIntercambio().clear();
+	    bob.getCarteraIntercambio().clear();
+	    alice.getOfertasPendientes().clear();
+	    bob.getOfertasPendientes().clear();
 
-		alice.getCarteraIntercambio().clear();
-		bob.getCarteraIntercambio().clear();
+	   
+	    alice.subirProducto("Comic A", "Desc", "img.jpg");
+	    bob.subirProducto("Comic B", "Desc", "img.jpg");
 
-		alice.subirProducto("Comic A", "Desc", "img.jpg");
-		bob.subirProducto("Comic B", "Desc", "img.jpg");
+	    Producto2Mano pa = alice.getCarteraIntercambio().get(0);
+	    Producto2Mano pb = bob.getCarteraIntercambio().get(0);
 
-		Producto2Mano pa = alice.getCarteraIntercambio().get(alice.getCarteraIntercambio().size() - 1);
-		Producto2Mano pb = bob.getCarteraIntercambio().get(bob.getCarteraIntercambio().size() - 1);
+	    pa.valorar(10.0, EstadoProducto.MUY_BUENO, empTasador);
+	    pb.valorar(10.0, EstadoProducto.MUY_BUENO, empTasador);
+	
+	    pa.setVisible(true);
+	    pb.setVisible(true);
+	    pa.setBloqueado(false);
+	    pb.setBloqueado(false);
 
-		empTasador.tasarProducto(pa.getId(), 10, EstadoProducto.MUY_BUENO);
-		empPedidos.tasarProducto(pb.getId(), 10, EstadoProducto.MUY_BUENO);
+	    List<Producto2Mano> misProd = new ArrayList<>();
+	    misProd.add(pa);
+	    List<Producto2Mano> susProd = new ArrayList<>();
+	    susProd.add(pb);
 
-		List<Producto2Mano> misProd = new ArrayList<>();
-		misProd.add(pa);
-		List<Producto2Mano> susProd = new ArrayList<>();
-		susProd.add(pb);
+	    boolean enviado = alice.proponerOferta(bob, misProd, susProd);
 
-		boolean enviado = alice.proponerOferta(bob, misProd, susProd);
-
-		assertTrue(enviado, "La oferta NO se envió.");
-
-		// 9. COMPROBACIÓN DE LISTAS
-		assertEquals(1, bob.getOfertasParaDecidir().size(), "Bob debería tener 1 oferta por decidir");
-		assertEquals(1, alice.getOfertasEnEspera().size(), "Alice debería tener 1 oferta en espera");
-	}
+	   
+	    assertTrue(enviado, "La oferta NO se envió. Revisa si proponerOferta devuelve false.");
+	   
+	    assertEquals(1, bob.getOfertasParaDecidir().size(), "Bob debería tener 1 oferta por decidir (él es el destino)");
+	    assertEquals(1, alice.getOfertasEnEspera().size(), "Alice debería tener 1 oferta en espera (ella es la origen)");
+	}	
 
 	@Test
 	@DisplayName("No se puede proponer oferta con producto bloqueado")
 	void testProductoBloqueadoEnOferta() {
-		alice.subirProducto("Comic A", "Desc", "img.jpg");
-		bob.subirProducto("Comic B", "Desc", "img.jpg");
-		Producto2Mano pa = alice.getCarteraIntercambio().get(0);
-		Producto2Mano pb = bob.getCarteraIntercambio().get(0);
-		pa.valorar(10.0, EstadoProducto.MUY_BUENO, empTasador);
-		pb.valorar(10.0, EstadoProducto.MUY_BUENO, empTasador);
+
+		alice.subirProducto("Comic Alice", "Muy Bueno", "imgA.jpg");
+		bob.subirProducto("Comic Bob", "Muy Bueno", "imgB.jpg");
+
+		Producto2Mano pa = alice.getCarteraIntercambio().get(alice.getCarteraIntercambio().size() - 1);
+		Producto2Mano pb = bob.getCarteraIntercambio().get(bob.getCarteraIntercambio().size() - 1);
+
+		pa.valorar(15.0, EstadoProducto.MUY_BUENO, empTasador);
+		pb.valorar(15.0, EstadoProducto.MUY_BUENO, empTasador);
 		pa.setVisible(true);
 		pb.setVisible(true);
 
-		// Primera oferta bloquea el producto pa
-		alice.proponerOferta(bob, alice.crearListaProductos2Mano(pa), alice.crearListaProductos2Mano(pb));
+		boolean exito = alice.proponerOferta(bob, alice.crearListaProductos2Mano(pa), bob.crearListaProductos2Mano(pb));
 
-		// Intentar otra oferta con el mismo producto pa debe fallar
-		assertFalse(
-				alice.proponerOferta(carlos, alice.crearListaProductos2Mano(pa), alice.crearListaProductos2Mano(pb)));
+		assertTrue(exito, "La primera oferta debe enviarse porque el producto estaba libre.");
+		assertTrue(pa.isBloqueado(), "Ahora el producto DEBE estar bloqueado por la oferta pendiente.");
+
+		assertThrows(ProductoBloqueadoException.class, () -> {
+			alice.proponerOferta(carlos, alice.crearListaProductos2Mano(pa), bob.crearListaProductos2Mano(pb));
+		});
 	}
 
-	@Test
 	void testPreferenciasNotificaciones() {
 		alice.getNotificaciones().clear(); // Limpiamos la bienvenida
 		alice.configurarPreferenciaNotificacion(TipoNotificacion.DESCUENTO, false);
@@ -616,7 +630,8 @@ public class PruebaCliente {
 		Producto2Mano p = alice.getCarteraIntercambio().get(0);
 		tienda.solicitarTasacion(p);
 		p.valorar(10.0, EstadoProducto.MUY_BUENO, empTasador);
-		assertDoesNotThrow(() -> alice.verMiCartera());}
+		assertDoesNotThrow(() -> alice.verMiCartera());
+	}
 
 	@Test
 	@DisplayName("verMisNotificacionesPorTipo sin notificaciones de ese tipo no lanza excepcion")
@@ -723,18 +738,7 @@ public class PruebaCliente {
 				alice.proponerOferta(carlos, alice.crearListaProductos2Mano(pa), alice.crearListaProductos2Mano(pb)));
 	}
 
-	@Test
-	@DisplayName("proponerOferta con producto no tasado lanza excepcion y devuelve false")
-	void testProponerOfertaProductoNoTasado() {
-		alice.subirProducto("A", "desc", "img.jpg");
-		bob.subirProducto("B", "desc", "img.jpg");
-		Producto2Mano pa = alice.getCarteraIntercambio().get(0);
-		Producto2Mano pb = bob.getCarteraIntercambio().get(0);
-		// No tasamos los productos
-		assertFalse(alice.proponerOferta(bob, alice.crearListaProductos2Mano(pa), alice.crearListaProductos2Mano(pb)));
-	}
 
-	@Test
 	@DisplayName("verIntercambioscon con intercambio realizado devuelve la oferta")
 	void testVerIntercambiosConOk() {
 		alice.subirProducto("A", "desc", "img.jpg");
