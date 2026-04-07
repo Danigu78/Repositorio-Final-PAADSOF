@@ -18,6 +18,9 @@ public class ComprobadorTiempos {
 	private final Map<String, List<Pedido>> pedidosPendientesPorUsuario;
 	private final ScheduledExecutorService scheduler;
 
+	/**
+	 * Constructor de la clase ComprobadorTiempos
+	 */
 	public ComprobadorTiempos() {
 		this.carritosPorUsuario = new ConcurrentHashMap<>();
 		this.pedidosPendientesPorUsuario = new ConcurrentHashMap<>();
@@ -26,8 +29,9 @@ public class ComprobadorTiempos {
 		iniciarRevisionPeriodica();
 	}
 
-	
-	
+	/**
+	 * Inicia la revisión automática de carritos y pedidos pendientes
+	 */
 	private void iniciarRevisionPeriodica() {
 		Tienda tienda = Tienda.getInstancia();
 
@@ -56,6 +60,9 @@ public class ComprobadorTiempos {
 		}, tiempoRevision, tiempoRevision, TimeUnit.MINUTES);
 	}
 
+	/**
+	 * Revisa los carritos guardados y elimina los que ya han caducado
+	 */
 	public void revisarCarritosCaducados() {
 		Iterator<Map.Entry<String, Carrito>> it = carritosPorUsuario.entrySet().iterator();
 		while (it.hasNext()) {
@@ -68,6 +75,9 @@ public class ComprobadorTiempos {
 		}
 	}
 
+	/**
+	 * Revisa los pedidos pendientes y cancela los que han caducado
+	 */
 	public void revisarPedidosPendientesCaducados() {
 		Iterator<Map.Entry<String, List<Pedido>>> itMapa = pedidosPendientesPorUsuario.entrySet().iterator();
 		while (itMapa.hasNext()) {
@@ -94,6 +104,12 @@ public class ComprobadorTiempos {
 		}
 	}
 
+	/**
+	 * Recupera el carrito asociado a un cliente
+	 *
+	 * @param cliente el cliente del que se quiere obtener el carrito
+	 * @return el carrito del cliente o null si no existe
+	 */
 	public Carrito obtenerCarrito(Cliente cliente) {
 		if (cliente == null) {
 			return null;
@@ -101,10 +117,22 @@ public class ComprobadorTiempos {
 		return carritosPorUsuario.get(cliente.getId());
 	}
 
+	/**
+	 * Devuelve el carrito asociado a un identificador de usuario
+	 *
+	 * @param idUsuario el id del usuario
+	 * @return el carrito guardado para ese usuario
+	 */
 	public Carrito getCarrito(String idUsuario) {
 		return carritosPorUsuario.get(idUsuario);
 	}
 
+	/**
+	 * Guarda un carrito asociado a un usuario
+	 *
+	 * @param idUsuario el id del usuario
+	 * @param carrito   el carrito que se quiere registrar
+	 */
 	public void registrarCarrito(String idUsuario, Carrito carrito) {
 		if (idUsuario == null || carrito == null) {
 			throw new IllegalArgumentException("Ni idUsuario ni carrito pueden ser null");
@@ -112,19 +140,30 @@ public class ComprobadorTiempos {
 
 		carritosPorUsuario.put(idUsuario, carrito);
 	}
+
+	/**
+	 * Registra un pedido pendiente para un usuario
+	 *
+	 * @param idUsuario el id del usuario
+	 * @param pedido    el pedido que se quiere guardar
+	 */
 	public void registrarPedido(String idUsuario, Pedido pedido) {
-	   
-	    List<Pedido> lista = pedidosPendientesPorUsuario.get(idUsuario);
 
-	  
-	    if (lista == null) {
-	        lista = new ArrayList<>();
-	        pedidosPendientesPorUsuario.put(idUsuario, lista);
-	    }
+		List<Pedido> lista = pedidosPendientesPorUsuario.get(idUsuario);
 
-	    lista.add(pedido);
+		if (lista == null) {
+			lista = new ArrayList<>();
+			pedidosPendientesPorUsuario.put(idUsuario, lista);
+		}
+
+		lista.add(pedido);
 	}
 
+	/**
+	 * Elimina el carrito de un usuario y lo caduca si existe
+	 *
+	 * @param idUsuario el id del usuario
+	 */
 	public void eliminarCarrito(String idUsuario) {
 		Carrito carrito = carritosPorUsuario.remove(idUsuario);
 
@@ -133,13 +172,24 @@ public class ComprobadorTiempos {
 		}
 	}
 
+	/**
+	 * Quita el carrito de un usuario sin aplicar ninguna otra acción
+	 *
+	 * @param idUsuario el id del usuario
+	 */
 	public void quitarCarrito(String idUsuario) {
-	    carritosPorUsuario.remove(idUsuario);
+		carritosPorUsuario.remove(idUsuario);
 	}
 
+	/**
+	 * Recupera los pedidos pendientes de un usuario
+	 *
+	 * @param idUsuario el id del usuario
+	 * @return una lista con sus pedidos pendientes
+	 */
 	public List<Pedido> getPedidosPendientesDeUsuario(String idUsuario) {
 		List<Pedido> pedidos = pedidosPendientesPorUsuario.get(idUsuario);
- 
+
 		if (pedidos == null) {
 			return new ArrayList<>();
 		}
@@ -147,10 +197,17 @@ public class ComprobadorTiempos {
 		return new ArrayList<>(pedidos);
 	}
 
+	/**
+	 * Detiene el comprobador de tiempos
+	 */
 	public void cerrarGestorTiempo() {
-	    scheduler.shutdownNow();
+		scheduler.shutdownNow();
 	}
+
+	/**
+	 * Elimina todos los carritos guardados
+	 */
 	public void limpiarCarritos() {
-	    carritosPorUsuario.clear();
+		carritosPorUsuario.clear();
 	}
 }
