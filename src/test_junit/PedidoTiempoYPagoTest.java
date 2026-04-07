@@ -1,10 +1,9 @@
 package test_junit;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;  
+import org.junit.jupiter.api.*;                   
 
 import java.util.Date;
-
-import org.junit.jupiter.api.*;
 
 import productos.ProductoVenta;
 import tienda.Tienda;

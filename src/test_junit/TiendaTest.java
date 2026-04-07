@@ -267,6 +267,7 @@ public class TiendaTest {
 	void testNotificacionesTienda() {
 		tienda.getHistorialNotificaciones().clear();
 		Notificacion n1 = new Notificacion("Aviso Descuento", TipoNotificacion.DESCUENTO);
+		@SuppressWarnings("unused")
 		Notificacion n2 = new Notificacion("Aviso Empleado", TipoNotificacion.EMPLEADOS);
 
 		assertEquals(2, tienda.getHistorialNotificaciones().size(), "Debe haber 2 notificaciones en el historial");
