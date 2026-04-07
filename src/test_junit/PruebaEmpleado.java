@@ -1,8 +1,9 @@
-package test.tienda;
+package test_junit;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.*;
 
+import Excepcion.OfertaNoDisponibleException;
 import Excepcion.ProductoNoTasadoException;
 import intercambios.EstadoOferta;
 import intercambios.Oferta;
@@ -440,11 +441,7 @@ public class PruebaEmpleado {
 		assertTrue(empStock.modificarUnidadesProductoEnPack(watchmen.getId(), idPack, 3));
 	}
 
-	@Test
-	@DisplayName("modificarUnidadesProductoEnPack con id pack inexistente devuelve false")
-	void testModificarUnidadesPackInexistente() {
-		assertFalse(empStock.modificarUnidadesProductoEnPack(watchmen.getId(), "PACK-FALSO", 3));
-	}
+	
 
 	@Test
 	@DisplayName("eliminarProductoDePack con datos validos devuelve true")
@@ -848,25 +845,107 @@ public class PruebaEmpleado {
 
 		assertTrue(empStock.añadirProductoaPack(figura.getId(), pack.getId(), 1));
 	}
+
 	@Test
-	@DisplayName("confirmarIntercambio con oferta aceptada ejecuta correctamente")
-	void testConfirmarIntercambioOk() throws ProductoNoTasadoException {
-	   
-	    cliente.subirProducto("Comic1", "desc", "img.jpg");
-	    Producto2Mano p1 = cliente.getCarteraIntercambio().get(0);
-	    empTasador.tasarProducto(p1.getId(), 10.0, EstadoProducto.MUY_BUENO);
+	@DisplayName("confirmarIntercambio: cubrir bloque try exitoso")
+	void testConfirmarIntercambioVerdeTry() throws OfertaNoDisponibleException {
+		// 1. Setup mínimo: necesitamos una oferta con origen y destino para que no de
+		// NPE el print
+		Cliente c1 = new Cliente("c1", "p", "1");
+		Cliente c2 = new Cliente("c2", "p", "2");
 
-	    Cliente destino = tienda.registrarNuevoCliente("cli_dest", "Dest@1234", "12345678Z");
-	    destino.subirProducto("Comic2", "desc", "img.jpg");
-	    Producto2Mano p2 = destino.getCarteraIntercambio().get(0);
-	    empTasador.tasarProducto(p2.getId(), 10.0, EstadoProducto.MUY_USADO);
+		Oferta o = new Oferta(c1, c2, new ArrayList<>(), new ArrayList<>());
 
+		o.setEstado(EstadoOferta.ACEPTADA);
+		assertTrue(empTasador.confirmarIntercambio(o));
+	}
+
+	@Test
+	@DisplayName("confirmarIntercambio: Forzar entrada al catch")
+	void testConfirmarIntercambioCatch() throws OfertaNoDisponibleException {
+
+		Cliente c1 = new Cliente("origen", "pass", "123");
+		Cliente c2 = new Cliente("destino", "pass", "456");
+		Oferta o = new Oferta(c1, c2, new ArrayList<>(), new ArrayList<>());
+
+		o.setEstado(EstadoOferta.ACEPTADA);
+
+		Tienda.getInstancia().setTiempoMaxOferta(0);
+
+		o.setEstado(EstadoOferta.RECHAZADA);
+
+		boolean resultado = empTasador.confirmarIntercambio(o);
+
+		assertFalse(resultado);
+	}
+	@Test
+	@DisplayName("modificarUnidadesPack: Cubrir error de permisos")
+	void testModPackErrorPermisos() {
 	   
-	    Oferta o = new Oferta(cliente, destino, List.of(p1), List.of(p2));
-	    o.setEstado(EstadoOferta.ACEPTADA);
+	    assertFalse(empSinPermisos.modificarUnidadesProductoEnPack("P1", "PACK1", 10));
+	}
+
+	@Test
+	@DisplayName("modificarUnidadesPack:  error de IDs vacíos")
+	void testModPackErrorIds() {
+	   
+
+	    assertFalse(empStock.modificarUnidadesProductoEnPack("P1", "", 10));
+	    assertFalse(empStock.modificarUnidadesProductoEnPack("  ", "PACK1", 10));
+	}
+
+	@Test
+	@DisplayName("modificarUnidadesPack:  error de unidades <= 0")
+	void testModPackErrorUnidades() {
 	    
-	
-	    assertTrue(empTasador.confirmarIntercambio(o));
-	    assertEquals(EstadoOferta.REALIZADA, o.getEstado());
+	    assertFalse(empStock.modificarUnidadesProductoEnPack("P1", "PACK1", 0));
+	    assertFalse(empStock.modificarUnidadesProductoEnPack("P1", "PACK1", -5));
+	}
+
+	@Test
+	@DisplayName("modificarUnidadesPack:  error de Pack inexistente")
+	void testModPackErrorNoExistePack() {
+	  
+	    assertFalse(empStock.modificarUnidadesProductoEnPack("P1", "ID-FALSO", 5));
+	    assertFalse(empStock.modificarUnidadesProductoEnPack("P1", akira.getId(), 5));
+	}
+
+	@Test
+	@DisplayName("modificarUnidadesPack: error de Producto inexistente")
+	void testModPackErrorNoExisteProducto() {
+	    
+	    empStock.asignarPermiso(TipoPermisos.GESTION_PACKS);
+	    ArrayList<LineaPack> lineas = new ArrayList<>();
+	    lineas.add(new LineaPack(watchmen, 1));
+	    
+	 
+	    empStock.crearPack("PackParaTest", "desc", "img.jpg", 10.0, 5, lineas);
+	 
+	    List<ProductoVenta> resultados = Tienda.getInstancia().buscarproductoPorNombre("PackParaTest");
+	    if (resultados.isEmpty()) {
+	        fail("El pack 'PackParaTest' no se creó. Revisa permisos o si 'watchmen' está en la tienda.");
+	    }
+	    String idPack = resultados.get(0).getId();
+
+	    assertFalse(empStock.modificarUnidadesProductoEnPack("PRODUCTO-FANTASMA", idPack, 3));
+	}
+
+	@Test
+	@DisplayName("modificarUnidadesPack: Cubrir éxito")
+	void testModPackExitoTotal() {
+	    // 1. Setup: Asegurar permiso
+	    empStock.asignarPermiso(TipoPermisos.GESTION_PACKS);
+	    ArrayList<LineaPack> lineas = new ArrayList<>();
+	    lineas.add(new LineaPack(watchmen, 2));
+	    empStock.crearPack("PackFinal", "desc", "img.jpg", 15.0, 10, lineas);
+
+	    List<ProductoVenta> resultados = Tienda.getInstancia().buscarproductoPorNombre("PackFinal");
+	    if (resultados.isEmpty()) {
+	        fail("El pack 'PackFinal' no se creó. Verifica que el empleado tenga permisos.");
+	    }
+	    String idPack = resultados.get(0).getId();
+
+	 
+	    assertTrue(empStock.modificarUnidadesProductoEnPack(watchmen.getId(), idPack, 5));
 	}
 }

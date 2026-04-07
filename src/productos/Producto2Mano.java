@@ -119,4 +119,6 @@ public class Producto2Mano extends Producto {
 	public Object getEstado() {
 		return this.valoracion.getEstadoValoracion();
 	}
+
+	
 }

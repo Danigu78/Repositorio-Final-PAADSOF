@@ -1,7 +1,5 @@
 package usuarios;
 
-import java.security.Identity;
-import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,15 +8,40 @@ import productos.Categoria;
 import tienda.Tienda;
 import tienda.TipoNotificacion;
 
+/**
+ * Clase que representa las preferencias de notificación de un cliente.
+ * 
+ * Permite configurar qué tipos de notificaciones desea recibir el cliente, así
+ * como gestionar categorías de interés para recibir avisos sobre nuevos
+ * productos.
+ * 
+ * Algunas notificaciones son obligatorias y no pueden desactivarse.
+ * 
+ * @author Daniel Gonzalez Ureta
+ * @version 1.0
+ */
 public class PreferenciaNotificacion {
+	/** Indica si el usuario desea recibir notificaciones de descuentos */
 	private boolean descuentos;
+	/** Indica si el usuario desea recibir notificaciones de pedidos caducados */
 	private boolean pedidosCaducados;
+	/** Indica si el usuario desea recibir notificaciones de nuevos intercambios */
 	private boolean nuevos_Intercambios;
+	/** Indica si el usuario desea recibir notificaciones de pedidos entregados */
 	private boolean pedido_entregado;
+	/**
+	 * Indica si el usuario desea recibir notificaciones de valoraciones completadas
+	 */
 	private boolean valoracion_completada;
+	/** Indica si el usuario desea recibir notificaciones de ofertas caducadas */
 	private boolean oferta_caducada;
+	/** Lista de categorías en las que el usuario tiene interés */
 	private List<Categoria> categoriasInteres;
 
+	/**
+	 * Constructor por defecto. Inicializa todas las preferencias configurables como
+	 * activadas y crea una lista vacía de categorías de interés.
+	 */
 	public PreferenciaNotificacion() {
 		this.descuentos = true;
 		this.pedidosCaducados = true;
@@ -29,6 +52,12 @@ public class PreferenciaNotificacion {
 		this.categoriasInteres = new ArrayList<>();
 	}
 
+	/**
+	 * Determina si el usuario debe recibir una notificación concreta.
+	 * 
+	 * @param tipo Tipo de notificación
+	 * @return true si debe recibirla, false en caso contrario
+	 */
 	public boolean debeRecibirNotificacion(TipoNotificacion tipo) {
 		switch (tipo) {
 		// Obligatorias
@@ -43,10 +72,10 @@ public class PreferenciaNotificacion {
 		case CATEGORIA_INTERES:
 		case CONFIRMACION_RESERVA_CARRITO:
 			return true;
-	
-		case EMPLEADOS://el cliente no recibe notificaciones de empleaos
+
+		case EMPLEADOS:// el cliente no recibe notificaciones de empleaos
 			return false;
-			// Configurables
+		// Configurables
 		case DESCUENTO:
 			return descuentos;
 		case PEDIDO_CADUCADO:
@@ -64,6 +93,12 @@ public class PreferenciaNotificacion {
 		}
 	}
 
+	/**
+	 * Modifica una preferencia de notificación configurable.
+	 * 
+	 * @param tipo  Tipo de notificación
+	 * @param valor Nuevo valor (true = activado, false = desactivado)
+	 */
 	public void modificarPreferencia(TipoNotificacion tipo, boolean valor) {
 		switch (tipo) {
 		case DESCUENTO:
@@ -90,6 +125,12 @@ public class PreferenciaNotificacion {
 		}
 	}
 
+	/**
+	 * Añade una categoría a la lista de intereses del cliente.
+	 * 
+	 * @param nombreCategoria Nombre de la categoría
+	 * @return true si se añadió correctamente, false en caso contrario
+	 */
 	public boolean añadirCategoriaInteres(String nombreCategoria) {
 		if (nombreCategoria == null || nombreCategoria.isBlank()) {
 			System.out.println("El nombre de la categoria no puede estar vacio");
@@ -105,6 +146,13 @@ public class PreferenciaNotificacion {
 		return true;
 	}
 
+	/**
+	 * Comprueba si el usuario debe recibir notificaciones sobre productos nuevos de
+	 * una categoría concreta.
+	 * 
+	 * @param nombreCategoria Nombre de la categoría
+	 * @return true si la categoría está entre sus intereses
+	 */
 	public boolean NotificacionesProductosNUevosCategoriasInteres(String nombreCategoria) {
 		if (categoriasInteres.isEmpty()) {
 			return false;
@@ -115,9 +163,14 @@ public class PreferenciaNotificacion {
 		}
 		return (this.categoriasInteres.contains(c));
 
-	
-}
+	}
 
+	/**
+	 * Elimina una categoría de la lista de intereses del usuario.
+	 * 
+	 * @param nombreCategoria Nombre de la categoría
+	 * @return true si se eliminó correctamente
+	 */
 	public boolean eliminarCategoriaInteres(String nombreCategoria) {
 		if (nombreCategoria == null || nombreCategoria.isBlank()) {
 			System.out.println("El nombre de la categoria no puede estar vacio");
@@ -140,79 +193,133 @@ public class PreferenciaNotificacion {
 		return quitar;
 	}
 
+	/**
+	 * @return true si las notificaciones de descuentos están activadas
+	 */
 	public boolean isDescuentos() {
 		return descuentos;
 	}
 
+	/**
+	 * Activa o desactiva las notificaciones de descuentos.
+	 * 
+	 * @param descuentos nuevo valor
+	 */
 	public void setDescuentos(boolean descuentos) {
 		this.descuentos = descuentos;
 	}
 
+	/**
+	 * @return true si las notificaciones de pedidos caducados están activadas
+	 */
 	public boolean isPedidosCaducados() {
 		return pedidosCaducados;
 	}
 
+	/**
+	 * @param pedidosCaducados nuevo valor de la preferencia
+	 */
 	public void setPedidosCaducados(boolean pedidosCaducados) {
 		this.pedidosCaducados = pedidosCaducados;
 	}
 
+	/**
+	 * @return true si las notificaciones de nuevos intercambios están activadas
+	 */
 	public boolean isNuevos_Intercambios() {
 		return nuevos_Intercambios;
 	}
 
+	/**
+	 * @param nuevos_Intercambios nuevo valor de la preferencia
+	 */
 	public void setNuevos_Intercambios(boolean nuevos_Intercambios) {
 		this.nuevos_Intercambios = nuevos_Intercambios;
 	}
 
+	/**
+	 * @return true si las notificaciones de pedido entregado están activadas
+	 */
 	public boolean isPedido_entregado() {
 		return pedido_entregado;
 	}
 
+	/**
+	 * @return true si las notificaciones de pedido entregado están activadas
+	 */
 	public void setPedido_entregado(boolean pedido_entregado) {
 		this.pedido_entregado = pedido_entregado;
 	}
 
+	/**
+	 * @return true si las notificaciones de valoración completada están activadas
+	 */
 	public boolean isValoracion_completada() {
 		return valoracion_completada;
 	}
 
+	/**
+	 * @param valoracion_completada nuevo valor de la preferencia
+	 */
 	public void setValoracion_completada(boolean valoracion_completada) {
 		this.valoracion_completada = valoracion_completada;
 	}
 
+	/**
+	 * @return true si las notificaciones de oferta caducada están activadas
+	 */
 	public boolean isOferta_caducada() {
 		return oferta_caducada;
 	}
 
+	/**
+	 * @param oferta_caducada nuevo valor de la preferencia
+	 */
 	public void setOferta_caducada(boolean oferta_caducada) {
 		this.oferta_caducada = oferta_caducada;
 	}
 
+	/**
+	 * Obtiene la lista de categorías de interés.
+	 * 
+	 * @return lista de categorías
+	 */
 	public List<Categoria> getCategoriasInteres() {
 		return categoriasInteres;
 	}
 
+	/**
+	 * Establece una nueva lista de categorías de interés.
+	 * 
+	 * @param categoriasInteres nueva lista
+	 */
 	public void setCategoriasInteres(List<Categoria> categoriasInteres) {
 		this.categoriasInteres = categoriasInteres;
 	}
-	 @Override
-	    public String toString() {
-		 ArrayList<String> nombresCats = new ArrayList<>();
-		 for (Categoria c : categoriasInteres) {
-		     nombresCats.add(c.getNombre());
-		 }
 
-		 //  Los unimos con una coma y un espacio
-		 String cats = String.join(", ", nombresCats);
+	/**
+	 * Devuelve una representación en texto de las preferencias del usuario.
+	 * 
+	 * @return Cadena con el estado de todas las preferencias
+	 */
+	@Override
+	public String toString() {
+		ArrayList<String> nombresCats = new ArrayList<>();
+		for (Categoria c : categoriasInteres) {
+			nombresCats.add(c.getNombre());
+		}
 
-		 return 
-		     "Descuentos: " + (descuentos ? "Activado" : "Desactivado") + "\n"
-		     + "Pedidos caducados: " + (pedidosCaducados ? "Activado" : "Desactivado") + "\n"
-		     + "Nuevos intercambios: " + (nuevos_Intercambios ? "Activado" : "Desactivado") + "\n"
-		     + "Pedido entregado: " + (pedido_entregado ? "Activado" : "Desactivado") + "\n"
-		     + "Valoración completada: " + (valoracion_completada ? "Activado" : "Desactivado") + "\n"
-		     + "Oferta caducada: " + (oferta_caducada ? "Activado" : "Desactivado") + "\n"
-		     + "Categorías de interés sobre las que recibir informacion respecto a los productos: " 
-		     + (cats.isEmpty() ? "Ninguna" : cats);}
+		// Los unimos con una coma y un espacio
+		String cats = String.join(", ", nombresCats);
+
+		return "Descuentos: " + (descuentos ? "Activado" : "Desactivado") + "\n" + "Pedidos caducados: "
+				+ (pedidosCaducados ? "Activado" : "Desactivado") + "\n" + "Nuevos intercambios: "
+				+ (nuevos_Intercambios ? "Activado" : "Desactivado") + "\n" + "Pedido entregado: "
+				+ (pedido_entregado ? "Activado" : "Desactivado") + "\n" + "Valoración completada: "
+				+ (valoracion_completada ? "Activado" : "Desactivado") + "\n" + "Oferta caducada: "
+				+ (oferta_caducada ? "Activado" : "Desactivado") + "\n"
+				+ "Categorías de interés sobre las que recibir informacion respecto a los productos: "
+				+ (cats.isEmpty() ? "Ninguna" : cats);
+	}
 
 }

@@ -89,11 +89,11 @@ public class Oferta {
 		for (Producto2Mano p : this.productosOfertados) {
 			origen.getCarteraIntercambio().remove(p);
 			p.setBloqueado(false);
-			// AHORA SE ENVIARIAN
+			
 		}
 		for (Producto2Mano p : productosSolicitados) {
 			destino.getCarteraIntercambio().remove(p);
-			// AHORA SE ENVIARIAN
+			
 		}
 		Tienda.getInstancia().registrarIntercambioFinalizado(this);
 		origen.recibirNotificacionTipo("¡Intercambio ID " + this.id + " aceptado por el usuario "
