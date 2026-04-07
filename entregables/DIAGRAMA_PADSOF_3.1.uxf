@@ -1,0 +1,2491 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="15.1">
+  <zoom_level>1</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>264</x>
+      <y>145</y>
+      <w>29</w>
+      <h>16</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;abstract&gt;&gt;
+Descuento 
+--
+# id: String
+# nombre: String
+# fechaInicio: LocalDateTime
+# fechaFin: LocalDateTime
+--
++ estaActivo(): boolean
+/aplicarDescuento(carrito: Carrito): double/
+bg=cyan</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>216</x>
+      <y>125</y>
+      <w>29</w>
+      <h>9</h>
+    </coordinates>
+    <panel_attributes>DescuentoCantidad
+--
+- cantidadMinima: int
+- porcentaje: double
+--
++ aplicarDescuento(carrito: Carrito): double
+bg=cyan</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>251</x>
+      <y>125</y>
+      <w>28</w>
+      <h>9</h>
+    </coordinates>
+    <panel_attributes>DescuentoCategoria
+--
+- porcentaje: double
+--
++ aplicarDescuento(carrito: Carrito): double
+bg=cyan</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>282</x>
+      <y>125</y>
+      <w>29</w>
+      <h>9</h>
+    </coordinates>
+    <panel_attributes>DescuentoVolumen
+--
+- umbralDinero: double
+- porcentaje: double
+--
++ aplicarDescuento(carrito: Carrito): double
+bg=cyan</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>314</x>
+      <y>125</y>
+      <w>33</w>
+      <h>9</h>
+    </coordinates>
+    <panel_attributes>Regalo
+--
+- umbral: double
+--
++ aplicarDescuento(carrito: Carrito): double
+bg=cyan</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>228</x>
+      <y>133</y>
+      <w>54</w>
+      <h>14</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>520.0;120.0;520.0;70.0;10.0;70.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>265</x>
+      <y>133</y>
+      <w>3</w>
+      <h>9</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes>10.0;70.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>271</x>
+      <y>133</y>
+      <w>29</w>
+      <h>9</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes>10.0;70.0;270.0;70.0;270.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>296</x>
+      <y>133</y>
+      <w>29</w>
+      <h>9</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes>10.0;70.0;270.0;70.0;270.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>215</x>
+      <y>146</y>
+      <w>25</w>
+      <h>17</h>
+    </coordinates>
+    <panel_attributes>Pago
+--
+-numeroTarjeta: String
+-fechaTransaccion: LocalDateTime
+-fechaTarjeta: Date
+-CVV: int
+-importe: double
+-exito: boolean
+--
+-procesarConBanco(): boolean
++isExito(): boolean
+bg=cyan</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>215</x>
+      <y>174</y>
+      <w>38</w>
+      <h>33</h>
+    </coordinates>
+    <panel_attributes>Pedido
+--
+-recogidaSolicitada: boolean
+-idPedido: String
+-fechaCreacion: LocalDateTime
+-fechaPreparado: LocalDateTime
+-fechaEntregado: LocalDateTime
+-total: double
+-codigoRecogida: String
+--
++recalcularTotal(carrito: Carrito): double
++pagar(tarjeta: String, cvv: int, caducidad: Date): boolean
++marcarPreparado(): boolean
++marcarEntregado(): boolean
++cancelarPedido(): boolean
++actualizarEstado(nuevoEstado:EstadoPedido): boolean
++productoPertenece(ProductoVenta p): boolean
++contarUnidadesDe(idProducto: String):int
++getPrecioDeProducto(idProductoBuscado: String): double
++getTotalBruto(): double
+bg=cyan</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>271</x>
+      <y>176</y>
+      <w>31</w>
+      <h>12</h>
+    </coordinates>
+    <panel_attributes>LineaPedido
+--
+-cantidad: int
+-precioVenta: double
+--
++getSubtotal(): double
++productoPertence(p: ProductoVenta): boolean
+bg=cyan</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>252</x>
+      <y>180</y>
+      <w>21</w>
+      <h>5</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-&gt;
+m2= lineas
+r2= 0...*</panel_attributes>
+    <additional_attributes>10.0;20.0;190.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>226</x>
+      <y>162</y>
+      <w>6</w>
+      <h>14</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-&gt;
+m2= pago</panel_attributes>
+    <additional_attributes>10.0;120.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>271</x>
+      <y>196</y>
+      <w>21</w>
+      <h>19</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;enum&gt;&gt;
+EstadoPedido
+--
++ PENDIENTE_PAGO
++ PAGADO
++ EN_PREPARACION
++ LISTO_PARA_RECOGER
++ ENTREGADO
++ CANCELADO
+bg=cyan</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>252</x>
+      <y>200</y>
+      <w>21</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-&gt;
+m2= estado</panel_attributes>
+    <additional_attributes>10.0;10.0;190.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>247</x>
+      <y>156</y>
+      <w>19</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-&gt;
+m2=descuentoAplicado</panel_attributes>
+    <additional_attributes>10.0;180.0;10.0;10.0;170.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>308</x>
+      <y>145</y>
+      <w>39</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>Carrito
+--
+-id: String
+-fechaCreacion: LocalDateTime
+- total: double
+--
++ añadirProducto(p: ProductoVenta, cant: int): void
++ eliminarProducto(idProducto: String): void
++ calcularTotal(): double
++ haExpirado(): boolean
++ contarUnidadesDe(String id): int
++ getPrecioDeProducto(idProductoBuscado: String): double
++ getTotalBruto(): double
+bg=cyan</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>311</x>
+      <y>173</y>
+      <w>33</w>
+      <h>10</h>
+    </coordinates>
+    <panel_attributes>LineaCarrito
+--
+-cantidad: int
+--
++productoPertenece(p: ProductoVenta): boolean
++getSubtotal(): double
+bg=cyan</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>327</x>
+      <y>164</y>
+      <w>8</w>
+      <h>11</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-&gt;
+m2=lineas   *</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;90.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>307</x>
+      <y>191</y>
+      <w>44</w>
+      <h>27</h>
+    </coordinates>
+    <panel_attributes>ComprobadorTiempos
+--
+-scheduler: ScheduledExecutor
+-carritosPorUsuario: Map&lt;String, Carrito&gt;
+-pedidosPendientesPorUsuario: Map&lt;String, List&lt;Pedido&gt;&gt;
+--
++iniciarRevisionPeriodica(): void
++revisarCarritosCaducados(): void
++revisarPedidosPendientesCaducados(): void
++obtenerCarritos(c: Cliente): Carrito
++getCarrito(idUsuario: String): Carrito
++registrarCarrito(String: idUsuario, carrito: Carrito): void 
++eliminarCarrito(idUsuario: String): void
++quitarCarrito(idUsuario: String): void
++getPedidosPendientesDeUsuario(idUsuario: String): List&lt;Pedido&gt;
++cerrarGestorTiempo():void
++limpiarCarritos(): void
+
+
+bg=cyan</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>466</x>
+      <y>136</y>
+      <w>21</w>
+      <h>12</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;abstract&gt;&gt;
+Producto
+--
+#id: String
+#nombre: String
+#descripcion: String
+#imagenRuta: String
+bg=pink</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>457</x>
+      <y>161</y>
+      <w>32</w>
+      <h>19</h>
+    </coordinates>
+    <panel_attributes>ProductoVenta
+--
+#precioOficial: double
+#stockDisponible: int
+--
++getMediaPuntuacion(): double
++addReseña(r:Reseña) boolean
++deleteReseña(r: Reseña): boolean
++addCategoria(c: Categoria): boolean
++deleteCategoria(c: Categoria): boolean
++addCategoriaInterno(c: Categoria): boolean
++deleteCategoriaInterno(c: Categoria): boolean
+bg=pink
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>476</x>
+      <y>147</y>
+      <w>3</w>
+      <h>16</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;140.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>421</x>
+      <y>146</y>
+      <w>35</w>
+      <h>14</h>
+    </coordinates>
+    <panel_attributes>Categoria
+--
+- nombre: String
+- descripcion: String 
+--
++addProducto(p: ProductoVenta): boolean
++deleteProducto(p: ProductoVenta): boolean
++addProductoInterno(p: ProductoVenta): boolean
++deleteProductoInterno(p: ProductoVenta): boolean
+bg=pink</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>431</x>
+      <y>194</y>
+      <w>21</w>
+      <h>10</h>
+    </coordinates>
+    <panel_attributes>Comic
+--
+-numeroPaginas: int
+-editorial: String
+-añoPublicacion: int
+
+bg=pink</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>454</x>
+      <y>193</y>
+      <w>21</w>
+      <h>11</h>
+    </coordinates>
+    <panel_attributes>Figura
+--
+-altura: double
+-ancho: double
+-largo: double
+-material: String
+-marca: String
+bg=pink</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>477</x>
+      <y>193</y>
+      <w>21</w>
+      <h>11</h>
+    </coordinates>
+    <panel_attributes>JuegoMesa
+--
+-minJugadores: int
+-maxJugadores: int
+-minEdad: int
+-maxEdad: int
+-tipoJuego: String
+bg=pink</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>500</x>
+      <y>193</y>
+      <w>45</w>
+      <h>17</h>
+    </coordinates>
+    <panel_attributes>Pack
+--
+--
++addLinea(lp: LineaPack): boolean
++eliminarLinea(p: ProductoVenta): boolean
++modificarUnidades(p: ProductoVenta, nuevasUnidades: int): boolean
++addProducto(p: ProductoVenta, unidades: int): boolean
++addProducto:conunaUnidad(p: ProductoVenta): boolean
++contieneProducto(p: ProductoVenta): boolean
++calcularSumaProductos(): double
++calcularPrecioFinal(): double
+bg=pink</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>515</x>
+      <y>180</y>
+      <w>9</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-&gt;
+m2=2..*  lineas</panel_attributes>
+    <additional_attributes>10.0;130.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>438</x>
+      <y>179</y>
+      <w>35</w>
+      <h>17</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>330.0;10.0;330.0;70.0;10.0;70.0;10.0;150.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>461</x>
+      <y>185</y>
+      <w>3</w>
+      <h>10</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes>10.0;10.0;10.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>465</x>
+      <y>184</y>
+      <w>24</w>
+      <h>11</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes>10.0;20.0;220.0;20.0;220.0;90.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>480</x>
+      <y>184</y>
+      <w>31</w>
+      <h>11</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes>10.0;20.0;290.0;20.0;290.0;90.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>495</x>
+      <y>127</y>
+      <w>59</w>
+      <h>10</h>
+    </coordinates>
+    <panel_attributes>Producto2Mano
+--
+-bloqueado: boolean
+-visible: boolean
+--
++valorar(precioTasacion: double, estado: EstadoProducto, empleado. Empleado): boolean
+bg=pink</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>476</x>
+      <y>136</y>
+      <w>29</w>
+      <h>22</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes>10.0;200.0;270.0;200.0;270.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>455</x>
+      <y>149</y>
+      <w>15</w>
+      <h>14</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-&gt;
+* categorias</panel_attributes>
+    <additional_attributes>60.0;120.0;60.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>442</x>
+      <y>159</y>
+      <w>17</w>
+      <h>11</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-&gt;
+m2=* productos</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;80.0;150.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>513</x>
+      <y>148</y>
+      <w>37</w>
+      <h>11</h>
+    </coordinates>
+    <panel_attributes>Valoracion
+--
+-fecha: LocalDateTime
+-precioTasacion: double
+-precioPagado: double
+--
++pagar(tarjeta: String, cvv: int, caducidad: Date): boolean
+bg=pink</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>569</x>
+      <y>132</y>
+      <w>21</w>
+      <h>19</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;enumeration&gt;&gt; 
+EstadoProducto
+--
++ PERFECTO
++ MUY_BUENO
++ USO_LIGERO
++ USO_EVIDENTE
++ MUY_USADO
++ DAÑADO
++ NO_ACEPTADO
+bg=pink</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>549</x>
+      <y>148</y>
+      <w>22</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-&gt;
+m2= estadoProducto</panel_attributes>
+    <additional_attributes>10.0;10.0;200.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>569</x>
+      <y>155</y>
+      <w>21</w>
+      <h>10</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;enumeration&gt;&gt; 
+EstadoValoracion
+--
++ PENDIENTE_DE_PAGO
++ PAGADO
++ REALIZADO
+bg=pink</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>549</x>
+      <y>155</y>
+      <w>22</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-&gt;
+m2= estadoValoracion</panel_attributes>
+    <additional_attributes>10.0;10.0;200.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>521</x>
+      <y>136</y>
+      <w>10</w>
+      <h>14</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-&gt;
+m2= valoracion</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;120.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>499</x>
+      <y>172</y>
+      <w>27</w>
+      <h>9</h>
+    </coordinates>
+    <panel_attributes>LineaPack
+--
+-unidades: int
+--
++añadirProducto(p: ProductoVenta): void
++getSubtotal(): double
+bg=pink</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>488</x>
+      <y>175</y>
+      <w>13</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=producto</panel_attributes>
+    <additional_attributes>10.0;10.0;110.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>419</x>
+      <y>170</y>
+      <w>21</w>
+      <h>11</h>
+    </coordinates>
+    <panel_attributes>Reseña
+--
+-idReseña: String
+-puntuacion: double
+-comentario: String
+-fecha: LocalDate
+bg=pink</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>439</x>
+      <y>175</y>
+      <w>20</w>
+      <h>5</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-&gt;
+m2= reseñas
+r2=*</panel_attributes>
+    <additional_attributes>180.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>439</x>
+      <y>172</y>
+      <w>20</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1= producto</panel_attributes>
+    <additional_attributes>180.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>317</x>
+      <y>360</y>
+      <w>78</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>Cliente
+--
+-dni: String
+--
++subirProducto(nombre: String, descripString: String, imagen: String): void
++contarPedidosCompletados(): int
++contarPedidosCancelados(): int
++contarIntercambios(): int
++tieneProductoenSuCartera(p: Producto2Mano): boolean
++solicitarTasacion(p: Producto2Mano, tarjeta: String, CVV: int, caducidad: Date): boolean
++getOfertasParaDecidir(): List&lt;Oferta&gt;
++getOfertasEnEspera(): List&lt;Oferta&gt;
++proponerOferta(destinatario: Cliente, misProductos: List&lt;Producto2Mano&gt;, susProductos: List&lt;Producto2Mano&gt;): boolean
++confirmarIntercambio(oferta: Oferta): void
++verIntercambioscon(c: Cliente): List&lt;Oferta&gt;
++verMisOfertasEnviadas(): void
++verMisOfertasPorResponder(): void
++verMiHistorialIntercambios(): void
++productoHasidoPedidoYentregado(p: ProductoVenta): boolean
++escribirReseña(p: ProductoVenta, pts: int, texto: String): boolean
++determinarCategoriaFavorita(): Categoria
++recibirNotificacionTipo(mensaje: String, tipo: TipoNotificacion): void
++notificarProductoNuevoCategoria(mensaje: String, nombreCategoria: String): void
++getNotificacionesNoLeidas(): List&lt;Notificacion&gt;
++verNotificacion(n: Notificacion): void
++getNotificacionesdeTipo(tipo: TipoNotificacion): List&lt;Notificacion&gt;
++eliminarNotifacion(n: Notificacion): boolean
++eliminarOfertadeOfertasPendientes(o: Oferta): boolean
++eliminarProductodeCategoria(p: Producto2Mano): boolean
++añadirProductoCarrito(p: ProductoVenta, cantidad: int): boolean
++reservarCarrito(): boolean
++pagarCarrito(p: Pedido, numeroTarjeta: String, fechaTarjeta: Date, CVV: int): boolean
++solicitarRecogidaPedido(codigoRecogida: String): boolean
++configurarPreferenciaNotificacion(tipo: TipoNotificacion, valor: boolean): boolean
++añadirCategoriaInteresParaRecibirInfo(nombreCategoria: String): boolean
++eliminarCategoriaInteres(nombreCategoria: String): boolean
++modificarPerfil(nuevoNickname: String, nuevoPass: String): boolean
++verMisPreferencias(): void
++verHistorialPedidos(): void
++verMiCartera(): void
++crearListaProductos2Mano(productos: Producto2Mano...): List&lt;Producto2Mano&gt;
++verMisNotificaciones(): void
++verMisNotificacionesPorTipo(tipo: TipoNotificacion): void
++imprimirCarritoActual(): void
+bg=red</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>405</x>
+      <y>360</y>
+      <w>85</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>Empleado
+--
+-despedido: boolean
+--
++mostrarPanelPrincipal(): void
++puedeRealizarTarea(permiso: TipoPermisos): boolean
+-buscarProductoPendientePorId(idProducto: String): Producto2Mano
+-buscarPedidoPorId(idPedido: String): Pedido
+-actualizarStockDesdeLinea(tipoProducto: String, id: String, partes: String[], numLinea: int, linea: String): void
+-procesarNuevoProducto(tipo: String, nombre: String, partes: String[], numLinea: int, linea: String): boolean
++tasarProducto(idProducto: String, precio: double, estado: EstadoProducto): void
++confirmarIntercambio(o: Oferta): boolean
++añadirProducto_nuevo(letra: String, nombre: String, descripcion: String, imagen: String, precioOficial: double, stock: int, 
+categorias: ArrayList&lt;Categoria&gt;, numpaginas: int, editorial: String, añoPublicacion: int, altura: double, ancho: double, largo: double, 
+material: String, marca: String, minNumjugadores: int, maxNumjugadores: int, minEdad: int, maxEdad: int, estilo: String): boolean
++reponerStockProducto(id: String, cantidad: int): boolean
++cargarProductosFicheroTexto(path: String): boolean
++prepararPedido(idPedido: String): boolean
++entregarPedido(codigoRecogida: String): boolean
++añadirProductoACategoria(idProducto: String, nombreCat: String): boolean
++eliminarProductoDeCategoria(idProducto: String, nombreCat: String): boolean
++crearPack(nombre: String, descripcion: String, imagen: String, precioOficial: double, stock: int, lineas: ArrayList&lt;LineaPack&gt;): boolean
++añadirProductoaPack(idProducto: String, idPack: String, unidades: int): boolean
++modificarUnidadesProductoEnPack(idProducto: String, idPack: String, nuevasUnidades: int): boolean
++eliminarProductoDePack(idPack: String, idProducto: String): boolean
++modificarPrecioPack(idPack: String, nuevoPrecio: double): boolean
++eliminarPack(idpack: String): boolean
++modificarDescripcionProducto(idProducto: String, descripcion: String): boolean
++modificarImagenProducto(idProducto: String, imagen: String): boolean
++verMisNotificaciones(): void
++verMisNotificacionesPorTipo(tipo: TipoNotificacion): void
++asignarPermiso(p: TipoPermisos): void
++quitarPermiso(p: TipoPermisos): void
++tienePermiso(p: TipoPermisos): boolean
++recibirNotificacion(mensaje: String): void
+bg=red
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>210</x>
+      <y>360</y>
+      <w>99</w>
+      <h>62</h>
+    </coordinates>
+    <panel_attributes>Gestor
+--
+-NICKNAME_INICIAL: String
+-PASSWORD_INICIAL: String
+--
++mostrarPanelPrincipal(): void
+-buscarEmpleadoporId(id: String): Empleado
+-validarFechas(inicio: LocalDateTime, fin: LocalDateTime): boolean
++buscarCategoriaPorNombre(name: String): Categoria
++darDeAltaEmpleados(nickname: String, password: String): boolean
++crearListaPermisos(permisos: TipoPermisos...): List&lt;TipoPermisos&gt;
++darDeAltaEmpleados_Permisos(nickname: String, password: String, permisos: List&lt;TipoPermisos&gt;): boolean
++darDeBajaAEmpleado(idEmpleado: String): boolean
++asignarPermiso(idEmpleado: String, permiso: TipoPermisos): boolean
++retirarPermiso(idEmpleado: String, permiso: TipoPermisos): boolean
++configurarTiemposSistema(tOferta: int, tCarrito: int, tPago: int): boolean
++setTiempoMaxOferta(tiempo: int): boolean
++setTiempoMaxCarrito(tiempo: int): boolean
++setTiempoMaxPago(tiempo: int): boolean
++setPrecioTasacion(precio: double): boolean
++modificarPrecioProducto(idProductoVenta: String, nuevoPrecio: double): boolean
++crearDescuentoCantidad(nombre: String, idProducto: String, cantidadMinima: int, porcentaje: double, inicio: LocalDateTime, fin: LocalDateTime): boolean
++crearDescuentoVolumen(nombre: String, precioMinimo: double, porcentaje: double, inicio: LocalDateTime, fin: LocalDateTime): boolean
++crearDescuentoCategoria(nombre: String, nombreCategoria: String, porcentaje: double, inicio: LocalDateTime, fin: LocalDateTime): boolean
++crearDescuentoRegalo(nombre: String, idProductoRegalado: String, gastoNecesario: double, inicio: LocalDateTime, fin: LocalDateTime): boolean
++eliminarDescuento(idDescuento: String): boolean
++crearCategoria(nombre: String, descripcion: String): boolean
++añadirProductoACategoria(idProducto: String, nombreCat: String): boolean
++eliminarProductoDeCategoria(idProducto: String, nombreCat: String): boolean
++modificarPerfil(nuevoNickname: String, nuevoPass: String): boolean
++verClientesTopCompras(): List&lt;Cliente&gt;
++verClientesTopIntercambios(): List&lt;Cliente&gt;
++verClientesConMasPedidosCancelados(): List&lt;Cliente&gt;
++consultarIngresosRango(inicio: LocalDate, fin: LocalDate): double
++consultarIngresosPorMeses(año: int): double[]
++consultarIngresosPorMesesActual(): double[]
++consultarIngresosVenta(): double
++consultarIngresosTasacion(): double
+bg=red
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>335</x>
+      <y>283</y>
+      <w>44</w>
+      <h>46</h>
+    </coordinates>
+    <panel_attributes>UsuarioRegistrado
+--
+#id: String
+#nickname: String
+#password: String
+#sesionIniciada: boolean
+--
++logout(): void
++validarPassword(pass: String): boolean
++login(password: String): boolean
++verReseñasProducto(p: ProductoVenta): List&lt;Reseña&gt;
++buscarProductos(): List&lt;ProductoVenta&gt;
++buscarProductosPorNombre(nombre: String): List&lt;ProductoVenta&gt;
++buscarProductoPorId(id: String): ProductoVenta
++buscarProductosPorCategoria(nombreCategoria: String): List&lt;ProductoVenta&gt;
++buscarProductosVentaFiltrados(): List&lt;ProductoVenta&gt;
++filtrarPorPrecio(min: double, max: double): void
++filtrarPorCategoria(nombreCategoria: String): void
++filtrarPorPuntuacion(puntuacionMinima: double): void
++filtrarProductos(precioMin: double, precioMax: double, puntuacionMin: double, categorias: String...): void
++buscarProductosSegundaMano(): List&lt;Producto2Mano&gt;
++buscarProducto2ManoNombre(nombre: String): List&lt;Producto2Mano&gt;
++buscarProducto2ManoPorid(id: String): Producto2Mano
++buscarProductos2ManoFiltrados(): List&lt;Producto2Mano&gt;
++filtrar2ManoPorValor(min: double, max: double): void
++filtrar2ManoPorEstado(estadoMinimo: EstadoProducto): void
++filtrar2Mano(min: double, max: double, estadoMinimo: EstadoProducto): void
++verCarteraCliente(nickname: String): List&lt;Producto2Mano&gt;
++mostrarPanelPrincipal(): void
+bg=red</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>394</x>
+      <y>297</y>
+      <w>54</w>
+      <h>18</h>
+    </coordinates>
+    <panel_attributes>UsuarioNoRegistrado
+--
+-sessionId: String
+--
++buscarProductos(): List&lt;ProductoVenta&gt;
++buscarProductosPorNombre(nombre: String): List&lt;ProductoVenta&gt;
++buscarProductoPorId(id: String): ProductoVenta
++buscarProductosPorCategoria(nombreCategoria: String): List&lt;ProductoVenta&gt;
++buscarProductosVentaFiltrados(): List&lt;ProductoVenta&gt;
++registrarse(nickname: String, password: String, dni: String): Cliente
+bg=red
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>244</x>
+      <y>427</y>
+      <w>56</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>PreferenciaNotificacion
+--
+-descuentos: boolean
+-pedidosCaducados: boolean
+-nuevos_Intercambios: boolean
+-pedido_entregado: boolean
+-valoracion_completada: boolean
+-oferta_caducada: boolean
+--
++debeRecibirNotificacion(tipo: TipoNotificacion): boolean
++modificarPreferencia(tipo: TipoNotificacion, valor: boolean): void
++añadirCategoriaInteres(nombreCategoria: String): boolean
++NotificacionesProductosNUevosCategoriasInteres(nombreCategoria: String): boolean
++eliminarCategoriaInteres(nombreCategoria: String): boolean
+bg=red</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>405</x>
+      <y>423</y>
+      <w>25</w>
+      <h>19</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;enum&gt;&gt;
+TipoPermisos
+--
+	+GESTION_STOCK
+	+GESTION_CATEGORIAS
+	+GESTION_PACKS
+	+MODIFICAR_PRODUCTO
+	+GESTION_PEDIDOS
+	+VALORACION_PRODUCTOS
+	+CONFIRMACION_INTERCAMBIO
+	+ENTREGA_PEDIDOS
+bg=red</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>354</x>
+      <y>328</y>
+      <w>3</w>
+      <h>34</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;320.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>354</x>
+      <y>347</y>
+      <w>68</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;10.0;660.0;10.0;660.0;130.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>289</x>
+      <y>347</y>
+      <w>68</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;130.0;10.0;10.0;660.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>417</x>
+      <y>415</y>
+      <w>9</w>
+      <h>10</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=permisos
+r1=*</panel_attributes>
+    <additional_attributes>10.0;80.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>300</x>
+      <y>428</y>
+      <w>19</w>
+      <h>5</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-&gt;&gt;&gt;&gt;&gt;
+m1=preferencias
+r1=*</panel_attributes>
+    <additional_attributes>10.0;20.0;170.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>653</x>
+      <y>301</y>
+      <w>54</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>Tienda
+--
+-nombre: String
+-tiempoMaxCarrito: int
+-tiempoMaxOferta: int
+-tiempoMaxPago: int
+-precioValoracion: double
+-instancia: Tienda
+--
++getInstancia(): Tienda
++getGestor(): Gestor
++nuevoUsuarioNoRegistrado(): UsuarioNoRegistrado
++existeUsuarioConNickname(nickname: String): boolean
++buscarCLientePorId(id: String): Cliente
++buscarClientePorNickname(nickname: String): Cliente
++existeUsuarioConDNI(dni: String): boolean
++buscarProductoVenta(): List&lt;ProductoVenta&gt;
++imprimirCatalogo(): void
++buscarProductoVentaPorId(idProducto: String): ProductoVenta
++buscarCategoriaPorNombre(nombre: String): Categoria
++buscarproductoPorNombre(nombre: String): List&lt;ProductoVenta&gt;
++buscarPackPorNombre(nombre: String): Pack
++imprimirUsuariosConSesionActiva(): void
++buscarProductoPorCategoria(nombreCategoria: String): List&lt;ProductoVenta&gt;
++buscarSegundaMano(): List&lt;Producto2Mano&gt;
++buscarSegundaManoPorNombre(nombre: String): List&lt;Producto2Mano&gt;
++buscarSegundaManoPorId(id: String): Producto2Mano
++buscarProductosFiltrados(filtro: FiltroVenta): List&lt;ProductoVenta&gt;
++buscarSegundaManoFiltrado(filtro: FiltroSegundaMano): List&lt;Producto2Mano&gt;
++login(nickname: String, password: String, tipo: String): UsuarioRegistrado
++loginGestor(nickname: String, password: String): Gestor
++loginEmpleado(nickname: String, password: String): Empleado
++loginCliente(nickname: String, password: String): Cliente
++registrarNotificacion(n: Notificacion): void
++getNotificacionesNoLeidas(): List&lt;Notificacion&gt;
++getNotificacionesPorTipo(tipo: TipoNotificacion): List&lt;Notificacion&gt;
++notificarDescuento(d: Descuento): void
++registrarNuevoCliente(nickname: String, password: String, dni: String): Cliente
++registrarIntercambioFinalizado(oferta: Oferta): void
++obtenerEmpleadosTienda(): List&lt;Empleado&gt;
++obtenerClientesTienda(): List&lt;Cliente&gt;
++añadirProducto(nuevo: ProductoVenta): void
++solicitarTasacion(p: Producto2Mano): void
++agregarDescuento(d: Descuento): void
++limpiarDescuentosCaducados(): void
++publicarParaIntercambio(p: Producto2Mano): void
++aplicarDescuentoPrioritario(carrito: Carrito): void
++imprimirDescuentosActivos(): void
++imprimirHistorialDescuentos(): void
++registrarVenta(pedido: Pedido): void
++isSistemaTiemposConfigurando(): boolean
++vaciarTienda(): void
++seleccionarCategorias(nombres: String...): ArrayList&lt;Categoria&gt;
++reiniciarComprobadorTiempos(): void
+bg=yellow</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>735</x>
+      <y>382</y>
+      <w>36</w>
+      <h>17</h>
+    </coordinates>
+    <panel_attributes>FiltroVenta
+--
+-precioMinimo: double
+-precioMaximo: double
+-puntuacionMinima: double
+--
++productoCumpleFiltro(p: ProductoVenta): boolean
++resetear(): void
++añadirCategoria(c: Categoria): void
++eliminarCategoria(c: Categoria): void
+bg=yellow
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>573</x>
+      <y>336</y>
+      <w>43</w>
+      <h>27</h>
+    </coordinates>
+    <panel_attributes>Estadistica
+--
+-instancia: Estadistica
+-nProductosVentas: int
+-nUsuarioRegistrado: int
+-nUsuarioNoRegistrado: int
+-nProducto2Mano: int
+-nVentas: int
+-nDescuentos: int
+-nIntercambiosFinalizados: int
+-nCategorias: int
+-nCarritos: int
+-nReseñas: int
+-nTasacionesCobradas: int
+-nNotificaciones: int
+--
++getInstancia(): Estadistica
+bg=yellow</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>573</x>
+      <y>301</y>
+      <w>67</w>
+      <h>28</h>
+    </coordinates>
+    <panel_attributes>Recomendador
+--
+-limiteMaximo: int
+-activo: boolean
+-pesoValoracion: double
+-pesoCompras: double
+-pesoCategorias: double
+--
++imprimirSugerencias(cliente: Cliente): void
++generarSugerencias(cliente: Cliente): List&lt;ProductoVenta&gt;
+-recomendarPorValoracion(cliente: Cliente, n: int, excluidos: Set&lt;String&gt;): List&lt;ProductoVenta&gt;
+-recomendarPorCompras(cliente: Cliente, n: int, excluidos: Set&lt;String&gt;): List&lt;ProductoVenta&gt;
+-recomendarPorCategorias(cliente: Cliente, n: int, excluidos: Set&lt;String&gt;): List&lt;ProductoVenta&gt;
+-obtenerIdsExcluidos(cliente: Cliente): Set&lt;String&gt;
+-acumularPuntuaciones(lista: List&lt;ProductoVenta&gt;, peso: double, puntuaciones: Map&lt;String, Double&gt;, 
+porId: Map&lt;String, ProductoVenta&gt;): void
++setConfiguracion(limite: int, estado: boolean): void
++setPesos(pesoValoracion: double, pesoCompras: double, pesoCategorias: double): void
+bg=yellow
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>715</x>
+      <y>304</y>
+      <w>21</w>
+      <h>14</h>
+    </coordinates>
+    <panel_attributes>Notificacion
+--
+-id: String
+-mensaje: String
+-fechaEnvio: LocalDateTime
+-leida: boolean
+--
++marcarComoLeida(): void
+bg=yellow
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>740</x>
+      <y>364</y>
+      <w>31</w>
+      <h>12</h>
+    </coordinates>
+    <panel_attributes>FiltroSegundaMano
+--
+-valorMinimo: double
+-valorMaximo: double
+--
++cumpleFiltro(p: Producto2Mano): boolean
++resetear(): void
+bg=yellow
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>723</x>
+      <y>338</y>
+      <w>48</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>MotorEstadistico
+--
+--
++obtenerClientesConMasPedidosCaducados(): List&lt;Cliente&gt;
++obtenerClientesConMasCompras(): List&lt;Cliente&gt;
++obtenerClientesConMasIntercambios(): List&lt;Cliente&gt;
++calcularIngresosRangoFechas(inicio: LocalDate, fin: LocalDate): double
++calcularIngresosMesesAño(año: int): double[]
++calcularIngresosMesesAñoActual(): double[]
++calcularIngresosVentaRango(inicio: LocalDate, fin: LocalDate): double
++calcularIngresosVenta(): double
++calcularIngresosTasacion(): double
+-calcularTasacionesEnRango(inicio: LocalDate, fin: LocalDate): double
+bg=yellow
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>743</x>
+      <y>297</y>
+      <w>28</w>
+      <h>35</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;enum&gt;&gt;
+TipoNotificacion
+--
++CODIGO_RECOGIDA
++PEDIDO_LISTO
++OFERTA_RECIBIDA
++PAGO_EXITOSO
++Pago_FALLIDO
++CARRITO_CADUCADO
++OFERTA_RECHAZADA
++INTERCAMBIO_REALIZADO
++CONFIRMACION_RESERVA_CARRITO
++EMPLEADOS
++CATEGORIA_INTERES
++SISTEMA
++DESCUENTO
++PEDIDO_CADUCADO
++PRODUCTO_INTERCAMBIO_NUEVO
++PEDIDO_ENTREGADO
++VALORACION_COMPLETADA
++OFERTA_CADUCADA
+bg=yellow
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>639</x>
+      <y>315</y>
+      <w>16</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1= recomendador</panel_attributes>
+    <additional_attributes>10.0;10.0;140.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>735</x>
+      <y>309</y>
+      <w>10</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1= tipo</panel_attributes>
+    <additional_attributes>80.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>687</x>
+      <y>163</y>
+      <w>21</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;enum&gt;&gt;
+EstadoOferta
+--
++ACEPTADA
++RECHAZADA
++PENDIENTE
++CADUCADA
++REALIZADA
++RETIRADA
+bg=orange</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>644</x>
+      <y>158</y>
+      <w>33</w>
+      <h>22</h>
+    </coordinates>
+    <panel_attributes>Oferta
+--
+-id: String
+-fechaOferta: LocalDateTime
+--
++rechazar(): void
++aceptarOferta(): void
++aceptarYEjecutar(): void
++haCaducado(): boolean
++imprimirResumen(): void
+bg=orange
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>676</x>
+      <y>166</y>
+      <w>13</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1= estado</panel_attributes>
+    <additional_attributes>110.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>641</x>
+      <y>155</y>
+      <w>70</w>
+      <h>28</h>
+    </coordinates>
+    <panel_attributes>
+bg=orange
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>644</x>
+      <y>145</y>
+      <w>10</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;usuarios&gt;&gt;
+Cliente
+bg=light_gray
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>645</x>
+      <y>148</y>
+      <w>7</w>
+      <h>12</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=origen</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>651</x>
+      <y>148</y>
+      <w>7</w>
+      <h>12</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=destino</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>673</x>
+      <y>145</y>
+      <w>11</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;productos&gt;&gt;
+Producto2Mano
+bg=light_gray</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>658</x>
+      <y>145</y>
+      <w>17</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-&gt;&gt;&gt;&gt;&gt;
+r1=productosOfertados
+m1=*</panel_attributes>
+    <additional_attributes>150.0;20.0;80.0;20.0;80.0;130.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>676</x>
+      <y>145</y>
+      <w>24</w>
+      <h>17</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-&gt;&gt;&gt;&gt;&gt;
+r1=productosSolicitados
+m1=</panel_attributes>
+    <additional_attributes>80.0;20.0;160.0;20.0;160.0;150.0;10.0;150.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>414</x>
+      <y>122</y>
+      <w>181</w>
+      <h>94</h>
+    </coordinates>
+    <panel_attributes>
+bg=pink
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>496</x>
+      <y>114</y>
+      <w>10</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;usuarios&gt;&gt;
+Cliente
+bg=light_gray
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>499</x>
+      <y>117</y>
+      <w>10</w>
+      <h>12</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1= propietario</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>557</x>
+      <y>114</y>
+      <w>10</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;usuarios&gt;&gt;
+Empleado
+bg=light_gray
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>546</x>
+      <y>117</y>
+      <w>22</w>
+      <h>33</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1= empleado</panel_attributes>
+    <additional_attributes>140.0;10.0;140.0;280.0;10.0;280.0;10.0;310.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>571</x>
+      <y>114</y>
+      <w>10</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;ventas&gt;&gt;
+Pago
+bg=light_gray
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>559</x>
+      <y>117</y>
+      <w>22</w>
+      <h>13</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1= pago</panel_attributes>
+    <additional_attributes>170.0;10.0;170.0;110.0;10.0;110.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>398</x>
+      <y>173</y>
+      <w>10</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;usuarios&gt;&gt;
+Cliente
+bg=light_gray
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>407</x>
+      <y>174</y>
+      <w>14</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1= autor</panel_attributes>
+    <additional_attributes>10.0;10.0;120.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>213</x>
+      <y>122</y>
+      <w>143</w>
+      <h>101</h>
+    </coordinates>
+    <panel_attributes>
+bg=cyan</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>261</x>
+      <y>114</y>
+      <w>10</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;productos&gt;&gt;
+Categoría
+bg=light_gray
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>265</x>
+      <y>117</y>
+      <w>9</w>
+      <h>10</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=categoría</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>364</x>
+      <y>128</y>
+      <w>11</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;productos&gt;&gt;
+ProductoVenta
+bg=light_gray
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>346</x>
+      <y>129</y>
+      <w>20</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=producto</panel_attributes>
+    <additional_attributes>180.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>195</x>
+      <y>184</y>
+      <w>10</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;usuarios&gt;&gt;
+Cliente
+bg=light_gray
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>204</x>
+      <y>185</y>
+      <w>13</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1= cliente</panel_attributes>
+    <additional_attributes>10.0;10.0;110.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>343</x>
+      <y>131</y>
+      <w>31</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1= producto</panel_attributes>
+    <additional_attributes>230.0;10.0;230.0;470.0;10.0;470.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>301</x>
+      <y>176</y>
+      <w>67</w>
+      <h>13</h>
+    </coordinates>
+    <panel_attributes>lt=-
+</panel_attributes>
+    <additional_attributes>650.0;10.0;650.0;110.0;10.0;110.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>346</x>
+      <y>158</y>
+      <w>6</w>
+      <h>35</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;40.0;10.0;40.0;330.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>245</x>
+      <y>206</y>
+      <w>64</w>
+      <h>13</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;110.0;620.0;110.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>366</x>
+      <y>271</y>
+      <w>10</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Tienda&gt;&gt;
+FiltroVenta
+bg=light_gray
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>337</x>
+      <y>271</y>
+      <w>15</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Tienda&gt;&gt;
+FiltroSegundaMano
+bg=light_gray
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>207</x>
+      <y>280</y>
+      <w>289</w>
+      <h>178</h>
+    </coordinates>
+    <panel_attributes>
+bg=red</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>370</x>
+      <y>274</y>
+      <w>9</w>
+      <h>11</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=filtroVenta</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;90.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>342</x>
+      <y>274</y>
+      <w>10</w>
+      <h>11</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=filtro2Mano</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;90.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>375</x>
+      <y>272</y>
+      <w>24</w>
+      <h>27</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=filtroVenta</panel_attributes>
+    <additional_attributes>10.0;10.0;220.0;10.0;220.0;250.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>178</x>
+      <y>381</y>
+      <w>15</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Tienda&gt;&gt;
+MotorEstadistico
+bg=light_gray
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>192</x>
+      <y>382</y>
+      <w>20</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1= motorEstadistico</panel_attributes>
+    <additional_attributes>10.0;10.0;180.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>252</x>
+      <y>465</y>
+      <w>15</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Tienda&gt;&gt;
+MotorEstadistico
+bg=light_gray
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>257</x>
+      <y>450</y>
+      <w>14</w>
+      <h>17</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-&gt;&gt;&gt;&gt;&gt;
+m1= categoriasInteres
+r1=*</panel_attributes>
+    <additional_attributes>10.0;150.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>304</x>
+      <y>466</y>
+      <w>12</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;ventas&gt;&gt;
+Pedido
+bg=light_gray
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>321</x>
+      <y>466</y>
+      <w>12</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;ventas&gt;&gt;
+Carrito
+bg=light_gray
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>339</x>
+      <y>466</y>
+      <w>12</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;intercambios&gt;&gt;
+Oferta
+bg=light_gray
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>357</x>
+      <y>466</y>
+      <w>12</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;productos&gt;&gt;
+Producto2Mano
+bg=light_gray
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>374</x>
+      <y>466</y>
+      <w>12</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;productos&gt;&gt;
+Reseña
+bg=light_gray
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>391</x>
+      <y>466</y>
+      <w>12</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Tienda&gt;&gt;
+Notificacion
+bg=light_gray
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>310</x>
+      <y>431</y>
+      <w>48</w>
+      <h>37</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-&gt;&gt;&gt;&gt;&gt;
+m1=historialPedidos
+r1=*</panel_attributes>
+    <additional_attributes>10.0;350.0;10.0;240.0;460.0;240.0;460.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>326</x>
+      <y>454</y>
+      <w>11</w>
+      <h>14</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=carritoActual</panel_attributes>
+    <additional_attributes>10.0;120.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>340</x>
+      <y>454</y>
+      <w>16</w>
+      <h>14</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=ofertasPendientes
+*
+historialIntercambios</panel_attributes>
+    <additional_attributes>10.0;120.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>355</x>
+      <y>454</y>
+      <w>52</w>
+      <h>14</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=notificaciones
+r1=*</panel_attributes>
+    <additional_attributes>420.0;120.0;420.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>361</x>
+      <y>454</y>
+      <w>15</w>
+      <h>14</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=carteraIntercambio</panel_attributes>
+    <additional_attributes>10.0;120.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>378</x>
+      <y>454</y>
+      <w>8</w>
+      <h>14</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=reseñas
+r1=*</panel_attributes>
+    <additional_attributes>10.0;120.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>507</x>
+      <y>365</y>
+      <w>12</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Tienda&gt;&gt;
+Notificacion
+bg=light_gray
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>489</x>
+      <y>365</y>
+      <w>20</w>
+      <h>5</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-&gt;&gt;&gt;&gt;&gt;
+m1=notificaciones
+r1=*</panel_attributes>
+    <additional_attributes>180.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>507</x>
+      <y>376</y>
+      <w>12</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;productos&gt;&gt;
+Valoracion
+bg=light_gray
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>489</x>
+      <y>376</y>
+      <w>20</w>
+      <h>5</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-&gt;&gt;&gt;&gt;&gt;
+m1=valoraciones
+r1=*</panel_attributes>
+    <additional_attributes>180.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLUseCase</id>
+    <coordinates>
+      <x>345</x>
+      <y>117</y>
+      <w>11</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>VENTAS
+bg=cyan</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLUseCase</id>
+    <coordinates>
+      <x>583</x>
+      <y>117</y>
+      <w>12</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>PRODUCTOS
+bg=pink</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLUseCase</id>
+    <coordinates>
+      <x>698</x>
+      <y>150</y>
+      <w>13</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>INTERCAMBIOS
+bg=orange</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLUseCase</id>
+    <coordinates>
+      <x>485</x>
+      <y>275</y>
+      <w>11</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>USUARIOS
+bg=red</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>570</x>
+      <y>281</y>
+      <w>204</w>
+      <h>122</h>
+    </coordinates>
+    <panel_attributes>
+bg=YELLOW</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLUseCase</id>
+    <coordinates>
+      <x>762</x>
+      <y>276</y>
+      <w>11</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>TIENDA
+bg=yellow</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>786</x>
+      <y>369</y>
+      <w>13</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;productos&gt;&gt;
+EstadoProductos
+bg=light_gray
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>770</x>
+      <y>370</y>
+      <w>18</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=estadoMinimo</panel_attributes>
+    <additional_attributes>160.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>786</x>
+      <y>387</y>
+      <w>13</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;productos&gt;&gt;
+Categoría
+bg=light_gray
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>770</x>
+      <y>387</y>
+      <w>18</w>
+      <h>5</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-&gt;&gt;&gt;&gt;&gt;
+m1=categorias
+r1=*</panel_attributes>
+    <additional_attributes>160.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>607</x>
+      <y>417</y>
+      <w>13</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;usuarios&gt;&gt;
+UsuarioRegistrado
+bg=light_gray
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>624</x>
+      <y>417</y>
+      <w>13</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;productos&gt;&gt;
+ProductoVenta
+bg=light_gray
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>642</x>
+      <y>417</y>
+      <w>13</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;productos&gt;&gt;
+Producto2Mano
+bg=light_gray
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>660</x>
+      <y>417</y>
+      <w>13</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;ventas&gt;&gt;
+Pedido
+bg=light_gray
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>678</x>
+      <y>417</y>
+      <w>13</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;ventas&gt;&gt;
+Descuento
+bg=light_gray
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>696</x>
+      <y>417</y>
+      <w>13</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;ventas&gt;&gt;
+Oferta
+bg=light_gray
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>715</x>
+      <y>417</y>
+      <w>13</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;ventas&gt;&gt;
+Categoría
+bg=light_gray
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>733</x>
+      <y>417</y>
+      <w>15</w>
+      <h>4</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;ventas&gt;&gt;
+ComprobadorTiempos
+bg=light_gray
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>706</x>
+      <y>317</y>
+      <w>35</w>
+      <h>9</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-&gt;
+m2= historialNotificaciones
+r2=*</panel_attributes>
+    <additional_attributes>10.0;70.0;190.0;70.0;190.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>613</x>
+      <y>388</y>
+      <w>67</w>
+      <h>31</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-&gt;
+m2=usuarios
+
+r2=*</panel_attributes>
+    <additional_attributes>650.0;10.0;650.0;220.0;10.0;220.0;10.0;290.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>677</x>
+      <y>409</y>
+      <w>79</w>
+      <h>10</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=comprobadorTiempos</panel_attributes>
+    <additional_attributes>640.0;80.0;640.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>629</x>
+      <y>409</y>
+      <w>10</w>
+      <h>10</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=stockVentas
+r1=*</panel_attributes>
+    <additional_attributes>10.0;80.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>647</x>
+      <y>409</y>
+      <w>18</w>
+      <h>11</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=catalogoIntercambio
+
+historialProcuctos2Mano
+pendientes_Tasacion
+*
+
+</panel_attributes>
+    <additional_attributes>10.0;80.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>665</x>
+      <y>409</y>
+      <w>12</w>
+      <h>10</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=historialVentas
+r1=*</panel_attributes>
+    <additional_attributes>10.0;80.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>682</x>
+      <y>409</y>
+      <w>15</w>
+      <h>10</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=descuentosActivos
+historialDescuentos
+*
+</panel_attributes>
+    <additional_attributes>10.0;80.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>699</x>
+      <y>409</y>
+      <w>18</w>
+      <h>10</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=intercambiosFinalizados
+r1=*</panel_attributes>
+    <additional_attributes>10.0;80.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>718</x>
+      <y>409</y>
+      <w>9</w>
+      <h>10</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=categorias
+r1=*</panel_attributes>
+    <additional_attributes>10.0;80.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>589</x>
+      <y>409</y>
+      <w>31</w>
+      <h>13</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=usuariosConSesionActiva
+r1=*</panel_attributes>
+    <additional_attributes>180.0;100.0;120.0;100.0;120.0;10.0;290.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>160</x>
+      <y>88</y>
+      <w>666</w>
+      <h>402</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes/>
+  </element>
+</diagram>
