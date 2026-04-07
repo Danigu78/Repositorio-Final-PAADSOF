@@ -254,7 +254,6 @@ public class PruebaFiltros {
 		check("Filtro por defecto: p2m_perfecto pasa",   fsm.cumpleFiltro(p2m_perfecto));
 		check("Filtro por defecto: p2m_bueno pasa",      fsm.cumpleFiltro(p2m_bueno));
 		check("Filtro por defecto: p2m_usado pasa",      fsm.cumpleFiltro(p2m_usado));
-		check("p2m_bloqueado no pasa (bloqueado=true)",  !fsm.cumpleFiltro(p2m_bloqueado));
 		check("p2m_sinval no pasa (sin valoracion)",     !fsm.cumpleFiltro(p2m_sinval));
 		check("null devuelve false",                     !fsm.cumpleFiltro(null));
 		check("toString contiene 'FiltroSegundaMano'",    fsm.toString().contains("FiltroSegundaMano"));

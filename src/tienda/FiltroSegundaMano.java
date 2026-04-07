@@ -3,30 +3,7 @@ package tienda;
 import productos.EstadoProducto;
 import productos.Producto2Mano;
 
-/**
- * 
- */
-/**
- * 
- */
-/**
- * 
- */
-/**
- * 
- */
-/**
- * 
- */
-/**
- * 
- */
-/**
- * 
- */
-/**
- * 
- */
+
 public class FiltroSegundaMano {
 
 	private double valorMinimo;
