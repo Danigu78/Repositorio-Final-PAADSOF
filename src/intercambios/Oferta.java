@@ -10,6 +10,10 @@ import tienda.TipoNotificacion;
 import productos.*;
 import usuarios.*;
 
+/**
+ * @author Antonino Albarrán
+ * @version 1.0
+ */
 public class Oferta {
 	private String id;
 	private LocalDateTime fechaOferta;
