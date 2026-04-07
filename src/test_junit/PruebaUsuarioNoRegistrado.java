@@ -138,4 +138,57 @@ public class PruebaUsuarioNoRegistrado {
         Cliente c = invitado.registrarse("invitado_dni2", "Invitado@5678", "11111111A");
         assertNull(c);
     }
+    @Test
+    @DisplayName("filtrarPorPrecio no rompe el sistema y devuelve lista valida")
+    void testFiltrarPorPrecio() {
+        invitado.filtrarPorPrecio(10, 20);
+
+        List<ProductoVenta> resultado = invitado.buscarProductos();
+
+        assertNotNull(resultado);
+        assertFalse(resultado.isEmpty());
+    }
+    @Test
+    @DisplayName("filtrarPorCategoria devuelve productos de esa categoria")
+    void testFiltrarPorCategoria() {
+        invitado.filtrarPorCategoria("Anime_inv");
+
+        List<ProductoVenta> resultado = invitado.buscarProductosVentaFiltrados();
+
+        assertNotNull(resultado);
+        assertFalse(resultado.isEmpty());
+    }
+    @Test
+    @DisplayName("filtrarPorCategoria inexistente no rompe el sistema")
+    void testFiltrarPorCategoriaInexistente() {
+        invitado.filtrarPorCategoria("CategoriaFake");
+
+        List<ProductoVenta> resultado = invitado.buscarProductosVentaFiltrados();
+
+        assertNotNull(resultado); // no debería ser null
+    }
+    @Test
+    @DisplayName("filtrarPorPuntuacion devuelve productos con puntuacion minima")
+    void testFiltrarPorPuntuacion() {
+        invitado.filtrarPorPuntuacion(0);
+
+        List<ProductoVenta> resultado = invitado.buscarProductosVentaFiltrados();
+
+        assertNotNull(resultado);
+    }
+    @Test
+    @DisplayName("filtrarProductos combinado funciona correctamente")
+    void testFiltrarProductosCombinado() {
+        invitado.filtrarProductos(10, 50, 0, "Anime_inv");
+
+        List<ProductoVenta> resultado = invitado.buscarProductosVentaFiltrados();
+
+        assertNotNull(resultado);
+        assertFalse(resultado.isEmpty());
+
+        for (ProductoVenta p : resultado) {
+            assertTrue(p.getPrecioOficial() >= 10 && p.getPrecioOficial() <= 50);
+        }
+    }
+    
 }

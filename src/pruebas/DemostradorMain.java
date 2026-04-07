@@ -11,17 +11,35 @@ import productos.*;
 import tienda.*;
 import usuarios.*;
 import ventas.*;
-
+/**
+ * Clase principal para demostrar el funcionamiento de la tienda CHECKPOINT. 
+ * Se encarga de ejecutar una simulación completa que valida la lógica de 
+ * negocio, la gestión de inventario, las ventas y los intercambios. Incluye la logica, casos de exito, casos de fallo y captura de excepciones
+ *
+ * @author Daniel, Lucas y Antonino
+ * @version 1.0
+ */
 public class DemostradorMain {
-
+	/**
+	 * Muestra por consola los datos básicos e identificativos de un empleado, 
+	 * así como la lista de permisos que tiene asignados.
+	 *
+	 * @param e El empleado del cual se imprimirán los datos.
+	 */
 	static void imprimirEmpleado(Empleado e) {
 		System.out.println(
 				" Empleado: " + e.getNickname() + " | id: " + e.getId() + " | permisos: " + e.getPermisos().size());
 		for (TipoPermisos p : e.getPermisos()) {
-			System.out.println("   -> " + p);
+			System.out.println("   - " + p);
 		}
 	}
-
+	/**
+	 * Organiza y agrupa diferentes líneas de productos para facilitar 
+	 * la creación de packs o promociones conjuntas.
+	 *
+	 * @param lineas Conjunto de líneas de producto a agrupar.
+	 * @return Una lista con todas las líneas de pack procesadas.
+	 */
 	static ArrayList<LineaPack> construirLineasPack(LineaPack... lineas) {
 		ArrayList<LineaPack> lista = new ArrayList<>();
 		for (LineaPack l : lineas) {
@@ -29,7 +47,12 @@ public class DemostradorMain {
 		}
 		return lista;
 	}
-
+	/**
+	 * Consulta y muestra el stock actual de cada uno de los artículos 
+	 * que integran un pack específico.
+	 *
+	 * @param pack El paquete cuyo stock se quiere comprobar.
+	 */
 	static void imprimirStockPack(Pack pack) {
 		System.out.println("  Stock reservado para pack '" + pack.getNombre() + "':");
 		for (LineaPack lp : pack.getLineas()) {
@@ -37,7 +60,13 @@ public class DemostradorMain {
 					+ " | stock restante: " + lp.getProducto().getStockDisponible());
 		}
 	}
-
+	/**
+	 * Punto de entrada del programa que lanza todas las pruebas del sistema. 
+	 * Ejecuta el registro de usuarios, compras, tasaciones, intercambios 
+	 * y el control de tiempos de caducidad.
+	 *
+	 * @param args Argumentos de configuración de la línea de comandos.
+	 */
 	public static void main(String[] args) {
 		System.out.println("Bienvenido al demostrado de la tienda CHECKPOINT");
 		System.out.println(
