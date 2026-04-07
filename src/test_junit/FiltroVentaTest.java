@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import productos.Categoria;
 import productos.Comic;
 import productos.ProductoVenta;
+import productos.Reseña;
 import tienda.FiltroVenta;
 
 class FiltroVentaTest {
@@ -69,6 +70,8 @@ class FiltroVentaTest {
     @Test
     @DisplayName("Puntuacion suficiente")
     void testPuntuacionOk() {
+    	Reseña r = new Reseña(null, producto, 0, null);
+    	producto.addReseña(null)
         filtro.setPuntuacionMinima(7);
         assertTrue(filtro.productoCumpleFiltro(producto));
     }
