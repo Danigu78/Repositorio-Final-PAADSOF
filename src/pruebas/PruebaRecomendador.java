@@ -54,9 +54,10 @@ public class PruebaRecomendador {
 		/*
 		 * Montamos la tienda con productos, categorias, clientes y pedidos El gestor ya
 		 * existe en la tienda (lo crea el constructor de Tienda). -Valoraciones a poner
-		 * comic1=9, comic2=7 -> Comics figura1=8, figura2=6 -> Figuras jm1=5 -> Juegos
-		 * * alice: compro comic1 -> categoria favorita Comics bob: compro comic1 y
-		 * figura1 (tiene comic1 en comun con alice) carlos: sin historial (caso borde)
+		 * producto1=9, producto2=7 -> categoria1 producto3=8, producto4=6 -> categoria2
+		 * producto5=5 -> categoria3 cliente1: compro producto1 -> categoria favorita
+		 * categoria1 cliente2: compro producto1 y producto3 (tiene producto1 en comun
+		 * con cliente1) cliente3: sin historial (caso borde)
 		 */
 		System.out.println("\n============= MONTAJE =============");
 
@@ -79,39 +80,39 @@ public class PruebaRecomendador {
 		List<TipoPermisos> permisosT = new ArrayList<>();
 		permisosT.add(TipoPermisos.VALORACION_PRODUCTOS);
 		permisosT.add(TipoPermisos.GESTION_STOCK);
-		gestor.darDeAltaEmpleados_Permisos("tasador", "Tasador@1", permisosT);
-		Empleado tasador = tienda.loginEmpleado("tasador", "Tasador@1");
+		gestor.darDeAltaEmpleados_Permisos("empleado1", "Clave1@", permisosT);
+		Empleado empleado1 = tienda.loginEmpleado("empleado1", "Clave1@");
 
 		// categorias
-		Categoria catComics = new Categoria("Comics", "desc");
-		Categoria catFiguras = new Categoria("Figuras", "desc");
-		Categoria catJuegos = new Categoria("Juegos", "desc");
-		tienda.getCategorias().add(catComics);
-		tienda.getCategorias().add(catFiguras);
-		tienda.getCategorias().add(catJuegos);
+		Categoria categoria1 = new Categoria("categoria1", "desc");
+		Categoria categoria2 = new Categoria("categoria2", "desc");
+		Categoria categoria3 = new Categoria("categoria3", "desc");
+		tienda.getCategorias().add(categoria1);
+		tienda.getCategorias().add(categoria2);
+		tienda.getCategorias().add(categoria3);
 
 		// el empleado sube los productos
-		ArrayList<Categoria> catsComics = new ArrayList<>(Arrays.asList(catComics));
-		ArrayList<Categoria> catsFiguras = new ArrayList<>(Arrays.asList(catFiguras));
-		ArrayList<Categoria> catsJuegos = new ArrayList<>(Arrays.asList(catJuegos));
+		ArrayList<Categoria> cats1 = new ArrayList<>(Arrays.asList(categoria1));
+		ArrayList<Categoria> cats2 = new ArrayList<>(Arrays.asList(categoria2));
+		ArrayList<Categoria> cats3 = new ArrayList<>(Arrays.asList(categoria3));
 
-		tasador.añadirProducto_nuevo("C", "Saga Vol.1", "desc", "img", 12.50, 20, catsComics, 200, "ANAYA", 2012, 0, 0,
+		empleado1.añadirProducto_nuevo("C", "producto1", "desc", "imagen1", 12.50, 20, cats1, 200, "dato1", 2001, 0, 0,
 				0, null, null, 0, 0, 0, 0, null);
-		tasador.añadirProducto_nuevo("C", "Watchmen", "desc", "img", 15.00, 10, catsComics, 400, "DC", 1987, 0, 0, 0,
-				null, null, 0, 0, 0, 0, null);
-		tasador.añadirProducto_nuevo("F", "Goku SSJ", "desc", "img", 35.00, 15, catsFiguras, 0, null, 0, 20, 15, 12,
-				"PVC", "Bandai", 0, 0, 0, 0, null);
-		tasador.añadirProducto_nuevo("F", "Link", "desc", "img", 40.00, 8, catsFiguras, 0, null, 0, 18, 12, 10, "PVC",
-				"Nintendo", 0, 0, 0, 0, null);
-		tasador.añadirProducto_nuevo("J", "Catan", "desc", "img", 45.00, 12, catsJuegos, 0, null, 0, 0, 0, 0, null,
-				null, 2, 4, 8, 99, "Eurogame");
+		empleado1.añadirProducto_nuevo("C", "producto2", "desc", "imagen2", 15.00, 10, cats1, 400, "dato2", 2002, 0, 0,
+				0, null, null, 0, 0, 0, 0, null);
+		empleado1.añadirProducto_nuevo("F", "producto3", "desc", "imagen3", 35.00, 15, cats2, 0, null, 0, 20, 15, 12,
+				"dato3", "dato4", 0, 0, 0, 0, null);
+		empleado1.añadirProducto_nuevo("F", "producto4", "desc", "imagen4", 40.00, 8, cats2, 0, null, 0, 18, 12, 10,
+				"dato5", "dato6", 0, 0, 0, 0, null);
+		empleado1.añadirProducto_nuevo("J", "producto5", "desc", "imagen5", 45.00, 12, cats3, 0, null, 0, 0, 0, 0, null,
+				null, 2, 4, 8, 99, "dato7");
 
 		// Igual aqui tenemos que meter un to string en el get stockventas?
-		ProductoVenta comic1 = tienda.getStockVentas().get(0);
-		ProductoVenta comic2 = tienda.getStockVentas().get(1);
-		ProductoVenta figura1 = tienda.getStockVentas().get(2);
-		ProductoVenta figura2 = tienda.getStockVentas().get(3);
-		ProductoVenta jm1 = tienda.getStockVentas().get(4);
+		ProductoVenta producto1 = tienda.getStockVentas().get(0);
+		ProductoVenta producto2 = tienda.getStockVentas().get(1);
+		ProductoVenta producto3 = tienda.getStockVentas().get(2);
+		ProductoVenta producto4 = tienda.getStockVentas().get(3);
+		ProductoVenta producto5 = tienda.getStockVentas().get(4);
 
 		System.out.println("COMPROBACION DE QUE LOS PRODUCTOS SE HAN AÑADIDO CORRECTAMENTE A LA TIENDA:");
 		System.out.println("\n=== PRODUCTOS EN LA TIENDA ===");
@@ -119,128 +120,131 @@ public class PruebaRecomendador {
 			System.out.println(p);
 		}
 		// clientes se registran y hacen login
-		tienda.registrarNuevoCliente("alice", "Alice@1234", "11111111A");
-		tienda.registrarNuevoCliente("bob", "Bob@1234", "22222222B");
-		tienda.registrarNuevoCliente("carlos", "Carlos@123", "33333333C");
-		Cliente alice = tienda.loginCliente("alice", "Alice@1234");
-		Cliente bob = tienda.loginCliente("bob", "Bob@1234");
-		Cliente carlos = tienda.loginCliente("carlos", "Carlos@123");
+		tienda.registrarNuevoCliente("cliente1", "Clave2@", "11111111A");
+		tienda.registrarNuevoCliente("cliente2", "Clave3@", "22222222B");
+		tienda.registrarNuevoCliente("cliente3", "Clave4@", "33333333C");
+		Cliente cliente1 = tienda.loginCliente("cliente1", "Clave2@");
+		Cliente cliente2 = tienda.loginCliente("cliente2", "Clave3@");
+		Cliente cliente3 = tienda.loginCliente("cliente3", "Clave4@");
 
-		// Resenas: comic1=9, comic2=7, figura1=8, figura2=6, jm1=5
-		new Reseña(alice, comic1, 9.0, "Genial");
-		new Reseña(alice, comic2, 7.0, "Bien");
-		new Reseña(bob, figura1, 8.0, "Muy bueno");
-		new Reseña(bob, figura2, 6.0, "Regular");
-		new Reseña(carlos, jm1, 5.0, "Pasable");
+		// Resenas: producto1=9, producto2=7, producto3=8, producto4=6, producto5=5
+		new Reseña(cliente1, producto1, 9.0, "texto1");
+		new Reseña(cliente1, producto2, 7.0, "texto2");
+		new Reseña(cliente2, producto3, 8.0, "texto3");
+		new Reseña(cliente2, producto4, 6.0, "texto4");
+		new Reseña(cliente3, producto5, 5.0, "texto5");
 
-		// alice compro comic1 -> categoria favorita Comics
-		alice.añadirProductoCarrito(comic1, 1);
-		alice.reservarCarrito();
-		Pedido pa = alice.getHistorialPedidos().get(0);
-		alice.pagarCarrito(pa, "1234567890123456", new java.sql.Date(System.currentTimeMillis() + 100000000L), 123);
+		// cliente1 compro producto1 -> categoria favorita categoria1
+		cliente1.añadirProductoCarrito(producto1, 1);
+		cliente1.reservarCarrito();
+		Pedido pedido1 = cliente1.getHistorialPedidos().get(0);
+		cliente1.pagarCarrito(pedido1, "1234567890123456", new java.sql.Date(System.currentTimeMillis() + 100000000L),
+				123);
 
-		// bob compro comic1 (en comun con alice) y figura1
-		bob.añadirProductoCarrito(comic1, 1);
-		bob.reservarCarrito();
-		Pedido pb1 = bob.getHistorialPedidos().get(0);
-		bob.pagarCarrito(pb1, "1234567890123456", new java.sql.Date(System.currentTimeMillis() + 100000000L), 123);
+		// cliente2 compro producto1 (en comun con cliente1) y producto3
+		cliente2.añadirProductoCarrito(producto1, 1);
+		cliente2.reservarCarrito();
+		Pedido pedido2 = cliente2.getHistorialPedidos().get(0);
+		cliente2.pagarCarrito(pedido2, "1234567890123456", new java.sql.Date(System.currentTimeMillis() + 100000000L),
+				123);
 
-		bob.añadirProductoCarrito(figura1, 1);
-		bob.reservarCarrito();
-		Pedido pb2 = bob.getHistorialPedidos().get(1);
-		bob.pagarCarrito(pb2, "1234567890123456", new java.sql.Date(System.currentTimeMillis() + 100000000L), 123);
+		cliente2.añadirProductoCarrito(producto3, 1);
+		cliente2.reservarCarrito();
+		Pedido pedido3 = cliente2.getHistorialPedidos().get(1);
+		cliente2.pagarCarrito(pedido3, "1234567890123456", new java.sql.Date(System.currentTimeMillis() + 100000000L),
+				123);
 
-		// carlos no hace nada
+		// cliente3 no hace nada
 
 		/*
-		 * Comprobamos el recomendador por valoracion. setPesos(1,0,0). comic1 esta
-		 * excluido (alice ya lo compro). El primero debe ser figura1 con puntuacion
-		 * 8.0.
+		 * Comprobamos el recomendador por valoracion. setPesos(1,0,0). producto1 esta
+		 * excluido (cliente1 ya lo compro). El primero debe ser producto3 con
+		 * puntuacion 8.0.
 		 */
 		System.out.println("\n============= recomendarPorValoracion =============");
 
 		try {
 			rec.setPesos(1, 0, 0);
-			List<ProductoVenta> sugerencias = rec.generarSugerencias(alice);
+			List<ProductoVenta> sugerencias = rec.generarSugerencias(cliente1);
 
 			check("Devuelve sugerencias no vacias", sugerencias != null && !sugerencias.isEmpty());
 			boolean resultado = true;
 			for (Producto p : sugerencias) {
-				if (p.getNombre().equals("Saga Vol.1")) {
+				if (p.getNombre().equals("producto1")) {
 					resultado = false;
 					break;
 				}
 			}
-			check("No incluye comic1 (ya comprado por alice)", resultado);
-			check("El primero es figura1 (puntuacion 8.0, la mas alta disponible)",
-					sugerencias.get(0).getNombre().equals("Goku SSJ"));
+			check("No incluye producto1 (ya comprado por cliente1)", resultado);
+			check("El primero es producto3 (puntuacion 8.0, la mas alta disponible)",
+					sugerencias.get(0).getNombre().equals("producto3"));
 			check("No supera el limite maximo", sugerencias.size() <= rec.getLimiteMaximo());
 		} catch (Exception e) {
 			fallos++;
 		}
 
 		/*
-		 * Comprobamos el recomendador por compras. Bob compro comic1 (en comun con
-		 * alice) y figura1. Debe sugerirle figura1 a alice.
+		 * Comprobamos el recomendador por compras. cliente2 compro producto1 (en comun
+		 * con cliente1) y producto3. Debe sugerirle producto3 a cliente1.
 		 */
 		System.out.println("\n============= recomendarPorCompras =============");
 
 		try {
 			rec.setPesos(0, 1, 0);
-			List<ProductoVenta> sugerencias = rec.generarSugerencias(alice);
+			List<ProductoVenta> sugerencias = rec.generarSugerencias(cliente1);
 
 			check("Devuelve sugerencias no vacias", sugerencias != null && !sugerencias.isEmpty());
 			boolean resultado = true;
 			for (Producto p : sugerencias) {
-				if (p.getNombre().equals("Saga Vol.1")) {
+				if (p.getNombre().equals("producto1")) {
 					resultado = false;
 					break;
 				}
 			}
-			check("No incluye comic1 (ya comprado por alice)", resultado);
+			check("No incluye producto1 (ya comprado por cliente1)", resultado);
 
 			resultado = false;
 			for (Producto p : sugerencias) {
-				if (p.getNombre().equals("Goku SSJ")) {
+				if (p.getNombre().equals("producto3")) {
 					resultado = true;
 					break;
 				}
 			}
-			check("Incluye figura1 (bob la compro y tiene comic1 en comun con alice)", resultado);
+			check("Incluye producto3 (cliente2 lo compro y tiene producto1 en comun con cliente1)", resultado);
 		} catch (Exception e) {
 			fallos++;
 		}
 
 		/*
-		 * Comprobamos el recomendador por categorias. Categoria favorita de alice es
-		 * Comics (solo compro comic1). Debe recomendarle comic2 y solo productos de
-		 * Comics.
+		 * Comprobamos el recomendador por categorias. Categoria favorita de cliente1 es
+		 * categoria1 (solo compro producto1). Debe recomendarle producto2 y solo
+		 * productos de categoria1.
 		 */
 		System.out.println("\n============= recomendarPorCategorias =============");
 
 		try {
 			rec.setPesos(0, 0, 1);
-			List<ProductoVenta> sugerencias = rec.generarSugerencias(alice);
+			List<ProductoVenta> sugerencias = rec.generarSugerencias(cliente1);
 
 			check("Devuelve sugerencias no vacias", sugerencias != null && !sugerencias.isEmpty());
 			boolean resultado = false;
 			for (Producto p : sugerencias) {
-				if (p.getNombre().equals("Watchmen")) {
+				if (p.getNombre().equals("producto2")) {
 					resultado = true;
 					break;
 				}
 			}
-			check("Incluye comic2 (misma categoria favorita, no comprado)", resultado);
+			check("Incluye producto2 (misma categoria favorita, no comprado)", resultado);
 
 			resultado = true;
 			for (Producto p : sugerencias) {
-				if (p.getNombre().equals("Saga Vol.1")) {
+				if (p.getNombre().equals("producto1")) {
 					resultado = false;
 					break;
 				}
 			}
-			check("No incluye comic1 (ya comprado)", resultado);
-			check("Solo incluye un elemento, comic2", sugerencias.size() == 1);
+			check("No incluye producto1 (ya comprado)", resultado);
+			check("Solo incluye un elemento, producto2", sugerencias.size() == 1);
 		} catch (Exception e) {
 			fallos++;
 		}
@@ -252,42 +256,42 @@ public class PruebaRecomendador {
 
 		try {
 			rec.setPesos(1, 1, 1);
-			List<ProductoVenta> sugerencias = rec.generarSugerencias(alice);
+			List<ProductoVenta> sugerencias = rec.generarSugerencias(cliente1);
 
 			check("Devuelve sugerencias no vacias", sugerencias != null && !sugerencias.isEmpty());
 			boolean resultado = true;
 			for (Producto p : sugerencias) {
-				if (p.getNombre().equals("Saga Vol.1")) {
+				if (p.getNombre().equals("producto1")) {
 					resultado = false;
 					break;
 				}
 			}
-			check("No incluye comic1 (ya comprado)", resultado);
+			check("No incluye producto1 (ya comprado)", resultado);
 			check("No supera el limite maximo", sugerencias.size() <= rec.getLimiteMaximo());
 		} catch (Exception e) {
 			fallos++;
 		}
 
 		/*
-		 * Caso extremo: carlos sin historial.
+		 * Caso extremo: cliente3 sin historial.
 		 */
-		System.out.println("\n============= carlos sin historial (caso extremo) =============");
+		System.out.println("\n============= cliente3 sin historial (caso extremo) =============");
 
 		try {
 			rec.setConfiguracion(rec.getLimiteMaximo(), true);
 			rec.setPesos(0, 0, 1);
 			check("Sin historial, recomendador por categorias devuelve lista vacia",
-					rec.generarSugerencias(carlos).isEmpty());
+					rec.generarSugerencias(cliente3).isEmpty());
 
 			rec.setPesos(1, 0, 0);
-			List<ProductoVenta> sugerencias = rec.generarSugerencias(carlos);
+			List<ProductoVenta> sugerencias = rec.generarSugerencias(cliente3);
 			check("Sin historial, recomendador por valoracion devuelve productos", !sugerencias.isEmpty());
 			check("Sin historial no hay excluidos, devuelve hasta el limite",
 					sugerencias.size() <= rec.getLimiteMaximo());
 
 			rec.setPesos(0, 1, 0);
 			check("Sin historial, recomendador por compras comun devuelve lista vacia",
-					rec.generarSugerencias(carlos).isEmpty());
+					rec.generarSugerencias(cliente3).isEmpty());
 		} catch (Exception e) {
 			fallos++;
 		}
@@ -298,18 +302,18 @@ public class PruebaRecomendador {
 		System.out.println("\n============= exclusion por carrito =============");
 
 		try {
-			alice.añadirProductoCarrito(comic2, 1);
+			cliente1.añadirProductoCarrito(producto2, 1);
 			rec.setPesos(1, 0, 0);
-			List<ProductoVenta> sugerencias = rec.generarSugerencias(alice);
+			List<ProductoVenta> sugerencias = rec.generarSugerencias(cliente1);
 			boolean resultado = true;
 			for (Producto p : sugerencias) {
-				if (p.getNombre().equals("Watchmen")) {
+				if (p.getNombre().equals("producto2")) {
 					resultado = false;
 					break;
 				}
 			}
-			check("comic2 en carrito no aparece en sugerencias", resultado);
-			alice.setCarritoActual(null);
+			check("producto2 en carrito no aparece en sugerencias", resultado);
+			cliente1.setCarritoActual(null);
 		} catch (Exception e) {
 			fallos++;
 		}
@@ -332,7 +336,7 @@ public class PruebaRecomendador {
 		// Prueba de pesos negativos
 		try {
 			rec.setPesos(-1, 0.5, 0.5);
-			check("setPesos con peso negativo no cambia los pesos", false); // No debería llegar aquí si lanza excepción
+			check("setPesos con peso negativo no cambia los pesos", false);
 		} catch (PesosInvalidosException e) {
 			check("setPesos con peso negativo lanza PesosInvalidosException", true);
 		}
@@ -348,7 +352,7 @@ public class PruebaRecomendador {
 		try {
 			rec.setConfiguracion(1, true);
 			rec.setPesos(1, 0, 0);
-			check("Con limite 1 solo devuelve 1 sugerencia", rec.generarSugerencias(alice).size() == 1);
+			check("Con limite 1 solo devuelve 1 sugerencia", rec.generarSugerencias(cliente1).size() == 1);
 		} catch (Exception e) {
 			fallos++;
 		}
@@ -356,7 +360,7 @@ public class PruebaRecomendador {
 		// Prueba de recomendador desactivado
 		try {
 			rec.setConfiguracion(5, false);
-			rec.generarSugerencias(alice);
+			rec.generarSugerencias(cliente1);
 			check("Con recomendador desactivado devuelve lista vacia", false);
 		} catch (RecomendadorNoActivoException e) {
 			check("Con recomendador desactivado lanza RecomendadorNoActivoException", true);

@@ -19,11 +19,12 @@ public class PruebaNotificacion {
 
 	static int correctos = 0;
 	static int fallos = 0;
+
 	/**
-	 * Evalúa una condición de prueba y actualiza los contadores globales 
-	 * de éxito y error. Muestra el resultado de la validación por consola.
+	 * Evalúa una condición de prueba y actualiza los contadores globales de éxito y
+	 * error. Muestra el resultado de la validación por consola.
 	 *
-	 * @param nombre Descripción breve de la funcionalidad que se comprueba.
+	 * @param nombre    Descripción breve de la funcionalidad que se comprueba.
 	 * @param condicion Expresión booleana que determina si la prueba es válida.
 	 */
 	static void check(String nombre, boolean condicion) {
@@ -35,11 +36,12 @@ public class PruebaNotificacion {
 			fallos++;
 		}
 	}
+
 	/**
-	 * Método principal que ejecuta la batería de pruebas de notificaciones. 
-	 * Simula el envío de mensajes obligatorios y configurables, valida 
-	 * que las preferencias de privacidad funcionen correctamente y comprueba 
-	 * la suscripción a novedades por categorías.
+	 * Método principal que ejecuta la batería de pruebas de notificaciones. Simula
+	 * el envío de mensajes obligatorios y configurables, valida que las
+	 * preferencias de privacidad funcionen correctamente y comprueba la suscripción
+	 * a novedades por categorías.
 	 *
 	 * @param args Argumentos de configuración de la línea de comandos.
 	 */
@@ -53,13 +55,13 @@ public class PruebaNotificacion {
 
 		Tienda tienda = Tienda.getInstancia();
 
-		Cliente alice = new Cliente("alice", "Alice@1234", "11111111A");
-		tienda.getUsuarios().add(alice);
+		Cliente cliente1 = new Cliente("cliente1", "Clave1@", "11111111A");
+		tienda.getUsuarios().add(cliente1);
 
-		Categoria catComics = new Categoria("Comics", "desc");
-		tienda.getCategorias().add(catComics);
+		Categoria categoria1 = new Categoria("categoria1", "desc");
+		tienda.getCategorias().add(categoria1);
 
-		System.out.println("\tMontaje listo.");
+		System.out.println("Montaje listo.");
 
 		/*
 		 * Comprobamos la clase Notificacion directamente: creacion, estado inicial,
@@ -67,13 +69,13 @@ public class PruebaNotificacion {
 		 */
 		System.out.println("\n============= Notificacion =============");
 
-		Notificacion n1 = new Notificacion("Pedido listo para recoger", TipoNotificacion.PEDIDO_LISTO);
-		Notificacion n2 = new Notificacion("Mensaje para empleado");
+		Notificacion n1 = new Notificacion("mensaje1", TipoNotificacion.PEDIDO_LISTO);
+		Notificacion n2 = new Notificacion("mensaje2");
 
 		check("n1 tiene id asignado", n1.getId() != null && !n1.getId().isEmpty());
 		check("n1 empieza como no leida", !n1.isLeida());
 		check("n1 tiene el tipo correcto", n1.getTipo() == TipoNotificacion.PEDIDO_LISTO);
-		check("n1 tiene el mensaje correcto", n1.getMensaje().equals("Pedido listo para recoger"));
+		check("n1 tiene el mensaje correcto", n1.getMensaje().equals("mensaje1"));
 		check("n1 tiene fecha de envio", n1.getFechaEnvio() != null);
 		check("n2 tiene tipo EMPLEADOS por defecto", n2.getTipo() == TipoNotificacion.EMPLEADOS);
 
@@ -81,7 +83,7 @@ public class PruebaNotificacion {
 		check("n1 queda como leida tras marcarComoLeida", n1.isLeida());
 
 		check("toString contiene el id", n1.toString().contains(n1.getId()));
-		check("toString contiene el mensaje", n1.toString().contains("Pedido listo para recoger"));
+		check("toString contiene el mensaje", n1.toString().contains("mensaje1"));
 		check("toString contiene el tipo", n1.toString().contains("PEDIDO_LISTO"));
 		check("toString indica que esta leida", n1.toString().contains("leida"));
 
@@ -94,19 +96,20 @@ public class PruebaNotificacion {
 		 */
 		System.out.println("\n============= recibirNotificacionTipo =============");
 
-		int antes = alice.getNotificaciones().size();
-		alice.recibirNotificacionTipo("Tu pago ha sido procesado", TipoNotificacion.PAGO_EXITOSO);
-		check("Notificacion obligatoria (PAGO_EXITOSO) llega siempre", alice.getNotificaciones().size() == antes + 1);
+		int antes = cliente1.getNotificaciones().size();
+		cliente1.recibirNotificacionTipo("mensaje3", TipoNotificacion.PAGO_EXITOSO);
+		check("Notificacion obligatoria (PAGO_EXITOSO) llega siempre",
+				cliente1.getNotificaciones().size() == antes + 1);
 
-		antes = alice.getNotificaciones().size();
-		alice.recibirNotificacionTipo("Nuevo descuento disponible", TipoNotificacion.DESCUENTO);
+		antes = cliente1.getNotificaciones().size();
+		cliente1.recibirNotificacionTipo("mensaje4", TipoNotificacion.DESCUENTO);
 		check("Notificacion configurable (DESCUENTO) llega si esta activa (por defecto activa)",
-				alice.getNotificaciones().size() == antes + 1);
+				cliente1.getNotificaciones().size() == antes + 1);
 
 		// EMPLEADOS nunca llega a un cliente
-		antes = alice.getNotificaciones().size();
-		alice.recibirNotificacionTipo("Esto no deberia llegar", TipoNotificacion.EMPLEADOS);
-		check("Notificacion tipo EMPLEADOS no llega a un cliente", alice.getNotificaciones().size() == antes);
+		antes = cliente1.getNotificaciones().size();
+		cliente1.recibirNotificacionTipo("mensaje5", TipoNotificacion.EMPLEADOS);
+		check("Notificacion tipo EMPLEADOS no llega a un cliente", cliente1.getNotificaciones().size() == antes);
 
 		/*
 		 * Comprobamos getNotificacionesNoLeidas en Cliente. Marcamos una como leida y
@@ -114,15 +117,15 @@ public class PruebaNotificacion {
 		 */
 		System.out.println("\n============= getNotificacionesNoLeidas =============");
 
-		int totalAntes = alice.getNotificaciones().size();
-		int noLeidasAntes = alice.getNotificacionesNoLeidas().size();
+		int totalAntes = cliente1.getNotificaciones().size();
+		int noLeidasAntes = cliente1.getNotificacionesNoLeidas().size();
 
 		// Marcamos la primera notificacion como leida
-		alice.getNotificaciones().get(0).marcarComoLeida();
+		cliente1.getNotificaciones().get(0).marcarComoLeida();
 
 		check("Despues de marcar 1 como leida, las no leidas bajan en 1",
-				alice.getNotificacionesNoLeidas().size() == noLeidasAntes - 1);
-		check("El total de notificaciones no cambia", alice.getNotificaciones().size() == totalAntes);
+				cliente1.getNotificacionesNoLeidas().size() == noLeidasAntes - 1);
+		check("El total de notificaciones no cambia", cliente1.getNotificaciones().size() == totalAntes);
 
 		/*
 		 * Comprobamos PreferenciaNotificacion: debeRecibirNotificacion,
@@ -130,7 +133,7 @@ public class PruebaNotificacion {
 		 */
 		System.out.println("\n============= PreferenciaNotificacion =============");
 
-		PreferenciaNotificacion pref = alice.getPreferencias();
+		PreferenciaNotificacion pref = cliente1.getPreferencias();
 
 		// Obligatorias siempre devuelven true
 		check("CODIGO_RECOGIDA es obligatoria", pref.debeRecibirNotificacion(TipoNotificacion.CODIGO_RECOGIDA));
@@ -151,21 +154,21 @@ public class PruebaNotificacion {
 		check("OFERTA_CADUCADA activo por defecto", pref.debeRecibirNotificacion(TipoNotificacion.OFERTA_CADUCADA));
 
 		// Desactivar una configurable
-		alice.configurarPreferenciaNotificacion(TipoNotificacion.DESCUENTO, false);
+		cliente1.configurarPreferenciaNotificacion(TipoNotificacion.DESCUENTO, false);
 		check("DESCUENTO desactivado tras modificarPreferencia",
 				!pref.debeRecibirNotificacion(TipoNotificacion.DESCUENTO));
 
 		// Verificar que ya no llega al cliente
-		antes = alice.getNotificaciones().size();
-		alice.recibirNotificacionTipo("Oferta especial", TipoNotificacion.DESCUENTO);
-		check("Con DESCUENTO desactivado la notificacion no llega", alice.getNotificaciones().size() == antes);
+		antes = cliente1.getNotificaciones().size();
+		cliente1.recibirNotificacionTipo("mensaje6", TipoNotificacion.DESCUENTO);
+		check("Con DESCUENTO desactivado la notificacion no llega", cliente1.getNotificaciones().size() == antes);
 
 		// Reactivar
-		alice.configurarPreferenciaNotificacion(TipoNotificacion.DESCUENTO, true);
+		cliente1.configurarPreferenciaNotificacion(TipoNotificacion.DESCUENTO, true);
 		check("DESCUENTO activo de nuevo tras reactivar", pref.debeRecibirNotificacion(TipoNotificacion.DESCUENTO));
 
 		// Intentar desactivar una obligatoria no tiene efecto
-		alice.configurarPreferenciaNotificacion(TipoNotificacion.PAGO_EXITOSO, false);
+		cliente1.configurarPreferenciaNotificacion(TipoNotificacion.PAGO_EXITOSO, false);
 		check("Intentar desactivar PAGO_EXITOSO (obligatoria) no tiene efecto",
 				pref.debeRecibirNotificacion(TipoNotificacion.PAGO_EXITOSO));
 
@@ -176,37 +179,37 @@ public class PruebaNotificacion {
 		System.out.println("\n============= categorias de interes =============");
 
 		check("Sin categorias de interes, notificarProductoNuevoCategoria no llega",
-				!pref.NotificacionesProductosNUevosCategoriasInteres("Comics"));
+				!pref.NotificacionesProductosNUevosCategoriasInteres("categoria1"));
 
-		alice.añadirCategoriaInteresParaRecibirInfo("Comics");
-		check("Tras añadir Comics, notificacion de Comics llega",
-				pref.NotificacionesProductosNUevosCategoriasInteres("Comics"));
+		cliente1.añadirCategoriaInteresParaRecibirInfo("categoria1");
+		check("Tras añadir categoria1, notificacion de categoria1 llega",
+				pref.NotificacionesProductosNUevosCategoriasInteres("categoria1"));
 
 		// La notificacion llega al cliente
-		antes = alice.getNotificaciones().size();
-		alice.notificarProductoNuevoCategoria("Nuevo comic disponible", "Comics");
+		antes = cliente1.getNotificaciones().size();
+		cliente1.notificarProductoNuevoCategoria("mensaje7", "categoria1");
 		check("notificarProductoNuevoCategoria llega si la categoria esta en intereses",
-				alice.getNotificaciones().size() == antes + 1);
+				cliente1.getNotificaciones().size() == antes + 1);
 
 		// Una categoria que no esta en intereses no llega
-		tienda.getCategorias().add(new Categoria("Juegos", "desc"));
-		antes = alice.getNotificaciones().size();
-		alice.notificarProductoNuevoCategoria("Nuevo juego disponible", "Juegos");
+		tienda.getCategorias().add(new Categoria("categoria2", "desc"));
+		antes = cliente1.getNotificaciones().size();
+		cliente1.notificarProductoNuevoCategoria("mensaje8", "categoria2");
 		check("notificarProductoNuevoCategoria no llega si la categoria no esta en intereses",
-				alice.getNotificaciones().size() == antes);
+				cliente1.getNotificaciones().size() == antes);
 
-		alice.eliminarCategoriaInteres("Comics");
-		check("Tras eliminar Comics de intereses, ya no llega",
-				!pref.NotificacionesProductosNUevosCategoriasInteres("Comics"));
+		cliente1.eliminarCategoriaInteres("categoria1");
+		check("Tras eliminar categoria1 de intereses, ya no llega",
+				!pref.NotificacionesProductosNUevosCategoriasInteres("categoria1"));
 
 		// Eliminar una categoria que no existe
-		check("Eliminar categoria no existente devuelve false", !alice.eliminarCategoriaInteres("Comics"));
+		check("Eliminar categoria no existente devuelve false", !cliente1.eliminarCategoriaInteres("categoria1"));
 
 		// Añadir categoria null o vacia
-		check("Añadir categoria con nombre null devuelve false", !alice.añadirCategoriaInteresParaRecibirInfo(null));
-		check("Añadir categoria con nombre vacio devuelve false", !alice.añadirCategoriaInteresParaRecibirInfo(""));
+		check("Añadir categoria con nombre null devuelve false", !cliente1.añadirCategoriaInteresParaRecibirInfo(null));
+		check("Añadir categoria con nombre vacio devuelve false", !cliente1.añadirCategoriaInteresParaRecibirInfo(""));
 		check("Añadir categoria que no existe en tienda devuelve false",
-				!alice.añadirCategoriaInteresParaRecibirInfo("CategoriaInexistente"));
+				!cliente1.añadirCategoriaInteresParaRecibirInfo("categoriaInexistente"));
 
 		/*
 		 * Comprobamos toString de PreferenciaNotificacion.

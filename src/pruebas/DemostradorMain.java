@@ -11,18 +11,20 @@ import productos.*;
 import tienda.*;
 import usuarios.*;
 import ventas.*;
+
 /**
- * Clase principal para demostrar el funcionamiento de la tienda CHECKPOINT. 
- * Se encarga de ejecutar una simulación completa que valida la lógica de 
- * negocio, la gestión de inventario, las ventas y los intercambios. Incluye la logica, casos de exito, casos de fallo y captura de excepciones
+ * Clase principal para demostrar el funcionamiento de la tienda CHECKPOINT. Se
+ * encarga de ejecutar una simulación completa que valida la lógica de negocio,
+ * la gestión de inventario, las ventas y los intercambios. Incluye la logica,
+ * casos de exito, casos de fallo y captura de excepciones
  *
  * @author Daniel, Lucas y Antonino
  * @version 1.0
  */
 public class DemostradorMain {
 	/**
-	 * Muestra por consola los datos básicos e identificativos de un empleado, 
-	 * así como la lista de permisos que tiene asignados.
+	 * Muestra por consola los datos básicos e identificativos de un empleado, así
+	 * como la lista de permisos que tiene asignados.
 	 *
 	 * @param e El empleado del cual se imprimirán los datos.
 	 */
@@ -33,9 +35,10 @@ public class DemostradorMain {
 			System.out.println("   - " + p);
 		}
 	}
+
 	/**
-	 * Organiza y agrupa diferentes líneas de productos para facilitar 
-	 * la creación de packs o promociones conjuntas.
+	 * Organiza y agrupa diferentes líneas de productos para facilitar la creación
+	 * de packs o promociones conjuntas.
 	 *
 	 * @param lineas Conjunto de líneas de producto a agrupar.
 	 * @return Una lista con todas las líneas de pack procesadas.
@@ -47,9 +50,10 @@ public class DemostradorMain {
 		}
 		return lista;
 	}
+
 	/**
-	 * Consulta y muestra el stock actual de cada uno de los artículos 
-	 * que integran un pack específico.
+	 * Consulta y muestra el stock actual de cada uno de los artículos que integran
+	 * un pack específico.
 	 *
 	 * @param pack El paquete cuyo stock se quiere comprobar.
 	 */
@@ -60,10 +64,11 @@ public class DemostradorMain {
 					+ " | stock restante: " + lp.getProducto().getStockDisponible());
 		}
 	}
+
 	/**
-	 * Punto de entrada del programa que lanza todas las pruebas del sistema. 
-	 * Ejecuta el registro de usuarios, compras, tasaciones, intercambios 
-	 * y el control de tiempos de caducidad.
+	 * Punto de entrada del programa que lanza todas las pruebas del sistema.
+	 * Ejecuta el registro de usuarios, compras, tasaciones, intercambios y el
+	 * control de tiempos de caducidad.
 	 *
 	 * @param args Argumentos de configuración de la línea de comandos.
 	 */
@@ -1091,17 +1096,15 @@ public class DemostradorMain {
 		bob.verHistorialPedidos();
 		carlos.verHistorialPedidos();
 
-		System.out.println("Cambiamos el precio de tasacion para ver que se recoge perfectamente en las estadisticas y que el gestor puede cambiar el precio en cualquir momento.");
-		
+		System.out.println(
+				"Cambiamos el precio de tasacion para ver que se recoge perfectamente en las estadisticas y que el gestor puede cambiar el precio en cualquir momento.");
+
 		gestor.setPrecioTasacion(12);
 		alice.subirProducto("Monopoly", "Como nuevo", "bleach.jpg");
-		Producto2Mano proMOnopoly = alice.getCarteraIntercambio()
-				.get(alice.getCarteraIntercambio().size() - 1);
+		Producto2Mano proMOnopoly = alice.getCarteraIntercambio().get(alice.getCarteraIntercambio().size() - 1);
 		alice.solicitarTasacion(proMOnopoly, "1111222233334444", 111, Date.valueOf("2029-01-01"));
 		empTasador.tasarProducto(proMOnopoly.getId(), 10.0, EstadoProducto.MUY_BUENO);
 
-		
-		
 		System.out.println("\nESTADISTICAS");
 		System.out.println("\n  Rankings de clientes:");
 		gestor.verClientesTopCompras();

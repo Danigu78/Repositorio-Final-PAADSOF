@@ -15,8 +15,7 @@ import ventas.*;
  * Clase de prueba para validar el motor estadístico y de ingresos del sistema.
  * Se encarga de verificar que el gestor genere correctamente los rankings de
  * clientes y calcule con precisión los ingresos por ventas y tasaciones, tanto
- * en periodos mensuales como en rangos de fechas específicos.
- *  Prueba que se
+ * en periodos mensuales como en rangos de fechas específicos. Prueba que se
  * hizo antes del demostrador como una especie de test para comprobar que la
  * logica es correcta, similar a los junit
  * 
@@ -27,11 +26,12 @@ public class PruebaMotorEstadistico {
 
 	static int correctos = 0;
 	static int fallos = 0;
+
 	/**
-	 * Valida un resultado esperado frente a uno obtenido y actualiza los 
-	 * contadores globales. Imprime el estado de la prueba por consola.
+	 * Valida un resultado esperado frente a uno obtenido y actualiza los contadores
+	 * globales. Imprime el estado de la prueba por consola.
 	 *
-	 * @param nombre Descripción de la prueba o funcionalidad validada.
+	 * @param nombre    Descripción de la prueba o funcionalidad validada.
 	 * @param condicion Expresión booleana que determina si la prueba es correcta.
 	 */
 	static void check(String nombre, boolean condicion) {
@@ -43,11 +43,12 @@ public class PruebaMotorEstadistico {
 			fallos++;
 		}
 	}
+
 	/**
-	 * Método principal que ejecuta la batería de pruebas estadísticas. 
-	 * Simula un entorno complejo con múltiples clientes, pedidos pagados, 
-	 * cancelaciones, productos de segunda mano e intercambios para comprobar 
-	 * la fiabilidad de los informes generados por el gestor.
+	 * Método principal que ejecuta la batería de pruebas estadísticas. Simula un
+	 * entorno complejo con múltiples clientes, pedidos pagados, cancelaciones,
+	 * productos de segunda mano e intercambios para comprobar la fiabilidad de los
+	 * informes generados por el gestor.
 	 *
 	 * @param args Argumentos de configuración de la línea de comandos.
 	 */
@@ -76,123 +77,132 @@ public class PruebaMotorEstadistico {
 			}
 		}
 
-		Empleado tasador = new Empleado("tasador", "Tasador@1");
-		tasador.asignarPermiso(TipoPermisos.VALORACION_PRODUCTOS);
-		tienda.getUsuarios().add(tasador);
+		Empleado empleado1 = new Empleado("empleado1", "Clave1@");
+		empleado1.asignarPermiso(TipoPermisos.VALORACION_PRODUCTOS);
+		tienda.getUsuarios().add(empleado1);
 
-		// alice: 3 pedidos validos + 1 cancelado, 2 intercambios
-		// bob: 2 pedidos validos, 1 intercambio
-		// carlos: 1 pedido valido, 1 intercambio
-		// diana: 0 pedidos validos + 1 cancelado, 0 intercambios
-		Cliente alice = new Cliente("alice", "Alice@1234", "11111111A");
-		Cliente bob = new Cliente("bob", "Bob@1234", "22222222B");
-		Cliente carlos = new Cliente("carlos", "Carlos@123", "33333333C");
-		Cliente diana = new Cliente("diana", "Diana@1234", "44444444D");
-		tienda.getUsuarios().add(alice);
-		tienda.getUsuarios().add(bob);
-		tienda.getUsuarios().add(carlos);
-		tienda.getUsuarios().add(diana);
+		// cliente1: 3 pedidos validos + 1 cancelado, 2 intercambios
+		// cliente2: 2 pedidos validos, 1 intercambio
+		// cliente3: 1 pedido valido, 1 intercambio
+		// cliente4: 0 pedidos validos + 1 cancelado, 0 intercambios
+		Cliente cliente1 = new Cliente("cliente1", "Clave2@", "11111111A");
+		Cliente cliente2 = new Cliente("cliente2", "Clave3@", "22222222B");
+		Cliente cliente3 = new Cliente("cliente3", "Clave4@", "33333333C");
+		Cliente cliente4 = new Cliente("cliente4", "Clave5@", "44444444D");
+		tienda.getUsuarios().add(cliente1);
+		tienda.getUsuarios().add(cliente2);
+		tienda.getUsuarios().add(cliente3);
+		tienda.getUsuarios().add(cliente4);
 
-		Comic comic1 = new Comic("Saga Vol.1", "Sci-fi", "saga.png", 12.50, 20, 200, "Image", 2012);
-		Comic comic2 = new Comic("Watchmen", "Clasico", "watch.png", 15.00, 10, 400, "DC", 1987);
-		Figura figura1 = new Figura("Goku SSJ", "Dragon Ball", "goku.png", 35.00, 15, 20, 15, 12, "PVC", "Bandai");
-		JuegoMesa jm1 = new JuegoMesa("Catan", "Estrategia", "catan.png", 45.00, 12, 2, 4, 8, 99, "Eurogame");
-		JuegoMesa jm2 = new JuegoMesa("Pandemic", "Cooperativo", "pand.png", 38.00, 10, 2, 4, 8, 99, "Cooperativo");
-		tienda.añadirProducto(comic1);
-		tienda.añadirProducto(comic2);
-		tienda.añadirProducto(figura1);
-		tienda.añadirProducto(jm1);
-		tienda.añadirProducto(jm2);
+		Comic producto1 = new Comic("producto1", "desc1", "imagen1.png", 12.50, 20, 200, "editorial1", 2001);
+		Comic producto2 = new Comic("producto2", "desc2", "imagen2.png", 15.00, 10, 400, "editorial2", 2002);
+		Figura producto3 = new Figura("producto3", "desc3", "imagen3.png", 35.00, 15, 20, 15, 12, "mat1", "marca1");
+		JuegoMesa producto4 = new JuegoMesa("producto4", "desc4", "imagen4.png", 45.00, 12, 2, 4, 8, 99, "tipo1");
+		JuegoMesa producto5 = new JuegoMesa("producto5", "desc5", "imagen5.png", 38.00, 10, 2, 4, 8, 99, "tipo2");
+		tienda.añadirProducto(producto1);
+		tienda.añadirProducto(producto2);
+		tienda.añadirProducto(producto3);
+		tienda.añadirProducto(producto4);
+		tienda.añadirProducto(producto5);
 
-		// Pedidos validos: alice 25+35+45=105, bob 15+38=53, carlos 12.50 -> total
+		// Pedidos validos: cliente1 25+35+45=105, cliente2 15+38=53, cliente3 12.50 ->
+		// total
 		// ventas 170.50
-		Carrito ca1 = new Carrito(alice);
-		ca1.añadirProducto(comic1, 2);
-		Pedido pa1 = new Pedido(alice, ca1);
-		alice.getHistorialPedidos().add(pa1);
-		tienda.registrarVenta(pa1);
-		Carrito ca2 = new Carrito(alice);
-		ca2.añadirProducto(figura1, 1);
-		Pedido pa2 = new Pedido(alice, ca2);
-		alice.getHistorialPedidos().add(pa2);
-		tienda.registrarVenta(pa2);
-		Carrito ca3 = new Carrito(alice);
-		ca3.añadirProducto(jm1, 1);
-		Pedido pa3 = new Pedido(alice, ca3);
-		alice.getHistorialPedidos().add(pa3);
-		tienda.registrarVenta(pa3);
-		Carrito cb1 = new Carrito(bob);
-		cb1.añadirProducto(comic2, 1);
-		Pedido pb1 = new Pedido(bob, cb1);
-		bob.getHistorialPedidos().add(pb1);
-		tienda.registrarVenta(pb1);
-		Carrito cb2 = new Carrito(bob);
-		cb2.añadirProducto(jm2, 1);
-		Pedido pb2 = new Pedido(bob, cb2);
-		bob.getHistorialPedidos().add(pb2);
-		tienda.registrarVenta(pb2);
-		Carrito cc1 = new Carrito(carlos);
-		cc1.añadirProducto(comic1, 1);
-		Pedido pc1 = new Pedido(carlos, cc1);
-		carlos.getHistorialPedidos().add(pc1);
-		tienda.registrarVenta(pc1);
+		Carrito carrito1 = new Carrito(cliente1);
+		carrito1.añadirProducto(producto1, 2);
+		Pedido pedido1 = new Pedido(cliente1, carrito1);
+		cliente1.getHistorialPedidos().add(pedido1);
+		tienda.registrarVenta(pedido1);
+
+		Carrito carrito2 = new Carrito(cliente1);
+		carrito2.añadirProducto(producto3, 1);
+		Pedido pedido2 = new Pedido(cliente1, carrito2);
+		cliente1.getHistorialPedidos().add(pedido2);
+		tienda.registrarVenta(pedido2);
+
+		Carrito carrito3 = new Carrito(cliente1);
+		carrito3.añadirProducto(producto4, 1);
+		Pedido pedido3 = new Pedido(cliente1, carrito3);
+		cliente1.getHistorialPedidos().add(pedido3);
+		tienda.registrarVenta(pedido3);
+
+		Carrito carrito4 = new Carrito(cliente2);
+		carrito4.añadirProducto(producto2, 1);
+		Pedido pedido4 = new Pedido(cliente2, carrito4);
+		cliente2.getHistorialPedidos().add(pedido4);
+		tienda.registrarVenta(pedido4);
+
+		Carrito carrito5 = new Carrito(cliente2);
+		carrito5.añadirProducto(producto5, 1);
+		Pedido pedido5 = new Pedido(cliente2, carrito5);
+		cliente2.getHistorialPedidos().add(pedido5);
+		tienda.registrarVenta(pedido5);
+
+		Carrito carrito6 = new Carrito(cliente3);
+		carrito6.añadirProducto(producto1, 1);
+		Pedido pedido6 = new Pedido(cliente3, carrito6);
+		cliente3.getHistorialPedidos().add(pedido6);
+		tienda.registrarVenta(pedido6);
 
 		// Pedidos cancelados
-		Carrito cac = new Carrito(alice);
-		cac.añadirProducto(comic2, 1);
-		Pedido pac = new Pedido(alice, cac);
-		alice.getHistorialPedidos().add(pac);
-		tienda.registrarVenta(pac);
-		pac.cancelarPedido();
-		Carrito cdc = new Carrito(diana);
-		cdc.añadirProducto(comic1, 1);
-		Pedido pdc = new Pedido(diana, cdc);
-		diana.getHistorialPedidos().add(pdc);
-		tienda.registrarVenta(pdc);
-		pdc.cancelarPedido();
+		Carrito carrito7 = new Carrito(cliente1);
+		carrito7.añadirProducto(producto2, 1);
+		Pedido pedido7 = new Pedido(cliente1, carrito7);
+		cliente1.getHistorialPedidos().add(pedido7);
+		tienda.registrarVenta(pedido7);
+		pedido7.cancelarPedido();
+
+		Carrito carrito8 = new Carrito(cliente4);
+		carrito8.añadirProducto(producto1, 1);
+		Pedido pedido8 = new Pedido(cliente4, carrito8);
+		cliente4.getHistorialPedidos().add(pedido8);
+		tienda.registrarVenta(pedido8);
+		pedido8.cancelarPedido();
 
 		// Tasaciones: 5+8 en catalogo, 3.50 en pendientes -> total 16.50
 		// Tasaciones
-		Producto2Mano p2m_alice1 = new Producto2Mano(alice, "Naruto Vol.3", "Usado", "naruto.png");
-		Producto2Mano p2m_alice2 = new Producto2Mano(alice, "Figura Pikachu", "Buen estado", "pika.png");
-		Producto2Mano p2m_bob = new Producto2Mano(bob, "One Piece Vol.1", "Algo desgastado", "op.png");
-		Producto2Mano p2m_carlos = new Producto2Mano(carlos, "DBZ Manga", "Bueno", "dbz.png");
+		Producto2Mano usado1 = new Producto2Mano(cliente1, "usado1", "desc6", "imagen6.png");
+		Producto2Mano usado2 = new Producto2Mano(cliente1, "usado2", "desc7", "imagen7.png");
+		Producto2Mano usado3 = new Producto2Mano(cliente2, "usado3", "desc8", "imagen8.png");
+		Producto2Mano usado4 = new Producto2Mano(cliente3, "usado4", "desc9", "imagen9.png");
 
-		p2m_alice1.valorar(5.00, EstadoProducto.MUY_BUENO, tasador);
-		p2m_alice2.valorar(8.00, EstadoProducto.MUY_BUENO, tasador);
-		p2m_carlos.valorar(4.00, EstadoProducto.MUY_BUENO, tasador);
+		usado1.valorar(5.00, EstadoProducto.MUY_BUENO, empleado1);
+		usado2.valorar(8.00, EstadoProducto.MUY_BUENO, empleado1);
+		usado4.valorar(4.00, EstadoProducto.MUY_BUENO, empleado1);
 
-		p2m_bob.valorar(3.50, EstadoProducto.MUY_BUENO, tasador);
-		tienda.getHistorialProductos2Mano().clear(); // Limpieza de seguridad antes de Bob
-		tienda.getHistorialProductos2Mano().add(p2m_bob);
+		usado3.valorar(3.50, EstadoProducto.MUY_BUENO, empleado1);
+		tienda.getHistorialProductos2Mano().clear(); // Limpieza de seguridad antes de usado3
+		tienda.getHistorialProductos2Mano().add(usado3);
 
-		tienda.publicarParaIntercambio(p2m_alice1);
-		tienda.publicarParaIntercambio(p2m_alice2);
+		tienda.publicarParaIntercambio(usado1);
+		tienda.publicarParaIntercambio(usado2);
 
-		tienda.publicarParaIntercambio(p2m_alice1);
-		tienda.publicarParaIntercambio(p2m_alice2);
+		tienda.publicarParaIntercambio(usado1);
+		tienda.publicarParaIntercambio(usado2);
 
-		// Intercambios: alice<->bob (1), alice<->carlos (2)
-		alice.getCarteraIntercambio().add(p2m_alice1);
-		alice.getCarteraIntercambio().add(p2m_alice2);
-		bob.getCarteraIntercambio().add(p2m_bob);
-		carlos.getCarteraIntercambio().add(p2m_carlos);
-		p2m_alice1.setBloqueado(false);
-		Oferta oferta1 = new Oferta(alice, bob, Arrays.asList(p2m_alice1), Arrays.asList(p2m_bob));
+		// Intercambios: cliente1<->cliente2 (1), cliente1<->cliente3 (2)
+		cliente1.getCarteraIntercambio().add(usado1);
+		cliente1.getCarteraIntercambio().add(usado2);
+		cliente2.getCarteraIntercambio().add(usado3);
+		cliente3.getCarteraIntercambio().add(usado4);
+		usado1.setBloqueado(false);
+		Oferta oferta1 = new Oferta(cliente1, cliente2, Arrays.asList(usado1), Arrays.asList(usado3));
 		oferta1.aceptarOferta();
 		tienda.registrarIntercambioFinalizado(oferta1);
-		p2m_alice2.setBloqueado(false);
-		Oferta oferta2 = new Oferta(alice, carlos, Arrays.asList(p2m_alice2), Arrays.asList(p2m_carlos));
+		usado2.setBloqueado(false);
+		Oferta oferta2 = new Oferta(cliente1, cliente3, Arrays.asList(usado2), Arrays.asList(usado4));
 		oferta2.aceptarOferta();
 		tienda.registrarIntercambioFinalizado(oferta2);
 
 		LocalDate hoy = LocalDate.now();
 		int anioActual = hoy.getYear();
+		System.out.println("Montaje listo.");
 
 		/*
 		 * Comprobamos que el ranking de compras ordena correctamente los clientes segun
 		 * sus pedidos validos (PAGADO, LISTO_PARA_RECOGER, ENTREGADO). Los pedidos
-		 * cancelados no deben contar. Diana tiene solo cancelados y debe quedar ultima.
+		 * cancelados no deben contar. cliente4 tiene solo cancelados y debe quedar
+		 * ultima.
 		 */
 		System.out.println("\n============= verClientesTopCompras =============");
 
@@ -200,10 +210,10 @@ public class PruebaMotorEstadistico {
 
 		check("La lista no es null", topCompras != null);
 		check("Hay 4 clientes en el ranking", topCompras.size() == 4);
-		check("alice lidera con 3 pedidos validos", topCompras.get(0).getNickname().equals("alice"));
-		check("bob es segundo con 2 pedidos", topCompras.get(1).getNickname().equals("bob"));
-		check("carlos es tercero con 1 pedido", topCompras.get(2).getNickname().equals("carlos"));
-		check("diana es ultima con 0 pedidos validos", topCompras.get(3).getNickname().equals("diana"));
+		check("cliente1 lidera con 3 pedidos validos", topCompras.get(0).getNickname().equals("cliente1"));
+		check("cliente2 es segundo con 2 pedidos", topCompras.get(1).getNickname().equals("cliente2"));
+		check("cliente3 es tercero con 1 pedido", topCompras.get(2).getNickname().equals("cliente3"));
+		check("cliente4 es ultima con 0 pedidos validos", topCompras.get(3).getNickname().equals("cliente4"));
 
 		/*
 		 * Comprobamos que el ranking de intercambios ordena segun el numero de
@@ -216,13 +226,14 @@ public class PruebaMotorEstadistico {
 
 		check("La lista no es null", topIntercambios != null);
 		check("Hay 4 clientes en el ranking", topIntercambios.size() == 4);
-		check("alice lidera con 2 intercambios", topIntercambios.get(0).getNickname().equals("alice"));
-		check("diana es ultima con 0 intercambios",
-				topIntercambios.get(topIntercambios.size() - 1).getNickname().equals("diana"));
+		check("cliente1 lidera con 2 intercambios", topIntercambios.get(0).getNickname().equals("cliente1"));
+		check("cliente4 es ultima con 0 intercambios",
+				topIntercambios.get(topIntercambios.size() - 1).getNickname().equals("cliente4"));
 
 		/*
-		 * Comprobamos que el ranking de pedidos cancelados ordena correctamente. Alice
-		 * y diana tienen 1 cancelado cada una, bob y carlos tienen 0.
+		 * Comprobamos que el ranking de pedidos cancelados ordena correctamente.
+		 * cliente1 y cliente4 tienen 1 cancelado cada una, cliente2 y cliente3 tienen
+		 * 0.
 		 */
 		System.out.println("\n============= verClientesConMasPedidosCancelados =============");
 
@@ -232,14 +243,14 @@ public class PruebaMotorEstadistico {
 		check("Hay 4 clientes en el ranking", topCancelados.size() == 4);
 		check("El primero tiene 1 pedido cancelado", topCancelados.get(0).getHistorialPedidos().stream()
 				.filter(p -> p.getEstado() == EstadoPedido.CANCELADO).count() == 1);
-		check("bob tiene 0 cancelados",
-				bob.getHistorialPedidos().stream().filter(p -> p.getEstado() == EstadoPedido.CANCELADO).count() == 0);
-		check("carlos tiene 0 cancelados", carlos.getHistorialPedidos().stream()
+		check("cliente2 tiene 0 cancelados", cliente2.getHistorialPedidos().stream()
+				.filter(p -> p.getEstado() == EstadoPedido.CANCELADO).count() == 0);
+		check("cliente3 tiene 0 cancelados", cliente3.getHistorialPedidos().stream()
 				.filter(p -> p.getEstado() == EstadoPedido.CANCELADO).count() == 0);
 
 		/*
 		 * Comprobamos los ingresos totales por ventas (pedidos), sin contar tasaciones.
-		 * alice 25+35+45=105, bob 15+38=53, carlos 12.50 -> 170.50
+		 * cliente1 25+35+45=105, cliente2 15+38=53, cliente3 12.50 -> 170.50
 		 */
 		System.out.println("\n============= consultarIngresosVenta =============");
 
@@ -261,7 +272,7 @@ public class PruebaMotorEstadistico {
 
 		/*
 		 * Comprobamos calcularIngresosRangoFechas, que suma ventas y tasaciones del
-		 * rango. Ventas = 170.50. Tasaciones en rango = solo p2m_bob (3.50), ya que
+		 * rango. Ventas = 170.50. Tasaciones en rango = solo usado3 (3.50), ya que
 		 * calcularIngresosTasacion usa nTasacionesCobradas que se incrementa en el
 		 * flujo normal de la tienda, no con valorar() directamente. Total esperado =
 		 * 174.00. Un rango sin actividad devuelve 0.0.
@@ -383,18 +394,18 @@ public class PruebaMotorEstadistico {
 		// Pruebas de excepciones en anio
 		try {
 			gestor.consultarIngresosPorMeses(0);
-			check("Anio 0 lanza excepcion", false);
+			check("Año 0 lanza excepcion", false);
 		} catch (AñoInvalidoException e) {
-			check("Anio 0 lanza excepcion", true);
+			check("Año 0 lanza excepcion", true);
 		} catch (RangoFechasInvalidoException e) {
 			fallos++;
 		}
 
 		try {
 			gestor.consultarIngresosPorMeses(-99);
-			check("Anio negativo lanza excepcion", false);
+			check("Año negativo lanza excepcion", false);
 		} catch (AñoInvalidoException e) {
-			check("Anio negativo lanza excepcion", true);
+			check("Año negativo lanza excepcion", true);
 		} catch (RangoFechasInvalidoException e) {
 			fallos++;
 		}
