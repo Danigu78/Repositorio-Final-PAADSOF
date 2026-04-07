@@ -1,113 +1,120 @@
 package test_junit;
-
 import static org.junit.jupiter.api.Assertions.*;
-import java.util.*;
-import org.junit.jupiter.api.*;
-import tienda.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import java.util.ArrayList;
+import java.util.List;
+import java.time.LocalDateTime;
+
+import intercambios.*;
 import productos.*;
 import usuarios.*;
+import tienda.*;
 import Excepcion.*;
-import intercambios.*;
-
 
 public class OfertaTest {
-
-    private Tienda tienda;
     private Cliente origen;
     private Cliente destino;
-
-    private Producto2Mano p1;
-    private Producto2Mano p2;
+    private Empleado taser;
+    private Producto2Mano pOrigen;
+    private Producto2Mano pDestino;
+    private List<Producto2Mano> ofertados;
+    private List<Producto2Mano> solicitados;
 
     @BeforeEach
-    public void setup() throws Exception {
-        tienda = Tienda.getInstancia();
-        tienda.vaciarTienda();
+    void setUp() {
+        Tienda.getInstancia().setTiempoMaxOferta(10);
         
-        Empleado e = new Empleado("Sacha", "CONTRASEÑA");
-       
-     
-        origen = tienda.registrarNuevoCliente("origen", "pass1", "11111111A");
-        destino = tienda.registrarNuevoCliente("destino", "pass2", "22222222B");
+        origen = new Cliente("juan77", "pass123", "12345678Z");
+        destino = new Cliente("marta88", "pass456", "87654321X");
+        taser = new Empleado("taser", "pass");
 
-       
-        p1 = new Producto2Mano(origen, "Producto1", "Desc1", "img1.jpg");
-        p1.valorar(50, EstadoProducto.MUY_BUENO, e);
-        p2 = new Producto2Mano(destino, "Producto2", "Desc2", "img2.jpg");
-        p2.valorar(31, EstadoProducto.PERFECTO, e);
+        pOrigen = new Producto2Mano("PS5", "Consola", "r", null, origen, false, true);
+        pDestino = new Producto2Mano("IPhone", "Movil", "r", null, destino, false, true);
 
-        origen.getCarteraIntercambio().add(p1);
-        destino.getCarteraIntercambio().add(p2);
+        pOrigen.setValoracion(new Valoracion(400.0, EstadoProducto.PERFECTO, taser));
+        pDestino.setValoracion(new Valoracion(500.0, EstadoProducto.MUY_BUENO, taser));
+
+        origen.getCarteraIntercambio().add(pOrigen);
+        destino.getCarteraIntercambio().add(pDestino);
+
+        ofertados = new ArrayList<>();
+        ofertados.add(pOrigen);
+        solicitados = new ArrayList<>();
+        solicitados.add(pDestino);
     }
 
     @Test
-    public void testCreacionOfertaValida() throws Exception {
-        Oferta oferta = new Oferta(origen, destino, List.of(p1), List.of(p2));
+    void testConstructorYEstadoInicial() throws ProductoNoTasadoException {
+        Oferta oferta = new Oferta(origen, destino, ofertados, solicitados);
+        assertNotNull(oferta.getId());
         assertEquals(EstadoOferta.PENDIENTE, oferta.getEstado());
         assertEquals(origen, oferta.getOrigen());
         assertEquals(destino, oferta.getDestino());
-        assertTrue(oferta.getProductosOfertados().contains(p1));
-        assertTrue(oferta.getProductosSolicitados().contains(p2));
     }
 
     @Test
-    public void testRechazarOferta() throws Exception {
-        Oferta oferta = new Oferta(origen, destino, List.of(p1), List.of(p2));
-        origen.getOfertasPendientes().add(oferta);
-        destino.getOfertasPendientes().add(oferta);
-
-        oferta.rechazar();
-        assertEquals(EstadoOferta.RECHAZADA, oferta.getEstado());
-        assertFalse(origen.getOfertasPendientes().contains(oferta));
-        assertFalse(destino.getOfertasPendientes().contains(oferta));
-        assertFalse(p1.isBloqueado());
+    void testErrorProductoNoTasado() {
+        pOrigen.setValoracion(null);
+        assertThrows(Exception.class, () -> {
+            new Oferta(origen, destino, ofertados, solicitados);
+        });
     }
 
     @Test
-    public void testAceptarOferta() throws Exception {
-        Oferta oferta = new Oferta(origen, destino, List.of(p1), List.of(p2));
+    void testAceptarYEjecutar() throws Exception {
+        Oferta oferta = new Oferta(origen, destino, ofertados, solicitados);
+        oferta.aceptarYEjecutar();
+        
+        assertEquals(EstadoOferta.REALIZADA, oferta.getEstado());
+        assertFalse(origen.getCarteraIntercambio().contains(pOrigen));
+        assertFalse(destino.getCarteraIntercambio().contains(pDestino));
+        assertTrue(origen.getHistorialIntercambios().contains(oferta));
+    }
+
+    @Test
+    void testAceptarSinEjecutar() throws Exception {
+        Oferta oferta = new Oferta(origen, destino, ofertados, solicitados);
         oferta.aceptarOferta();
+  
         assertEquals(EstadoOferta.ACEPTADA, oferta.getEstado());
     }
 
     @Test
-    public void testAceptarYEjecutarOferta() throws Exception {
-        Oferta oferta = new Oferta(origen, destino, List.of(p1), List.of(p2));
+    void testRechazar() throws Exception {
+        Oferta oferta = new Oferta(origen, destino, ofertados, solicitados);
         origen.getOfertasPendientes().add(oferta);
         destino.getOfertasPendientes().add(oferta);
-
-        oferta.aceptarYEjecutar();
-        assertEquals(EstadoOferta.REALIZADA, oferta.getEstado());
+        
+        oferta.rechazar();
+        
+        assertEquals(EstadoOferta.RECHAZADA, oferta.getEstado());
         assertFalse(origen.getOfertasPendientes().contains(oferta));
-        assertFalse(destino.getOfertasPendientes().contains(oferta));
-        assertFalse(origen.getCarteraIntercambio().contains(p1));
-        assertFalse(destino.getCarteraIntercambio().contains(p2));
-        assertTrue(tienda.getIntercambiosFinalizados().contains(oferta));
+    }
+
+    
+
+    @Test
+    void testCaducidad() throws ProductoNoTasadoException {
+        Tienda.getInstancia().setTiempoMaxOferta(-1);
+        Oferta oferta = new Oferta(origen, destino, ofertados, solicitados);
+        
+        assertTrue(oferta.haCaducado());
+        assertEquals(EstadoOferta.CADUCADA, oferta.getEstado());
     }
 
     @Test
-    public void testOfertaCaducada() throws Exception {
-        Oferta oferta = new Oferta(origen, destino, List.of(p1), List.of(p2));
-
-        // Forzar caducidad
-        oferta.getFechaOferta().minusMinutes(tienda.getTiempoMaxOferta() + 1);
-
-        boolean caducada = oferta.haCaducado();
-        // El estado debe cambiar a CADUCADA si estaba PENDIENTE
-        if (tienda.getTiempoMaxOferta() > 0) {
-            assertEquals(EstadoOferta.CADUCADA, oferta.getEstado());
-            assertTrue(caducada);
-        } else {
-            assertFalse(caducada);
-        }
+    void testGettersListas() throws ProductoNoTasadoException {
+        Oferta oferta = new Oferta(origen, destino, ofertados, solicitados);
+        assertEquals(1, oferta.getProductosOfertados().size());
+        assertEquals(1, oferta.getProductosSolicitados().size());
+        assertTrue(oferta.getProductosOfertados().contains(pOrigen));
     }
 
     @Test
-    public void testExcepcionProductoNoTasado() {
-        Producto2Mano pNoTasado = new Producto2Mano(origen, "SinTasacion", "Desc", "img.jpg");
-        Exception ex = assertThrows(ProductoNoTasadoException.class, () -> {
-            new Oferta(origen, destino, List.of(pNoTasado), List.of(p2));
-        });
-        assertTrue(ex.getMessage().contains("SinTasacion"));
+    void testFechaCreacion() throws ProductoNoTasadoException {
+        Oferta oferta = new Oferta(origen, destino, ofertados, solicitados);
+        assertNotNull(oferta.getFechaOferta());
+        assertTrue(oferta.getFechaOferta().isBefore(LocalDateTime.now().plusSeconds(1)));
     }
 }

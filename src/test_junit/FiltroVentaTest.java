@@ -13,6 +13,7 @@ import productos.Comic;
 import productos.ProductoVenta;
 import productos.Reseña;
 import tienda.FiltroVenta;
+import usuarios.Cliente;
 
 class FiltroVentaTest {
 
@@ -70,8 +71,9 @@ class FiltroVentaTest {
     @Test
     @DisplayName("Puntuacion suficiente")
     void testPuntuacionOk() {
-    	Reseña r = new Reseña(null, producto, 0, null);
-    	producto.addReseña(null)
+    	Cliente c = new Cliente("Sacha", "Sacha1234", "02576624A");
+    	Reseña r = new Reseña(c, producto, 10, "muy bien");
+    	producto.addReseña(r);
         filtro.setPuntuacionMinima(7);
         assertTrue(filtro.productoCumpleFiltro(producto));
     }
