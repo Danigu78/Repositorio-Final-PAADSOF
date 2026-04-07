@@ -5,12 +5,27 @@ import productos.*;
 import tienda.*;
 import usuarios.*;
 
-
+/**
+ * Clase de prueba para validar el funcionamiento de los filtros de búsqueda.
+ * Se encarga de verificar que tanto los filtros de productos de venta como los 
+ * de segunda mano se filtren correctamente por precio, puntuación, 
+ * categoría y estado de conservación.
+ *
+ *Prueba que se hizo antes del demostrador como una especie de test paracomprobar que la logica es correcta, similar a los junit
+ * @author Daniel
+ * @version 1.0
+ */
 public class PruebaFiltros {
 
 	static int correctos = 0;
 	static int fallos    = 0;
-
+	/**
+	 * Compara el resultado de una prueba con el valor esperado y actualiza 
+	 * los contadores globales de éxito y error.
+	 *
+	 * @param nombre Identificador o descripción de la prueba ejecutada.
+	 * @param condicion Resultado booleano de la validación.
+	 */
 	static void check(String nombre, boolean condicion) {
 		if (condicion) {
 			System.out.println("\tCORRECTO -> " + nombre);
@@ -20,7 +35,14 @@ public class PruebaFiltros {
 			fallos++;
 		}
 	}
-
+	/**
+	 * Método principal que coordina la ejecución de las pruebas de filtrado. 
+	 * Instancia un entorno con productos de diversas características y 
+	 * comprueba la precisión de FiltroVenta y FiltroSegundaMano ante 
+	 * criterios combinados y valores límite.
+	 *
+	 * @param args Argumentos de configuración de la línea de comandos.
+	 */
 	public static void main(String[] args) {
 
 		/*
@@ -102,9 +124,9 @@ public class PruebaFiltros {
 		System.out.println("\tMontaje listo.");
 
 
-		// =============================================
+		
 		System.out.println("\n============= FiltroVenta - estado inicial =============");
-		// =============================================
+		
 
 		/*
 		 * Con filtro por defecto (sin restricciones) todos los productos
@@ -118,9 +140,9 @@ public class PruebaFiltros {
 		check("toString contiene 'FiltroVenta'",                  fv.toString().contains("FiltroVenta"));
 
 
-		// =============================================
+		
 		System.out.println("\n============= FiltroVenta - precio =============");
-		// =============================================
+	
 
 		/*
 		 * Filtramos por rango de precio y comprobamos que solo pasan
@@ -141,9 +163,9 @@ public class PruebaFiltros {
 		check("precio exactamente igual al maximo (35) pasa", fv.productoCumpleFiltro(figura1));
 
 
-		// =============================================
+	
 		System.out.println("\n============= FiltroVenta - puntuacion =============");
-		// =============================================
+		
 
 		fv.resetear();
 		fv.setPuntuacionMinima(7.0);
@@ -154,9 +176,8 @@ public class PruebaFiltros {
 		check("puntuacion 3 (jm1) no pasa minimo 7",  !fv.productoCumpleFiltro(jm1));
 
 
-		// =============================================
 		System.out.println("\n============= FiltroVenta - categorias =============");
-		// =============================================
+		
 
 		fv.resetear();
 		fv.añadirCategoria(catComics);
@@ -181,9 +202,9 @@ public class PruebaFiltros {
 		check("añadir null no añade nada al filtro", fv.getCategorias().size() == 1);
 
 
-		// =============================================
+		
 		System.out.println("\n============= FiltroVenta - combinado =============");
-		// =============================================
+		
 
 		/*
 		 * Precio [10,20], puntuacion >= 7, categoria Comics.
@@ -201,9 +222,9 @@ public class PruebaFiltros {
 		check("figura1 no pasa (precio 35 > 20)",     !fv.productoCumpleFiltro(figura1));
 
 
-		// =============================================
+	
 		System.out.println("\n============= FiltroVenta - control errores setters =============");
-		// =============================================
+		
 
 		fv.resetear();
 		fv.setPrecioMinimo(-5);
@@ -224,10 +245,9 @@ public class PruebaFiltros {
 		check("setPuntuacionMinima > 10 no cambia el valor", fv.getPuntuacionMinima() == 0);
 
 
-		// =============================================
+		
 		System.out.println("\n============= FiltroVenta - resetear =============");
-		// =============================================
-
+		
 		fv.setPrecioMinimo(10);
 		fv.setPrecioMaximo(30);
 		fv.setPuntuacionMinima(5);
@@ -241,9 +261,9 @@ public class PruebaFiltros {
 		check("Tras resetear, comic1 vuelve a pasar",              fv.productoCumpleFiltro(comic1));
 
 
-		// =============================================
+		
 		System.out.println("\n============= FiltroSegundaMano - estado inicial =============");
-		// =============================================
+		
 
 		/*
 		 * Con filtro por defecto pasan todos los productos visibles,
@@ -259,9 +279,9 @@ public class PruebaFiltros {
 		check("toString contiene 'FiltroSegundaMano'",    fsm.toString().contains("FiltroSegundaMano"));
 
 
-		// =============================================
+		
 		System.out.println("\n============= FiltroSegundaMano - precio =============");
-		// =============================================
+		
 
 		fsm.setValorMinimo(5);
 		fsm.setValorMaximo(12);
@@ -277,9 +297,9 @@ public class PruebaFiltros {
 		check("tasacion exactamente igual al maximo (15) pasa", fsm.cumpleFiltro(p2m_perfecto));
 
 
-		// =============================================
+	
 		System.out.println("\n============= FiltroSegundaMano - estado =============");
-		// =============================================
+	
 
 		/*
 		 * estadoMinimo indica la calidad minima: PERFECTO(0) es el mejor,
@@ -301,9 +321,9 @@ public class PruebaFiltros {
 		check("Con estadoMinimo null todos los estados pasan",  fsm.cumpleFiltro(p2m_usado));
 
 
-		// =============================================
+		
 		System.out.println("\n============= FiltroSegundaMano - control errores setters =============");
-		// =============================================
+		
 
 		fsm.resetear();
 		fsm.setValorMinimo(-1);
@@ -318,10 +338,9 @@ public class PruebaFiltros {
 		check("setValorMaximo < valorMinimo no cambia el valor", fsm.getValorMaximo() == 20);
 
 
-		// =============================================
+		
 		System.out.println("\n============= FiltroSegundaMano - resetear =============");
-		// =============================================
-
+	
 		fsm.setValorMinimo(5);
 		fsm.setValorMaximo(10);
 		fsm.setEstadoMinimo(EstadoProducto.PERFECTO);
@@ -333,7 +352,7 @@ public class PruebaFiltros {
 		check("Tras resetear, p2m_usado vuelve a pasar",     fsm.cumpleFiltro(p2m_usado));
 
 
-		// =============================================
+		
 		System.out.println("\n==============================================");
 		System.out.println("\tRESULTADO: " + correctos + " CORRECTOS  |  " + fallos + " FALLOS");
 		System.out.println("==============================================");

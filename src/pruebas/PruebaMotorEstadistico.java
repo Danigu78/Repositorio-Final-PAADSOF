@@ -11,11 +11,29 @@ import tienda.*;
 import usuarios.*;
 import ventas.*;
 
+/**
+ * Clase de prueba para validar el motor estadístico y de ingresos del sistema.
+ * Se encarga de verificar que el gestor genere correctamente los rankings de
+ * clientes y calcule con precisión los ingresos por ventas y tasaciones, tanto
+ * en periodos mensuales como en rangos de fechas específicos.
+ *  Prueba que se
+ * hizo antes del demostrador como una especie de test para comprobar que la
+ * logica es correcta, similar a los junit
+ * 
+ * @author Lucas
+ * @version 1.0
+ */
 public class PruebaMotorEstadistico {
 
 	static int correctos = 0;
 	static int fallos = 0;
-
+	/**
+	 * Valida un resultado esperado frente a uno obtenido y actualiza los 
+	 * contadores globales. Imprime el estado de la prueba por consola.
+	 *
+	 * @param nombre Descripción de la prueba o funcionalidad validada.
+	 * @param condicion Expresión booleana que determina si la prueba es correcta.
+	 */
 	static void check(String nombre, boolean condicion) {
 		if (condicion) {
 			System.out.println("\tCORRECTO -> " + nombre);
@@ -25,7 +43,14 @@ public class PruebaMotorEstadistico {
 			fallos++;
 		}
 	}
-
+	/**
+	 * Método principal que ejecuta la batería de pruebas estadísticas. 
+	 * Simula un entorno complejo con múltiples clientes, pedidos pagados, 
+	 * cancelaciones, productos de segunda mano e intercambios para comprobar 
+	 * la fiabilidad de los informes generados por el gestor.
+	 *
+	 * @param args Argumentos de configuración de la línea de comandos.
+	 */
 	public static void main(String[] args) {
 
 		/*
@@ -35,9 +60,9 @@ public class PruebaMotorEstadistico {
 		 * intercambios finalizados. El gestor ya existe porque la Tienda lo crea en su
 		 * constructor.
 		 */
-		
+
 		Tienda.getInstancia().getHistorialVentas().clear();
-	    Tienda.getInstancia().getHistorialProductos2Mano().clear();
+		Tienda.getInstancia().getHistorialProductos2Mano().clear();
 		System.out.println("\n============= MONTAJE =============");
 
 		Tienda tienda = Tienda.getInstancia();
@@ -133,21 +158,17 @@ public class PruebaMotorEstadistico {
 		Producto2Mano p2m_bob = new Producto2Mano(bob, "One Piece Vol.1", "Algo desgastado", "op.png");
 		Producto2Mano p2m_carlos = new Producto2Mano(carlos, "DBZ Manga", "Bueno", "dbz.png");
 
-		
 		p2m_alice1.valorar(5.00, EstadoProducto.MUY_BUENO, tasador);
 		p2m_alice2.valorar(8.00, EstadoProducto.MUY_BUENO, tasador);
 		p2m_carlos.valorar(4.00, EstadoProducto.MUY_BUENO, tasador);
 
-		
 		p2m_bob.valorar(3.50, EstadoProducto.MUY_BUENO, tasador);
 		tienda.getHistorialProductos2Mano().clear(); // Limpieza de seguridad antes de Bob
-		tienda.getHistorialProductos2Mano().add(p2m_bob); 
+		tienda.getHistorialProductos2Mano().add(p2m_bob);
 
-		
 		tienda.publicarParaIntercambio(p2m_alice1);
 		tienda.publicarParaIntercambio(p2m_alice2);
 
-		
 		tienda.publicarParaIntercambio(p2m_alice1);
 		tienda.publicarParaIntercambio(p2m_alice2);
 
@@ -248,10 +269,9 @@ public class PruebaMotorEstadistico {
 		System.out.println("\n============= consultarIngresosRango =============");
 
 		try {
-			
-			check("Rango anio completo  = 180.50",
-					gestor.consultarIngresosRango(LocalDate.of(anioActual, 1, 1),
-							LocalDate.of(anioActual, 12, 31)) == 180.5);
+
+			check("Rango anio completo  = 180.50", gestor.consultarIngresosRango(LocalDate.of(anioActual, 1, 1),
+					LocalDate.of(anioActual, 12, 31)) == 180.5);
 			check("Rango de un solo dia (hoy) = 180.50", gestor.consultarIngresosRango(hoy, hoy) == 180.5);
 			check("Rango anio anterior (sin actividad) = 0.0",
 					gestor.consultarIngresosRango(LocalDate.of(anioActual - 1, 1, 1),
@@ -298,14 +318,14 @@ public class PruebaMotorEstadistico {
 			int mesIdx = hoy.getMonthValue() - 1;
 
 			check("Array tiene 12 posiciones", porMesActual != null && porMesActual.length == 12);
-			
+
 			check("Mes actual tiene 180.5", porMesActual[mesIdx] == 180.5);
 
 			double sumaMeses = 0.0;
 			for (double v : porMesActual) {
 				sumaMeses += v;
 			}
-			
+
 			check("Suma de los 12 meses = 180.5", sumaMeses == 180.5);
 
 			boolean otrosMesesVacios = true;
@@ -332,7 +352,8 @@ public class PruebaMotorEstadistico {
 			double[] porMesActual = gestor.consultarIngresosPorMesesActual();
 			double[] porMesAnioActual = gestor.consultarIngresosPorMeses(anioActual);
 
-			check("Array del año actual tiene 12 posiciones", porMesAnioActual != null && porMesAnioActual.length == 12);
+			check("Array del año actual tiene 12 posiciones",
+					porMesAnioActual != null && porMesAnioActual.length == 12);
 			check("consultarIngresosPorMeses(anioActual) coincide con consultarIngresosPorMesesActual()",
 					Arrays.equals(porMesActual, porMesAnioActual));
 

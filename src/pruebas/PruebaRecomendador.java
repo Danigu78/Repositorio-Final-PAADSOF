@@ -7,11 +7,30 @@ import usuarios.*;
 import ventas.*;
 import Excepcion.*;
 
+/**
+ * Clase de prueba para validar el motor de recomendaciones de la tienda. Se
+ * encarga de verificar que el sistema sugiera productos de forma coherente
+ * basándose en tres criterios configurables: valoraciones globales, historial
+ * de compras comunes entre usuarios y categorías favoritas. Prueba que se hizo
+ * antes del demostrador como una especie de test para comprobar que la logica
+ * es correcta, similar a los junit
+ *
+ * @author Lucas y Antonino
+ * @version 1.0
+ */
 public class PruebaRecomendador {
 
 	static int correctos = 0;
 	static int fallos = 0;
 
+	/**
+	 * Evalúa una condición lógica y actualiza los contadores de éxito o fallo.
+	 * Imprime el resultado de la comprobación detallando si la funcionalidad
+	 * responde según lo esperado.
+	 *
+	 * @param nombre    Descripción del test o comportamiento que se está validando.
+	 * @param condicion Resultado booleano de la evaluación del test.
+	 */
 	static void check(String nombre, boolean condicion) {
 		if (condicion) {
 			System.out.println("\tCORRECTO -> " + nombre);
@@ -22,6 +41,14 @@ public class PruebaRecomendador {
 		}
 	}
 
+	/**
+	 * Método principal que coordina las pruebas del recomendador. Simula un entorno
+	 * con múltiples productos reseñados y compras cruzadas entre usuarios para
+	 * verificar que los pesos de ponderación, los límites de sugerencias y las
+	 * exclusiones por productos ya adquiridos funcionan correctamente.
+	 *
+	 * @param args Argumentos de configuración de la línea de comandos.
+	 */
 	public static void main(String[] args) {
 
 		/*
@@ -79,10 +106,7 @@ public class PruebaRecomendador {
 		tasador.añadirProducto_nuevo("J", "Catan", "desc", "img", 45.00, 12, catsJuegos, 0, null, 0, 0, 0, 0, null,
 				null, 2, 4, 8, 99, "Eurogame");
 
-		
-		
-		
-		//Igual aqui tenemos que meter un to string en el get stockventas?
+		// Igual aqui tenemos que meter un to string en el get stockventas?
 		ProductoVenta comic1 = tienda.getStockVentas().get(0);
 		ProductoVenta comic2 = tienda.getStockVentas().get(1);
 		ProductoVenta figura1 = tienda.getStockVentas().get(2);
@@ -92,7 +116,7 @@ public class PruebaRecomendador {
 		System.out.println("COMPROBACION DE QUE LOS PRODUCTOS SE HAN AÑADIDO CORRECTAMENTE A LA TIENDA:");
 		System.out.println("\n=== PRODUCTOS EN LA TIENDA ===");
 		for (ProductoVenta p : tienda.getStockVentas()) {
-		    System.out.println(p);
+			System.out.println(p);
 		}
 		// clientes se registran y hacen login
 		tienda.registrarNuevoCliente("alice", "Alice@1234", "11111111A");

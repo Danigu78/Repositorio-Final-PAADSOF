@@ -119,5 +119,71 @@ public class TestExcepciones {
             throw new ReseñaDuplicadaException("ID-USER-123");
         });
     }
+    @Test
+    public void testProductoNoTasadoException() {
+        ProductoNoTasadoException e = new ProductoNoTasadoException("ID1", "ProductoTest");
+
+        assertEquals("ID1", e.getIdProducto());
+        assertEquals("ProductoTest", e.getNombreProducto());
+        assertTrue(e.getMessage().contains("no puede participar en un intercambio"));
+        assertTrue(e instanceof CheckPointException);
+    }
+    @Test
+    public void testProductoYaEnPackException() {
+        ProductoYaEnPackException e1 = new ProductoYaEnPackException();
+        assertTrue(e1.getMessage().contains("ya está incluido"));
+
+        ProductoYaEnPackException e2 = new ProductoYaEnPackException("Mensaje custom");
+        assertEquals("Mensaje custom", e2.getMessage());
+    }
+    @Test
+    public void testRangoFechasInvalidoException() {
+        java.time.LocalDate inicio = java.time.LocalDate.of(2025, 1, 10);
+        java.time.LocalDate fin = java.time.LocalDate.of(2025, 1, 5);
+
+        RangoFechasInvalidoException e = new RangoFechasInvalidoException(inicio, fin);
+
+        assertEquals(inicio, e.getInicio());
+        assertEquals(fin, e.getFin());
+        assertTrue(e.getMessage().contains("Rango de fechas invalido"));
+    }
+    @Test
+    public void testRecomendadorNoActivoException() {
+        RecomendadorNoActivoException e = new RecomendadorNoActivoException();
+
+        assertTrue(e.getMessage().contains("recomendador"));
+        assertTrue(e instanceof CheckPointException);
+    }
+    @Test
+    public void testStockInsuficienteParaPackException() {
+        StockInsuficienteParaPackException e1 = new StockInsuficienteParaPackException();
+        assertTrue(e1.getMessage().contains("stock suficiente"));
+
+        StockInsuficienteParaPackException e2 = new StockInsuficienteParaPackException("Custom");
+        assertEquals("Custom", e2.getMessage());
+    }
+    @Test
+    public void testProductoInvalidoException() {
+        ProductoInvalidoException e1 = new ProductoInvalidoException();
+        assertTrue(e1.getMessage().contains("no son válidos"));
+
+        ProductoInvalidoException e2 = new ProductoInvalidoException("Error custom");
+        assertEquals("Error custom", e2.getMessage());
+    }
+    @Test
+    public void testLanzamientoProductoNoTasado() {
+        assertThrows(ProductoNoTasadoException.class, () -> {
+            throw new ProductoNoTasadoException("ID1", "ProductoTest");
+        });
+    }
+    @Test
+    public void testLanzamientoRangoFechasInvalido() {
+        assertThrows(RangoFechasInvalidoException.class, () -> {
+            throw new RangoFechasInvalidoException(
+                java.time.LocalDate.now(),
+                java.time.LocalDate.now().minusDays(1)
+            );
+        });
+    }
     
 }
