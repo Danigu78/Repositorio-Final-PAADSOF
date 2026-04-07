@@ -147,26 +147,37 @@ public class MotorEstadistico {
 
 	public double calcularIngresosVenta() {
 		try {
-			return calcularIngresosVentaRango(LocalDate.MIN, LocalDate.MAX);
+			return calcularIngresosVentaRango(LocalDate.MIN, LocalDate.MAX) ;
 		} catch (RangoFechasInvalidoException e) {
 			return 0.0;
 		}
 	}
 
 	public double calcularIngresosTasacion() {
-		return (Estadistica.getInstancia().getnTasacionesCobradas()) * (Tienda.getInstancia().getPrecioTasacion());
+
+	    return calcularTasacionesEnRango(LocalDate.MIN, LocalDate.MAX);
 	}
 
 	private double calcularTasacionesEnRango(LocalDate inicio, LocalDate fin) {
-		double total = 0.0;
-		for (Producto2Mano p : Tienda.getInstancia().getHistorialProductos2Mano()) {
-			if (p.getValoracion() != null && p.getValoracion().getFecha() != null) {
-				LocalDate fechaVal = p.getValoracion().getFecha().toLocalDate();
-				if (!fechaVal.isBefore(inicio) && !fechaVal.isAfter(fin)) {
-					total += p.getValoracion().getPrecioPagado();
-				}
-			}
-		}
-		return total;
+	    double total = 0.0;
+
+	    List<Producto2Mano> historial = new ArrayList<>(Tienda.getInstancia().getHistorialProductos2Mano());
+
+	    for (Producto2Mano p : historial) {
+	        Valoracion v = p.getValoracion();
+
+	        if (v != null && v.getFecha() != null) {
+
+	            LocalDate fechaVal = v.getFecha().toLocalDate();
+
+	            if (!fechaVal.isBefore(inicio) && !fechaVal.isAfter(fin)) {
+
+	               
+	                total += v.getPrecioTasacion();
+	            }
+	        }
+	    }
+
+	    return total;
 	}
-}
+	}

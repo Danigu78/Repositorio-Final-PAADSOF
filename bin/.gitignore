@@ -1,10 +1,14 @@
 /module-info.class
 /Tienda.class
 /.metadata/
-/test_junit/
+/.classpath
+/.gitignore
+/.project
+/Excepcion/
 /intercambios/
 /productos/
 /pruebas/
+/test_junit/
+/tienda/
 /usuarios/
-/Excepcion/
 /ventas/

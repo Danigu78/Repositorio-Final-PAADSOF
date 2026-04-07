@@ -35,6 +35,9 @@ public class PruebaMotorEstadistico {
 		 * intercambios finalizados. El gestor ya existe porque la Tienda lo crea en su
 		 * constructor.
 		 */
+		
+		Tienda.getInstancia().getHistorialVentas().clear();
+	    Tienda.getInstancia().getHistorialProductos2Mano().clear();
 		System.out.println("\n============= MONTAJE =============");
 
 		Tienda tienda = Tienda.getInstancia();
@@ -124,17 +127,29 @@ public class PruebaMotorEstadistico {
 		pdc.cancelarPedido();
 
 		// Tasaciones: 5+8 en catalogo, 3.50 en pendientes -> total 16.50
+		// Tasaciones
 		Producto2Mano p2m_alice1 = new Producto2Mano(alice, "Naruto Vol.3", "Usado", "naruto.png");
 		Producto2Mano p2m_alice2 = new Producto2Mano(alice, "Figura Pikachu", "Buen estado", "pika.png");
 		Producto2Mano p2m_bob = new Producto2Mano(bob, "One Piece Vol.1", "Algo desgastado", "op.png");
 		Producto2Mano p2m_carlos = new Producto2Mano(carlos, "DBZ Manga", "Bueno", "dbz.png");
+
+		
 		p2m_alice1.valorar(5.00, EstadoProducto.MUY_BUENO, tasador);
 		p2m_alice2.valorar(8.00, EstadoProducto.MUY_BUENO, tasador);
-		p2m_bob.valorar(3.50, EstadoProducto.MUY_BUENO, tasador);
 		p2m_carlos.valorar(4.00, EstadoProducto.MUY_BUENO, tasador);
+
+		
+		p2m_bob.valorar(3.50, EstadoProducto.MUY_BUENO, tasador);
+		tienda.getHistorialProductos2Mano().clear(); // Limpieza de seguridad antes de Bob
+		tienda.getHistorialProductos2Mano().add(p2m_bob); 
+
+		
 		tienda.publicarParaIntercambio(p2m_alice1);
 		tienda.publicarParaIntercambio(p2m_alice2);
-		tienda.getPendientesTasacion().add(p2m_bob);
+
+		
+		tienda.publicarParaIntercambio(p2m_alice1);
+		tienda.publicarParaIntercambio(p2m_alice2);
 
 		// Intercambios: alice<->bob (1), alice<->carlos (2)
 		alice.getCarteraIntercambio().add(p2m_alice1);
