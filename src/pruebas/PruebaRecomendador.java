@@ -51,20 +51,11 @@ public class PruebaRecomendador {
 	 */
 	public static void main(String[] args) {
 
-		/*
-		 * Montamos la tienda con productos, categorias, clientes y pedidos El gestor ya
-		 * existe en la tienda (lo crea el constructor de Tienda). -Valoraciones a poner
-		 * producto1=9, producto2=7 -> categoria1 producto3=8, producto4=6 -> categoria2
-		 * producto5=5 -> categoria3 cliente1: compro producto1 -> categoria favorita
-		 * categoria1 cliente2: compro producto1 y producto3 (tiene producto1 en comun
-		 * con cliente1) cliente3: sin historial (caso borde)
-		 */
 		System.out.println("\n============= MONTAJE =============");
 
 		Tienda tienda = Tienda.getInstancia();
 		Recomendador rec = tienda.getRecomendador();
 
-		// recordar q el gestor se crea solo, lo buscamos
 		Gestor gestor = null;
 		for (UsuarioRegistrado u : tienda.getUsuarios()) {
 			if (u instanceof Gestor) {
@@ -73,17 +64,14 @@ public class PruebaRecomendador {
 			}
 		}
 
-		// el gestor configura los tiempos del sistema (necesario para el carrito)
 		gestor.configurarTiemposSistema(60, 60, 60);
 
-		// el gestor crea un empleado q pueda tasar
 		List<TipoPermisos> permisosT = new ArrayList<>();
 		permisosT.add(TipoPermisos.VALORACION_PRODUCTOS);
 		permisosT.add(TipoPermisos.GESTION_STOCK);
-		gestor.darDeAltaEmpleados_Permisos("empleado1", "Clave1@", permisosT);
-		Empleado empleado1 = tienda.loginEmpleado("empleado1", "Clave1@");
+		gestor.darDeAltaEmpleados_Permisos("empleado1", "Clave1@1234", permisosT);
+		Empleado empleado1 = tienda.loginEmpleado("empleado1", "Clave1@1234");
 
-		// categorias
 		Categoria categoria1 = new Categoria("categoria1", "desc");
 		Categoria categoria2 = new Categoria("categoria2", "desc");
 		Categoria categoria3 = new Categoria("categoria3", "desc");
@@ -91,7 +79,6 @@ public class PruebaRecomendador {
 		tienda.getCategorias().add(categoria2);
 		tienda.getCategorias().add(categoria3);
 
-		// el empleado sube los productos
 		ArrayList<Categoria> cats1 = new ArrayList<>(Arrays.asList(categoria1));
 		ArrayList<Categoria> cats2 = new ArrayList<>(Arrays.asList(categoria2));
 		ArrayList<Categoria> cats3 = new ArrayList<>(Arrays.asList(categoria3));
@@ -107,7 +94,6 @@ public class PruebaRecomendador {
 		empleado1.añadirProducto_nuevo("J", "producto5", "desc", "imagen5", 45.00, 12, cats3, 0, null, 0, 0, 0, 0, null,
 				null, 2, 4, 8, 99, "dato7");
 
-		// Igual aqui tenemos que meter un to string en el get stockventas?
 		ProductoVenta producto1 = tienda.getStockVentas().get(0);
 		ProductoVenta producto2 = tienda.getStockVentas().get(1);
 		ProductoVenta producto3 = tienda.getStockVentas().get(2);
@@ -119,15 +105,15 @@ public class PruebaRecomendador {
 		for (ProductoVenta p : tienda.getStockVentas()) {
 			System.out.println(p);
 		}
-		// clientes se registran y hacen login
-		tienda.registrarNuevoCliente("cliente1", "Clave2@", "11111111A");
-		tienda.registrarNuevoCliente("cliente2", "Clave3@", "22222222B");
-		tienda.registrarNuevoCliente("cliente3", "Clave4@", "33333333C");
-		Cliente cliente1 = tienda.loginCliente("cliente1", "Clave2@");
-		Cliente cliente2 = tienda.loginCliente("cliente2", "Clave3@");
-		Cliente cliente3 = tienda.loginCliente("cliente3", "Clave4@");
 
-		// Resenas: producto1=9, producto2=7, producto3=8, producto4=6, producto5=5
+		// CORRECCIÓN: contraseñas con mayúscula, minúscula, número y carácter especial
+		tienda.registrarNuevoCliente("cliente1", "Clave2@1234", "11111111A");
+		tienda.registrarNuevoCliente("cliente2", "Clave3@1234", "22222222B");
+		tienda.registrarNuevoCliente("cliente3", "Clave4@1234", "33333333C");
+		Cliente cliente1 = tienda.loginCliente("cliente1", "Clave2@1234");
+		Cliente cliente2 = tienda.loginCliente("cliente2", "Clave3@1234");
+		Cliente cliente3 = tienda.loginCliente("cliente3", "Clave4@1234");
+
 		new Reseña(cliente1, producto1, 9.0, "texto1");
 		new Reseña(cliente1, producto2, 7.0, "texto2");
 		new Reseña(cliente2, producto3, 8.0, "texto3");
@@ -156,11 +142,6 @@ public class PruebaRecomendador {
 
 		// cliente3 no hace nada
 
-		/*
-		 * Comprobamos el recomendador por valoracion. setPesos(1,0,0). producto1 esta
-		 * excluido (cliente1 ya lo compro). El primero debe ser producto3 con
-		 * puntuacion 8.0.
-		 */
 		System.out.println("\n============= recomendarPorValoracion =============");
 
 		try {
@@ -183,10 +164,6 @@ public class PruebaRecomendador {
 			fallos++;
 		}
 
-		/*
-		 * Comprobamos el recomendador por compras. cliente2 compro producto1 (en comun
-		 * con cliente1) y producto3. Debe sugerirle producto3 a cliente1.
-		 */
 		System.out.println("\n============= recomendarPorCompras =============");
 
 		try {
@@ -215,11 +192,6 @@ public class PruebaRecomendador {
 			fallos++;
 		}
 
-		/*
-		 * Comprobamos el recomendador por categorias. Categoria favorita de cliente1 es
-		 * categoria1 (solo compro producto1). Debe recomendarle producto2 y solo
-		 * productos de categoria1.
-		 */
 		System.out.println("\n============= recomendarPorCategorias =============");
 
 		try {
@@ -249,9 +221,6 @@ public class PruebaRecomendador {
 			fallos++;
 		}
 
-		/*
-		 * Comprobamos el recomendador con los tres criterios activos.
-		 */
 		System.out.println("\n============= recomendador ponderado =============");
 
 		try {
@@ -272,9 +241,6 @@ public class PruebaRecomendador {
 			fallos++;
 		}
 
-		/*
-		 * Caso extremo: cliente3 sin historial.
-		 */
 		System.out.println("\n============= cliente3 sin historial (caso extremo) =============");
 
 		try {
@@ -296,9 +262,6 @@ public class PruebaRecomendador {
 			fallos++;
 		}
 
-		/*
-		 * Comprobamos que los productos en el carrito tambien se excluyen.
-		 */
 		System.out.println("\n============= exclusion por carrito =============");
 
 		try {
@@ -318,9 +281,6 @@ public class PruebaRecomendador {
 			fallos++;
 		}
 
-		/*
-		 * Comprobamos el control de errores de configuracion del recomendador.
-		 */
 		System.out.println("\n============= CONTROL DE ERRORES =============");
 
 		int limiteAntes = rec.getLimiteMaximo();
@@ -333,7 +293,6 @@ public class PruebaRecomendador {
 		rec.getPesoValoracion();
 		rec.getPesoCompras();
 
-		// Prueba de pesos negativos
 		try {
 			rec.setPesos(-1, 0.5, 0.5);
 			check("setPesos con peso negativo no cambia los pesos", false);
@@ -341,7 +300,6 @@ public class PruebaRecomendador {
 			check("setPesos con peso negativo lanza PesosInvalidosException", true);
 		}
 
-		// Prueba de pesos a cero
 		try {
 			rec.setPesos(0, 0, 0);
 			check("setPesos todos a 0 no cambia los pesos", false);
@@ -357,7 +315,6 @@ public class PruebaRecomendador {
 			fallos++;
 		}
 
-		// Prueba de recomendador desactivado
 		try {
 			rec.setConfiguracion(5, false);
 			rec.generarSugerencias(cliente1);
@@ -372,9 +329,6 @@ public class PruebaRecomendador {
 			fallos++;
 		}
 
-		/*
-		 * Imprimimos el resultado del test.
-		 */
 		System.out.println("\n==============================================");
 		System.out.println("\tRESULTADO: " + correctos + " CORRECTOS  |  " + fallos + " FALLOS");
 		System.out.println("==============================================");
