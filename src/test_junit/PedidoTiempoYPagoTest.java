@@ -1,7 +1,7 @@
 package test_junit;
 
-import static org.junit.jupiter.api.Assertions.*;  
-import org.junit.jupiter.api.*;                   
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.*;
 
 import java.util.Date;
 

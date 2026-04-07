@@ -8,14 +8,14 @@ package Excepcion;
  */
 public class CheckPointException extends RuntimeException {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    /**
-     * Construye la excepción con un mensaje descriptivo.
-     *
-     * @param mensaje descripción del error
-     */
-    public CheckPointException(String mensaje) {
-        super(mensaje);
-    }
+	/**
+	 * Construye la excepción con un mensaje descriptivo.
+	 *
+	 * @param mensaje descripción del error
+	 */
+	public CheckPointException(String mensaje) {
+		super(mensaje);
+	}
 }
