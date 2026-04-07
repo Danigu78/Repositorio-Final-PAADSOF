@@ -411,15 +411,16 @@ public class PruebaEmpleado {
 	@Test
 	@DisplayName("cargarProductosFicheroTexto sin permiso devuelve false")
 	void testCargarFicheroSinPermiso() {
-		assertFalse(empSinPermisos.cargarProductosFicheroTexto("src/tienda/ficheros/productos.txt"));
+	 
+	    assertFalse(empSinPermisos.cargarProductosFicheroTexto("ficheros/productos.txt"));
 	}
 
 	@Test
 	@DisplayName("cargarProductosFicheroTexto con fichero valido devuelve true")
 	void testCargarFicheroOk() {
-		assertTrue(empStock.cargarProductosFicheroTexto("src/tienda/ficheros/productos.txt"));
+	   
+	    assertTrue(empStock.cargarProductosFicheroTexto("ficheros/productos.txt"));
 	}
-
 	@Test
 	@DisplayName("añadirProductoaPack con id que no es pack devuelve false")
 	void testAñadirProductoAPackNoEsPack() {
@@ -440,8 +441,6 @@ public class PruebaEmpleado {
 
 		assertTrue(empStock.modificarUnidadesProductoEnPack(watchmen.getId(), idPack, 3));
 	}
-
-	
 
 	@Test
 	@DisplayName("eliminarProductoDePack con datos validos devuelve true")
@@ -878,74 +877,89 @@ public class PruebaEmpleado {
 
 		assertFalse(resultado);
 	}
+
 	@Test
 	@DisplayName("modificarUnidadesPack: Cubrir error de permisos")
 	void testModPackErrorPermisos() {
-	   
-	    assertFalse(empSinPermisos.modificarUnidadesProductoEnPack("P1", "PACK1", 10));
+
+		assertFalse(empSinPermisos.modificarUnidadesProductoEnPack("P1", "PACK1", 10));
 	}
 
 	@Test
 	@DisplayName("modificarUnidadesPack:  error de IDs vacíos")
 	void testModPackErrorIds() {
-	   
 
-	    assertFalse(empStock.modificarUnidadesProductoEnPack("P1", "", 10));
-	    assertFalse(empStock.modificarUnidadesProductoEnPack("  ", "PACK1", 10));
+		assertFalse(empStock.modificarUnidadesProductoEnPack("P1", "", 10));
+		assertFalse(empStock.modificarUnidadesProductoEnPack("  ", "PACK1", 10));
 	}
 
 	@Test
 	@DisplayName("modificarUnidadesPack:  error de unidades <= 0")
 	void testModPackErrorUnidades() {
-	    
-	    assertFalse(empStock.modificarUnidadesProductoEnPack("P1", "PACK1", 0));
-	    assertFalse(empStock.modificarUnidadesProductoEnPack("P1", "PACK1", -5));
+
+		assertFalse(empStock.modificarUnidadesProductoEnPack("P1", "PACK1", 0));
+		assertFalse(empStock.modificarUnidadesProductoEnPack("P1", "PACK1", -5));
 	}
 
 	@Test
 	@DisplayName("modificarUnidadesPack:  error de Pack inexistente")
 	void testModPackErrorNoExistePack() {
-	  
-	    assertFalse(empStock.modificarUnidadesProductoEnPack("P1", "ID-FALSO", 5));
-	    assertFalse(empStock.modificarUnidadesProductoEnPack("P1", akira.getId(), 5));
+
+		assertFalse(empStock.modificarUnidadesProductoEnPack("P1", "ID-FALSO", 5));
+		assertFalse(empStock.modificarUnidadesProductoEnPack("P1", akira.getId(), 5));
 	}
 
 	@Test
 	@DisplayName("modificarUnidadesPack: error de Producto inexistente")
 	void testModPackErrorNoExisteProducto() {
-	    
+	   
 	    empStock.asignarPermiso(TipoPermisos.GESTION_PACKS);
+	    empStock.reponerStockProducto(watchmen.getId(), 20);
+	    empStock.reponerStockProducto(akira.getId(), 20); 
+	  
+	    
 	    ArrayList<LineaPack> lineas = new ArrayList<>();
 	    lineas.add(new LineaPack(watchmen, 1));
+	    lineas.add(new LineaPack(akira, 1)); 
 	    
-	 
+	  
 	    empStock.crearPack("PackParaTest", "desc", "img.jpg", 10.0, 5, lineas);
-	 
+	   
 	    List<ProductoVenta> resultados = Tienda.getInstancia().buscarproductoPorNombre("PackParaTest");
-	    if (resultados.isEmpty()) {
-	        fail("El pack 'PackParaTest' no se creó. Revisa permisos o si 'watchmen' está en la tienda.");
-	    }
+	    assertFalse(resultados.isEmpty(), "El pack 'PackParaTest' no se creó. Asegúrate de que tenga > 1 producto.");
+	    
 	    String idPack = resultados.get(0).getId();
-
-	    assertFalse(empStock.modificarUnidadesProductoEnPack("PRODUCTO-FANTASMA", idPack, 3));
+	    assertFalse(empStock.modificarUnidadesProductoEnPack("PRODUCTO-FANTASMA", idPack, 3),
+	               "Debería devolver false al intentar modificar un producto que no existe en el pack");
 	}
 
 	@Test
 	@DisplayName("modificarUnidadesPack: Cubrir éxito")
 	void testModPackExitoTotal() {
-	    // 1. Setup: Asegurar permiso
+	    // 1. Setup: Asignar permisos y asegurar stock
 	    empStock.asignarPermiso(TipoPermisos.GESTION_PACKS);
+	    empStock.asignarPermiso(TipoPermisos.GESTION_STOCK); 
+
+	    // Reponemos stock de ambos productos para evitar fallos por falta de existencias
+	    empStock.reponerStockProducto(watchmen.getId(), 50);
+	    empStock.reponerStockProducto(akira.getId(), 50);
+
+	    // 2. IMPORTANTE: El pack DEBE tener al menos 2 productos diferentes
 	    ArrayList<LineaPack> lineas = new ArrayList<>();
 	    lineas.add(new LineaPack(watchmen, 2));
-	    empStock.crearPack("PackFinal", "desc", "img.jpg", 15.0, 10, lineas);
+	    lineas.add(new LineaPack(akira, 1)); // Añadimos un segundo producto
+	    
+	    // 3. Crear el pack
+	    boolean creado = empStock.crearPack("PackFinal", "desc", "img.jpg", 15.0, 10, lineas);
+	    assertTrue(creado, "El método crearPack devolvió false. Revisa que el pack tenga > 1 producto y stock suficiente.");
 
+	    // 4. Buscar el pack creado
 	    List<ProductoVenta> resultados = Tienda.getInstancia().buscarproductoPorNombre("PackFinal");
-	    if (resultados.isEmpty()) {
-	        fail("El pack 'PackFinal' no se creó. Verifica que el empleado tenga permisos.");
-	    }
+	    assertFalse(resultados.isEmpty(), "El pack 'PackFinal' no se encontró en la tienda.");
+	    
 	    String idPack = resultados.get(0).getId();
 
-	 
-	    assertTrue(empStock.modificarUnidadesProductoEnPack(watchmen.getId(), idPack, 5));
-	}
-}
+	    // 5. Ejecución: Modificar las unidades de 'watchmen' de 2 a 5
+	    boolean modificado = empStock.modificarUnidadesProductoEnPack(watchmen.getId(), idPack, 5);
+	    assertTrue(modificado, "No se pudieron modificar las unidades del pack.");
+	}}

@@ -32,6 +32,7 @@ public class UsuarioNoRegistrado {
 		Estadistica est = Estadistica.getInstancia();
 		this.sessionId = "INVITADO-" + String.valueOf(est.getnUsuarioNoRegistrado());
 		est.setnUsuarioNoRegistrado(est.getnUsuarioNoRegistrado() + 1);
+		this.filtroVenta = new FiltroVenta();
 	}
 
 	/**
@@ -113,6 +114,51 @@ public class UsuarioNoRegistrado {
 			System.out.println("  " + p.resumen());
 		}
 		return resultado;
+	}
+
+	public void filtrarPorPrecio(double min, double max) {
+		filtroVenta.resetear();
+		filtroVenta.setPrecioMinimo(min);
+		filtroVenta.setPrecioMaximo(max);
+		System.out.println("  Filtro aplicado (Invitado): " + filtroVenta);
+		buscarProductosVentaFiltrados();
+		filtroVenta.resetear();
+	}
+
+	public void filtrarPorCategoria(String nombreCategoria) {
+		filtroVenta.resetear();
+		Categoria c = Tienda.getInstancia().buscarCategoriaPorNombre(nombreCategoria);
+		if (c == null) {
+			System.out.println("  Categoria '" + nombreCategoria + "' no encontrada.");
+			return;
+		}
+		filtroVenta.añadirCategoria(c);
+		System.out.println("  Filtro aplicado (Invitado): " + filtroVenta);
+		buscarProductosVentaFiltrados();
+		filtroVenta.resetear();
+	}
+
+	public void filtrarPorPuntuacion(double puntuacionMinima) {
+		filtroVenta.resetear();
+		filtroVenta.setPuntuacionMinima(puntuacionMinima);
+		System.out.println("  Filtro aplicado (Invitado): " + filtroVenta);
+		buscarProductosVentaFiltrados();
+		filtroVenta.resetear();
+	}
+
+	public void filtrarProductos(double precioMin, double precioMax, double puntuacionMin, String... categorias) {
+		filtroVenta.resetear();
+		filtroVenta.setPrecioMinimo(precioMin);
+		filtroVenta.setPrecioMaximo(precioMax);
+		filtroVenta.setPuntuacionMinima(puntuacionMin);
+		for (String nombreCat : categorias) {
+			Categoria c = Tienda.getInstancia().buscarCategoriaPorNombre(nombreCat);
+			if (c != null)
+				filtroVenta.añadirCategoria(c);
+		}
+		System.out.println("  Filtro aplicado (Invitado): " + filtroVenta);
+		buscarProductosVentaFiltrados();
+		filtroVenta.resetear();
 	}
 
 	/**

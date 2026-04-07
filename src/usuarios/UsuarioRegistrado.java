@@ -272,7 +272,7 @@ public abstract class UsuarioRegistrado {
 
 		}
 		if (c.getNickname().equalsIgnoreCase(this.nickname)) {
-			System.err.println("  Para ver tu propia cartera usa verMiCartera().");
+			System.out.println("  Para ver tu propia cartera usa verMiCartera().");
 			return new ArrayList<>();
 		}
 		List<Producto2Mano> resultado = new ArrayList<>();

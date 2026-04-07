@@ -189,12 +189,15 @@ public class PruebaPreferenciaNotificacion {
         assertEquals(lista, prefs.getCategoriasInteres());
     }
     @Test
-    @DisplayName("C Probar toString incluyendo  categorías")
+    @DisplayName("C Probar toString incluyendo categorías")
     void testToString() {
-        //  Caso lista vacía . sin categorias
+     
+        gestor.crearCategoria("Comics", "Libros de ilustraciones");
+        
+       
         assertTrue(prefs.toString().contains("Ninguna"));
 
-       
+     
         prefs.añadirCategoriaInteres("Comics");
         String resultado = prefs.toString();
         assertTrue(resultado.contains("Comics"));
@@ -218,28 +221,31 @@ public class PruebaPreferenciaNotificacion {
     }
 
     @Test
-    @DisplayName(" Notificaciones categorías interés")
+    @DisplayName("Notificaciones categorías interés")
     void testNotificacionesCategorias() {
-      
+     
+        gestor.crearCategoria("Comics", "Test");
+        
+       
         assertFalse(prefs.NotificacionesProductosNUevosCategoriasInteres("Comics"));
 
-    
         prefs.añadirCategoriaInteres("Comics");
+     
         assertFalse(prefs.NotificacionesProductosNUevosCategoriasInteres("NoExiste"));
-
-        
         assertTrue(prefs.NotificacionesProductosNUevosCategoriasInteres("Comics"));
     }
 
     @Test
-    @DisplayName(" Modificar preferencias obligatorias vs configurables")
+    @DisplayName("Modificar preferencias obligatorias vs configurables")
     void testModificarPreferencias() {
-        // Configurable
+        // Configurable: debe cambiar
         prefs.modificarPreferencia(TipoNotificacion.DESCUENTO, false);
         assertFalse(prefs.isDescuentos());
 
-        // Obligatoria (debe entrar en el default y no hacer nada)
+      
         prefs.modificarPreferencia(TipoNotificacion.PAGO_EXITOSO, false);
-        
-}
+        assertTrue(prefs.debeRecibirNotificacion(TipoNotificacion.PAGO_EXITOSO), 
+            "La notificación obligatoria no debería haberse desactivado");
+    }
+
 }
