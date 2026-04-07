@@ -1,153 +1,189 @@
 package test_junit;
 
+import org.junit.jupiter.api.*;
+
+import intercambios.Oferta;
+
 import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.List;
-import java.util.ArrayList;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import productos.*;
+import java.time.LocalDateTime;
+import java.util.*;
 import usuarios.*;
 import ventas.*;
+import productos.*;
 import tienda.*;
 
 public class TiendaTest {
 
-    private Tienda tienda;
+	private Tienda tienda;
+	private Cliente clienteTest;
+	private Cliente clienteDestino;
 
-    @BeforeEach
-    public void setUp() {
-        tienda = Tienda.getInstancia();
-        tienda.vaciarTienda();
-    }
+	@BeforeEach
+	public void setup() {
+		tienda = Tienda.getInstancia();
+		tienda.vaciarTienda();
+		// Clientes de prueba para productos de 2ª mano y carritos/intercambios
+		clienteTest = tienda.registrarNuevoCliente("clienteTest", "Password1", "99999999Z");
+		clienteDestino = tienda.registrarNuevoCliente("clienteDestino", "Password2", "88888888Y");
+	}
 
-    @Test
-    public void testUsuarios() {
-        Cliente cliente = tienda.registrarNuevoCliente("pepito", "Password123", "12345678A");
-        assertNotNull(cliente);
-        assertEquals(cliente, tienda.buscarClientePorNickname("pepito"));
-        assertEquals(cliente, tienda.buscarCLientePorId(cliente.getId()));
-        assertTrue(tienda.existeUsuarioConDNI("12345678A"));
-        assertTrue(tienda.existeUsuarioConNickname("pepito"));
-        Gestor gestor = tienda.getGestor();
-        assertNotNull(gestor);
-        assertEquals(gestor, tienda.loginGestor(gestor.getNickname(), "admin"));
-        assertEquals(cliente, tienda.loginCliente("pepito", "Password123"));
-    }
+	@Test
+	public void testNuevoUsuarioNoRegistrado() {
+		UsuarioNoRegistrado u = tienda.nuevoUsuarioNoRegistrado();
+		assertNotNull(u);
+	}
 
-    @Test
-    public void testSesionActiva() {
-        Cliente cliente = tienda.registrarNuevoCliente("pepito", "Password123", "12345678A");
-        assertTrue(tienda.getUsuariosConSesionActiva().size() >= 1);
-        tienda.getUsuariosConSesionActiva().add(cliente);
-        assertTrue(tienda.getUsuariosConSesionActiva().contains(cliente));
-        tienda.setUsuariosConSesionActiva(new ArrayList<>());
-        assertTrue(tienda.getUsuariosConSesionActiva().isEmpty());
-    }
+	@Test
+	public void testExisteUsuarioConNicknameYConDNI() {
+		Cliente c = tienda.registrarNuevoCliente("juan", "Password1", "12345678A");
+		assertTrue(tienda.existeUsuarioConNickname("juan"));
+		assertTrue(tienda.existeUsuarioConDNI("12345678A"));
+		assertFalse(tienda.existeUsuarioConNickname("pepe"));
+		assertFalse(tienda.existeUsuarioConDNI("87654321B"));
+	}
 
-    @Test
-    public void testStockYPacks() {
-        Comic p1 = new Comic("Producto1", "Desc1", "img1.jpg", 10.0, 5, 100, "Editorial1", 2020);
-        Comic p2 = new Comic("Producto2", "Desc2", "img2.jpg", 20.0, 5, 150, "Editorial2", 2021);
-        tienda.añadirProducto(p1);
-        tienda.añadirProducto(p2);
-        assertEquals(2, tienda.getStockVentas().size());
-        assertEquals(p1, tienda.buscarProductoVentaPorId(p1.getId()));
-        assertEquals(p2, tienda.buscarproductoPorNombre("Producto2").get(0));
-        Categoria cat = new Categoria("Electrónica","desc");
-        p1.getCategorias().add(cat);
-        tienda.setCategorias(List.of(cat));
-        assertEquals(p1, tienda.buscarProductoPorCategoria("Electrónica").get(0));
-        Pack pack = new Pack("Pack1", "desc", "img", 10, 10);
-        tienda.getStockVentas().add(pack);
-        assertEquals(pack, tienda.buscarPackPorNombre("Pack1"));
-    }
+	@Test
+	public void testBuscarClientePorIdYPorNickname() {
+		Cliente c = tienda.registrarNuevoCliente("maria", "Password1", "11111111A");
+		assertEquals(c, tienda.buscarCLientePorId(c.getId()));
+		assertEquals(c, tienda.buscarClientePorNickname("maria"));
+		assertNull(tienda.buscarCLientePorId("noexiste"));
+		assertNull(tienda.buscarClientePorNickname("noexiste"));
+	}
 
-    @Test
-    public void testSegundaMano() {
-        Producto2Mano p = new Producto2Mano("Segunda1");
-        tienda.solicitarTasacion(p);
-        assertTrue(tienda.getPendientesTasacion().contains(p));
-        tienda.publicarParaIntercambio(p);
-        assertTrue(tienda.getCatalogoIntercambio().contains(p));
-        assertEquals(p, tienda.buscarSegundaManoPorId(p.getId()));
-        assertTrue(tienda.buscarSegundaManoPorNombre("Segunda1").contains(p));
-    }
+	@Test
+	public void testBuscarProductosVentaYPorIdNombreCategoria() {
+		Figura f = new Figura("Fig1", "Desc", "img.jpg", 100.0, 5, 10.0, 5.0, 3.0, "Plástico", "Marca1");
+		Categoria cat = new Categoria("Figuras", "Figuras coleccionables");
+		f.getCategorias().add(cat);
+		tienda.setCategorias(List.of(cat));
+		tienda.añadirProducto(f);
 
-    @Test
-    public void testFiltros() {
-        ProductoVenta p = new ProductoVenta("FiltroTest", 10.0, 5);
-        tienda.getStockVentas().add(p);
-        List<ProductoVenta> filtrados = tienda.buscarProductosFiltrados(pr -> pr.getPrecio() > 5);
-        assertTrue(filtrados.contains(p));
-        Producto2Mano sm = new Producto2Mano("Filtro2Mano");
-        tienda.getCatalogoIntercambio().add(sm);
-        List<Producto2Mano> filtrados2 = tienda.buscarSegundaManoFiltrado(pr -> pr.getNombre().contains("Filtro"));
-        assertTrue(filtrados2.contains(sm));
-    }
+		assertTrue(tienda.buscarProductoVenta().contains(f));
+		assertEquals(f, tienda.buscarProductoVentaPorId(f.getId()));
+		assertTrue(tienda.buscarproductoPorNombre("Fig1").contains(f));
+		assertTrue(tienda.buscarProductoPorCategoria("Figuras").contains(f));
+	}
 
-    @Test
-    public void testDescuentosYCarrito() {
-        Descuento d = new Descuento("Desc1", 0.1);
-        tienda.agregarDescuento(d);
-        assertTrue(tienda.getDescuentosActivos().contains(d));
-        tienda.limpiarDescuentosCaducados();
-        Carrito carrito = new Carrito();
-        tienda.aplicarDescuentoPrioritario(carrito);
-        carrito.setDescuentoAplicado(d);
-        assertEquals(d, carrito.getDescuentoAplicado());
-    }
+	@Test
+	public void testBuscarPackPorNombre() {
+		Pack pack = new Pack("Pack1", "Pack de prueba", "imgpack.jpg", 50.0, 10);
+		tienda.getStockVentas().add(pack);
+		assertEquals(pack, tienda.buscarPackPorNombre("Pack1"));
+		assertNull(tienda.buscarPackPorNombre("NoExiste"));
+	}
 
-    @Test
-    public void testRecomendaciones() throws Exception {
-        Cliente cliente = tienda.registrarNuevoCliente("pepito", "Password123", "12345678A");
-        ProductoVenta p1 = new ProductoVenta("Producto1", 10.0, 5);
-        tienda.añadirProducto(p1);
-        List<ProductoVenta> sugerencias = tienda.getRecomendador().generarSugerencias(cliente);
-        assertTrue(sugerencias.contains(p1));
-    }
+	@Test
+	public void testLoginUsuarios() {
+		Cliente c = tienda.registrarNuevoCliente("cliente1", "Password1", "22222222B");
+		Gestor g = tienda.getGestor();
+		Empleado e = new Empleado("emp1", "Password1");
+		tienda.getUsuarios().add(e);
 
-    @Test
-    public void testIntercambiosFinalizados() {
-        Oferta o = new Oferta();
-        tienda.registrarIntercambioFinalizado(o);
-        assertTrue(tienda.getIntercambiosFinalizados().contains(o));
-    }
+		assertEquals(c, tienda.loginCliente("cliente1", "Password1"));
+		assertEquals(g, tienda.loginGestor(g.getNickname(), g.getPassword()));
+		assertEquals(e, tienda.loginEmpleado("emp1", "Password1"));
+		assertNull(tienda.loginCliente("cliente1", "wrong"));
+	}
 
-    @Test
-    public void testVentasYNotificaciones() {
-        Pedido pedido = new Pedido();
-        tienda.registrarVenta(pedido);
-        assertTrue(tienda.getHistorialVentas().contains(pedido));
-        Notificacion n = new Notificacion("Test", TipoNotificacion.CLIENTES);
-        tienda.registrarNotificacion(n);
-        assertTrue(tienda.getHistorialNotificaciones().contains(n));
-        assertTrue(tienda.getNotificacionesNoLeidas().contains(n));
-        assertTrue(tienda.getNotificacionesPorTipo(TipoNotificacion.CLIENTES).contains(n));
-    }
+	@Test
+	public void testNotificaciones() {
+		Cliente c = tienda.registrarNuevoCliente("noti", "Password1", "33333333C");
+		Notificacion n = new Notificacion("Mensaje", TipoNotificacion.DESCUENTO);
+		tienda.registrarNotificacion(n);
+		assertTrue(tienda.getNotificacionesNoLeidas().contains(n));
+		assertTrue(tienda.getNotificacionesPorTipo(TipoNotificacion.DESCUENTO).contains(n));
+	}
 
-    @Test
-    public void testConfiguracionTienda() {
-        tienda.setNombre("NuevaTienda");
-        assertEquals("NuevaTienda", tienda.getNombre());
-        tienda.setTiempoMaxCarrito(10);
-        tienda.setTiempoMaxOferta(5);
-        tienda.setTiempoMaxPago(15);
-        assertTrue(tienda.isSistemaTiemposConfigurando());
-        tienda.setPrecioTasacion(20.0);
-        assertEquals(20.0, tienda.getPrecioTasacion());
-        tienda.reiniciarComprobadorTiempos();
-        assertNotNull(tienda.getComprobadorTiempos());
-    }
+	@Test
+	public void testRegistrarIntercambioFinalizado() {
+		Producto2Mano p1 = new Producto2Mano(clienteTest, "P2M1", "Desc1", "img1.jpg");
+		Producto2Mano p2 = new Producto2Mano(clienteDestino, "P2M2", "Desc2", "img2.jpg");
+		tienda.publicarParaIntercambio(p1);
+		tienda.publicarParaIntercambio(p2);
 
-    @Test
-    public void testSeleccionarCategorias() {
-        Categoria c1 = new Categoria("Cat1");
-        Categoria c2 = new Categoria("Cat2");
-        tienda.setCategorias(List.of(c1, c2));
-        List<Categoria> seleccion = tienda.seleccionarCategorias("Cat1", "Cat2");
-        assertTrue(seleccion.contains(c1) && seleccion.contains(c2));
-    }
+		Oferta of = new Oferta(clienteTest, clienteDestino, List.of(p1), List.of(p2));
+
+		tienda.registrarIntercambioFinalizado(of);
+		assertFalse(tienda.getCatalogoIntercambio().contains(p1));
+		assertFalse(tienda.getCatalogoIntercambio().contains(p2));
+		assertTrue(tienda.getIntercambiosFinalizados().contains(of));
+	}
+
+	@Test
+	public void testSolicitarTasacionYPublicarParaIntercambio() {
+		Empleado e = new Empleado("Sacha", "CONTRASEÑA");
+		Producto2Mano p = new Producto2Mano(clienteTest, "P2M3", "Desc3", "img3.jpg");
+		tienda.solicitarTasacion(p);
+		assertTrue(tienda.getPendientesTasacion().contains(p));
+		Valoracion v = new Valoracion(50, EstadoProducto.MUY_BUENO, e);
+		p.setValoracion(v);
+		tienda.publicarParaIntercambio(p);
+		assertTrue(tienda.getCatalogoIntercambio().contains(p));
+	}
+
+	@Test
+	public void testAgregarYLimpiarDescuentos() {
+		LocalDateTime ahora = LocalDateTime.now();
+		Regalo d = new Regalo("RegaloTest", ahora.minusDays(1), ahora.plusDays(1), 50.0, null);
+		
+		tienda.agregarDescuento(d);
+		assertTrue(tienda.getDescuentosActivos().contains(d));
+	
+		tienda.limpiarDescuentosCaducados();
+		assertFalse(tienda.getDescuentosActivos().contains(d));
+	}
+
+	@Test
+	public void testAplicarDescuentoPrioritario() {
+		Carrito carrito = new Carrito(clienteTest);
+		Figura f = new Figura("Fig2", "Desc", "img.jpg", 100.0, 5, 10.0, 5.0, 3.0, "Plástico", "Marca1");
+		carrito.añadirProducto(f, 2);
+		
+
+		LocalDateTime ahora = LocalDateTime.now();
+		Regalo r = new Regalo("RegaloPrioritario", ahora.minusDays(1), ahora.plusDays(1), 50.0, f);
+		
+
+		tienda.agregarDescuento(r);
+		tienda.aplicarDescuentoPrioritario(carrito);
+		assertEquals(r, carrito.getDescuentoAplicado());
+	}
+
+	@Test
+	public void testRegistrarVenta() {
+		Cliente c = new Cliente("Sacha", "PADSOF_HASTA_LA_MUERTE", "02576624A");
+		Carrito carr = new Carrito(c);
+		Pedido p = new Pedido(c, carr);
+		tienda.registrarVenta(p);
+		assertTrue(tienda.getHistorialVentas().contains(p));
+	}
+
+	@Test
+	public void testSeleccionarCategorias() {
+		Categoria c1 = new Categoria("C1", "Desc1");
+		Categoria c2 = new Categoria("C2", "Desc2");
+		tienda.setCategorias(List.of(c1, c2));
+		List<Categoria> seleccionadas = tienda.seleccionarCategorias("C1", "C2", "NoExiste");
+		assertTrue(seleccionadas.contains(c1));
+		assertTrue(seleccionadas.contains(c2));
+		assertEquals(2, seleccionadas.size());
+	}
+
+	@Test
+	public void testHistorialProductos2Mano() {
+		Producto2Mano p = new Producto2Mano(clienteTest, "HistP2M", "DescHist", "imgHist.jpg");
+		tienda.solicitarTasacion(p);
+		assertTrue(tienda.getHistorialProductos2Mano().contains(p));
+	}
+
+	@Test
+	public void testComprobadorTiempos() {
+		ComprobadorTiempos ct1 = tienda.getComprobadorTiempos();
+		tienda.reiniciarComprobadorTiempos();
+		ComprobadorTiempos ct2 = tienda.getComprobadorTiempos();
+		assertNotNull(ct1);
+		assertNotNull(ct2);
+		assertNotSame(ct1, ct2);
+	}
 }

@@ -22,6 +22,7 @@ class FiltroSegundaManoTest {
     @BeforeEach
     void setUp() {
         filtro = new FiltroSegundaMano();
+        filtro.setEstadoMinimo(EstadoProducto.USO_EVIDENTE);
         cliente = new Cliente("Jose", "PADSOF2026", "02576624A");
         empleado = new Empleado("emp", "pass");
         producto = new Producto2Mano(cliente, "movil", "desc", "img");
@@ -125,6 +126,9 @@ class FiltroSegundaManoTest {
     @DisplayName("Estado no aceptado no cumple")
     void testNoAceptado() {
         producto.valorar(100, EstadoProducto.NO_ACEPTADO, empleado);
+        if(producto.getValoracion().getEstadoProducto()== EstadoProducto.NO_ACEPTADO) {
+        	System.out.println("ESTA BIEN AAAAAAAA");
+        }
         producto.setVisible(true);
         producto.setBloqueado(false);
 
