@@ -15,6 +15,11 @@ import productos.*;
 
 public class MotorEstadistico {
 
+	/**
+	 * Obtiene los clientes ordenados según la cantidad de pedidos cancelados
+	 *
+	 * @return la lista de clientes ordenada de mayor a menor
+	 */
 	public List<Cliente> obtenerClientesConMasPedidosCaducados() {
 		Tienda tienda = Tienda.getInstancia();
 
@@ -39,6 +44,11 @@ public class MotorEstadistico {
 		return clientes;
 	}
 
+	/**
+	 * Devuelve los clientes ordenados por número de compras realizadas
+	 *
+	 * @return la lista de clientes de mayor a menor número de compras
+	 */
 	public List<Cliente> obtenerClientesConMasCompras() {
 		Tienda tienda = Tienda.getInstancia();
 
@@ -62,6 +72,11 @@ public class MotorEstadistico {
 		return clientes;
 	}
 
+	/**
+	 * Obtiene los clientes que más intercambios han realizado
+	 *
+	 * @return la lista de clientes ordenada de mayor a menor número de intercambios
+	 */
 	public List<Cliente> obtenerClientesConMasIntercambios() {
 
 		Tienda tienda = Tienda.getInstancia();
@@ -90,6 +105,14 @@ public class MotorEstadistico {
 		return clientes;
 	}
 
+	/**
+	 * Calcula los ingresos totales de la tienda entre dos fechas
+	 *
+	 * @param inicio la fecha inicial del rango
+	 * @param fin    la fecha final del rango
+	 * @return el total de ingresos entre esas fechas
+	 * @throws RangoFechasInvalidoException si el rango no es válido
+	 */
 	public double calcularIngresosRangoFechas(LocalDate inicio, LocalDate fin) throws RangoFechasInvalidoException {
 		if (inicio == null || fin == null || fin.isBefore(inicio)) {
 			throw new RangoFechasInvalidoException(inicio, fin);
@@ -103,6 +126,14 @@ public class MotorEstadistico {
 		return this.calcularIngresosVentaRango(inicio, fin) + this.calcularTasacionesEnRango(inicio, fin);
 	}
 
+	/**
+	 * Calcula los ingresos de cada mes de un año concreto
+	 *
+	 * @param año el año que se quiere consultar
+	 * @return un array con los ingresos de los 12 meses
+	 * @throws AñoInvalidoException         si el año no es válido
+	 * @throws RangoFechasInvalidoException si alguna fecha del cálculo no es válida
+	 */
 	public double[] calcularIngresosMesesAño(int año) throws AñoInvalidoException, RangoFechasInvalidoException {
 		double[] ingresosPorMes = new double[12];
 		if (año <= 0) {
@@ -119,10 +150,25 @@ public class MotorEstadistico {
 		return ingresosPorMes;
 	}
 
+	/**
+	 * Calcula los ingresos mensuales del año actual
+	 *
+	 * @return un array con los ingresos de cada mes del año en curso
+	 * @throws AñoInvalidoException         si el año actual no fuese válido
+	 * @throws RangoFechasInvalidoException si ocurre un problema con las fechas
+	 */
 	public double[] calcularIngresosMesesAñoActual() throws AñoInvalidoException, RangoFechasInvalidoException {
 		return this.calcularIngresosMesesAño(LocalDate.now().getYear());
 	}
 
+	/**
+	 * Calcula los ingresos obtenidos por ventas entre dos fechas
+	 *
+	 * @param inicio la fecha inicial
+	 * @param fin    la fecha final
+	 * @return el total de ventas en ese rango
+	 * @throws RangoFechasInvalidoException si el rango no es correcto
+	 */
 	public double calcularIngresosVentaRango(LocalDate inicio, LocalDate fin) throws RangoFechasInvalidoException {
 		if (inicio == null || fin == null || fin.isBefore(inicio)) {
 			throw new RangoFechasInvalidoException(inicio, fin);
@@ -145,6 +191,11 @@ public class MotorEstadistico {
 		return total;
 	}
 
+	/**
+	 * Calcula todos los ingresos obtenidos por ventas
+	 *
+	 * @return el total acumulado de ventas
+	 */
 	public double calcularIngresosVenta() {
 		try {
 			return calcularIngresosVentaRango(LocalDate.MIN, LocalDate.MAX);
@@ -153,11 +204,23 @@ public class MotorEstadistico {
 		}
 	}
 
+	/**
+	 * Calcula los ingresos obtenidos por tasaciones
+	 *
+	 * @return el total acumulado de tasaciones cobradas
+	 */
 	public double calcularIngresosTasacion() {
 
 		return calcularTasacionesEnRango(LocalDate.MIN, LocalDate.MAX);
 	}
 
+	/**
+	 * Suma el importe de las tasaciones realizadas en un rango de fechas
+	 *
+	 * @param inicio la fecha inicial
+	 * @param fin    la fecha final
+	 * @return el total cobrado por tasaciones en ese periodo
+	 */
 	private double calcularTasacionesEnRango(LocalDate inicio, LocalDate fin) {
 		double total = 0.0;
 
@@ -168,7 +231,7 @@ public class MotorEstadistico {
 			if (v != null && v.getFecha() != null) {
 				LocalDate fechaVal = v.getFecha().toLocalDate();
 				if (!fechaVal.isBefore(inicio) && !fechaVal.isAfter(fin)) {
-					
+
 					total += v.getPrecioPagado();
 				}
 			}
