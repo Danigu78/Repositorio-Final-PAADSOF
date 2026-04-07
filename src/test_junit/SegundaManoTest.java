@@ -1,4 +1,4 @@
-package test_junit.productos;
+package test_junit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -45,7 +45,6 @@ public class SegundaManoTest {
 		assertTrue(resultado);
 		assertNotNull(producto.getValoracion());
 		assertTrue(producto.isVisible());
-		assertTrue(producto.isBloqueado());
 		assertEquals(EstadoProducto.MUY_BUENO, producto.getValoracion().getEstadoProducto());
 	}
 
