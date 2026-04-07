@@ -12,6 +12,14 @@ public class Pago {
 	private double importe;
 	private boolean exito;
 
+	/**
+	 * Constructor de la clase Pago
+	 *
+	 * @param numeroTarjeta el número de la tarjeta con la que se paga
+	 * @param importe       la cantidad que se quiere cobrar
+	 * @param fechaTarjeta  la fecha de caducidad de la tarjeta
+	 * @param CVV           el código de seguridad de la tarjeta
+	 */
 	public Pago(String numeroTarjeta, double importe, Date fechaTarjeta, int CVV) {
 		this.fechaTransaccion = LocalDateTime.now();
 		this.fechaTarjeta = fechaTarjeta;
@@ -21,6 +29,11 @@ public class Pago {
 		this.exito = procesarConBanco();
 	}
 
+	/**
+	 * Comprueba los datos de la tarjeta e intenta realizar el cobro
+	 *
+	 * @return true si el pago se procesa bien, false si falla
+	 */
 	private boolean procesarConBanco() {
 		String cvvString = String.valueOf(this.CVV);// convertimos a string
 		Date hoy = new Date();
@@ -53,6 +66,11 @@ public class Pago {
 
 	}
 
+	/**
+	 * Indica si el pago se realizó correctamente
+	 *
+	 * @return true si el pago tuvo éxito, false en caso contrario
+	 */
 	public boolean getExito() {
 		return this.exito;
 	}

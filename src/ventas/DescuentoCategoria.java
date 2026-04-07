@@ -7,6 +7,15 @@ public class DescuentoCategoria extends Descuento {
 	private Categoria categoria;
 	private double porcentaje;
 
+	/**
+	 * Constructor de la clase DescuentoCategoria
+	 *
+	 * @param nombre     el nombre del descuento
+	 * @param inicio     la fecha desde la que empieza a aplicarse
+	 * @param fin        la fecha en la que deja de estar disponible
+	 * @param categoria  la categoría a la que afecta el descuento
+	 * @param porcentaje el porcentaje que se rebaja
+	 */
 	public DescuentoCategoria(String nombre, LocalDateTime inicio, LocalDateTime fin, Categoria categoria,
 			double porcentaje) {
 		super(nombre, inicio, fin);
@@ -18,6 +27,13 @@ public class DescuentoCategoria extends Descuento {
 		this.porcentaje = porcentaje;
 	}
 
+	/**
+	 * Aplica el descuento a los productos del carrito que pertenezcan a la
+	 * categoría
+	 *
+	 * @param carrito el carrito sobre el que se quiere calcular
+	 * @return el total final una vez aplicado el descuento
+	 */
 	@Override
 	public double aplicarDescuento(Carrito carrito) {
 		if (!estaActivo())
@@ -36,10 +52,20 @@ public class DescuentoCategoria extends Descuento {
 		return total;
 	}
 
+	/**
+	 * Recupera la categoría asociada al descuento
+	 *
+	 * @return la categoría sobre la que actúa
+	 */
 	public Categoria getCategoria() {
 		return categoria;
 	}
 
+	/**
+	 * Devuelve el porcentaje del descuento
+	 *
+	 * @return el porcentaje que se aplica
+	 */
 	public double getPorcentaje() {
 		return porcentaje;
 	}

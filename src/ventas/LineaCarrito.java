@@ -6,6 +6,12 @@ public class LineaCarrito {
 	private ProductoVenta producto;
 	private int cantidad;
 
+	/**
+	 * Constructor de la clase LineaCarrito
+	 *
+	 * @param producto el producto asociado a la línea
+	 * @param cantidad la cantidad de unidades de ese producto
+	 */
 	public LineaCarrito(ProductoVenta producto, int cantidad) {
 		if (producto == null || cantidad <= 0) {
 			throw new IllegalArgumentException("Argumentos de linea carrito inválidos");
@@ -14,6 +20,12 @@ public class LineaCarrito {
 		this.cantidad = cantidad;
 	}
 
+	/**
+	 * Comprueba si el producto recibido es el mismo que el de la línea
+	 *
+	 * @param p el producto que se quiere comprobar
+	 * @return true si coincide, false en caso contrario
+	 */
 	public boolean productoPertence(ProductoVenta p) {
 		if (p == null) {
 			return false;
@@ -24,6 +36,11 @@ public class LineaCarrito {
 		return false;
 	}
 
+	/**
+	 * Cambia la cantidad de unidades de la línea
+	 *
+	 * @param cantidad la nueva cantidad
+	 */
 	public void setCantidad(int cantidad) {
 		if (cantidad < 0) {
 			return;
@@ -31,14 +48,29 @@ public class LineaCarrito {
 		this.cantidad = cantidad;
 	}
 
+	/**
+	 * Recupera la cantidad de productos de la línea
+	 *
+	 * @return el número de unidades
+	 */
 	public int getCantidad() {
 		return this.cantidad;
 	}
 
+	/**
+	 * Devuelve el producto asociado a la línea
+	 *
+	 * @return el producto de la línea
+	 */
 	public ProductoVenta getProducto() {
 		return this.producto;
 	}
 
+	/**
+	 * Calcula el subtotal de la línea
+	 *
+	 * @return el precio total según cantidad y producto
+	 */
 	public double getSubtotal() {
 		return this.producto.getPrecioOficial() * this.cantidad;
 	}

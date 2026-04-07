@@ -6,6 +6,15 @@ public class DescuentoVolumen extends Descuento {
 	private double umbralMinimo;
 	private double porcentaje;
 
+	/**
+	 * Constructor de la clase DescuentoVolumen
+	 *
+	 * @param nombre       el nombre del descuento
+	 * @param inicio       la fecha en la que empieza a aplicarse
+	 * @param fin          la fecha en la que deja de estar activo
+	 * @param umbralMinimo el importe mínimo necesario para que se aplique
+	 * @param porcentaje   el porcentaje de descuento
+	 */
 	public DescuentoVolumen(String nombre, LocalDateTime inicio, LocalDateTime fin, double umbralMinimo,
 			double porcentaje) {
 		super(nombre, inicio, fin);
@@ -17,6 +26,13 @@ public class DescuentoVolumen extends Descuento {
 		this.porcentaje = porcentaje;
 	}
 
+	/**
+	 * Aplica el descuento si el carrito alcanza el importe mínimo
+	 *
+	 * @param carrito el carrito sobre el que se calcula el descuento
+	 * @return el total final tras aplicar el descuento, o el subtotal si no
+	 *         corresponde
+	 */
 	@Override
 	public double aplicarDescuento(Carrito carrito) {
 		if (!estaActivo())
@@ -27,10 +43,20 @@ public class DescuentoVolumen extends Descuento {
 		return subtotal * (1 - porcentaje);
 	}
 
+	/**
+	 * Recupera el importe mínimo necesario para aplicar el descuento
+	 *
+	 * @return el umbral mínimo
+	 */
 	public double getUmbralMinimo() {
 		return umbralMinimo;
 	}
 
+	/**
+	 * Devuelve el porcentaje del descuento
+	 *
+	 * @return el porcentaje aplicado
+	 */
 	public double getPorcentaje() {
 		return porcentaje;
 	}

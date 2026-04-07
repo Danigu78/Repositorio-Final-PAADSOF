@@ -6,6 +6,15 @@ public class DescuentoCantidad extends Descuento {
 	private int cantidadMinima;
 	private double porcentaje;
 
+	/**
+	 * Constructor de la clase DescuentoCantidad
+	 *
+	 * @param nombre         el nombre del descuento
+	 * @param inicio         la fecha en la que comienza
+	 * @param fin            la fecha en la que termina
+	 * @param cantidadMinima la cantidad mínima necesaria para aplicar el descuento
+	 * @param porcentaje     el porcentaje de descuento
+	 */
 	public DescuentoCantidad(String nombre, LocalDateTime inicio, LocalDateTime fin, int cantidadMinima,
 			double porcentaje) {
 		super(nombre, inicio, fin);
@@ -17,6 +26,12 @@ public class DescuentoCantidad extends Descuento {
 		this.porcentaje = porcentaje;
 	}
 
+	/**
+	 * Aplica el descuento a las líneas que cumplen la cantidad mínima
+	 *
+	 * @param carrito el carrito sobre el que se calcula el descuento
+	 * @return el total final después de aplicar el descuento
+	 */
 	@Override
 	public double aplicarDescuento(Carrito carrito) {
 		if (!estaActivo())
@@ -35,10 +50,20 @@ public class DescuentoCantidad extends Descuento {
 		return total;
 	}
 
+	/**
+	 * Devuelve la cantidad mínima necesaria para que se aplique el descuento
+	 *
+	 * @return la cantidad mínima de productos
+	 */
 	public int getCantidadMinima() {
 		return cantidadMinima;
 	}
 
+	/**
+	 * Recupera el porcentaje del descuento
+	 *
+	 * @return el porcentaje aplicado
+	 */
 	public double getPorcentaje() {
 		return porcentaje;
 	}

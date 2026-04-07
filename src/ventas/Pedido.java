@@ -25,6 +25,12 @@ public class Pedido {
 	private String codigoRecogida;
 	private Descuento descuentoAplicado;
 
+	/**
+	 * Constructor de la clase Pedido
+	 *
+	 * @param cliente el cliente que realiza el pedido
+	 * @param carrito el carrito a partir del que se crea
+	 */
 	public Pedido(Cliente cliente, Carrito carrito) {
 		if (cliente == null) {
 			throw new IllegalArgumentException("El cliente no puede ser null");
@@ -76,6 +82,13 @@ public class Pedido {
 		}
 	}
 
+	/**
+	 * Recalcula el importe total del pedido
+	 *
+	 * @param carrito el carrito original, si se quiere usar para recalcular
+	 *                descuentos
+	 * @return el total resultante
+	 */
 	private double recalcularTotal(Carrito carrito) {
 		double subtotal = 0.0;
 		for (LineaPedido linea : this.lineas) {
@@ -130,6 +143,14 @@ public class Pedido {
 		return subtotal;
 	}
 
+	/**
+	 * Intenta pagar el pedido
+	 *
+	 * @param tarjeta   el número de la tarjeta
+	 * @param cvv       el código de seguridad
+	 * @param caducidad la fecha de caducidad de la tarjeta
+	 * @return true si el pago sale bien, false en caso contrario
+	 */
 	public boolean pagar(String tarjeta, int cvv, Date caducidad) {
 		if (isCaducado()) {
 			return false;
@@ -152,6 +173,12 @@ public class Pedido {
 		System.out.println("El pago no se ha podido procesar");
 		return false;
 	}
+
+	/**
+	 * Marca el pedido como listo para recoger
+	 *
+	 * @return true si se actualiza bien, false si no corresponde ese cambio
+	 */
 	public boolean marcarPreparado() {
 		if (this.estado != EstadoPedido.PAGADO) {
 			return false;
@@ -162,6 +189,11 @@ public class Pedido {
 		return true;
 	}
 
+	/**
+	 * Marca el pedido como entregado
+	 *
+	 * @return true si se completa el cambio, false en caso contrario
+	 */
 	public boolean marcarEntregado() {
 		if (this.estado != EstadoPedido.LISTO_PARA_RECOGER) {
 			return false;
@@ -172,6 +204,11 @@ public class Pedido {
 		return true;
 	}
 
+	/**
+	 * Cancela el pedido y devuelve el stock de sus productos
+	 *
+	 * @return true si se cancela, false si ya no se puede cancelar
+	 */
 	public boolean cancelarPedido() {
 		if (this.estado == EstadoPedido.CANCELADO || this.estado == EstadoPedido.ENTREGADO) {
 			return false;
@@ -187,6 +224,12 @@ public class Pedido {
 		return true;
 	}
 
+	/**
+	 * Actualiza el estado del pedido según el nuevo valor indicado
+	 *
+	 * @param nuevoEstado el estado al que se quiere pasar
+	 * @return true si el cambio se hace, false si no es válido
+	 */
 	public boolean actualizarEstado(EstadoPedido nuevoEstado) {
 		if (nuevoEstado == null) {
 			return false;
@@ -208,6 +251,12 @@ public class Pedido {
 		}
 	}
 
+	/**
+	 * Comprueba si un producto forma parte del pedido
+	 *
+	 * @param p el producto que se quiere buscar
+	 * @return true si está incluido, false en caso contrario
+	 */
 	public boolean productoPertenece(ProductoVenta p) {
 		if (p == null) {
 			return false;
@@ -222,6 +271,12 @@ public class Pedido {
 		return false;
 	}
 
+	/**
+	 * Cuenta cuántas unidades hay de un producto concreto en el pedido
+	 *
+	 * @param idProductoBuscado el id del producto
+	 * @return el número total de unidades de ese producto
+	 */
 	public int contarUnidadesDe(String idProductoBuscado) {
 		if (idProductoBuscado == null) {
 			return 0;
@@ -238,6 +293,12 @@ public class Pedido {
 		return totalUnidades;
 	}
 
+	/**
+	 * Devuelve el precio de venta guardado para un producto del pedido
+	 *
+	 * @param idProductoBuscado el id del producto
+	 * @return el precio de venta, 0.0 si no se encuentra y -1.0 si el id es null
+	 */
 	public double getPrecioDeProducto(String idProductoBuscado) {
 		if (idProductoBuscado == null) {
 			return -1.0;
@@ -255,6 +316,11 @@ public class Pedido {
 		return 0.0;
 	}
 
+	/**
+	 * Calcula el total bruto del pedido sin aplicar descuentos
+	 *
+	 * @return la suma de todas las líneas del pedido
+	 */
 	public double getTotalBruto() {
 		double totalBruto = 0.0;
 
@@ -265,6 +331,12 @@ public class Pedido {
 		return totalBruto;
 	}
 
+	/**
+	 * Cambia el descuento aplicado al pedido mientras siga pendiente de pago
+	 *
+	 * @param descuentoAplicado el nuevo descuento
+	 * @return true si se cambia correctamente, false en caso contrario
+	 */
 	public boolean setDescuentoAplicado(Descuento descuentoAplicado) {
 		if (this.estado != EstadoPedido.PENDIENTE_PAGO) {
 			return false;
@@ -275,6 +347,11 @@ public class Pedido {
 		return true;
 	}
 
+	/**
+	 * Comprueba si el pedido ha superado el tiempo máximo para pagarse
+	 *
+	 * @return true si ha caducado, false en caso contrario
+	 */
 	public boolean isCaducado() {
 		if (this.estado != EstadoPedido.PENDIENTE_PAGO) {
 			return false;
@@ -282,62 +359,137 @@ public class Pedido {
 		return LocalDateTime.now().isAfter(this.fechaCreacion.plusMinutes(Tienda.getInstancia().getTiempoMaxPago()));
 	}
 
+	/**
+	 * Devuelve el identificador del pedido
+	 *
+	 * @return el id del pedido
+	 */
 	public String getIdPedido() {
 		return this.idPedido;
 	}
 
+	/**
+	 * Recupera la fecha de creación del pedido
+	 *
+	 * @return la fecha en la que se creó
+	 */
 	public LocalDateTime getFechaCreacion() {
 		return this.fechaCreacion;
 	}
 
+	/**
+	 * Devuelve la fecha en la que el pedido quedó preparado
+	 *
+	 * @return la fecha de preparación
+	 */
 	public LocalDateTime getFechaPreparado() {
 		return this.fechaPreparado;
 	}
 
+	/**
+	 * Recupera la fecha de entrega del pedido
+	 *
+	 * @return la fecha de entrega
+	 */
 	public LocalDateTime getFechaEntregado() {
 		return this.fechaEntregado;
 	}
 
+	/**
+	 * Devuelve el cliente asociado al pedido
+	 *
+	 * @return el cliente que hizo el pedido
+	 */
 	public Cliente getCliente() {
 		return this.cliente;
 	}
 
+	/**
+	 * Recupera las líneas del pedido
+	 *
+	 * @return una copia de la lista de líneas
+	 */
 	public List<LineaPedido> getLineas() {
 		return new ArrayList<>(this.lineas);
 	}
 
+	/**
+	 * Devuelve el pago asociado al pedido
+	 *
+	 * @return el pago registrado
+	 */
 	public Pago getPago() {
 		return this.pago;
 	}
 
+	/**
+	 * Recupera el importe total del pedido
+	 *
+	 * @return el total final
+	 */
 	public double getTotal() {
 		return this.total;
 	}
 
+	/**
+	 * Devuelve el estado actual del pedido
+	 *
+	 * @return el estado en el que se encuentra
+	 */
 	public EstadoPedido getEstado() {
 		return this.estado;
 	}
 
+	/**
+	 * Recupera el código de recogida del pedido
+	 *
+	 * @return el código de recogida
+	 */
 	public String getCodigoRecogida() {
 		return this.codigoRecogida;
 	}
 
+	/**
+	 * Devuelve el descuento aplicado al pedido
+	 *
+	 * @return el descuento actual
+	 */
 	public Descuento getDescuentoAplicado() {
 		return this.descuentoAplicado;
 	}
 
+	/**
+	 * Indica si se ha solicitado la recogida del pedido
+	 *
+	 * @return true si se ha solicitado, false en caso contrario
+	 */
 	public boolean isRecogida_solicitada() {
 		return recogidaSolicitada;
 	}
 
+	/**
+	 * Cambia el valor de recogida solicitada
+	 *
+	 * @param recogida_solicitada el nuevo valor
+	 */
 	public void setRecogida_solicitada(boolean recogida_solicitada) {
 		this.recogidaSolicitada = recogida_solicitada;
 	}
 
+	/**
+	 * Cambia directamente el estado del pedido
+	 *
+	 * @param estado el nuevo estado
+	 */
 	public void setEstado(EstadoPedido estado) {
 		this.estado = estado;
 	}
 
+	/**
+	 * Cambia el código de recogida del pedido
+	 *
+	 * @param codigoRecogida el nuevo código
+	 */
 	public void setCodigoRecogida(String codigoRecogida) {
 		this.codigoRecogida = codigoRecogida;
 	}
