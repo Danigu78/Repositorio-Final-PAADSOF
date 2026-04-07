@@ -5,8 +5,6 @@ import usuarios.Cliente;
 import tienda.Estadistica;
 import java.time.*;
 
-
-
 public class Reseña {
 	private String idReseña;
 	private Cliente autor;
@@ -15,6 +13,14 @@ public class Reseña {
 	private String comentario;
 	private LocalDate fecha;
 
+	/**
+	 * Constructor de la clase Reseña
+	 *
+	 * @param autor      el cliente que escribe la reseña
+	 * @param productoV  el producto sobre el que se hace la reseña
+	 * @param puntuacion la nota dada al producto
+	 * @param comentario el comentario que acompaña a la reseña
+	 */
 	public Reseña(Cliente autor, ProductoVenta productoV, double puntuacion, String comentario) {
 		Estadistica est = Estadistica.getInstancia();
 		this.idReseña = "RESEÑA-" + String.valueOf(est.getnReseñas());
@@ -35,14 +41,30 @@ public class Reseña {
 		}
 	}
 
+	/**
+	 * Recupera la fecha en la que se creó la reseña
+	 *
+	 * @return la fecha de creación
+	 */
 	public LocalDate getFecha() {
 		return this.fecha;
 	}
 
+	/**
+	 * Devuelve la puntuación de la reseña
+	 *
+	 * @return la nota asignada al producto
+	 */
 	public double getPuntuacion() {
 		return this.puntuacion;
 	}
 
+	/**
+	 * Asocia la reseña a un producto
+	 *
+	 * @param p el producto al que pertenece la reseña
+	 * @return true si se asigna correctamente
+	 */
 	public boolean setProducto(ProductoVenta p) {
 		if (p == null) {
 			throw new ProductoInvalidoException("El producto de la reseña no puede ser null.");
@@ -51,18 +73,32 @@ public class Reseña {
 		return true;
 	}
 
+	/**
+	 * Devuelve una representación sencilla de la reseña
+	 *
+	 * @return un texto con el autor, la fecha, la puntuación y el comentario
+	 */
 	@Override
 	public String toString() {
 		return "[" + this.idReseña + "] " + (this.autor != null ? this.autor.getNickname() : "null") + " | "
 				+ this.fecha + " | " + this.puntuacion + " | " + this.comentario + " |";
 	}
 
+	/**
+	 * Recupera el autor de la reseña
+	 *
+	 * @return el cliente que la ha escrito
+	 */
 	public Cliente getAutor() {
 		return autor;
 	}
 
+	/**
+	 * Recupera el producto asociado a la reseña
+	 *
+	 * @return el producto valorado
+	 */
 	public ProductoVenta getProducto() {
-		// TODO Auto-generated method stub
 		return producto;
 	}
 }
