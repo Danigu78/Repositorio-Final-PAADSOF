@@ -31,7 +31,7 @@ public class Gestor extends UsuarioRegistrado {
 		this.motorEstadistico = new MotorEstadistico();
 		this.sesionIniciada = true;
 	}
-
+/*
 	// @Override
 	public void mostrarPanelPrincipal() {
 		System.out.println("--- PANEL DE CONTROL DEL GESTOR ---");
@@ -40,7 +40,7 @@ public class Gestor extends UsuarioRegistrado {
 		System.out.println("3. Gestión de Descuentos y Precios");
 		System.out.println("4. Ver Estadísticas de Rendimiento");
 	}
-
+*/
 	private Empleado buscarEmpleadoporId(String id) {
 		if (id == null || id.isBlank()) {
 			return null;
@@ -443,10 +443,7 @@ public class Gestor extends UsuarioRegistrado {
 		return c.deleteProducto(p);
 	}
 
-	// ----------------------------------------------------------------
-	// PERFIL DEL GESTOR
-	// El gestor SÍ puede modificar sus credenciales (requisito 2.1.1.9)
-	// ----------------------------------------------------------------
+	
 
 	/**
 	 * Modifica el perfil del gestor (nickname y contraseña).
