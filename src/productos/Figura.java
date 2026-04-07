@@ -1,6 +1,6 @@
 package productos;
 
-import Excepcion.ProductoInvalidoException;
+import Excepcion.*;
 
 /**
  * @author Lucas Manuel Blanco Rodríguez
