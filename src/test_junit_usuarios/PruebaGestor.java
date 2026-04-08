@@ -1,4 +1,4 @@
-package test_junit;
+package test_junit_usuarios;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.*;
