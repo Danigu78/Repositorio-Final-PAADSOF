@@ -2,9 +2,10 @@ package test_junit_excepciones;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
-import Excepcion.*;
 
-public class TestExcepciones {
+import excepciones.*;
+
+public class ExcepcionesTest {
 
 	@Test
 	public void testCheckPointException() {

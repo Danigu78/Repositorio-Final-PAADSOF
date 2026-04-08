@@ -1,4 +1,4 @@
-package Excepcion;
+package excepciones;
 
 /**
  * Excepción que se lanza cuando se intenta añadir un producto a una categoría a

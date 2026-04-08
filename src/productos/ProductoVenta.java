@@ -2,7 +2,7 @@ package productos;
 
 import java.util.*;
 
-import Excepcion.*;
+import excepciones.*;
 import tienda.Estadistica;
 
 /**

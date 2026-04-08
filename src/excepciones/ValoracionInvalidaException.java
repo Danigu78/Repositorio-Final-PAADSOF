@@ -1,4 +1,4 @@
-package Excepcion;
+package excepciones;
 
 /**
  * Excepción que se lanza cuando una valoración de producto es inválida.

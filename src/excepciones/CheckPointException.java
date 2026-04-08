@@ -1,4 +1,4 @@
-package Excepcion;
+package excepciones;
 
 /**
  * Excepción base del sistema para gestionar errores de tipo checkpoint.

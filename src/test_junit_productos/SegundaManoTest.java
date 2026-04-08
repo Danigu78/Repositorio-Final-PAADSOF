@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.Test;
 
-import Excepcion.ProductoInvalidoException;
-import Excepcion.ValoracionInvalidaException;
+import excepciones.ProductoInvalidoException;
+import excepciones.ValoracionInvalidaException;
 import usuarios.Cliente;
 import usuarios.Empleado;
 import ventas.Pago;

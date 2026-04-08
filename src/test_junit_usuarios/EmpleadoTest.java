@@ -3,9 +3,10 @@ package test_junit_usuarios;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.*;
 
+import excepciones.*;
+
 import java.util.*;
 
-import Excepcion.*;
 import intercambios.*;
 import productos.*;
 import tienda.*;
@@ -13,7 +14,7 @@ import usuarios.*;
 import ventas.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class PruebaEmpleado {
+public class EmpleadoTest {
 
 	private static Tienda tienda;
 	private static Gestor gestor;

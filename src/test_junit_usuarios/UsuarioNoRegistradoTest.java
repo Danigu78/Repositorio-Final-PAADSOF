@@ -9,7 +9,7 @@ import productos.*;
 import tienda.*;
 import usuarios.*;
 
-public class PruebaUsuarioNoRegistrado {
+public class UsuarioNoRegistradoTest {
 
 	private static Tienda tienda;
 	private static Gestor gestor;

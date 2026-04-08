@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import productos.*;
 import org.junit.jupiter.api.Test;
 
-import Excepcion.ProductoInvalidoException;
+import excepciones.ProductoInvalidoException;
 
 public class ProductoValidacionesTest {
 

@@ -3,8 +3,8 @@ package test_junit_tienda;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.*;
 
-import Excepcion.ProductoInvalidoException;
-import Excepcion.ProductoYaEnPackException;
+import excepciones.ProductoInvalidoException;
+import excepciones.ProductoYaEnPackException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

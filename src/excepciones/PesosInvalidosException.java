@@ -1,4 +1,4 @@
-package Excepcion;
+package excepciones;
 
 /**
  * Excepción que se lanza cuando los pesos utilizados en el cálculo de

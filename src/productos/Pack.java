@@ -2,7 +2,7 @@ package productos;
 
 import java.util.ArrayList;
 
-import Excepcion.*;
+import excepciones.*;
 
 /**
  * @author Lucas Manuel Blanco Rodríguez

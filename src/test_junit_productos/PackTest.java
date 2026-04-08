@@ -4,9 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import Excepcion.ProductoInvalidoException;
-import Excepcion.ProductoYaEnPackException;
-import Excepcion.StockInsuficienteParaPackException;
+import excepciones.ProductoInvalidoException;
+import excepciones.ProductoYaEnPackException;
+import excepciones.StockInsuficienteParaPackException;
 import productos.*;
 
 public class PackTest {

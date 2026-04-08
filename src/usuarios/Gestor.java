@@ -3,7 +3,7 @@ package usuarios;
 import java.time.*;
 import java.util.*;
 
-import Excepcion.*;
+import excepciones.*;
 import ventas.*;
 import productos.*;
 import tienda.*;

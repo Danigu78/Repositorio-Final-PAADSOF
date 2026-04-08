@@ -3,7 +3,7 @@ package productos;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-import Excepcion.*;
+import excepciones.*;
 import tienda.Tienda;
 import usuarios.Empleado;
 import ventas.Pago;

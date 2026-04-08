@@ -3,7 +3,7 @@ package test_junit_usuarios;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.*;
 
-import Excepcion.ProductoBloqueadoException;
+import excepciones.ProductoBloqueadoException;
 
 import java.sql.Date;
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ import tienda.*;
 import usuarios.*;
 import ventas.*;
 
-public class PruebaCliente {
+public class ClienteTest {
 
 	private static Tienda tienda;
 	private static Gestor gestor;

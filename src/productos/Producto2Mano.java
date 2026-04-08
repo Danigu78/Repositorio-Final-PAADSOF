@@ -1,7 +1,7 @@
 package productos;
 
-import Excepcion.*;
 import usuarios.*;
+import excepciones.*;
 import tienda.*;
 
 /**

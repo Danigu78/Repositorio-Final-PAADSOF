@@ -1,11 +1,13 @@
 package pruebas;
 
 import java.util.*;
+
+import excepciones.*;
+
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import Excepcion.*;
 import intercambios.*;
 import productos.*;
 import tienda.*;

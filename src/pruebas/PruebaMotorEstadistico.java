@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
-import Excepcion.*;
+import excepciones.*;
 import intercambios.*;
 import productos.*;
 import tienda.*;

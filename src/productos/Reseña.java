@@ -1,9 +1,10 @@
 package productos;
 
-import Excepcion.*;
 import usuarios.Cliente;
 import tienda.Estadistica;
 import java.time.*;
+
+import excepciones.*;
 
 /**
  * @author Lucas Manuel Blanco Rodríguez

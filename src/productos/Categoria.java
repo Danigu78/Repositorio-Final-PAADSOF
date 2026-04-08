@@ -1,7 +1,8 @@
 package productos;
 
 import java.util.*;
-import Excepcion.ProductoYaEnCategoriaException;
+
+import excepciones.ProductoYaEnCategoriaException;
 
 /**
  * @author Lucas Manuel Blanco Rodríguez

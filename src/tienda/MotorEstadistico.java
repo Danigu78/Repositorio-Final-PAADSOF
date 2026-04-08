@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import Excepcion.AñoInvalidoException;
-import Excepcion.RangoFechasInvalidoException;
+import excepciones.AñoInvalidoException;
+import excepciones.RangoFechasInvalidoException;
 import intercambios.*;
 import usuarios.*;
 import ventas.*;

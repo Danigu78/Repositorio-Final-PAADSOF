@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import Excepcion.ProductoYaEnCategoriaException;
-import Excepcion.ReseñaDuplicadaException;
+import excepciones.ProductoYaEnCategoriaException;
+import excepciones.ReseñaDuplicadaException;
 import usuarios.Cliente;
 import productos.*;
 

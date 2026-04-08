@@ -1,11 +1,12 @@
 package pruebas;
 
 import java.util.*;
+
+import excepciones.*;
 import productos.*;
 import tienda.*;
 import usuarios.*;
 import ventas.*;
-import Excepcion.*;
 
 /**
  * Clase de prueba para validar el motor de recomendaciones de la tienda. Se

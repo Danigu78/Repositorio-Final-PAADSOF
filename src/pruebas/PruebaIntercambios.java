@@ -2,8 +2,8 @@ package pruebas;
 
 import java.util.*;
 
-import Excepcion.ProductoBloqueadoException;
-import Excepcion.ValoracionInvalidaException;
+import excepciones.ProductoBloqueadoException;
+import excepciones.ValoracionInvalidaException;
 import intercambios.*;
 import productos.*;
 import tienda.*;

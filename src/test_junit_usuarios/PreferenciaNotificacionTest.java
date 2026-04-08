@@ -10,7 +10,7 @@ import productos.Categoria;
 import tienda.*;
 import usuarios.*;
 
-public class PruebaPreferenciaNotificacion {
+public class PreferenciaNotificacionTest {
 
 	private static Tienda tienda;
 	private static Gestor gestor;

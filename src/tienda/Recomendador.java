@@ -2,8 +2,8 @@ package tienda;
 
 import java.util.*;
 
-import Excepcion.PesosInvalidosException;
-import Excepcion.RecomendadorNoActivoException;
+import excepciones.PesosInvalidosException;
+import excepciones.RecomendadorNoActivoException;
 import productos.*;
 import usuarios.*;
 import ventas.*;

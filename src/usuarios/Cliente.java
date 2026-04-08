@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import excepciones.*;
 import tienda.*;
 import productos.*;
-import Excepcion.*;
 import intercambios.*;
 
 import ventas.*;

@@ -1,6 +1,6 @@
 package productos;
 
-import Excepcion.*;
+import excepciones.*;
 
 /**
  * @author Lucas Manuel Blanco Rodríguez

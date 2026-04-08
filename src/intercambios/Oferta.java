@@ -3,7 +3,7 @@ package intercambios;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import Excepcion.*;
+import excepciones.*;
 import tienda.Estadistica;
 import tienda.Tienda;
 import tienda.TipoNotificacion;
