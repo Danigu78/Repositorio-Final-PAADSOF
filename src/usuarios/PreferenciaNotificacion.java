@@ -194,7 +194,9 @@ public class PreferenciaNotificacion {
 	}
 
 	/**
-	 * @return true si las notificaciones de descuentos están activadas
+	 * Indica si las notificaciones de descuentos están habilitadas.
+	 * 
+	 * @return true si están activadas, false en caso contrario
 	 */
 	public boolean isDescuentos() {
 		return descuentos;
@@ -210,13 +212,17 @@ public class PreferenciaNotificacion {
 	}
 
 	/**
-	 * @return true si las notificaciones de pedidos caducados están activadas
+	 * Indica si las notificaciones de pedidos caducados están habilitadas.
+	 * 
+	 * @return true si están activadas, false en caso contrario
 	 */
 	public boolean isPedidosCaducados() {
 		return pedidosCaducados;
 	}
 
 	/**
+	 * Activa o desactiva las notificaciones de pedidos caducados.
+	 * 
 	 * @param pedidosCaducados nuevo valor de la preferencia
 	 */
 	public void setPedidosCaducados(boolean pedidosCaducados) {
@@ -224,13 +230,17 @@ public class PreferenciaNotificacion {
 	}
 
 	/**
-	 * @return true si las notificaciones de nuevos intercambios están activadas
+	 * Indica si las notificaciones de nuevos intercambios están habilitadas.
+	 * 
+	 * @return true si están activadas, false en caso contrario
 	 */
 	public boolean isNuevos_Intercambios() {
 		return nuevos_Intercambios;
 	}
 
 	/**
+	 * Activa o desactiva las notificaciones de nuevos intercambios.
+	 * 
 	 * @param nuevos_Intercambios nuevo valor de la preferencia
 	 */
 	public void setNuevos_Intercambios(boolean nuevos_Intercambios) {
@@ -238,27 +248,35 @@ public class PreferenciaNotificacion {
 	}
 
 	/**
-	 * @return true si las notificaciones de pedido entregado están activadas
+	 * Indica si las notificaciones de pedido entregado están habilitadas.
+	 * 
+	 * @return true si están activadas, false en caso contrario
 	 */
 	public boolean isPedido_entregado() {
 		return pedido_entregado;
 	}
 
 	/**
-	 * @return true si las notificaciones de pedido entregado están activadas
+	 * Activa o desactiva las notificaciones de pedido entregado.
+	 * 
+	 * @param pedido_entregado nuevo valor de la preferencia
 	 */
 	public void setPedido_entregado(boolean pedido_entregado) {
 		this.pedido_entregado = pedido_entregado;
 	}
 
 	/**
-	 * @return true si las notificaciones de valoración completada están activadas
+	 * Indica si las notificaciones de valoración completada están habilitadas.
+	 * 
+	 * @return true si están activadas, false en caso contrario
 	 */
 	public boolean isValoracion_completada() {
 		return valoracion_completada;
 	}
 
 	/**
+	 * Activa o desactiva las notificaciones de valoración completada.
+	 * 
 	 * @param valoracion_completada nuevo valor de la preferencia
 	 */
 	public void setValoracion_completada(boolean valoracion_completada) {
@@ -266,13 +284,17 @@ public class PreferenciaNotificacion {
 	}
 
 	/**
-	 * @return true si las notificaciones de oferta caducada están activadas
+	 * Indica si las notificaciones de oferta caducada están habilitadas.
+	 * 
+	 * @return true si están activadas, false en caso contrario
 	 */
 	public boolean isOferta_caducada() {
 		return oferta_caducada;
 	}
 
 	/**
+	 * Activa o desactiva las notificaciones de oferta caducada.
+	 * 
 	 * @param oferta_caducada nuevo valor de la preferencia
 	 */
 	public void setOferta_caducada(boolean oferta_caducada) {

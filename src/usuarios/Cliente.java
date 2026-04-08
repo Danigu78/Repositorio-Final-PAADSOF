@@ -937,6 +937,11 @@ public class Cliente extends UsuarioRegistrado {
 		carritoActual.imprimirCarrito();
 	}
 
+	/**
+	 * Recupera el historial completo de pedidos del cliente
+	 *
+	 * @return la lista de todos los pedidos realizados
+	 */
 	public List<Pedido> getHistorialPedidos() {
 		return this.historialPedidos;
 	}

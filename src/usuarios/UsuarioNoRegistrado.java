@@ -109,7 +109,11 @@ public class UsuarioNoRegistrado {
 		}
 		return resultado;
 	}
-
+	/**
+	 * Filtra los productos del catálogo según un rango de precios específico.
+	 * @param min el precio mínimo a mostrar
+	 * @param max el precio máximo a mostrar
+	 */
 	public void filtrarPorPrecio(double min, double max) {
 		filtroVenta.resetear();
 		filtroVenta.setPrecioMinimo(min);
@@ -118,7 +122,11 @@ public class UsuarioNoRegistrado {
 		buscarProductosVentaFiltrados();
 		filtroVenta.resetear();
 	}
-
+	/**
+	 * Busca y muestra productos que pertenecen a una categoría determinada.
+	 * Si la categoría no existe en el sistema, se cancela la operación.
+	 * @param nombreCategoria el nombre de la categoría por la que filtrar
+	 */
 	public void filtrarPorCategoria(String nombreCategoria) {
 		filtroVenta.resetear();
 		Categoria c = Tienda.getInstancia().buscarCategoriaPorNombre(nombreCategoria);
@@ -131,7 +139,10 @@ public class UsuarioNoRegistrado {
 		buscarProductosVentaFiltrados();
 		filtroVenta.resetear();
 	}
-
+	/**
+	 * Filtra el catálogo para mostrar solo productos con una valoración mínima.
+	 * @param puntuacionMinima la nota mínima de corte 
+	 */
 	public void filtrarPorPuntuacion(double puntuacionMinima) {
 		filtroVenta.resetear();
 		filtroVenta.setPuntuacionMinima(puntuacionMinima);
@@ -139,7 +150,13 @@ public class UsuarioNoRegistrado {
 		buscarProductosVentaFiltrados();
 		filtroVenta.resetear();
 	}
-
+	/**
+	 * Realiza un filtrado avanzado combinando múltiples criterios simultáneamente.
+	 * @param precioMin      el precio mínimo permitido
+	 * @param precioMax      el precio máximo permitido
+	 * @param puntuacionMin  la puntuación mínima requerida
+	 * @param categorias     uno o varios nombres de categorías 
+	 */
 	public void filtrarProductos(double precioMin, double precioMax, double puntuacionMin, String... categorias) {
 		filtroVenta.resetear();
 		filtroVenta.setPrecioMinimo(precioMin);

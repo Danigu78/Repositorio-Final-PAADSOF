@@ -3,8 +3,10 @@ package ventas;
 import java.time.LocalDateTime;
 import java.util.*;
 import es.uam.eps.padsof.telecard.*;
+
 /**
  * Clase que gestiona la transacción bancaria de un pedido mediante tarjeta.
+ * 
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
@@ -18,7 +20,7 @@ public class Pago {
 	/** Fecha de caducidad de la tarjeta empleada. */
 	private Date fechaTarjeta;
 
-	/** Código de seguridad  de la tarjeta. */
+	/** Código de seguridad de la tarjeta. */
 	private int CVV;
 
 	/** Cantidad económica total a cargar en la cuenta. */
@@ -90,10 +92,20 @@ public class Pago {
 		return this.exito;
 	}
 
+	/**
+	 * Recupera el momento exacto en el que se efectuó la transacción.
+	 * 
+	 * @return fecha y hora del registro de la operación
+	 */
 	public LocalDateTime getFechaTransaccion() {
 		return fechaTransaccion;
 	}
 
+	/**
+	 * Establece o modifica la fecha y hora asociadas a la transacción.
+	 * 
+	 * @param fechaTransaccion el nuevo sello temporal de la operación
+	 */
 	public void setFechaTransaccion(LocalDateTime fechaTransaccion) {
 		this.fechaTransaccion = fechaTransaccion;
 	}

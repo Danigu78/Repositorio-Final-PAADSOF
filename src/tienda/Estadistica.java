@@ -1,6 +1,10 @@
 package tienda;
 
 /**
+ * Clase encargada de gestionar los contadores globales del sistema. Implementa
+ * el patrón Singleton para centralizar la generación de identificadores únicos
+ * de diversas entidades (usuarios, productos, ventas, notificaciones, etc.).
+ * 
  * @author Antonino Albarrán
  * @version 1.0
  */
