@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,8 +21,17 @@ class MotorEstadisticoTest {
 
 	@BeforeEach
 	void setUp() {
-		motor = new MotorEstadistico();
 		tienda = Tienda.getInstancia();
+		limpiarTienda();
+		motor = new MotorEstadistico();
+	}
+
+	@AfterEach
+	void limpiar() {
+		limpiarTienda();
+	}
+
+	private void limpiarTienda() {
 		tienda.obtenerClientesTienda().clear();
 		tienda.getHistorialVentas().clear();
 		tienda.getIntercambiosFinalizados().clear();
