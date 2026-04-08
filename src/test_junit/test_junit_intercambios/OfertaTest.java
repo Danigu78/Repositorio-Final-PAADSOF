@@ -1,4 +1,4 @@
-package test_junit_intercambios;
+package test_junit.test_junit_intercambios;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;

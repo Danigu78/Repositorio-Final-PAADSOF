@@ -1,4 +1,4 @@
-package test_junit_tienda;
+package test_junit.test_junit_tienda;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.*;
@@ -24,7 +24,7 @@ public class TiendaTest {
 	private ProductoVenta watchmen;
 	private ProductoVenta akira;
 	private ProductoVenta figura;
-	// Atributos para los clientes necesarios en Carrito
+	
 	private Cliente clienteA;
 	private Cliente clienteB;
 

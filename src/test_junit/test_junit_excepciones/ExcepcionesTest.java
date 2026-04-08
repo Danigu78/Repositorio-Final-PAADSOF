@@ -1,4 +1,4 @@
-package test_junit_excepciones;
+package test_junit.test_junit_excepciones;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
