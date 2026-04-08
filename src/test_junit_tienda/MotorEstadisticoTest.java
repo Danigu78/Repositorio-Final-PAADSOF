@@ -32,7 +32,7 @@ class MotorEstadisticoTest {
 	}
 
 	private void limpiarTienda() {
-		tienda.obtenerClientesTienda().clear();
+		tienda.vaciarTienda();
 		tienda.getHistorialVentas().clear();
 		tienda.getIntercambiosFinalizados().clear();
 		tienda.getHistorialProductos2Mano().clear();

@@ -1,7 +1,6 @@
 package pruebas;
 
 import java.util.*;
-
 import excepciones.*;
 
 import java.sql.Date;
