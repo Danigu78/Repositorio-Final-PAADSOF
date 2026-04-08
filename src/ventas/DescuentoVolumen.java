@@ -1,13 +1,16 @@
 package ventas;
 
 import java.time.LocalDateTime;
-
 /**
+ * Clase que aplica una reducción de precio al total del carrito si se supera un importe mínimo de compra.
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
 public class DescuentoVolumen extends Descuento {
+	/** Importe total mínimo que debe alcanzar el carrito para activar el descuento. */
 	private double umbralMinimo;
+
+	/** Factor de descuento aplicado sobre el total del subtotal. */
 	private double porcentaje;
 
 	/**

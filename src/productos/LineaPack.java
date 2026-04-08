@@ -3,11 +3,22 @@ package productos;
 import excepciones.*;
 
 /**
+ * Clase que representa una línea de detalle dentro de un pack de productos.
+ * Vincula un {@link ProductoVenta} específico con una cantidad determinada de
+ * unidades que formarán parte del conjunto.
+ * 
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
 public class LineaPack {
+	/**
+	 * El producto individual que se incluye dentro del pack.
+	 */
 	private ProductoVenta producto;
+	/**
+	 * Cantidad de ejemplares del producto asociado que contiene esta línea del
+	 * pack.
+	 */
 	private int unidades;
 
 	/**

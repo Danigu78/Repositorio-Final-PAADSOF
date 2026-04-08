@@ -4,11 +4,20 @@ import java.time.LocalDateTime;
 import productos.ProductoVenta;
 
 /**
+ * Clase que representa una promoción donde se regala un producto al superar un
+ * gasto mínimo.
+ * 
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
 public class Regalo extends Descuento {
+	/** Importe mínimo de compra requerido para obtener el artículo de obsequio. */
 	private double umbral;
+
+	/**
+	 * Artículo específico que se añade gratuitamente al pedido si se cumple la
+	 * condición.
+	 */
 	private ProductoVenta producto;
 
 	/**

@@ -5,7 +5,7 @@ package tienda;
  * @version 1.0
  */
 public class Estadistica {
-
+	/** Instancia única de la clase (Patrón Singleton). */
 	private static Estadistica instancia;
 
 	private Estadistica() {
@@ -22,17 +22,40 @@ public class Estadistica {
 		return instancia;
 	}
 
+	/** Contador para IDs de productos de venta. */
 	private int nProductosVentas = 1;
+
+	/** Contador para IDs de usuarios registrados. */
 	private int nUsuarioRegistrado = 1;
+
+	/** Contador para sesiones de usuarios no registrados. */
 	private int nUsuarioNoRegistrado = 1;
+
+	/** Contador para IDs de productos de segunda mano. */
 	private int nProducto2Mano = 1;
+
+	/** Contador para IDs de pedidos/ventas. */
 	private int nVentas = 1;
+
+	/** Contador para IDs de descuentos aplicados. */
 	private int nDescuentos = 1;
+
+	/** Contador para registros de intercambios finalizados. */
 	private int nIntercambiosFinalizados = 1;
+
+	/** Contador para IDs de categorías de productos. */
 	private int nCategorias = 1;
+
+	/** Contador para IDs de carritos de compra. */
 	private int nCarritos = 1;
+
+	/** Contador para IDs de reseñas publicadas. */
 	private int nReseñas = 1;
+
+	/** Contador del total de tasaciones que han sido abonadas. */
 	private int nTasacionesCobradas = 0;
+
+	/** Contador para IDs de notificaciones del sistema. */
 	private int nNotificaciones = 1;
 
 	/**

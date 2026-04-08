@@ -9,17 +9,29 @@ import usuarios.*;
 import ventas.*;
 
 /**
+ * Clase que gestiona el sistema de sugerencias personalizadas para clientes.
+ * 
  * @author Antonino Albarrán
  * @version 1.0
  */
 public class Recomendador {
 
+	/** Cantidad máxima de sugerencias que se mostrarán al usuario. */
 	private int limiteMaximo = 5;
+
+	/** Indica si el motor de recomendaciones está habilitado o no. */
 	private boolean activo = true;
 
-	// Pesos de cada criterio. Se normalizan en setPesos, deben ser >= 0.
+	/** Peso del criterio basado en la calificación media de los productos. */
 	private double pesoValoracion = 0.34;
+
+	/**
+	 * Peso del criterio basado en el historial de compras de otros usuarios
+	 * similares.
+	 */
 	private double pesoCompras = 0.33;
+
+	/** Peso del criterio basado en la categoría favorita del cliente. */
 	private double pesoCategorias = 0.33;
 
 	/**

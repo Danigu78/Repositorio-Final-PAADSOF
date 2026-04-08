@@ -10,23 +10,45 @@ import tienda.TipoNotificacion;
 import usuarios.Cliente;
 
 /**
+ * Clase que representa una reserva de un carrito.
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
 public class Pedido {
+	/** Indica si el cliente ha marcado el pedido para recoger en tienda física. */
 	private boolean recogidaSolicitada;
+
+	/** Identificador alfanumérico único del pedido. */
 	private final String idPedido;
+
+	/** Fecha y hora en la que se generó el pedido a partir del carrito. */
 	private final LocalDateTime fechaCreacion;
+
+	/** Fecha y hora en la que el personal de tienda terminó de preparar el pedido. */
 	private LocalDateTime fechaPreparado;
+
+	/** Fecha y hora en la que el pedido fue retirado o entregado al cliente. */
 	private LocalDateTime fechaEntregado;
 
+	/** Cliente que ha realizado la compra. */
 	private final Cliente cliente;
+
+	/** Lista de productos y cantidades que componen la compra. */
 	private final List<LineaPedido> lineas;
 
+	/** Información sobre la transacción bancaria asociada. */
 	private Pago pago;
+
+	/** Importe económico final a pagar por el cliente. */
 	private double total;
+
+	/** Situación actual del pedido ( PENDIENTE_PAGO, PAGADO, ENTREGADO). */
 	private EstadoPedido estado;
+
+	/** Código único generado tras el pago para validar la retirada del producto. */
 	private String codigoRecogida;
+
+	/** Promoción aplicada al cálculo del precio final del pedido. */
 	private Descuento descuentoAplicado;
 
 	/**

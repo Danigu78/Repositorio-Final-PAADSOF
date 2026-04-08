@@ -6,15 +6,24 @@ import excepciones.*;
 import tienda.Estadistica;
 
 /**
+ * Clase abstracta para productos destinados a la venta directa.
+ * 
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
 public abstract class ProductoVenta extends Producto {
-	protected double precioOficial;
-	protected int stockDisponible;
-	protected ArrayList<Reseña> reseñas;
-	protected ArrayList<Categoria> categorias;
 
+	/** Precio base de venta al público. */
+	protected double precioOficial;
+
+	/** Cantidad de unidades disponibles en el inventario. */
+	protected int stockDisponible;
+
+	/** Listado de opiniones y puntuaciones de los clientes. */
+	protected ArrayList<Reseña> reseñas;
+
+	/** Listado de categorías a las que está asignado el producto. */
+	protected ArrayList<Categoria> categorias;
 	/* CONSTRUCTORES DEL PRODUCTO CON DIFERENTES PARAMETROS */
 
 	/**

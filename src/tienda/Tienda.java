@@ -17,31 +17,76 @@ import ventas.Regalo;
 import productos.*;
 
 /**
- * @author Antonino Albarrán
+ * Clase principal que gestiona el funcionamiento global del sistema
+ * (Singleton).
+ * 
+ * @author Antonino Albarrán, Lucas y Daniel
  * @version 1.0
  */
 public class Tienda {
-
+	/** Nombre comercial de la tienda. */
 	private String nombre;
+
+	/** Lista de todos los usuarios registrados (Clientes, Empleados y Gestor). */
 	private List<UsuarioRegistrado> usuarios;
+
+	/** Inventario de productos disponibles para la venta. */
 	private List<ProductoVenta> stockVentas;
+
+	/** Catálogo de productos de segunda mano disponibles para intercambio. */
 	private List<Producto2Mano> catalogoIntercambio;
+
+	/** Registro histórico de todos los pedidos realizados. */
 	private List<Pedido> historialVentas;
-	private List<Producto2Mano> pendientes_Tasacion; // Productos que no han sido tasados
+
+	/** Productos recibidos que aún no han sido evaluados por un empleado. */
+	private List<Producto2Mano> pendientes_Tasacion;
+
+	/** Lista de promociones y descuentos aplicables actualmente. */
 	private List<Descuento> descuentosActivos = new ArrayList<>();
+
+	/** Registro de todos los descuentos creados en el sistema. */
 	private List<Descuento> historialDescuentos = new ArrayList<>();
+
+	/** Registro de ofertas de intercambio que se han completado con éxito. */
 	private List<Oferta> intercambiosFinalizados = new ArrayList<>();
+
+	/** Clasificaciones disponibles para organizar los productos. */
 	private List<Categoria> categorias = new ArrayList<>();
+
+	/** Motor de sugerencias personalizadas para los clientes. */
 	private Recomendador recomendador;
+
+	/**
+	 * Tiempo máximo (minutos) que un producto puede estar reservado en un carrito.
+	 */
 	private int tiempoMaxCarrito;
+
+	/** Tiempo máximo (minutos) de validez para una oferta de intercambio. */
 	private int tiempoMaxOferta;
+
+	/** Tiempo máximo (minutos) para completar el pago de un pedido. */
 	private int tiempoMaxPago;
+
+	/** Tarifa estándar cobrada por el servicio de tasación. */
 	private double precioValoracion;
+
+	/** Lista de usuarios que han iniciado sesión actualmente. */
 	private List<UsuarioRegistrado> usuariosConSesionActiva = new ArrayList<>();
+
+	/** Registro global de avisos y notificaciones generadas. */
 	private List<Notificacion> historialNotificaciones = new ArrayList<>();
+
+	/**
+	 * Historial completo de todos los productos de segunda mano que han pasado por
+	 * la tienda.
+	 */
 	private List<Producto2Mano> historialProductos2Mano = new ArrayList<Producto2Mano>();
-	// esta variable estatica, el constructor privado y el segundo metodo
+
+	/** Instancia única de la tienda (Patrón Singleton). */
 	private static Tienda instancia;
+
+	/** Componente encargado de monitorizar la caducidad de carritos y ofertas. */
 	private ComprobadorTiempos comprobadorTiempos;
 
 	/**

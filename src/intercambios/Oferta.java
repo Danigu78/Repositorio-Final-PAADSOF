@@ -11,16 +11,41 @@ import productos.*;
 import usuarios.*;
 
 /**
+ * Clase que representa una oferta de intercambio entre dos clientes. Gestiona
+ * los productos que se ofrecen, los que se solicitan y el estado del proceso de
+ * negociación.
+ * 
  * @author Antonino Albarrán
  * @version 1.0
  */
 public class Oferta {
+	/**
+     * Identificador único de la oferta .
+     */
 	private String id;
+	/**
+     * Fecha y hora en la que se realizó la propuesta de intercambio.
+     */
 	private LocalDateTime fechaOferta;
+	/**
+     * Estado actual de la oferta (PENDIENTE, ACEPTADA, CANCELADA, etc.).
+     */
 	private EstadoOferta estado;
+	/**
+     * Cliente que inicia la oferta y propone el intercambio.
+     */
 	private Cliente origen;
+	/**
+     * Cliente que recibe la oferta y debe decidir si la acepta o rechaza.
+     */
 	private Cliente destino;
+	/**
+     * Lista de productos de segunda mano que el cliente origen ofrece entregar.
+     */
 	private List<Producto2Mano> productosOfertados;
+	/**
+     * Lista de productos de segunda mano que el cliente origen desea recibir del destino.
+     */
 	private List<Producto2Mano> productosSolicitados;
 
 	/**

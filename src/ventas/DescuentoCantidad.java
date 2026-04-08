@@ -3,11 +3,22 @@ package ventas;
 import java.time.LocalDateTime;
 
 /**
+ * Clase que aplica una reducción de precio basada en el volumen de unidades de
+ * un mismo producto que se van a comprar .
+ * 
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
 public class DescuentoCantidad extends Descuento {
+	/**
+	 * Número de unidades de un mismo artículo necesarias para activar la promoción.
+	 */
 	private int cantidadMinima;
+
+	/**
+	 * Factor de descuento a aplicar ( 0.1 para un 10%) sobre las líneas que
+	 * cumplan el mínimo.
+	 */
 	private double porcentaje;
 
 	/**

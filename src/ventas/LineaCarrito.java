@@ -3,11 +3,17 @@ package ventas;
 import productos.ProductoVenta;
 
 /**
+ * Clase que representa el detalle de un producto específico dentro de un
+ * carrito.
+ * 
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
 public class LineaCarrito {
+	/** El artículo de venta asociado a esta línea del carrito. */
 	private ProductoVenta producto;
+
+	/** Número de ejemplares reservados del producto. */
 	private int cantidad;
 
 	/**

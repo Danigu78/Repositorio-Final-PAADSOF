@@ -3,14 +3,34 @@ package productos;
 import excepciones.*;
 
 /**
+ * Clase que representa un juego de mesa como un tipo específico de producto de
+ * venta. Extiende de {@link ProductoVenta} e incluye información sobre el
+ * número de jugadores, rangos de edad recomendados y la tipología del juego.
+ * 
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
 public class JuegoMesa extends ProductoVenta {
+	/**
+	 * Número mínimo de personas necesarias para poder jugar una partida.
+	 */
 	private int minJugadores;
+	/**
+	 * Número máximo de personas que pueden participar simultáneamente en una
+	 * partida.
+	 */
 	private int maxJugadores;
+	/**
+	 * Edad mínima recomendada para comprender las reglas y mecánicas del juego.
+	 */
 	private int minEdad;
+	/**
+	 * Edad máxima recomendada .
+	 */
 	private int maxEdad;
+	/**
+	 * Clasificación o género del juego .
+	 */
 	private String tipoJuego;
 
 	/**

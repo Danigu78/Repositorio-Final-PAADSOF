@@ -13,13 +13,27 @@ import tienda.Tienda;
 import usuarios.Cliente;
 
 /**
+ * Clase encargada de monitorizar y gestionar la caducidad de carritos y
+ * pedidos.
+ * 
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
 public class ComprobadorTiempos {
 
+	/** Mapa que vincula el ID de cada usuario con su carrito de compra actual. */
 	private final Map<String, Carrito> carritosPorUsuario;
+
+	/**
+	 * Mapa que registra las listas de pedidos que están esperando pago o
+	 * procesamiento por usuario.
+	 */
 	private final Map<String, List<Pedido>> pedidosPendientesPorUsuario;
+
+	/**
+	 * Servicio encargado de ejecutar las tareas de revisión de caducidad de forma
+	 * periódica en segundo plano.
+	 */
 	private final ScheduledExecutorService scheduler;
 
 	/**

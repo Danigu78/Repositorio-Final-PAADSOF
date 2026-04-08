@@ -4,20 +4,24 @@ import productos.EstadoProducto;
 import productos.Producto2Mano;
 
 /**
+ * Clase encargada de filtrar productos de segunda mano por precio y estado de
+ * conservación.
+ * 
  * @author Antonino Albarrán
  * @version 1.0
  */
 public class FiltroSegundaMano {
 
+	/** Límite inferior del precio de tasación aceptado en la búsqueda. */
 	private double valorMinimo;
+
+	/** Límite superior del precio de tasación aceptado en la búsqueda. */
 	private double valorMaximo;
 
-	// El enum EstadoProducto esta ordenado de mejor a peor estado:
-	// PERFECTO(0) > MUY_BUENO(1) > USO_LIGERO(2) > USO_EVIDENTE(3) > MUY_USADO(4) >
-	// DAÑADO(5) > NO_ACEPTADO(6)
-	// estadoMinimo indica la calidad minima aceptada: un producto cumple el filtro
-	// si su estado tiene ordinal <= estadoMinimo.ordinal() (es igual o mejor
-	// calidad).
+	/**
+	 * * Calidad mínima requerida. Se basa en el ordinal del enum: a menor número,
+	 * mejor estado físico.
+	 */
 	private EstadoProducto estadoMinimo;
 
 	/**

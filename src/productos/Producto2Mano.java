@@ -3,15 +3,19 @@ package productos;
 import usuarios.*;
 import excepciones.*;
 import tienda.*;
-
 /**
+ * Clase que representa un producto de segunda mano  aportado por un cliente.
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
 public class Producto2Mano extends Producto {
+	/** Resultado de la tasación oficial realizada por un empleado. */
 	private Valoracion valoracion = null;
+	/** Cliente que posee actualmente el artículo. */
 	private Cliente propietario = null;
+	/** Indica si el producto está reservado o bloqueado . */
 	private boolean bloqueado = true;
+	/** Indica si el producto aparece en el catálogo público de intercambios. */
 	private boolean visible = false;
 
 	/**

@@ -9,18 +9,32 @@ import usuarios.Empleado;
 import ventas.Pago;
 
 /**
+ * Clase que gestiona el resultado de la tasación de un producto.
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
 public class Valoracion {
-	private LocalDateTime fecha;
-	private EstadoProducto estadoProducto;
-	private EstadoValoracion estadoValoracion = EstadoValoracion.PENDIENTE_DE_PAGO;
-	private Empleado empleado;
-	private Pago pago;
-	private double precioTasacion;
-	private double precioPagado;
 
+	/** Fecha y hora en la que se realizó la valoración. */
+	private LocalDateTime fecha;
+
+	/** Estado físico o de conservación del producto (ej. EXCELENTE, DAÑADO). */
+	private EstadoProducto estadoProducto;
+
+	/** Estado administrativo del cobro de la tasación  */
+	private EstadoValoracion estadoValoracion = EstadoValoracion.PENDIENTE_DE_PAGO;
+
+	/** Empleado responsable de realizar la tasación. */
+	private Empleado empleado;
+
+	/** Registro del pago asociado a la tarifa de tasación. */
+	private Pago pago;
+
+	/** Importe estimado del valor del producto en el mercado. */
+	private double precioTasacion;
+
+	/** Importe abonado por el cliente por el servicio de tasación. */
+	private double precioPagado;
 	/**
 	 * Constructor de la clase Valoracion
 	 *

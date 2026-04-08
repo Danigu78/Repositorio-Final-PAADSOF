@@ -14,6 +14,10 @@ import ventas.*;
 import productos.*;
 
 /**
+ * Clase encargada de procesar datos de la tienda para generar informes y
+ * ránkings. Proporciona métodos para ordenar clientes según su actividad y
+ * calcular ingresos económicos en diferentes rangos temporales.
+ * 
  * @author Antonino Albarrán
  * @version 1.0
  */

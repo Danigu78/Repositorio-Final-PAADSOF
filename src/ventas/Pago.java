@@ -3,17 +3,28 @@ package ventas;
 import java.time.LocalDateTime;
 import java.util.*;
 import es.uam.eps.padsof.telecard.*;
-
 /**
+ * Clase que gestiona la transacción bancaria de un pedido mediante tarjeta.
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
 public class Pago {
+	/** Número identificativo de la tarjeta de crédito o débito. */
 	private String numeroTarjeta;
+
+	/** Registro de la fecha y hora exacta en la que se intentó el cobro. */
 	private LocalDateTime fechaTransaccion;
+
+	/** Fecha de caducidad de la tarjeta empleada. */
 	private Date fechaTarjeta;
+
+	/** Código de seguridad  de la tarjeta. */
 	private int CVV;
+
+	/** Cantidad económica total a cargar en la cuenta. */
 	private double importe;
+
+	/** Indica si la operación fue autorizada y completada por el banco. */
 	private boolean exito;
 
 	/**

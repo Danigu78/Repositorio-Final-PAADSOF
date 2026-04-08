@@ -6,14 +6,23 @@ import productos.Categoria;
 import productos.ProductoVenta;
 
 /**
- * @author Antonino Albarrán
+ * Clase encargada de filtrar productos de venta nueva por precio, puntuación y
+ * categorías.
+ * 
+ * @author Danie Gonzalez
  * @version 1.0
  */
 public class FiltroVenta {
-
+	/** Límite inferior del precio de venta aceptado. */
 	private double precioMinimo;
+
+	/** Límite superior del precio de venta aceptado. */
 	private double precioMaximo;
+
+	/** Calificación media mínima que debe tener el producto (basada en reseñas). */
 	private double puntuacionMinima;
+
+	/** Lista de categorías permitidas; si está vacía, se aceptan todas. */
 	private List<Categoria> categorias;
 
 	/**

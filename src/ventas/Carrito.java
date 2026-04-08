@@ -9,14 +9,26 @@ import usuarios.Cliente;
 import productos.ProductoVenta;
 
 /**
+ * Clase que gestiona la selección temporal de productos por parte de un
+ * cliente, almacenandose en el carrito .
+ * 
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
 public class Carrito {
+	/** Identificador único del carrito. */
 	private final String idCarrito;
+
+	/** Lista de artículos y cantidades añadidos por el usuario. */
 	private final List<LineaCarrito> lineas;
+
+	/** Fecha y hora exacta en la que se inició el carrito. */
 	private final LocalDateTime fechaCreacion;
+
+	/** Promoción o reducción de precio que se está aplicando al total. */
 	private Descuento descuentoAplicado;
+
+	/** Cliente que está realizando la selección de productos. */
 	private final Cliente propietario;
 
 	/**

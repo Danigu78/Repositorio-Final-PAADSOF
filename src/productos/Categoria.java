@@ -3,15 +3,26 @@ package productos;
 import java.util.*;
 
 import excepciones.ProductoYaEnCategoriaException;
-
 /**
+ * Representa una categoría de productos en el sistema de la tienda.
+ * Permite agrupar productos de venta y gestionar la relación bidireccional
+ * entre las categorías y los productos.
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
 public class Categoria {
-
+	/**
+	 * Nombre identificativo de la categoría .
+	 */
 	private String nombre;
+	/**
+	 * Descripción detallada sobre el tipo de productos que engloba esta categoría.
+	 */
 	private String descripcion;
+	/**
+	 * Lista de productos asociados a esta categoría. 
+	 * Mantiene la integridad de la relación bidireccional con ProductoVenta.
+	 */
 	private ArrayList<ProductoVenta> productos;
 
 	/**

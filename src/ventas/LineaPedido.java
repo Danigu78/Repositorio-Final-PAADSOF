@@ -1,16 +1,20 @@
 package ventas;
 
 import productos.ProductoVenta;
-
 /**
+ * Clase que representa el detalle de un producto dentro de un pedido ya realizado.
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
 public class LineaPedido {
+	/** El artículo de venta que forma parte del pedido. */
 	private final ProductoVenta producto;
-	private final int cantidad;
-	private final double precioVenta; // Precio en el momento de la compra
 
+	/** Número de unidades adquiridas del producto. */
+	private final int cantidad;
+
+	/** Precio unitario del producto fijado en el instante de la compra. */
+	private final double precioVenta;
 	/**
 	 * Constructor de la clase LineaPedido
 	 *

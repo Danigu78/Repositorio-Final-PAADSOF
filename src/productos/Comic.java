@@ -3,12 +3,25 @@ package productos;
 import excepciones.ProductoInvalidoException;
 
 /**
+ * Clase que representa un cómic como un tipo específico de producto de venta.
+ * Extiende de {@link ProductoVenta} añadiendo información bibliográfica propia
+ * del formato editorial.
+ * 
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
 public class Comic extends ProductoVenta {
+	/**
+	 * Cantidad total de páginas que componen la obra.
+	 */
 	private int numeroPaginas;
+	/**
+	 * Nombre de la empresa editorial encargada de la publicación del cómic.
+	 */
 	private String editorial;
+	/**
+	 * Año en el que la obra fue publicada por primera vez o la edición específica.
+	 */
 	private int añoPublicacion;
 
 	/**

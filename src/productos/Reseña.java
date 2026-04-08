@@ -5,19 +5,30 @@ import tienda.Estadistica;
 import java.time.*;
 
 import excepciones.*;
-
 /**
+ * Clase que representa la valoración de un cliente sobre un producto.
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
 public class Reseña {
-	private String idReseña;
-	private Cliente autor;
-	private ProductoVenta producto;
-	private double puntuacion; // 0-10
-	private String comentario;
-	private LocalDate fecha;
 
+	/** Identificador único de la reseña. */
+	private String idReseña;
+
+	/** Cliente que ha realizado la valoración. */
+	private Cliente autor;
+
+	/** Producto de venta al que hace referencia la reseña. */
+	private ProductoVenta producto;
+
+	/** Calificación numérica del producto (rango 0-10). */
+	private double puntuacion;
+
+	/** Texto descriptivo con la opinión del cliente. */
+	private String comentario;
+
+	/** Fecha en la que se registró la valoración. */
+	private LocalDate fecha;
 	/**
 	 * Constructor de la clase Reseña
 	 *

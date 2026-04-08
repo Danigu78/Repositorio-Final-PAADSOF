@@ -3,15 +3,26 @@ package tienda;
 import java.time.LocalDateTime;
 
 /**
+ * Clase que representa una notificacion enviado por el sistema a un usuario.
+ * 
  * @author Antonino Albarrán
  * @version 1.0
  */
 public class Notificacion {
 
+	/** Identificador único de la notificación. */
 	private String id;
+
+	/** Contenido textual del aviso. */
 	private String mensaje;
+
+	/** Fecha y hora exacta en la que se generó la notificación. */
 	private LocalDateTime fechaEnvio;
+
+	/** Indica si el destinatario ha visualizado el aviso. */
 	private boolean leida;
+
+	/** Tipo de la notificación ( DESCUENTO, EMPLEADOS...). */
 	private TipoNotificacion tipo;
 
 	/**

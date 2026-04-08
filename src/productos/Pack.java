@@ -3,12 +3,19 @@ package productos;
 import java.util.ArrayList;
 
 import excepciones.*;
-
 /**
- * @author Lucas Manuel Blanco Rodríguez
+ * Clase que representa un conjunto de productos vendidos como una única unidad.
+ * Un Pack es un {@link ProductoVenta} compuesto por múltiples {@link LineaPack}.
+ * Incluye lógica para validar que el precio del pack sea inferior a la suma 
+ * de sus componentes y gestiona automáticamente el stock de los productos incluidos.
+ * *@author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
 public class Pack extends ProductoVenta {
+	/**
+	 * Lista de relaciones entre productos y cantidades que componen el pack.
+	 * Cada elemento de la lista detalla qué producto se incluye y cuántas unidades.
+	 */
 	private ArrayList<LineaPack> lineas;
 
 	/**

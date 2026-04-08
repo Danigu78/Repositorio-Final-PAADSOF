@@ -3,14 +3,33 @@ package productos;
 import excepciones.*;
 
 /**
+ * Clase que representa una figura coleccionable como un tipo específico de
+ * producto de venta. Extiende de {@link ProductoVenta} incorporando dimensiones
+ * físicas, composición y fabricante.
+ * 
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
 public class Figura extends ProductoVenta {
+	/**
+	 * Altura de la figura .
+	 */
 	private double altura;
+	/**
+	 * Ancho de la figura .
+	 */
 	private double ancho;
+	/**
+	 * Largo o profundidad de la figura .
+	 */
 	private double largo;
+	/**
+	 * Material principal de fabricación
+	 */
 	private String material;
+	/**
+	 * Empresa o fabricante responsable de la producción de la figura .
+	 */
 	private String marca;
 
 	/**

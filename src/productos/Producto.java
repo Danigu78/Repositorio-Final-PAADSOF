@@ -3,13 +3,21 @@ package productos;
 import excepciones.*;
 
 /**
+ * Clase abstracta que define la estructura base de cualquier artículo del
+ * sistema. Proporciona los atributos comunes de identificación, denominación y
+ * descripcion .
+ * 
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
 public abstract class Producto {
+	/** Identificador único del producto. */
 	protected String id;
+	/** Nombre del producto. */
 	protected String nombre;
+	/** Descripción del producto. */
 	protected String descripcion;
+	/** Ruta del archivo de imagen del producto. */
 	protected String imagenRuta;
 
 	/**

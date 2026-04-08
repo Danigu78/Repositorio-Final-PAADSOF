@@ -5,13 +5,22 @@ import java.time.LocalDateTime;
 import tienda.Estadistica;
 
 /**
+ * Clase base para la gestión de promociones temporales aplicables a carritos.
+ * 
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
 public abstract class Descuento {
+	/** Identificador alfanumérico único de la promoción. */
 	protected String id;
+
+	/** Nombre comercial o descriptivo del descuento. */
 	protected String nombre;
+
+	/** Fecha y hora a partir de la cual la promoción empieza a ser válida. */
 	protected LocalDateTime fechaInicio;
+
+	/** Fecha y hora en la que la promoción deja de tener validez. */
 	protected LocalDateTime fechaFin;
 
 	/**
