@@ -20,11 +20,29 @@ public class VentanaPrincipal extends JFrame {
 	public static final Color COLOR_BORDE = new Color(60, 60, 60);
 
 	// FUENTES NUMERICAS
-	public static final Font FUENTE_TITULO = new Font("Segoe UI", Font.BOLD, 28);
-	public static final Font FUENTE_SUBTITULO = new Font("Segoe UI", Font.BOLD, 16);
-	public static final Font FUENTE_NORMAL = new Font("Segoe UI", Font.PLAIN, 14);
-	public static final Font FUENTE_PEQUENA = new Font("Segoe UI", Font.PLAIN, 12);
 
+	// Bloque estático — se ejecuta una sola vez al cargar la clase
+	public static final Font FUENTE_TITULO;
+	public static final Font FUENTE_SUBTITULO;
+	public static final Font FUENTE_NORMAL;
+	public static final Font FUENTE_PEQUENA;
+	public static final Font FUENTE_LOGO;
+	public static final Font FUENTE_BOTON;
+	public static final Font FUENTE_PRECIO;
+	public static final Font FUENTE_ICONO;
+
+	static {
+		int dpi = Toolkit.getDefaultToolkit().getScreenResolution();
+		double escala = dpi / 96.0;
+		FUENTE_TITULO = new Font("Segoe UI", Font.BOLD, (int) (28 * escala));
+		FUENTE_SUBTITULO = new Font("Segoe UI", Font.BOLD, (int) (16 * escala));
+		FUENTE_NORMAL = new Font("Segoe UI", Font.PLAIN, (int) (14 * escala));
+		FUENTE_PEQUENA = new Font("Segoe UI", Font.PLAIN, (int) (12 * escala));
+		FUENTE_LOGO = new Font("Segoe UI", Font.BOLD, (int) (36 * escala));
+		FUENTE_BOTON = new Font("Segoe UI", Font.BOLD, (int) (13 * escala));
+		FUENTE_PRECIO = new Font("Segoe UI", Font.BOLD, (int) (15 * escala));
+		FUENTE_ICONO = new Font("Segoe UI Emoji", Font.PLAIN, (int) (60 * escala));
+	}
 	public static final String PANTALLA_LOGIN = "LOGIN";
 	public static final String PANTALLA_CLIENTE = "CLIENTE";
 	public static final String PANTALLA_EMPLEADO = "EMPLEADO";
@@ -143,4 +161,11 @@ public class VentanaPrincipal extends JFrame {
 			new VentanaPrincipal().setVisible(true);
 		});
 	}
+
+	/** Escala un tamaño según el DPI de la pantalla */
+	public static int escalar(int tamano) {
+		int dpi = Toolkit.getDefaultToolkit().getScreenResolution();
+		return (int) (tamano * dpi / 96.0);
+	}
+
 }
