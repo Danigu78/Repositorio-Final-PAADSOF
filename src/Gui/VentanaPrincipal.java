@@ -18,9 +18,8 @@ public class VentanaPrincipal extends JFrame {
 	public static final Color COLOR_PANEL = new Color(28, 28, 28);// gris
 	public static final Color COLOR_TARJETA = new Color(38, 38, 38);// gris borde de los productos
 	public static final Color COLOR_BORDE = new Color(60, 60, 60);
-
+	
 	// FUENTES NUMERICAS
-
 	// Bloque estático — se ejecuta una sola vez al cargar la clase
 	public static final Font FUENTE_TITULO;
 	public static final Font FUENTE_SUBTITULO;
