@@ -162,10 +162,19 @@ public class VentanaPrincipal extends JFrame {
 		});
 	}
 
-	/** Escala un tamaño según el DPI de la pantalla */
+	/**
+	 * Escala un tamaño según el DPI de la pantalla del usuario. El escalado máximo
+	 * es 1.5 para evitar que se vea demasiado grande en pantallas con DPI muy alto.
+	 *
+	 * @param tamano El tamaño base en píxeles
+	 * @return El tamaño escalado
+	 */
 	public static int escalar(int tamano) {
 		int dpi = Toolkit.getDefaultToolkit().getScreenResolution();
-		return (int) (tamano * dpi / 96.0);
+		double escala = dpi / 96.0;
+		// Limitamos el escalado máximo a 1.5
+		escala = Math.min(escala, 1.5);
+		return (int) (tamano * escala);
 	}
 
 }
