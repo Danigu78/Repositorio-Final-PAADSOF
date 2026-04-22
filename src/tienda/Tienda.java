@@ -1244,4 +1244,31 @@ public class Tienda {
 	public void reiniciarComprobadorTiempos() {
 		this.comprobadorTiempos = new ComprobadorTiempos();
 	}
+
+	public Empleado registrarNuevoEmpleado(String nickname, String password) {
+		if (nickname == null || nickname.isBlank() || password == null || password.isBlank()) {
+			return null;
+		}
+
+		for (UsuarioRegistrado u : usuarios) {
+			if (u.getNickname().equalsIgnoreCase(nickname)) {
+				System.out.println("Ese nickname ya está en uso.");
+				return null;
+			}
+		}
+
+		Empleado nuevo = new Empleado(nickname, password);
+
+		nuevo.asignarPermiso(TipoPermisos.GESTION_STOCK);
+		nuevo.asignarPermiso(TipoPermisos.GESTION_CATEGORIAS);
+		nuevo.asignarPermiso(TipoPermisos.GESTION_PACKS);
+		nuevo.asignarPermiso(TipoPermisos.MODIFICAR_PRODUCTO);
+		nuevo.asignarPermiso(TipoPermisos.GESTION_PEDIDOS);
+		nuevo.asignarPermiso(TipoPermisos.VALORACION_PRODUCTOS);
+		nuevo.asignarPermiso(TipoPermisos.CONFIRMACION_INTERCAMBIO);
+		nuevo.asignarPermiso(TipoPermisos.ENTREGA_PEDIDOS);
+
+		usuarios.add(nuevo);
+		return nuevo;
+	}
 }
