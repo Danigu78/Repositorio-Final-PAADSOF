@@ -19,4 +19,15 @@ public class SubpanelCarrito extends JPanel {
     public void actualizar(Cliente cliente) {
         this.cliente = cliente;
     }
+    
+    
+    private void inicializarPantalla() {
+    	  setLayout(new BorderLayout());
+          setBackground(VentanaPrincipal.COLOR_FONDO);
+
+          
+    }
+    
+    
+    
 }
