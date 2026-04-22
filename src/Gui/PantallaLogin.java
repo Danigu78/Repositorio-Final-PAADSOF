@@ -111,7 +111,7 @@ public class PantallaLogin extends JPanel {
 
 		// Dividir la pantalla en dos mitades
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, panelIzquierdo, panelDerecho);
-		splitPane.setDividerLocation(450);// Posicion donde dividimos
+		splitPane.setResizeWeight(0.33);
 		splitPane.setDividerSize(0);// Liena de separacion entre las dos pantallas
 		splitPane.setBorder(null);
 		splitPane.setEnabled(false); // No redimensionable

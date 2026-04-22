@@ -42,27 +42,26 @@ public class VentanaPrincipal extends JFrame {
 	private PanelGestor panelGestor;
 
 	public VentanaPrincipal() {
-		this.tienda = Tienda.getInstancia();// conectamos la tienda
-		inicializarVentana();// inciializamos la ventana grande la que tiene la x de cerrar y el titulo
-		inicializarPantallas();// creamos las secciones pantallas
+		this.tienda = Tienda.getInstancia();
+		inicializarVentana();
+		inicializarPantallas();
 		mostrarPantalla(PANTALLA_LOGIN);
+		// Calcular tamaño según la pantalla del usuario
+		Dimension pantalla = Toolkit.getDefaultToolkit().getScreenSize();
+		setSize(pantalla.width * 3 / 4, pantalla.height * 3 / 4);
+		setLocationRelativeTo(null);
 	}
 
 	// Esta es la clase de la ventana grande la que tiene cerrar u minimizar
 	private void inicializarVentana() {
-
-		setTitle("CheckPoint - Tienda Friki");// Define el texto que aparece en la barra superior de la ventana
-		setSize(ANCHO, ALTO);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);// si pulsas la x se cierra.
-		setLocationRelativeTo(null);// Para que la ventana aparezca totalmente centrada. Sino la ponemos aparece
-									// centrada arriba a la izquierda
-		setMinimumSize(new Dimension(900, 600));// Evita que el usuario haga la ventana tan pequeña que los botones se
-												// amontonen o dejen de verse.
-
+		setTitle("CheckPoint - Tienda Friki");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLocationRelativeTo(null);
+		getContentPane().setBackground(COLOR_FONDO);
 		cardLayout = new CardLayout();
 		panelContenedor = new JPanel(cardLayout);
 		panelContenedor.setBackground(COLOR_FONDO);
-		add(panelContenedor, BorderLayout.CENTER);// pegamos el contenedor en el centro de la ventana
+		add(panelContenedor);
 	}
 
 	private void inicializarPantallas() {
@@ -130,12 +129,16 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	public static void main(String[] args) {
+		// 1. Evita que Windows "estire" la ventana y la emborrone
 		System.setProperty("sun.java2d.uiScale", "1.0");
+
 		SwingUtilities.invokeLater(() -> {
 			try {
+				// 2. Intenta poner el LookAndFeel pero con gestión de errores
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 			} catch (Exception e) {
-				System.err.println("Error configurando LookAndFeel");
+				// Si falla, Swing usará el estilo "Metal" por defecto, que es igual en todos
+				// lados
 			}
 			new VentanaPrincipal().setVisible(true);
 		});
