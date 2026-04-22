@@ -61,6 +61,7 @@ public class VentanaPrincipal extends JFrame {
 		inicializarVentana();
 		inicializarPantallas();
 		mostrarPantalla(PANTALLA_LOGIN);
+		this.setMinimumSize(new Dimension(800, 600));
 		// Calcular tamaño según la pantalla del usuario
 		Dimension pantalla = Toolkit.getDefaultToolkit().getScreenSize();
 		setSize(pantalla.width * 3 / 4, pantalla.height * 3 / 4);
