@@ -32,16 +32,14 @@ public class VentanaPrincipal extends JFrame {
 	public static final Font FUENTE_ICONO;
 
 	static {
-		int dpi = Toolkit.getDefaultToolkit().getScreenResolution();
-		double escala = dpi / 96.0;
-		FUENTE_TITULO = new Font("Segoe UI", Font.BOLD, (int) (28 * escala));
-		FUENTE_SUBTITULO = new Font("Segoe UI", Font.BOLD, (int) (16 * escala));
-		FUENTE_NORMAL = new Font("Segoe UI", Font.PLAIN, (int) (14 * escala));
-		FUENTE_PEQUENA = new Font("Segoe UI", Font.PLAIN, (int) (12 * escala));
-		FUENTE_LOGO = new Font("Segoe UI", Font.BOLD, (int) (36 * escala));
-		FUENTE_BOTON = new Font("Segoe UI", Font.BOLD, (int) (13 * escala));
-		FUENTE_PRECIO = new Font("Segoe UI", Font.BOLD, (int) (15 * escala));
-		FUENTE_ICONO = new Font("Segoe UI Emoji", Font.PLAIN, (int) (60 * escala));
+	    FUENTE_TITULO    = new Font("Segoe UI", Font.BOLD,  28);
+	    FUENTE_SUBTITULO = new Font("Segoe UI", Font.BOLD,  16);
+	    FUENTE_NORMAL    = new Font("Segoe UI", Font.PLAIN, 14);
+	    FUENTE_PEQUENA   = new Font("Segoe UI", Font.PLAIN, 12);
+	    FUENTE_LOGO      = new Font("Segoe UI", Font.BOLD,  36);
+	    FUENTE_BOTON     = new Font("Segoe UI", Font.BOLD,  13);
+	    FUENTE_PRECIO    = new Font("Segoe UI", Font.BOLD,  15);
+	    FUENTE_ICONO     = new Font("Segoe UI Emoji", Font.PLAIN, 60);
 	}
 	public static final String PANTALLA_LOGIN = "LOGIN";
 	public static final String PANTALLA_CLIENTE = "CLIENTE";
