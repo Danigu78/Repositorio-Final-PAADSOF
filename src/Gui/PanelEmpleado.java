@@ -393,9 +393,9 @@ public class PanelEmpleado extends JPanel {
 
 	private JScrollPane estilizarScroll(Component comp) {
 		JScrollPane scroll = new JScrollPane(comp);
-		scroll.setBorder(BorderFactory.createLineBorder(new Color(85, 85, 85), 1));
-		scroll.getViewport().setBackground(new Color(24, 24, 24));
-		scroll.setBackground(new Color(24, 24, 24));
+		scroll.setBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE, 1));
+		scroll.getViewport().setBackground(Color.WHITE);
+		scroll.setBackground(Color.WHITE);
 		scroll.getVerticalScrollBar().setUnitIncrement(16);
 		scroll.getHorizontalScrollBar().setUnitIncrement(16);
 		return scroll;
@@ -1042,35 +1042,46 @@ public class PanelEmpleado extends JPanel {
 		JTable tabla = new JTable(modelo);
 		tabla.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 		tabla.setRowHeight(30);
-		tabla.setBackground(new Color(26, 26, 26));
+		tabla.setBackground(Color.WHITE);
 		tabla.setForeground(VentanaPrincipal.COLOR_TEXTO);
-		tabla.setGridColor(new Color(60, 60, 60));
+		tabla.setGridColor(new Color(225, 225, 225));
 		tabla.setSelectionBackground(VentanaPrincipal.COLOR_ACENTO);
-		tabla.setSelectionForeground(new Color(18, 18, 18));
+		tabla.setSelectionForeground(VentanaPrincipal.COLOR_TEXTO);
 		tabla.setFillsViewportHeight(true);
 		tabla.setShowVerticalLines(true);
 		tabla.setShowHorizontalLines(true);
+		tabla.setOpaque(true);
 
+		// Cabecera
 		JTableHeader header = tabla.getTableHeader();
 		header.setFont(new Font("Segoe UI", Font.BOLD, 13));
-		header.setBackground(new Color(55, 55, 55));
-		header.setForeground(VentanaPrincipal.COLOR_ACENTO);
+		header.setBackground(new Color(232, 232, 232));
+		header.setForeground(VentanaPrincipal.COLOR_TEXTO);
+		header.setBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE));
 		header.setReorderingAllowed(false);
 
+		// Renderer general claro
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
 					boolean hasFocus, int row, int column) {
+
 				JLabel c = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
 						column);
 
+				c.setOpaque(true);
+
 				if (isSelected) {
 					c.setBackground(VentanaPrincipal.COLOR_ACENTO);
-					c.setForeground(new Color(18, 18, 18));
+					c.setForeground(VentanaPrincipal.COLOR_TEXTO);
 				} else {
-					c.setBackground(row % 2 == 0 ? new Color(30, 30, 30) : new Color(24, 24, 24));
+					if (row % 2 == 0) {
+						c.setBackground(Color.WHITE);
+					} else {
+						c.setBackground(new Color(246, 246, 246));
+					}
 					c.setForeground(VentanaPrincipal.COLOR_TEXTO);
 				}
 
@@ -1079,15 +1090,18 @@ public class PanelEmpleado extends JPanel {
 			}
 		};
 
-		for (int i = 0; i < tabla.getColumnModel().getColumnCount(); i++) {
-			tabla.getColumnModel().getColumn(i).setCellRenderer(renderer);
-		}
+		// Aplicar renderer a todas las columnas
+		tabla.setDefaultRenderer(Object.class, renderer);
+		tabla.setDefaultRenderer(String.class, renderer);
+		tabla.setDefaultRenderer(Integer.class, renderer);
+		tabla.setDefaultRenderer(Double.class, renderer);
 
-		tabla.getColumnModel().getColumn(0).setPreferredWidth(90); // ID
-		tabla.getColumnModel().getColumn(1).setPreferredWidth(320); // Nombre
-		tabla.getColumnModel().getColumn(2).setPreferredWidth(150); // Tipo
-		tabla.getColumnModel().getColumn(3).setPreferredWidth(120); // Precio
-		tabla.getColumnModel().getColumn(4).setPreferredWidth(90); // Stock
+		// Anchuras
+		tabla.getColumnModel().getColumn(0).setPreferredWidth(90);
+		tabla.getColumnModel().getColumn(1).setPreferredWidth(320);
+		tabla.getColumnModel().getColumn(2).setPreferredWidth(150);
+		tabla.getColumnModel().getColumn(3).setPreferredWidth(120);
+		tabla.getColumnModel().getColumn(4).setPreferredWidth(90);
 
 		return tabla;
 	}
