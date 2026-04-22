@@ -84,7 +84,6 @@ public class PantallaLogin extends JPanel {
 	/** CardLayout para alternar entre login y registro */
 	private CardLayout cardFormularios;
 
-	
 	/**
 	 * Constructor de la pantalla de login.
 	 * 
@@ -95,8 +94,6 @@ public class PantallaLogin extends JPanel {
 		this.tienda = Tienda.getInstancia();
 		inicializarUI();
 	}
-
-	
 
 	/**
 	 * Construye y organiza todos los componentes de la pantalla. La pantalla se
@@ -114,52 +111,46 @@ public class PantallaLogin extends JPanel {
 
 		// Dividir la pantalla en dos mitades
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, panelIzquierdo, panelDerecho);
-		splitPane.setDividerLocation(450);//Posicion donde dividimos
-		splitPane.setDividerSize(0);//Liena de separacion entre las dos pantallas
+		splitPane.setDividerLocation(450);// Posicion donde dividimos
+		splitPane.setDividerSize(0);// Liena de separacion entre las dos pantallas
 		splitPane.setBorder(null);
 		splitPane.setEnabled(false); // No redimensionable
 
 		add(splitPane, BorderLayout.CENTER);
 	}
 
-	
-	//PANEL DE LA IZQUIERDA
+	// PANEL DE LA IZQUIERDA
 	/**
 	 * Crea el panel izquierdo con el logo y descripción de la tienda.
 	 * 
 	 * @return El panel izquierdo configurado
 	 */
 	private JPanel crearPanelLogo() {
-	    JPanel panel = new JPanel(new GridBagLayout());
-	    panel.setBackground(new Color(60, 30, 5)); //  color naranja oscuro sólido
+		JPanel panel = new JPanel(new GridBagLayout());
+		panel.setBackground(new Color(60, 30, 5)); // color naranja oscuro sólido
 		panel.setPreferredSize(new Dimension(450, VentanaPrincipal.ALTO));
 
 		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridx = 0;//columna unica 
-		gbc.insets = new Insets(15, 30, 15, 30);//separacion entre los objetos
+		gbc.gridx = 0;// columna unica
+		gbc.insets = new Insets(15, 30, 15, 30);// separacion entre los objetos
 		gbc.anchor = GridBagConstraints.CENTER;
 
-		
-
-		java.net.URL urlImagen = getClass().getResource("/fotos/logo.png");//busca la ruta
+		java.net.URL urlImagen = getClass().getResource("/fotos/logo.png");// busca la ruta
 		JLabel labelImagen;
 
 		if (urlImagen != null) {
-		    //  Creamos el icono y lo escalamos para que no sea gigante
-		    ImageIcon iconoOriginal = new ImageIcon(urlImagen);
-		    Image imgEscalada = iconoOriginal.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
-		    labelImagen = new JLabel(new ImageIcon(imgEscalada));
+			// Creamos el icono y lo escalamos para que no sea gigante
+			ImageIcon iconoOriginal = new ImageIcon(urlImagen);
+			Image imgEscalada = iconoOriginal.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+			labelImagen = new JLabel(new ImageIcon(imgEscalada));
 		} else {
-		    // Por si la imagen no carga, ponemos un texto de error para que no explote
-		    labelImagen = new JLabel("Imagen no encontrada");
+			// Por si la imagen no carga, ponemos un texto de error para que no explote
+			labelImagen = new JLabel("Imagen no encontrada");
 		}
-		
+
 		gbc.gridy = 0;// añadimos en la fila 0
 		gbc.anchor = GridBagConstraints.CENTER;
 		panel.add(labelImagen, gbc);
-		
-		
-		
 
 		// Nombre de la tienda
 		JLabel labelTitulo = new JLabel("CheckPoint");
@@ -187,33 +178,30 @@ public class PantallaLogin extends JPanel {
 		gbc.fill = GridBagConstraints.NONE;
 
 		// Descripción
-		String[] lineas = { "📚 Comics y Manga", "🎲 Juegos de Mesa", "🗿 Figuras de Colección",
-				"🔄 Segunda Mano e Intercambios" };
-		gbc.fill = GridBagConstraints.NONE; 
-		gbc.ipadx = 0; 
-		gbc.ipady = 0;
+		// Definimos los nombres de los archivos de imagen que deberías tener en
+		// /resources/
+		// Definimos solo los textos (sin emojis ni iconos)
+		String[] lineas = { "Comics y Manga", "Juegos de Mesa", "Figuras de Colección", "Segunda Mano e Intercambios" };
 
 		for (int i = 0; i < lineas.length; i++) {
-		    JLabel label = new JLabel(lineas[i]);
-		    label.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		    label.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-		    
-		    // Alineación del texto dentro del propio JLabel
-		    label.setHorizontalAlignment(SwingConstants.LEFT);
+			JLabel label = new JLabel(lineas[i]);
+			label.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+			label.setForeground(VentanaPrincipal.COLOR_TEXTO2);
 
-		    gbc.gridy = 4 + i; // Fila dinámica
-		    gbc.gridx = 0;     // Siempre columna 0
-		    
-		    // IMPORTANTE: Reducimos el margen superior/inferior para que estén más juntas
-		    // Insets(arriba, izquierda, abajo, derecha)
-		    gbc.insets = new Insets(5, 50, 5, 10); 
-		    
-		    // Forzamos a que se peguen a la izquierda de la columna
-		    gbc.anchor = GridBagConstraints.WEST; 
-		    
-		    panel.add(label, gbc);
+			// El gridy sigue siendo dinámico para que no se solapen (Tema 4.3) [cite: 955,
+			// 968]
+			gbc.gridy = 4 + i;
+			gbc.gridx = 0; // Columna única
+
+			// Ajustamos los márgenes (Insets) para que el texto esté centrado visualmente
+			// Insets(arriba, izquierda, abajo, derecha)
+			gbc.insets = new Insets(10, 60, 10, 10);
+
+			// Forzamos la alineación al Oeste (izquierda)
+			gbc.anchor = GridBagConstraints.WEST;
+
+			panel.add(label, gbc); // Añadimos el componente al contenedor [cite: 2079]
 		}
-
 		return panel;
 	}
 

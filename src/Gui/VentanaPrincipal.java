@@ -71,10 +71,8 @@ public class VentanaPrincipal extends JFrame {
 //Creamos los ventanas que nos saldran cuando nos registremos
 		panelCliente = new PanelCliente(this);
 		panelContenedor.add(panelCliente, PANTALLA_CLIENTE);
-
 		panelEmpleado = new PanelEmpleado(this);
 		panelContenedor.add(panelEmpleado, PANTALLA_EMPLEADO);
-
 		panelGestor = new PanelGestor(this);
 		panelContenedor.add(panelGestor, PANTALLA_GESTOR);
 	}
