@@ -6,9 +6,11 @@ import tienda.Tienda;
 import usuarios.Cliente;
 import usuarios.Empleado;
 import usuarios.Gestor;
+import usuarios.TipoPermisos;
 import productos.Comic;
 import productos.Figura;
 import productos.JuegoMesa;
+import java.util.List;
 
 public class VentanaPrincipal extends JFrame {
 	public static final int ANCHO = 1200;
@@ -64,76 +66,113 @@ public class VentanaPrincipal extends JFrame {
 	private PanelEmpleado panelEmpleado;
 	private PanelGestor panelGestor;
 
-	private static void cargarDatosDemo() {
-		Tienda tienda = Tienda.getInstancia();
+	
+		/**
+		 * Inicializa la tienda con datos reales al arrancar la aplicación.
+		 * Crea categorías, empleados y productos de ejemplo.
+		 */
+		private void inicializarDatosTienda() {
+		    Gestor gestor = tienda.getGestor();
+		    gestor.login( "Admin@1234");
 
-		if (tienda.getStockVentas() != null && !tienda.getStockVentas().isEmpty()) {
-			return;
+		    // Configurar tiempos
+		    gestor.configurarTiemposSistema(60, 30, 30);
+		    gestor.setPrecioTasacion(10);
+
+		    // Categorías
+		    gestor.crearCategoria("Familiar", "Juegos para toda la familia");
+		    gestor.crearCategoria("Estrategia", "Juegos de estrategia");
+		    gestor.crearCategoria("Anime", "Productos de anime y manga");
+		    gestor.crearCategoria("Accion", "Productos de accion");
+		    gestor.crearCategoria("Ciencia-ficcion", "Productos de ciencia ficcion");
+		    gestor.crearCategoria("Replicas", "Figuras de coleccionista");
+		    gestor.crearCategoria("Retro-Gaming", "Videojuegos y consolas retro");
+		    gestor.crearCategoria("Terror", "Productos de terror");
+
+		    // Empleado
+		    List<TipoPermisos> permisos = gestor.crearListaPermisos(
+		        TipoPermisos.GESTION_STOCK,
+		        TipoPermisos.GESTION_CATEGORIAS,
+		        TipoPermisos.GESTION_PACKS,
+		        TipoPermisos.MODIFICAR_PRODUCTO,
+		        TipoPermisos.GESTION_PEDIDOS,
+		        TipoPermisos.ENTREGA_PEDIDOS,
+		        TipoPermisos.VALORACION_PRODUCTOS,
+		        TipoPermisos.CONFIRMACION_INTERCAMBIO
+		    );
+		    gestor.darDeAltaEmpleados_Permisos("empleado", "Empleado@1234", permisos);
+		    Empleado emp = tienda.loginEmpleado("empleado", "Empleado@1234");
+
+		    // Productos - Comics
+		    emp.añadirProducto_nuevo("C", "Watchmen", "Clasico del comic", "watchmen.jpg",
+		        15.00, 10, tienda.seleccionarCategorias("Accion", "Anime"),
+		        400, "DC Comics", 1987, 0,0,0,null,null,0,0,0,0,null);
+
+		    emp.añadirProducto_nuevo("C", "Akira Vol.1", "Manga de ciencia ficcion", "akira.jpg",
+		        12.99, 20, tienda.seleccionarCategorias("Anime", "Ciencia-ficcion"),
+		        350, "Kodansha", 1982, 0,0,0,null,null,0,0,0,0,null);
+
+		    emp.añadirProducto_nuevo("C", "Maus", "Historia del Holocausto en comic", "maus.jpg",
+		        18.00, 8, tienda.seleccionarCategorias("Accion"),
+		        296, "Pantheon Books", 1991, 0,0,0,null,null,0,0,0,0,null);
+
+		    emp.añadirProducto_nuevo("C", "V de Vendetta", "Distopia y anarquismo", "vvendetta.jpg",
+		        16.00, 12, tienda.seleccionarCategorias("Accion", "Ciencia-ficcion"),
+		        296, "DC Comics", 1988, 0,0,0,null,null,0,0,0,0,null);
+
+		    // Productos - Juegos de mesa
+		    emp.añadirProducto_nuevo("J", "Catan", "Juego de estrategia", "catan.jpg",
+		        45.00, 8, tienda.seleccionarCategorias("Familiar", "Estrategia"),
+		        0,null,0,0,0,0,null,null,2,4,8,99,"Estrategia");
+
+		    emp.añadirProducto_nuevo("J", "Pandemic", "Juego cooperativo", "pandemic.jpg",
+		        38.00, 6, tienda.seleccionarCategorias("Familiar"),
+		        0,null,0,0,0,0,null,null,2,4,8,99,"Cooperativo");
+
+		    emp.añadirProducto_nuevo("J", "Monopoly", "El clasico de los negocios", "monopoly.jpg",
+		        35.00, 10, tienda.seleccionarCategorias("Familiar"),
+		        0,null,0,0,0,0,null,null,2,6,8,99,"Economico");
+
+		    emp.añadirProducto_nuevo("J", "Cluedo", "Juego de misterio", "cluedo.jpg",
+		        30.00, 7, tienda.seleccionarCategorias("Familiar", "Terror"),
+		        0,null,0,0,0,0,null,null,2,6,8,99,"Misterio");
+
+		    emp.añadirProducto_nuevo("J", "Ticket to Ride", "Juego de trenes", "ttr.jpg",
+		        42.00, 5, tienda.seleccionarCategorias("Familiar", "Estrategia"),
+		        0,null,0,0,0,0,null,null,2,5,8,99,"Estrategia");
+
+		    emp.añadirProducto_nuevo("J", "Dixit", "Juego de imaginacion", "dixit.jpg",
+		        34.00, 9, tienda.seleccionarCategorias("Familiar"),
+		        0,null,0,0,0,0,null,null,3,6,8,99,"Creativo");
+
+		    emp.añadirProducto_nuevo("J", "Risk", "Conquista el mundo", "risk.jpg",
+		        40.00, 6, tienda.seleccionarCategorias("Estrategia"),
+		        0,null,0,0,0,0,null,null,2,6,10,99,"Estrategia");
+
+		    // Productos - Figuras
+		    emp.añadirProducto_nuevo("F", "Figura Goku SSJ", "Figura de Dragon Ball", "goku.jpg",
+		        35.00, 5, tienda.seleccionarCategorias("Anime", "Replicas"),
+		        0,null,0,20.0,15.0,12.0,"PVC","Bandai",0,0,0,0,null);
+
+		    emp.añadirProducto_nuevo("F", "Figura Darth Vader", "Figura de Star Wars", "vader.jpg",
+		        49.99, 4, tienda.seleccionarCategorias("Replicas", "Ciencia-ficcion"),
+		        0,null,0,25.0,12.0,10.0,"PVC","Hasbro",0,0,0,0,null);
+
+		    emp.añadirProducto_nuevo("F", "Figura Link", "Figura de Zelda", "link.jpg",
+		        39.99, 7, tienda.seleccionarCategorias("Replicas", "Retro-Gaming"),
+		        0,null,0,18.0,10.0,8.0,"PVC","Nintendo",0,0,0,0,null);
+
+		    emp.añadirProducto_nuevo("F", "Figura Spider-Man", "Figura articulada de Spider-Man", "spiderman.jpg",
+		        44.99, 5, tienda.seleccionarCategorias("Replicas", "Accion"),
+		        0,null,0,22.0,12.0,10.0,"PVC","Marvel",0,0,0,0,null);
+
+		    emp.logout();
 		}
-
-		// Comics
-		tienda.añadirProducto(new Comic("One Piece Vol. 1", "Primer volumen del manga One Piece", "default.png", 8.95,
-				12, 192, "Planeta", 2021));
-
-		tienda.añadirProducto(new Comic("Batman Año Uno", "Cómic clásico de Batman", "default.png", 15.50, 7, 144,
-				"DC Comics", 2019));
-
-		tienda.añadirProducto(
-				new Comic("Naruto Vol. 3", "Manga shonen clásico", "default.png", 8.95, 3, 192, "Planeta", 2020));
-
-		tienda.añadirProducto(new Comic("Chainsaw Man Vol. 2", "Manga de acción y terror", "default.png", 9.50, 15, 200,
-				"Norma", 2022));
-
-		tienda.añadirProducto(
-				new Comic("Watchmen", "Novela gráfica imprescindible", "default.png", 22.95, 4, 416, "ECC", 2018));
-
-		tienda.añadirProducto(
-				new Comic("Sandman Vol. 1", "Edición recopilatoria", "default.png", 19.90, 6, 256, "ECC", 2021));
-
-		// Juegos de mesa
-		tienda.añadirProducto(new JuegoMesa("Catan", "Juego de estrategia y comercio", "default.png", 34.95, 5, 3, 4,
-				10, 99, "Estrategia"));
-
-		tienda.añadirProducto(new JuegoMesa("Virus!", "Juego de cartas rápido y divertido", "default.png", 14.95, 18, 2,
-				6, 8, 99, "Cartas"));
-
-		tienda.añadirProducto(new JuegoMesa("Carcassonne", "Juego de colocación de losetas", "default.png", 29.95, 9, 2,
-				5, 7, 99, "Familiar"));
-
-		tienda.añadirProducto(new JuegoMesa("Azul", "Juego abstracto de estrategia", "default.png", 32.95, 2, 2, 4, 8,
-				99, "Abstracto"));
-
-		tienda.añadirProducto(new JuegoMesa("Terraforming Mars", "Juego de estrategia avanzada", "default.png", 54.95,
-				4, 1, 5, 12, 99, "Estrategia"));
-
-		tienda.añadirProducto(new JuegoMesa("Dixit", "Juego creativo e imaginativo", "default.png", 31.50, 11, 3, 6, 8,
-				99, "Creativo"));
-
-		// Figuras
-		tienda.añadirProducto(new Figura("Goku Super Saiyan", "Figura de colección de Dragon Ball", "default.png",
-				29.99, 6, 25.0, 10.0, 8.0, "PVC", "Banpresto"));
-
-		tienda.añadirProducto(new Figura("Spider-Man Marvel", "Figura articulada de Spider-Man", "default.png", 24.99,
-				9, 18.0, 8.0, 6.0, "ABS", "Hasbro"));
-
-		tienda.añadirProducto(new Figura("Link Breath of the Wild", "Figura coleccionable de Zelda", "default.png",
-				39.95, 3, 22.0, 9.0, 7.0, "PVC", "Good Smile"));
-
-		tienda.añadirProducto(new Figura("Darth Vader", "Figura de colección Star Wars", "default.png", 34.95, 8, 24.0,
-				10.0, 8.0, "PVC", "Hasbro"));
-
-		tienda.añadirProducto(new Figura("Luffy Gear 5", "Figura especial de One Piece", "default.png", 44.95, 1, 27.0,
-				11.0, 9.0, "PVC", "Banpresto"));
-
-		tienda.añadirProducto(new Figura("Iron Man Mark 85", "Figura articulada Marvel", "default.png", 49.95, 5, 20.0,
-				8.0, 7.0, "ABS", "Hasbro"));
-
-		tienda.añadirProducto(new Figura("Totoro", "Figura decorativa de Studio Ghibli", "default.png", 21.95, 10, 15.0,
-				9.0, 9.0, "Resina", "Ensky"));
-	}
+	
 
 	public VentanaPrincipal() {
 		this.tienda = Tienda.getInstancia();
+		inicializarDatosTienda();
 		inicializarVentana();
 		inicializarPantallas();
 		mostrarPantalla(PANTALLA_LOGIN);
@@ -234,7 +273,7 @@ public class VentanaPrincipal extends JFrame {
 				// Si falla, Swing usará el estilo "Metal" por defecto, que es igual en todos
 				// lados
 			}
-			cargarDatosDemo();
+			
 			new VentanaPrincipal().setVisible(true);
 		});
 	}

@@ -242,7 +242,8 @@ public abstract class UsuarioRegistrado {
 	 * @param puntuacionMin la puntuación mínima
 	 * @param categorias    las categorías que se quieren usar en el filtro
 	 */
-	public void filtrarProductos(double precioMin, double precioMax, double puntuacionMin, String... categorias) {
+	public List<ProductoVenta> filtrarProductos(double precioMin, double precioMax, double puntuacionMin,
+			String... categorias) {
 		filtroVenta.resetear();
 		filtroVenta.setPrecioMinimo(precioMin);
 		filtroVenta.setPrecioMaximo(precioMax);
@@ -254,7 +255,9 @@ public abstract class UsuarioRegistrado {
 		}
 		System.out.println("  Filtro aplicado: " + filtroVenta);
 		buscarProductosVentaFiltrados();
+		List<ProductoVenta> resultado = buscarProductosVentaFiltrados();
 		filtroVenta.resetear();
+		return resultado;
 	}
 
 	/**
