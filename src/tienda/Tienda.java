@@ -232,6 +232,13 @@ public class Tienda {
 		return false;
 	}
 
+	private String normalizarId(String id) {
+		if (id == null) {
+			return "";
+		}
+		return id.trim().toUpperCase();
+	}
+
 	/**
 	 * Imprime el catálogo de productos con stock disponible en la tienda
 	 *
@@ -266,11 +273,15 @@ public class Tienda {
 	 * @return el producto venta si existe, null en cualquier otro caso
 	 */
 	public ProductoVenta buscarProductoVentaPorId(String idProducto) {
-		if (idProducto == null || idProducto.isBlank())
+		String idBuscado = normalizarId(idProducto);
+		if (idBuscado.isBlank()) {
 			return null;
+		}
+
 		for (ProductoVenta p : stockVentas) {
-			if (p.getId().equals(idProducto))
+			if (p != null && p.getId() != null && normalizarId(p.getId()).equals(idBuscado)) {
 				return p;
+			}
 		}
 		return null;
 	}
@@ -400,11 +411,15 @@ public class Tienda {
 	 */
 	// Busca por id iterando la lista — robusto aunque haya huecos en los indices
 	public Producto2Mano buscarSegundaManoPorId(String id) {
-		if (id == null || id.isBlank())
+		String idBuscado = normalizarId(id);
+		if (idBuscado.isBlank()) {
 			return null;
+		}
+
 		for (Producto2Mano p : catalogoIntercambio) {
-			if (p.getId().equals(id))
+			if (p != null && p.getId() != null && normalizarId(p.getId()).equals(idBuscado)) {
 				return p;
+			}
 		}
 		return null;
 	}
