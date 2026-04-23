@@ -232,6 +232,13 @@ public class Tienda {
 		return false;
 	}
 
+	private String normalizarId(String id) {
+		if (id == null) {
+			return "";
+		}
+		return id.trim().toUpperCase();
+	}
+
 	/**
 	 * Imprime el catálogo de productos con stock disponible en la tienda
 	 *
@@ -266,11 +273,15 @@ public class Tienda {
 	 * @return el producto venta si existe, null en cualquier otro caso
 	 */
 	public ProductoVenta buscarProductoVentaPorId(String idProducto) {
-		if (idProducto == null || idProducto.isBlank())
+		String idBuscado = normalizarId(idProducto);
+		if (idBuscado.isBlank()) {
 			return null;
+		}
+
 		for (ProductoVenta p : stockVentas) {
-			if (p.getId().equals(idProducto))
+			if (p != null && p.getId() != null && normalizarId(p.getId()).equals(idBuscado)) {
 				return p;
+			}
 		}
 		return null;
 	}
@@ -400,11 +411,15 @@ public class Tienda {
 	 */
 	// Busca por id iterando la lista — robusto aunque haya huecos en los indices
 	public Producto2Mano buscarSegundaManoPorId(String id) {
-		if (id == null || id.isBlank())
+		String idBuscado = normalizarId(id);
+		if (idBuscado.isBlank()) {
 			return null;
+		}
+
 		for (Producto2Mano p : catalogoIntercambio) {
-			if (p.getId().equals(id))
+			if (p != null && p.getId() != null && normalizarId(p.getId()).equals(idBuscado)) {
 				return p;
+			}
 		}
 		return null;
 	}
@@ -1243,5 +1258,32 @@ public class Tienda {
 	 */
 	public void reiniciarComprobadorTiempos() {
 		this.comprobadorTiempos = new ComprobadorTiempos();
+	}
+
+	public Empleado registrarNuevoEmpleado(String nickname, String password) {
+		if (nickname == null || nickname.isBlank() || password == null || password.isBlank()) {
+			return null;
+		}
+
+		for (UsuarioRegistrado u : usuarios) {
+			if (u.getNickname().equalsIgnoreCase(nickname)) {
+				System.out.println("Ese nickname ya está en uso.");
+				return null;
+			}
+		}
+
+		Empleado nuevo = new Empleado(nickname, password);
+
+		nuevo.asignarPermiso(TipoPermisos.GESTION_STOCK);
+		nuevo.asignarPermiso(TipoPermisos.GESTION_CATEGORIAS);
+		nuevo.asignarPermiso(TipoPermisos.GESTION_PACKS);
+		nuevo.asignarPermiso(TipoPermisos.MODIFICAR_PRODUCTO);
+		nuevo.asignarPermiso(TipoPermisos.GESTION_PEDIDOS);
+		nuevo.asignarPermiso(TipoPermisos.VALORACION_PRODUCTOS);
+		nuevo.asignarPermiso(TipoPermisos.CONFIRMACION_INTERCAMBIO);
+		nuevo.asignarPermiso(TipoPermisos.ENTREGA_PEDIDOS);
+
+		usuarios.add(nuevo);
+		return nuevo;
 	}
 }

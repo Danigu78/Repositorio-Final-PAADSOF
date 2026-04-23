@@ -496,30 +496,28 @@ public class Empleado extends UsuarioRegistrado {
 	 * @param cantidad Cantidad a añadir
 	 * @return true si se repuso correctamente
 	 */
-	public boolean reponerStockProducto(String id, int cantidad) {
-		if (!puedeRealizarTarea(TipoPermisos.GESTION_STOCK)) {
-			System.out.println("No tienes permiso para trabajar con productos");
+	public boolean reponerStockProducto(String idProducto, int cantidad) {
+		if (idProducto == null || idProducto.isBlank()) {
+			System.out.println("El id del producto no puede estar vacío.");
 			return false;
 		}
+
 		if (cantidad <= 0) {
-			System.out.println("La cantidad a añadir tiene que ser mayor que 0");
+			System.out.println("La cantidad debe ser mayor que 0.");
 			return false;
 		}
 
 		Tienda tienda = Tienda.getInstancia();
-		for (ProductoVenta p : tienda.getStockVentas()) {
-			if (p.getId().equals(id)) {
-				// Caso en el que hayamos encontrado un producto que ya exista
-				int unidades = p.getStockDisponible();
-				unidades = unidades + cantidad;
-				p.setStockDisponible(unidades);
-				System.out.println("Se han añadiendo las unidades correctamente. Ahora el producto " + p.getId()
-						+ " tiene " + p.getStockDisponible() + " unidades en stock.");
-				return true;
-			}
+		ProductoVenta producto = tienda.buscarProductoVentaPorId(idProducto.trim());
+
+		if (producto == null) {
+			System.out.println("No existe ningún producto con id: " + idProducto);
+			return false;
 		}
-		System.out.println("Este producto no existe en la lista de productos de venta de la tienda");
-		return false;
+
+		producto.setStockDisponible(producto.getStockDisponible() + cantidad);
+		System.out.println("Stock repuesto correctamente para " + producto.getId());
+		return true;
 	}
 
 	/**

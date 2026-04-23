@@ -5,8 +5,10 @@ import tienda.Estadistica;
 import java.time.*;
 
 import excepciones.*;
+
 /**
  * Clase que representa la valoración de un cliente sobre un producto.
+ * 
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
@@ -29,6 +31,7 @@ public class Reseña {
 
 	/** Fecha en la que se registró la valoración. */
 	private LocalDate fecha;
+
 	/**
 	 * Constructor de la clase Reseña
 	 *
@@ -116,5 +119,14 @@ public class Reseña {
 	 */
 	public ProductoVenta getProducto() {
 		return producto;
+	}
+
+	/**
+	 * Devuelve el comentario de la reseña.
+	 *
+	 * @return el texto del comentario
+	 */
+	public String getComentario() {
+		return comentario;
 	}
 }
