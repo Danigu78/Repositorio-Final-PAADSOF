@@ -152,7 +152,6 @@ public class PantallaLogin extends JPanel {
 
 		// Líneas descriptivas
 		String[] lineas = { "Comics y Manga", "Juegos de Mesa", "Figuras de Colección", "Segunda Mano e Intercambios" };
-
 		for (int i = 0; i < lineas.length; i++) {
 			JLabel label = new JLabel(lineas[i]);
 			label.setFont(VentanaPrincipal.FUENTE_NORMAL);
@@ -163,7 +162,6 @@ public class PantallaLogin extends JPanel {
 			gbc.anchor = GridBagConstraints.WEST;
 			panel.add(label, gbc);
 		}
-
 		return panel;
 	}
 
@@ -266,6 +264,17 @@ public class PantallaLogin extends JPanel {
 		gbc.gridy = 9;
 		panel.add(botonIrRegistro, gbc);
 
+		// Botón continuar como invitado
+		JButton botonIniciarSinRegistrar = crearBoton("Continuar como invitado", true);
+		gbc.gridy = 10;
+		gbc.insets = new Insets(VentanaPrincipal.escalar(8), 0, VentanaPrincipal.escalar(8), 0);
+		panel.add(botonIniciarSinRegistrar, gbc);
+
+		botonIniciarSinRegistrar.addActionListener(e -> {
+		    ventana.loginInvitado();
+		});
+		
+	
 		return panel;
 	}
 
@@ -367,8 +376,6 @@ public class PantallaLogin extends JPanel {
 
 		return panel;
 	}
-
-	// ── Acciones ──────────────────────────────────────────────────────────────
 
 	/**
 	 * Realiza el login según el tipo de usuario seleccionado. Navega al panel
@@ -504,8 +511,7 @@ public class PantallaLogin extends JPanel {
 			comboTipoUsuario.setSelectedIndex(0);
 	}
 
-	// ── Métodos de estilo ─────────────────────────────────────────────────────
-
+	
 	/**
 	 * Crea una etiqueta con el estilo de CheckPoint.
 	 *
@@ -537,6 +543,8 @@ public class PantallaLogin extends JPanel {
 		return campo;
 	}
 
+	
+	
 	/**
 	 * Crea un campo de contraseña con fondo blanco y texto negro. El padding
 	 * interno está escalado según el DPI.
@@ -555,6 +563,13 @@ public class PantallaLogin extends JPanel {
 		return campo;
 	}
 
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * Crea un botón principal (naranja) o secundario (texto naranja sin fondo). El
 	 * padding interno está escalado según el DPI.
@@ -598,6 +613,25 @@ public class PantallaLogin extends JPanel {
 		return boton;
 	}
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * Aplica el estilo de CheckPoint a un JComboBox.
 	 *

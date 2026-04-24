@@ -107,19 +107,20 @@ public class SubpanelCatalogo extends JPanel {
 				new FlowLayout(FlowLayout.LEFT, VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(10))) {
 			// Sobreescribimos getPreferredSize para que el ScrollPane
 			// sepa que solo necesita scroll vertical, no horizontal
+			
 			@Override
 			public Dimension getPreferredSize() {
-				int ancho = getParent() != null ? getParent().getWidth() : 800;
-				// Calculamos cuántas tarjetas caben por fila
-				int anchTarjeta = VentanaPrincipal.escalar(220) + VentanaPrincipal.escalar(10);
-				int porFila = Math.max(1, ancho / anchTarjeta);
-				// Calculamos cuántas filas necesitamos
-				int numTarjetas = getComponentCount();
-				int filas = (int) Math.ceil((double) numTarjetas / porFila);
-				// Calculamos el alto total
-				int altTarjeta = VentanaPrincipal.escalar(340) + VentanaPrincipal.escalar(10);
-				int altoTotal = filas * altTarjeta + VentanaPrincipal.escalar(19999);
-				return new Dimension(ancho, altoTotal);
+			    int ancho = getParent() != null ? getParent().getWidth() : 800;
+			    // Calculamos cuántas tarjetas caben por fila
+			    int anchTarjeta = VentanaPrincipal.escalar(300) + VentanaPrincipal.escalar(10);
+			    int porFila = Math.max(1, ancho / anchTarjeta);
+			    // Calculamos cuántas filas necesitamos
+			    int numTarjetas = getComponentCount();
+			    int filas = (int) Math.ceil((double) numTarjetas / porFila);
+			    // Calculamos el alto total con un pequeño margen al final
+			    int altTarjeta = VentanaPrincipal.escalar(350) + VentanaPrincipal.escalar(10);
+			    int altoTotal = filas * altTarjeta + VentanaPrincipal.escalar(30);
+			    return new Dimension(ancho, altoTotal);
 			}
 		};
 		panelProductos.setBackground(VentanaPrincipal.COLOR_FONDO);
@@ -297,8 +298,8 @@ public class SubpanelCatalogo extends JPanel {
 		JPanel tarjeta = new JPanel(new BorderLayout(0, VentanaPrincipal.escalar(5)));
 		tarjeta.setBackground(VentanaPrincipal.COLOR_TARJETA);
 		// Tamaño fijo escalado según el DPI de la pantalla
-		tarjeta.setPreferredSize(new Dimension(VentanaPrincipal.escalar(400), // largo
-				VentanaPrincipal.escalar(500)));
+		tarjeta.setPreferredSize(new Dimension(VentanaPrincipal.escalar(300), // largo
+				VentanaPrincipal.escalar(350)));
 		tarjeta.setBorder(
 				BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
 						BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(8),
