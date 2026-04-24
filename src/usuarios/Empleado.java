@@ -1,8 +1,6 @@
 package usuarios;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 import excepciones.*;
@@ -1211,5 +1209,38 @@ public class Empleado extends UsuarioRegistrado {
 	@Override
 	public String toString() {
 		return "Empleado [id=" + getId() + ", nickname=" + getNickname() + "]";
+	}
+
+	/**
+	 * Método llamado automáticamente cuando se guarda un Empleado en fichero.
+	 */
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		inicializarCamposNulos();
+		out.defaultWriteObject();
+	}
+
+	/**
+	 * Método llamado automáticamente cuando se carga un Empleado desde fichero.
+	 */
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		inicializarCamposNulos();
+	}
+
+	/**
+	 * Evita que las listas o conjuntos queden a null al guardar/cargar.
+	 */
+	private void inicializarCamposNulos() {
+		if (this.notificaciones == null) {
+			this.notificaciones = new ArrayList<>();
+		}
+
+		if (this.permisos == null) {
+			this.permisos = new TreeSet<>();
+		}
+
+		if (this.valoraciones == null) {
+			this.valoraciones = new ArrayList<>();
+		}
 	}
 }

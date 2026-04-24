@@ -1,5 +1,6 @@
 package usuarios;
 
+import java.io.*;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +22,11 @@ import ventas.*;
  * @author Daniel
  * @version 1.0
  */
-public class Cliente extends UsuarioRegistrado {
+public class Cliente extends UsuarioRegistrado implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	// private double saldoPuntos;
 
 	private List<Pedido> historialPedidos;
@@ -1034,6 +1039,55 @@ public class Cliente extends UsuarioRegistrado {
 	 */
 	public void setPreferencias(PreferenciaNotificacion preferencias) {
 		this.preferencias = preferencias;
+	}
+
+	/**
+	 * Método llamado automáticamente cuando se guarda un Cliente en fichero.
+	 */
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		inicializarCamposNulos();
+		out.defaultWriteObject();
+	}
+
+	/**
+	 * Método llamado automáticamente cuando se carga un Cliente desde fichero.
+	 */
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		inicializarCamposNulos();
+	}
+
+	/**
+	 * Evita que las listas o preferencias queden a null al guardar/cargar.
+	 */
+	private void inicializarCamposNulos() {
+		if (this.historialPedidos == null) {
+			this.historialPedidos = new ArrayList<>();
+		}
+
+		if (this.carteraIntercambio == null) {
+			this.carteraIntercambio = new ArrayList<>();
+		}
+
+		if (this.ofertasPendientes == null) {
+			this.ofertasPendientes = new ArrayList<>();
+		}
+
+		if (this.historialIntercambios == null) {
+			this.historialIntercambios = new ArrayList<>();
+		}
+
+		if (this.reseñas == null) {
+			this.reseñas = new ArrayList<>();
+		}
+
+		if (this.notificaciones == null) {
+			this.notificaciones = new ArrayList<>();
+		}
+
+		if (this.preferencias == null) {
+			this.preferencias = new PreferenciaNotificacion();
+		}
 	}
 
 }
