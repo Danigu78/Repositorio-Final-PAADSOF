@@ -189,7 +189,7 @@ public class PanelCliente extends JPanel {
 		panelPestanas.setBackground(VentanaPrincipal.COLOR_PANEL);
 		panelPestanas.setBorder(BorderFactory.createEmptyBorder(8, 0, 0, 0));
 
-		// Definir las pestañas: [texto visible, icono emoji, id de sección]
+		// Definir las JLabelpestañas: [texto visible, icono emoji, id de sección]
 		String[][] pestanas = { { "Catálogo", "🛍️", SEC_CATALOGO }, { "Carrito", "🛒", SEC_CARRITO },
 				{ "Mis Pedidos", "📦", SEC_PEDIDOS }, { "Segunda Mano", "🔄", SEC_SEGUNDA_MANO },
 				{ "Intercambios", "🤝", SEC_INTERCAMBIOS }, { "Notificaciones", "🔔", SEC_NOTIFICACIONES },
@@ -265,10 +265,12 @@ public class PanelCliente extends JPanel {
 	 */
 	private JButton crearBotonPestana(String texto, String seccion) {
 		JButton boton = new JButton(texto);
-		boton.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		boton.setFont(new Font("Segoe UI", Font.PLAIN, VentanaPrincipal.escalar(13)));
 		boton.setForeground(VentanaPrincipal.COLOR_TEXTO2);
 		boton.setBackground(VentanaPrincipal.COLOR_PANEL);
-		boton.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
+		
+		
+		boton.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(12), VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(12)));//espacio entre el texto y el borde dentro del boton
 		boton.setFocusPainted(false);
 		boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
