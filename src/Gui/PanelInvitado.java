@@ -3,11 +3,9 @@ package Gui;
 import javax.swing.*;
 import javax.swing.border.*;
 
-import com.sun.org.apache.xml.internal.dtm.ref.DTMAxisIterNodeList;
 
 import Gui.Controladores.ControladorPanelInvitado;
-import sun.jvm.hotspot.oops.java_lang_Class;
-import sun.tools.jar.resources.jar;
+
 
 import java.awt.*;
 import java.awt.event.*;
@@ -26,18 +24,44 @@ public class PanelInvitado extends JPanel {
 	/** Botón actualmente seleccionado en la barra de navegación */
 	private JButton botonActivo;
 	private ControladorPanelInvitado controlador;
+	/** Layout que gestiona el cambio entre secciones */
+	private CardLayout cardSecciones;
+	/** Panel contenedor de todas las secciones */
+	private JPanel panelSecciones;
+	/** Panel del catálogo de productos */
+	private SubpanelCatalogo subpanelCatalogo;
+	/** Panel de productos de segunda mano */
+	private SubpanelSegundaMano subpanelSegundaMano;
 
 	public PanelInvitado(VentanaPrincipal ventana) {
 		this.ventana = ventana;
 		this.controlador = new ControladorPanelInvitado(ventana, this);
 		setLayout(new BorderLayout());
+		inicializarUI();
 	}
 
 	private void inicializarUI() {
-		JPanel barraNavegacion = new JPanel(new BorderLayout());
+		JPanel barraNavegacion = crearBarraDeNavegacion();
+		add(barraNavegacion, BorderLayout.NORTH);
+		cardSecciones = new CardLayout();
+		panelSecciones = new JPanel(cardSecciones);
+		panelSecciones.setBackground(VentanaPrincipal.COLOR_FONDO);
+
+		subpanelCatalogo = new SubpanelCatalogo(ventana);
+		subpanelSegundaMano = new SubpanelSegundaMano(ventana);
+
+		panelSecciones.add(subpanelCatalogo, SEC_CATALOGO);
+		panelSecciones.add(subpanelSegundaMano, SEC_SEGUNDA_MANO);
+		int margen = VentanaPrincipal.escalar(20);
+		panelSecciones.setBorder(BorderFactory.createEmptyBorder(margen, margen, margen, margen));
+		add(panelSecciones, BorderLayout.CENTER);
+
+		// Mostrar catálogo por defecto
+		mostrarSeccion(SEC_CATALOGO);
+
 	}
 
-	private void crearBarraDeNavegacion() {
+	private JPanel crearBarraDeNavegacion() {
 		JPanel barra = new JPanel(new BorderLayout());
 		barra.setPreferredSize(new Dimension(0, VentanaPrincipal.escalar(58)));
 		int margenEscalado = VentanaPrincipal.escalar(15);
@@ -98,15 +122,86 @@ public class PanelInvitado extends JPanel {
 		}
 		// Suponiendo que tu panel de la barra se llama 'panelBarra'
 		barra.add(zonaPestañas, BorderLayout.CENTER);
-		
-		
-		
-		
-		
-		
-		
-		
-		
+
+		// zona derecha
+		JPanel panelDerecho = new JPanel(new FlowLayout(FlowLayout.RIGHT, VentanaPrincipal.escalar(10), 0)); // hueco
+																												// horizontal
+																												// entre
+																												// los
+																												// botones
+		panelDerecho.setForeground(ventana.COLOR_PANEL);
+		panelDerecho.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(12), 0, 0, 0));// deja un margen
+																										// arriba de 12
+																										// para que no
+																										// este pegado
+																										// arriba
+
+		JLabel labelInvitado = new JLabel("Usuario no registrado");
+		labelInvitado.setFont(VentanaPrincipal.FUENTE_NORMAL);
+		labelInvitado.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+		panelDerecho.add(labelInvitado);
+
+		// separador
+		panelDerecho.add(crearSeparador());
+		// boton registrarse
+		Color naranjaHover = new Color(230, 120, 0);
+		Color naranjaNormal = new Color(255, 140, 0);
+		JButton botonRegistro = new JButton("Registrarse | Iniciar sesion");
+		botonRegistro.setFont(VentanaPrincipal.FUENTE_PEQUENA);
+		botonRegistro.setForeground(Color.WHITE);
+		botonRegistro.setBackground(naranjaNormal);
+		botonRegistro.setFocusPainted(false);
+		botonRegistro.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		botonRegistro.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(5),
+		        VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(5), VentanaPrincipal.escalar(15)));
+
+		botonRegistro.setContentAreaFilled(false);
+		botonRegistro.setOpaque(true);            
+		botonRegistro.setBorderPainted(false);    
+	
+
+		botonRegistro.addMouseListener(new MouseAdapter() {
+		    @Override
+		    public void mouseEntered(MouseEvent e) {
+		        botonRegistro.setBackground(naranjaHover);
+		        
+		    }
+
+		    @Override
+		    public void mouseExited(MouseEvent e) {
+		        botonRegistro.setBackground(naranjaNormal);
+		    }
+		});
+		botonRegistro.addActionListener(e -> controlador.irARegistro());
+
+		panelDerecho.add(botonRegistro);
+		// añadimos otra vez el mismo separador
+		panelDerecho.add(crearSeparador());
+		JButton botonCerrar = new JButton("Salir");
+		botonCerrar.setFont(VentanaPrincipal.FUENTE_PEQUENA);
+		botonCerrar.setForeground(new Color(220, 80, 80));
+		botonCerrar.setBackground(VentanaPrincipal.COLOR_PANEL);
+		botonCerrar.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(10),
+				VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(10)));
+		botonCerrar.setFocusPainted(false);
+		botonCerrar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+		botonCerrar.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				botonCerrar.setForeground(new Color(255, 100, 100));
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				botonCerrar.setForeground(new Color(220, 80, 80));
+			}
+		});
+		botonCerrar.addActionListener(e -> controlador.salirDeAplicacion());
+		panelDerecho.add(botonCerrar);
+		barra.add(panelDerecho, BorderLayout.EAST);
+		return barra;
+
 	}
 
 	private JButton crearBotonPestana(String texto, String seccion) {
@@ -136,7 +231,7 @@ public class PanelInvitado extends JPanel {
 		});
 
 		boton.addActionListener(e -> {
-			// En lugar de hacer la lógica aquí, le pasamos el trabajo al controlador
+			// la logica la hace el controlador.
 			controlador.gestionarNavegacion(boton, seccion);
 		});
 		return boton;
@@ -157,5 +252,40 @@ public class PanelInvitado extends JPanel {
 				BorderFactory.createMatteBorder(0, 0, linea, 0, VentanaPrincipal.COLOR_ACENTO), // Pone el borde abajo
 				BorderFactory.createEmptyBorder(v, h, v - linea, h)// Ponemos donde es pinchable
 		));
+	}
+
+	public void desmarcarTodo() {
+		if (botonActivo != null) {
+
+			botonActivo.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(0),
+					VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(5), VentanaPrincipal.escalar(10)));
+
+			// Volvemos a poner el texto en su color normal
+			botonActivo.setForeground(VentanaPrincipal.COLOR_TEXTO_BARRA);
+
+			// Olvidamos cuál era el botón activo
+			botonActivo = null;
+		}
+	}
+	
+	private JPanel crearSeparador() {
+	    JPanel sep = new JPanel();
+	    sep.setBackground(VentanaPrincipal.COLOR_ACENTO);
+	    sep.setPreferredSize(new Dimension(VentanaPrincipal.escalar(3), VentanaPrincipal.escalar(25)));
+	    return sep;
+	}
+	public void mostrarSeccion(String seccion) {
+		cardSecciones.show(panelSecciones, seccion);
+		actualizarSeccion(seccion);
+	}
+	private void actualizarSeccion(String seccion) {
+	    switch (seccion) {
+	        case SEC_CATALOGO:     
+	            subpanelCatalogo.actualizar(null); 
+	            break;
+	        case SEC_SEGUNDA_MANO:
+	            subpanelSegundaMano.actualizar(null);
+	            break;
+	    }
 	}
 }

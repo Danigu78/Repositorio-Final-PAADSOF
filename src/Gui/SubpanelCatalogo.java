@@ -104,33 +104,35 @@ public class SubpanelCatalogo extends JPanel {
 
 		// Panel de productos con FlowLayout
 		panelProductos = new JPanel(
-				new FlowLayout(FlowLayout.LEFT, VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(10))) {
-			// Sobreescribimos getPreferredSize para que el ScrollPane
-			// sepa que solo necesita scroll vertical, no horizontal
-			
+				new FlowLayout(FlowLayout.LEFT, VentanaPrincipal.escalar(25), VentanaPrincipal.escalar(25))) { // separeacion
+																												// horizontal
+																												// y
+																												// separacion
+																												// vertical
+
 			@Override
 			public Dimension getPreferredSize() {
-			    int ancho = getParent() != null ? getParent().getWidth() : 800;
-			    // Calculamos cuántas tarjetas caben por fila
-			    int anchTarjeta = VentanaPrincipal.escalar(300) + VentanaPrincipal.escalar(10);
-			    int porFila = Math.max(1, ancho / anchTarjeta);
-			    // Calculamos cuántas filas necesitamos
-			    int numTarjetas = getComponentCount();
-			    int filas = (int) Math.ceil((double) numTarjetas / porFila);
-			    // Calculamos el alto total con un pequeño margen al final
-			    int altTarjeta = VentanaPrincipal.escalar(350) + VentanaPrincipal.escalar(10);
-			    int altoTotal = filas * altTarjeta + VentanaPrincipal.escalar(30);
-			    return new Dimension(ancho, altoTotal);
+				int ancho = getParent() != null ? getParent().getWidth() : 800;
+				// Calculamos cuántas tarjetas caben por fila
+				int anchTarjeta = VentanaPrincipal.escalar(300) + VentanaPrincipal.escalar(10);
+				int porFila = Math.max(1, ancho / anchTarjeta);
+				// Calculamos cuántas filas necesitamos
+				int numTarjetas = getComponentCount();
+				int filas = (int) Math.ceil((double) numTarjetas / porFila);
+				// Calculamos el alto total con un pequeño margen al final
+				int altTarjeta = VentanaPrincipal.escalar(350) + VentanaPrincipal.escalar(10);
+				int altoTotal = filas * altTarjeta + VentanaPrincipal.escalar(30);
+				return new Dimension(ancho, altoTotal);
 			}
 		};
 		panelProductos.setBackground(VentanaPrincipal.COLOR_FONDO);
 		panelProductos.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(10),
-				VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(10)));
+				VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(10))); // padding
 
 		JScrollPane scroll = new JScrollPane(panelProductos);
 		scroll.setBorder(null);
-		scroll.getVerticalScrollBar().setUnitIncrement(VentanaPrincipal.escalar(16));
-		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scroll.getVerticalScrollBar().setUnitIncrement(VentanaPrincipal.escalar(16));// cuando baja al mover la rueda
+		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);// no hay barra horizontal
 		scroll.getViewport().setBackground(VentanaPrincipal.COLOR_FONDO);
 		panel.add(scroll, BorderLayout.CENTER);
 
@@ -147,22 +149,29 @@ public class SubpanelCatalogo extends JPanel {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.setBackground(VentanaPrincipal.COLOR_PANEL);
 		panel.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createMatteBorder(0, 0, 1, 0, VentanaPrincipal.COLOR_BORDE),
-				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(15),
-						VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(15))));
+				BorderFactory.createMatteBorder(0, 0, VentanaPrincipal.escalar(3), 0, VentanaPrincipal.COLOR_ACENTO), // linea
+																														// separatoria
+																														// en
+																														// la
+																														// parte
+																														// de
+																														// abajo
+				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15), // padding
+																											// interno
+						VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15))));
 
-		JPanel panelFiltros = new JPanel(new FlowLayout(FlowLayout.LEFT, VentanaPrincipal.escalar(10), 0));
+		JPanel panelFiltros = new JPanel(new FlowLayout(FlowLayout.CENTER, VentanaPrincipal.escalar(25), 0));
 		panelFiltros.setBackground(VentanaPrincipal.COLOR_PANEL);
 
 		// Icono lupa
-		panelFiltros.add(crearIcono("/fotos/iconos/lupa.png", VentanaPrincipal.escalar(20)));
+		panelFiltros.add(crearIcono("/fotos/lupa.jpg", VentanaPrincipal.escalar(30)));
 
 		// Campo de búsqueda por nombre
 		campoBusqueda = new JTextField(15);
 		campoBusqueda.setFont(VentanaPrincipal.FUENTE_NORMAL);
-		campoBusqueda.setForeground(Color.BLACK);
+		campoBusqueda.setForeground(Color.BLACK);// color letra
 		campoBusqueda.setBackground(Color.WHITE);
-		campoBusqueda.setCaretColor(Color.BLACK);
+		campoBusqueda.setCaretColor(Color.BLACK);// palito que parpadea
 		campoBusqueda.setBorder(
 				BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
 						BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(8),
@@ -191,7 +200,8 @@ public class SubpanelCatalogo extends JPanel {
 		panelFiltros.add(labelPrecio);
 
 		// SpinnerNumberModel(valor inicial, mínimo, máximo, paso)
-		spinnerPrecioMin = new JSpinner(new SpinnerNumberModel(0.0, 0.0, 9999.0, 1.0));
+		spinnerPrecioMin = new JSpinner(new SpinnerNumberModel(0.0, 0.0, 9999.0, 1.0));// cada vez que pulsas una flecha
+																						// sube o baja 1
 		spinnerPrecioMin.setFont(VentanaPrincipal.FUENTE_NORMAL);
 		spinnerPrecioMin.setPreferredSize(new Dimension(VentanaPrincipal.escalar(70), VentanaPrincipal.escalar(30)));
 		panelFiltros.add(spinnerPrecioMin);
@@ -205,7 +215,6 @@ public class SubpanelCatalogo extends JPanel {
 		spinnerPrecioMax.setPreferredSize(new Dimension(VentanaPrincipal.escalar(70), VentanaPrincipal.escalar(30)));
 		panelFiltros.add(spinnerPrecioMax);
 
-		// Botón buscar
 		JButton botonBuscar = crearBoton("Buscar", true);
 		botonBuscar.addActionListener(e -> buscar());
 		panelFiltros.add(botonBuscar);
@@ -295,14 +304,14 @@ public class SubpanelCatalogo extends JPanel {
 	 * @return El panel con la tarjeta
 	 */
 	private JPanel crearTarjeta(ProductoVenta producto) {
-		JPanel tarjeta = new JPanel(new BorderLayout(0, VentanaPrincipal.escalar(5)));
+		JPanel tarjeta = new JPanel(new BorderLayout(0, VentanaPrincipal.escalar(10)));
 		tarjeta.setBackground(VentanaPrincipal.COLOR_TARJETA);
-		// Tamaño fijo escalado según el DPI de la pantalla
+		// Tamaño fijo escalado
 		tarjeta.setPreferredSize(new Dimension(VentanaPrincipal.escalar(300), // largo
 				VentanaPrincipal.escalar(350)));
 		tarjeta.setBorder(
 				BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
-						BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(8),
+						BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(35), VentanaPrincipal.escalar(8),
 								VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(8))));
 
 		// Borde naranja al pasar el ratón por encima
@@ -311,7 +320,7 @@ public class SubpanelCatalogo extends JPanel {
 			public void mouseEntered(MouseEvent e) {
 				tarjeta.setBorder(BorderFactory
 						.createCompoundBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_ACENTO),
-								BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(8),
+								BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(45),
 										VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(8),
 										VentanaPrincipal.escalar(8))));
 			}
@@ -320,7 +329,7 @@ public class SubpanelCatalogo extends JPanel {
 			public void mouseExited(MouseEvent e) {
 				tarjeta.setBorder(
 						BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
-								BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(8),
+								BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(35),
 										VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(8),
 										VentanaPrincipal.escalar(8))));
 			}
@@ -338,7 +347,6 @@ public class SubpanelCatalogo extends JPanel {
 		panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.Y_AXIS));
 		panelInfo.setBackground(VentanaPrincipal.COLOR_TARJETA);
 
-		// Nombre — cortado si es muy largo
 		String nombre = producto.getNombre();
 		if (nombre.length() > 18)
 			nombre = nombre.substring(0, 16) + "...";
@@ -346,9 +354,9 @@ public class SubpanelCatalogo extends JPanel {
 		labelNombre.setFont(VentanaPrincipal.FUENTE_BOTON);
 		labelNombre.setForeground(VentanaPrincipal.COLOR_TEXTO);
 		labelNombre.setAlignmentX(Component.CENTER_ALIGNMENT);
+		labelNombre.setBorder(
+				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(5), 0, VentanaPrincipal.escalar(5), 0));
 		panelInfo.add(labelNombre);
-
-		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(3)));
 
 		// Descripción — cortada si es muy larga
 		String desc = producto.getDescripcion();
@@ -358,23 +366,23 @@ public class SubpanelCatalogo extends JPanel {
 		labelDesc.setFont(VentanaPrincipal.FUENTE_PEQUENA);
 		labelDesc.setForeground(VentanaPrincipal.COLOR_TEXTO2);
 		labelDesc.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		labelDesc.setBorder(
+				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(5), 0, VentanaPrincipal.escalar(8), 0));
+		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(3)));
 		panelInfo.add(labelDesc);
 
-		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(3)));
-
-		// Precio en naranja
 		JLabel labelPrecio = new JLabel(String.format("%.2f€", producto.getPrecioOficial()));
 		labelPrecio.setFont(VentanaPrincipal.FUENTE_PRECIO);
 		labelPrecio.setForeground(VentanaPrincipal.COLOR_ACENTO);
 		labelPrecio.setAlignmentX(Component.CENTER_ALIGNMENT);
+		labelPrecio.setBorder(BorderFactory.createEmptyBorder(0, 0, VentanaPrincipal.escalar(8), 0));
 		panelInfo.add(labelPrecio);
-
-		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(8)));
 
 		// Botón ver información — abre SubpanelProducto
 		JButton botonVer = crearBoton("Ver información", true);
 		botonVer.setAlignmentX(Component.CENTER_ALIGNMENT);
-		botonVer.addActionListener(e -> verProducto(producto));
+		botonVer.addActionListener(e -> controlador.verProducto(producto));
 		panelInfo.add(botonVer);
 
 		tarjeta.add(panelInfo, BorderLayout.CENTER);
@@ -386,7 +394,7 @@ public class SubpanelCatalogo extends JPanel {
 	 *
 	 * @param producto El producto a mostrar en detalle
 	 */
-	private void verProducto(ProductoVenta producto) {
+	public void verProducto(ProductoVenta producto) {
 		subpanelProducto.mostrarProducto(producto, cliente, controlador);
 		cardLayout.show(panelContenido, "PRODUCTO");
 	}
@@ -466,8 +474,11 @@ public class SubpanelCatalogo extends JPanel {
 		boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
 		if (principal) {
-			boton.setBackground(VentanaPrincipal.COLOR_ACENTO);
+			Color colorNormal = VentanaPrincipal.COLOR_ACENTO;
+			Color colorHover = VentanaPrincipal.COLOR_ACENTO.darker();
+			boton.setBackground(colorNormal);
 			boton.setForeground(Color.WHITE);
+			boton.setContentAreaFilled(false);
 			boton.setOpaque(true);
 			boton.setBorderPainted(false);
 			boton.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(10),
@@ -475,14 +486,15 @@ public class SubpanelCatalogo extends JPanel {
 			boton.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseEntered(MouseEvent e) {
-					boton.setBackground(VentanaPrincipal.COLOR_ACENTO2);
+					boton.setBackground(colorHover);
 				}
 
 				@Override
 				public void mouseExited(MouseEvent e) {
-					boton.setBackground(VentanaPrincipal.COLOR_ACENTO);
+					boton.setBackground(colorNormal);
 				}
 			});
+
 		} else {
 			boton.setBackground(VentanaPrincipal.COLOR_PANEL);
 			boton.setForeground(VentanaPrincipal.COLOR_ACENTO);
@@ -501,7 +513,7 @@ public class SubpanelCatalogo extends JPanel {
 	 */
 	public void actualizar(Cliente cliente) {
 		this.cliente = cliente;
-		this.controlador = new ControladorCatalogo(cliente);
+		this.controlador = new ControladorCatalogo(cliente, this);
 
 		// Rellenamos el combo con las categorías de la tienda
 		comboCategoria.removeAllItems();

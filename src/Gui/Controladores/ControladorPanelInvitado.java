@@ -6,24 +6,32 @@ import Gui.PanelInvitado;
 import Gui.VentanaPrincipal;
 
 public class ControladorPanelInvitado {
-private VentanaPrincipal ventana;
-private PanelInvitado vista;
+	private VentanaPrincipal ventana;
+	private PanelInvitado vista;
 
-public ControladorPanelInvitado(VentanaPrincipal ventana, PanelInvitado panel) {
-	this.ventana=ventana;
-	this.vista=panel;
-}/**
- * Gestiona el clic en las pestañas de navegación
- * @param botonPulsado El JButton que el usuario ha clicado
- * @param seccion El identificador de la sección (ej: "CATALOGO")
- */
-public void gestionarNavegacion(JButton botonPulsado, String seccion) {
-    // 1. Lógica Visual: Le pedimos a la vista que use el método que acabamos de hacer
-    vista.marcarBotonActivo(botonPulsado);
+	public ControladorPanelInvitado(VentanaPrincipal ventana, PanelInvitado panel) {
+		this.ventana = ventana;
+		this.vista = panel;
+	}
 
-    // 2. Lógica de Navegación: Cambiamos el panel central de la aplicación
-    ventana.mostrarPantalla(seccion);
-    
-  
-}
+	/**
+	 * Gestiona el clic en las pestañas de navegación
+	 * 
+	 * @param botonPulsado El JButton que el usuario ha clicado
+	 * @param seccion      El identificador de la sección (ej: "CATALOGO")
+	 */
+	public void gestionarNavegacion(JButton botonPulsado, String seccion) {
+		vista.marcarBotonActivo(botonPulsado);
+		vista.mostrarSeccion(seccion);
+	}
+
+	public void irARegistro() {
+		ventana.mostrarPantalla(VentanaPrincipal.PANTALLA_LOGIN);
+		vista.desmarcarTodo();
+	}
+
+	public void salirDeAplicacion() {
+		System.exit(0);
+
+	}
 }

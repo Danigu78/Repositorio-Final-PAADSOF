@@ -220,12 +220,18 @@ public class PanelCliente extends JPanel {
 		labelUsuario.setForeground(VentanaPrincipal.COLOR_TEXTO2);
 		panelUsuario.add(labelUsuario);
 
-		// Separador vertical decorativo
-		JSeparator sep = new JSeparator(JSeparator.VERTICAL);
-		sep.setPreferredSize(new Dimension(1, 20));
-		sep.setForeground(VentanaPrincipal.COLOR_BORDE);
-		panelUsuario.add(sep);
+		
+//Separador
+		JPanel sep = new JPanel();
+		sep.setBackground(VentanaPrincipal.COLOR_ACENTO);
 
+		
+		int anchoSep = VentanaPrincipal.escalar(3); 
+		int altoSep = VentanaPrincipal.escalar(25);
+		sep.setPreferredSize(new Dimension(anchoSep, altoSep));
+
+		panelUsuario.add(sep);
+		
 		// Botón de logout
 		JButton botonLogout = new JButton("🚪 Salir");
 		botonLogout.setFont(VentanaPrincipal.FUENTE_PEQUENA);
@@ -268,9 +274,10 @@ public class PanelCliente extends JPanel {
 		boton.setFont(new Font("Segoe UI", Font.PLAIN, VentanaPrincipal.escalar(13)));
 		boton.setForeground(VentanaPrincipal.COLOR_TEXTO2);
 		boton.setBackground(VentanaPrincipal.COLOR_PANEL);
-		
-		
-		boton.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(12), VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(12)));//espacio entre el texto y el borde dentro del boton
+
+		boton.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(12),
+				VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(12)));// espacio entre el texto y el borde dentro
+																			// del boton
 		boton.setFocusPainted(false);
 		boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
@@ -341,6 +348,7 @@ public class PanelCliente extends JPanel {
 		cardSecciones.show(panelSecciones, seccion);
 	}
 
+	
 	/**
 	 * Actualiza los datos de una sección cuando el usuario navega a ella. De esta
 	 * forma los datos siempre están frescos al entrar en cada sección.
