@@ -604,6 +604,8 @@ public class Cliente extends UsuarioRegistrado implements Serializable {
 					+ p.getNombre() + " en la tienda.");
 			return false;
 		}
+		// Comprobamos si hay algún pedido pendiente de pago
+
 		if (this.carritoActual == null) {
 			this.carritoActual = new Carrito(this);
 			Tienda.getInstancia().getComprobadorTiempos().registrarCarrito(this.getId(), this.carritoActual);

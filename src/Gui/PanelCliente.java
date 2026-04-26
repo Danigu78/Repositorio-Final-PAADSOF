@@ -344,7 +344,7 @@ public class PanelCliente extends JPanel {
 	 * @param seccion Identificador de la sección a mostrar (usar las constantes
 	 *                SEC_*)
 	 */
-	private void mostrarSeccion(String seccion) {
+	public void mostrarSeccion(String seccion) {
 		cardSecciones.show(panelSecciones, seccion);
 	}
 
