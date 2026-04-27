@@ -43,6 +43,8 @@ public class SubpanelProducto extends JPanel {
 	/** Panel donde se muestran las reseñas */
 	private JPanel panelReseñas;
 
+	private SubpanelPedidos subpanelPedidos;
+
 	/**
 	 * Constructor del subpanel producto.
 	 *
@@ -88,7 +90,14 @@ public class SubpanelProducto extends JPanel {
 		barra.setBackground(VentanaPrincipal.COLOR_PANEL);
 		barra.setBorder(
 				BorderFactory.createMatteBorder(0, 0, VentanaPrincipal.escalar(1), 0, VentanaPrincipal.COLOR_BORDE));
-		String textoVolver = subpanelCarrito != null ? "← Volver al carrito" : "← Volver al catálogo";
+		String textoVolver;
+		if (subpanelCarrito != null) {
+		    textoVolver = " Volver al carrito";
+		} else if (subpanelPedidos != null) {
+		    textoVolver = " Volver al pedido";
+		} else {
+		    textoVolver = " Volver al catálogo";
+		}
 		JButton botonVolver = new JButton(textoVolver);
 		botonVolver.setFont(VentanaPrincipal.FUENTE_NORMAL);
 		botonVolver.setForeground(VentanaPrincipal.COLOR_TEXTO);
@@ -326,9 +335,12 @@ public class SubpanelProducto extends JPanel {
 	/**
 	 * Vuelve al catálogo. Lo llama el controlador.
 	 */
+
 	public void volver() {
 		if (subpanelCarrito != null) {
 			subpanelCarrito.volverDelProducto();
+		} else if (subpanelPedidos != null) {
+			subpanelPedidos.volverDelProducto();
 		} else if (subpanelCatalogo != null) {
 			subpanelCatalogo.volverDelProducto();
 		}
@@ -382,19 +394,19 @@ public class SubpanelProducto extends JPanel {
 		}
 	}
 
-	/**
-	 * Establece el panel de origen para saber a dónde volver. Puede ser
-	 * SubpanelCatalogo o SubpanelCarrito.
-	 *
-	 * @param origen El panel desde el que se navegó al producto
-	 */
 	public void setSubpanelOrigen(JPanel origen) {
 		if (origen instanceof SubpanelCatalogo) {
 			this.subpanelCatalogo = (SubpanelCatalogo) origen;
 			this.subpanelCarrito = null;
+			this.subpanelPedidos = null;
 		} else if (origen instanceof SubpanelCarrito) {
 			this.subpanelCarrito = (SubpanelCarrito) origen;
 			this.subpanelCatalogo = null;
+			this.subpanelPedidos = null;
+		} else if (origen instanceof SubpanelPedidos) {
+			this.subpanelPedidos = (SubpanelPedidos) origen;
+			this.subpanelCatalogo = null;
+			this.subpanelCarrito = null;
 		}
 	}
 }

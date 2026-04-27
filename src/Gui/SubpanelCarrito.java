@@ -95,12 +95,12 @@ public class SubpanelCarrito extends JPanel {
 	 * @return El panel principal
 	 */
 	private JPanel crearPanelPrincipal() {
-		JPanel panel = new JPanel(new BorderLayout(VentanaPrincipal.escalar(20), 0));
+		JPanel panel = new JPanel(new BorderLayout(VentanaPrincipal.escalar(20), 0)); //Asegura que panel de la izquierda y de la derecha guarden un pading de 20  
 		panel.setBackground(VentanaPrincipal.COLOR_FONDO);
 		panel.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(20),
 				VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(20)));
 
-		JPanel panelIzquierdo = new JPanel(new BorderLayout(0, VentanaPrincipal.escalar(10)));
+		JPanel panelIzquierdo = new JPanel(new BorderLayout(0, VentanaPrincipal.escalar(30))); //asegura un padding vertical de 20  entre paneles de la zona izda
 		panelIzquierdo.setBackground(VentanaPrincipal.COLOR_FONDO);
 
 		JLabel titulo = new JLabel("Tu Cesta");
@@ -169,16 +169,17 @@ public class SubpanelCarrito extends JPanel {
 	private JPanel crearPanelResumen() {
 		JPanel panel = new JPanel(new GridBagLayout());
 		panel.setBackground(VentanaPrincipal.COLOR_PANEL);
-		panel.setPreferredSize(new Dimension(VentanaPrincipal.escalar(260), 0));
-		panel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
+		int grosorLinea = VentanaPrincipal.escalar(3); //borde
+		panel.setPreferredSize(new Dimension(VentanaPrincipal.escalar(260), 0));//Ponemos 0 en el alto pq el border layout colocado en el este estira  de arriba a abajo para llenar toda la ventana
+		panel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE,grosorLinea),
 				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(20),
 						VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(20))));
 
 		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridx = 0;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.weightx = 1;
-		gbc.insets = new Insets(VentanaPrincipal.escalar(4), 0, VentanaPrincipal.escalar(4), 0);
+		gbc.gridx = 0; //todo lo que añadamos se queda en la primera columna 
+		gbc.fill = GridBagConstraints.HORIZONTAL;// estiramos todo horizontalmente para que ocupe todo
+		gbc.weightx = 1;//si la ventana se estira tu te estiras
+	
 
 		// Título
 		JLabel tituloResumen = new JLabel("Resumen del pedido");
@@ -188,8 +189,8 @@ public class SubpanelCarrito extends JPanel {
 		gbc.insets = new Insets(0, 0, VentanaPrincipal.escalar(15), 0);
 		panel.add(tituloResumen, gbc);
 
+		//separador
 		gbc.insets = new Insets(VentanaPrincipal.escalar(4), 0, VentanaPrincipal.escalar(4), 0);
-
 		gbc.gridy = 1;
 		panel.add(new JSeparator(), gbc);
 
@@ -282,7 +283,7 @@ public class SubpanelCarrito extends JPanel {
 					JOptionPane.showMessageDialog(this,
 							"Pedido reservado correctamente.\nVe a Mis Pedidos para pagarlo.", "Pedido reservado",
 							JOptionPane.INFORMATION_MESSAGE);
-					// Solo actualizamos el carrito — queda vacío
+				
 					actualizar(cliente);
 				} else {
 					JOptionPane.showMessageDialog(this, "No se pudo reservar el pedido.", "Error",
@@ -297,7 +298,7 @@ public class SubpanelCarrito extends JPanel {
 		// Relleno
 		gbc.gridy = 12;
 		gbc.weighty = 1;
-		panel.add(Box.createVerticalGlue(), gbc);
+		panel.add(Box.createVerticalGlue(), gbc);//ocupamos toda la zona sobrante para que las cosas se vayan hacia arirba 
 
 		return panel;
 	}
@@ -315,12 +316,18 @@ public class SubpanelCarrito extends JPanel {
 
 		JPanel tarjeta = new JPanel(new BorderLayout(VentanaPrincipal.escalar(15), 0));
 		tarjeta.setBackground(VentanaPrincipal.COLOR_TARJETA);
-		tarjeta.setMaximumSize(new Dimension(Integer.MAX_VALUE, VentanaPrincipal.escalar(140)));
-		tarjeta.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createMatteBorder(0, 0, 1, 0, VentanaPrincipal.COLOR_BORDE),
-				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(12), VentanaPrincipal.escalar(15),
-						VentanaPrincipal.escalar(12), VentanaPrincipal.escalar(15))));
+		tarjeta.setMaximumSize(new Dimension(Integer.MAX_VALUE, VentanaPrincipal.escalar(140)));//el alto maximo es 140 
+		int grosor = VentanaPrincipal.escalar(2); 
 
+		tarjeta.setBorder(BorderFactory.createCompoundBorder(
+		 
+		    BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE, grosor),   
+		  
+		    BorderFactory.createEmptyBorder(
+		        VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(20),
+		        VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(20)
+		    )
+		));
 		// Imagen
 		JLabel labelImagen = new JLabel();
 		labelImagen.setHorizontalAlignment(SwingConstants.CENTER);
@@ -333,7 +340,7 @@ public class SubpanelCarrito extends JPanel {
 		panelInfo.setBackground(VentanaPrincipal.COLOR_TARJETA);
 
 		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.anchor = GridBagConstraints.WEST;
+		gbc.anchor = GridBagConstraints.WEST; //alineamos a la iquierda
 		gbc.insets = new Insets(VentanaPrincipal.escalar(2), 0, VentanaPrincipal.escalar(2),
 				VentanaPrincipal.escalar(10));
 
@@ -341,9 +348,9 @@ public class SubpanelCarrito extends JPanel {
 		JLabel labelNombre = new JLabel(producto.getNombre());
 		labelNombre.setFont(VentanaPrincipal.FUENTE_BOTON);
 		labelNombre.setForeground(VentanaPrincipal.COLOR_TEXTO);
-		gbc.gridx = 0;
+		gbc.gridx = 0;//columna 0
 		gbc.gridy = 0;
-		gbc.gridwidth = 2;
+		gbc.gridwidth = 2; //ocupa dos columnas 
 		gbc.weightx = 1;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		panelInfo.add(labelNombre, gbc);
@@ -490,7 +497,7 @@ public class SubpanelCarrito extends JPanel {
 			labelTiempo.setText("No hay carrito activo");
 			labelTiempo.setForeground(VentanaPrincipal.COLOR_TEXTO2);
 		} else if (minutos <= 5) {
-			labelTiempo.setText("⚠ Caduca en " + minutos + " min");
+			labelTiempo.setText(" Caduca en " + minutos + " min");
 			labelTiempo.setForeground(new Color(200, 50, 50));
 		} else {
 			labelTiempo.setText("Caduca en " + minutos + " min");
