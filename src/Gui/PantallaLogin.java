@@ -107,7 +107,7 @@ public class PantallaLogin extends JPanel {
         if (urlImagen != null) {
             ImageIcon icono = new ImageIcon(urlImagen);
             Image img = icono.getImage().getScaledInstance(
-                VentanaPrincipal.escalar(200), VentanaPrincipal.escalar(200), Image.SCALE_SMOOTH);
+                VentanaPrincipal.escalar(350), VentanaPrincipal.escalar(300), Image.SCALE_SMOOTH);
             labelImagen = new JLabel(new ImageIcon(img));
         } else {
             labelImagen = new JLabel("🎮");
