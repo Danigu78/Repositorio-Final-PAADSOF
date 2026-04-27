@@ -23,7 +23,11 @@ import productos.*;
  * @author Daniel Gonzalez Ureta
  * @version 1.0
  */
-public class Empleado extends UsuarioRegistrado {
+public class Empleado extends UsuarioRegistrado implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	/** Lista de notificaciones del empleado */
 	protected List<Notificacion> notificaciones;
 	/** Lista de notificaciones del empleado */
@@ -497,6 +501,10 @@ public class Empleado extends UsuarioRegistrado {
 	public boolean reponerStockProducto(String idProducto, int cantidad) {
 		if (idProducto == null || idProducto.isBlank()) {
 			System.out.println("El id del producto no puede estar vacío.");
+			return false;
+		}
+
+		if (!puedeRealizarTarea(TipoPermisos.GESTION_STOCK)) {
 			return false;
 		}
 

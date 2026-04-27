@@ -1,5 +1,6 @@
 package Gui;
 
+import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 
 import javax.swing.Box;
@@ -10,103 +11,137 @@ import javax.swing.JTextField;
 
 import usuarios.Empleado;
 
+/**
+ * Sección de gestión de stock del empleado.
+ * 
+ * Permite consultar los productos actuales, reponer stock manualmente y cargar
+ * productos desde un fichero de texto.
+ */
 public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
-    private static final long serialVersionUID = 1L;
 
-    public SeccionStockEmpleado(VentanaPrincipal ventana, Empleado empleado) {
-        super(ventana, empleado);
-        construirUI();
-    }
+	private static final long serialVersionUID = 1L;
 
-    private void construirUI() {
-        JPanel base = crearPanelBase("Gestión de Stock");
-        JPanel contenido = getContenido(base);
+	private JTextField campoId;
+	private JTextField campoCantidad;
+	private JTextField campoRuta;
 
-        JTextField campoId = crearCampo();
-        JTextField campoCantidad = crearCampo();
+	private SelectorVenta selector;
 
-        SelectorVenta selector = crearSelectorProductosVenta(
-                "Productos actuales",
-                "Filtra por texto, categoría, precio, stock y puntuación. Pulsa una fila para cargar su ID.",
-                true,
-                campoId);
+	public SeccionStockEmpleado(VentanaPrincipal ventana, Empleado empleado) {
+		super(ventana, empleado);
+		construirUI();
+	}
 
-        JPanel bloqueReponer = crearBloque("Reponer stock");
-        JButton botonReponer = crearBotonAccion("Reponer");
+	private void construirUI() {
+		JPanel base = crearPanelBase("Gestión de Stock");
+		JPanel contenido = getContenido(base);
 
-        bloqueReponer.add(crearLabel("ID producto"), gbcCampo(1));
-        bloqueReponer.add(campoId, gbcCampo(2));
-        bloqueReponer.add(crearLabel("Cantidad"), gbcCampo(3));
-        bloqueReponer.add(campoCantidad, gbcCampo(4));
-        bloqueReponer.add(botonReponer, gbcBoton(5));
+		campoId = crearCampo();
+		campoCantidad = crearCampo();
+		campoRuta = crearCampo();
 
-        botonReponer.addActionListener(e -> {
-            try {
-                String id = campoId.getText().trim();
-                Integer cantidad = leerEnteroSeguro(campoCantidad.getText());
+		selector = crearSelectorProductosVenta("Productos actuales",
+				"Filtra los productos y pulsa una fila para cargar su ID.", true, campoId);
 
-                if (id.isBlank() || cantidad == null || cantidad <= 0) {
-                    mostrarError("Introduce un ID válido y una cantidad positiva.");
-                    return;
-                }
+		contenido.add(selector.bloque);
+		contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(18)));
+		contenido.add(crearBloqueReponerStock());
+		contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(18)));
+		contenido.add(crearBloqueCargarFichero());
 
-                boolean ok = empleado.reponerStockProducto(id, cantidad);
-                if (ok) {
-                    recargarTablaProductos(selector.tabla);
-                    mostrarMensaje("Stock repuesto correctamente.");
-                    campoCantidad.setText("");
-                } else {
-                    mostrarError("No se pudo reponer el stock.");
-                }
-            } catch (Exception ex) {
-                mostrarError("Datos inválidos.");
-            }
-        });
+		add(base, BorderLayout.CENTER);
+	}
 
-        JPanel bloqueFichero = crearBloque("Cargar productos desde fichero");
-        JTextField campoRuta = crearCampo();
-        JButton botonExaminar = crearBotonSecundario("Examinar...");
-        JButton botonCargar = crearBotonAccion("Cargar fichero");
+	private JPanel crearBloqueReponerStock() {
+		JPanel bloque = crearBloque("Reponer stock");
 
-        bloqueFichero.add(crearLabel("Ruta del fichero"), gbcCampo(1));
-        bloqueFichero.add(campoRuta, gbcCampo(2));
+		JButton botonReponer = crearBotonAccion("Reponer");
 
-        JPanel filaBotones = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
-        filaBotones.setOpaque(false);
-        filaBotones.add(botonExaminar);
-        filaBotones.add(botonCargar);
-        bloqueFichero.add(filaBotones, gbcBoton(3));
+		bloque.add(crearLabel("ID producto"), gbcCampo(1));
+		bloque.add(campoId, gbcCampo(2));
 
-        botonExaminar.addActionListener(e -> {
-            JFileChooser chooser = new JFileChooser();
-            int resultado = chooser.showOpenDialog(this);
-            if (resultado == JFileChooser.APPROVE_OPTION && chooser.getSelectedFile() != null) {
-                campoRuta.setText(chooser.getSelectedFile().getAbsolutePath());
-            }
-        });
+		bloque.add(crearLabel("Cantidad a añadir"), gbcCampo(3));
+		bloque.add(campoCantidad, gbcCampo(4));
 
-        botonCargar.addActionListener(e -> {
-            String ruta = campoRuta.getText().trim();
-            if (ruta.isBlank()) {
-                mostrarError("Introduce o selecciona una ruta.");
-                return;
-            }
+		bloque.add(botonReponer, gbcBoton(5));
 
-            boolean ok = empleado.cargarProductosFicheroTexto(ruta);
-            if (ok) {
-                recargarTablaProductos(selector.tabla);
-                mostrarMensaje("Fichero procesado correctamente.");
-            } else {
-                mostrarError("No se pudo cargar el fichero.");
-            }
-        });
+		botonReponer.addActionListener(e -> reponerStock());
 
-        contenido.add(selector.bloque);
-        contenido.add(Box.createVerticalStrut(18));
-        contenido.add(bloqueReponer);
-        contenido.add(Box.createVerticalStrut(18));
-        contenido.add(bloqueFichero);
+		return bloque;
+	}
 
-        add(base);
-    }
+	private JPanel crearBloqueCargarFichero() {
+		JPanel bloque = crearBloque("Cargar productos desde fichero");
+
+		JButton botonExaminar = crearBotonSecundario("Examinar...");
+		JButton botonCargar = crearBotonAccion("Cargar fichero");
+
+		bloque.add(crearLabel("Ruta del fichero"), gbcCampo(1));
+		bloque.add(campoRuta, gbcCampo(2));
+
+		JPanel filaBotones = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+		filaBotones.setOpaque(false);
+		filaBotones.add(botonExaminar);
+		filaBotones.add(botonCargar);
+
+		bloque.add(filaBotones, gbcBoton(3));
+
+		botonExaminar.addActionListener(e -> seleccionarFichero());
+		botonCargar.addActionListener(e -> cargarFichero());
+
+		return bloque;
+	}
+
+	private void reponerStock() {
+		String id = campoId.getText().trim();
+		Integer cantidad = leerEnteroSeguro(campoCantidad.getText());
+
+		if (id.isBlank()) {
+			mostrarError("Introduce el ID del producto.");
+			return;
+		}
+
+		if (cantidad == null || cantidad <= 0) {
+			mostrarError("Introduce una cantidad positiva.");
+			return;
+		}
+
+		boolean ok = empleado.reponerStockProducto(id, cantidad);
+
+		if (ok) {
+			recargarTablaProductos(selector.tabla);
+			campoCantidad.setText("");
+			mostrarMensaje("Stock repuesto correctamente.");
+		} else {
+			mostrarError("No se pudo reponer el stock.");
+		}
+	}
+
+	private void seleccionarFichero() {
+		JFileChooser chooser = new JFileChooser();
+
+		int resultado = chooser.showOpenDialog(this);
+
+		if (resultado == JFileChooser.APPROVE_OPTION && chooser.getSelectedFile() != null) {
+			campoRuta.setText(chooser.getSelectedFile().getAbsolutePath());
+		}
+	}
+
+	private void cargarFichero() {
+		String ruta = campoRuta.getText().trim();
+
+		if (ruta.isBlank()) {
+			mostrarError("Introduce o selecciona una ruta.");
+			return;
+		}
+
+		boolean ok = empleado.cargarProductosFicheroTexto(ruta);
+
+		if (ok) {
+			recargarTablaProductos(selector.tabla);
+			mostrarMensaje("Fichero procesado correctamente.");
+		} else {
+			mostrarError("No se pudo cargar el fichero.");
+		}
+	}
 }

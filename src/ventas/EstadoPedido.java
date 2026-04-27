@@ -15,9 +15,6 @@ public enum EstadoPedido {
 	/** El pago se ha confirmado correctamente. */
 	PAGADO,
 
-	/** El personal de almacén está localizando y empaquetando los productos. */
-	EN_PREPARACION,
-
 	/**
 	 * El pedido está listo para que el cliente pase a buscarlo por la tienda
 	 * física.

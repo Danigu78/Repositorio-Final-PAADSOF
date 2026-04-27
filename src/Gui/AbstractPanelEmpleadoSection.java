@@ -25,333 +25,386 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.plaf.basic.BasicButtonUI;
 
 import usuarios.Empleado;
 
+/**
+ * Clase base para las secciones del panel de empleado.
+ * 
+ * Aquí se guardan métodos comunes para crear campos, botones, bloques y leer
+ * datos de forma segura. Así las secciones concretas quedan más limpias.
+ */
 public abstract class AbstractPanelEmpleadoSection extends JPanel {
-    private static final long serialVersionUID = 1L;
 
-    protected final VentanaPrincipal ventana;
-    protected final Empleado empleado;
+	private static final long serialVersionUID = 1L;
 
-    protected AbstractPanelEmpleadoSection(VentanaPrincipal ventana, Empleado empleado) {
-        this.ventana = ventana;
-        this.empleado = empleado;
-        setLayout(new BorderLayout());
-        setBackground(VentanaPrincipal.COLOR_FONDO);
-    }
+	protected final VentanaPrincipal ventana;
+	protected final Empleado empleado;
 
-    protected JPanel crearPanelBase(String titulo) {
-        JPanel wrapper = new JPanel(new BorderLayout());
-        wrapper.setBackground(VentanaPrincipal.COLOR_FONDO);
-        wrapper.setBorder(BorderFactory.createEmptyBorder(
-                VentanaPrincipal.escalar(22),
-                VentanaPrincipal.escalar(22),
-                VentanaPrincipal.escalar(22),
-                VentanaPrincipal.escalar(22)));
+	protected AbstractPanelEmpleadoSection(VentanaPrincipal ventana, Empleado empleado) {
+		this.ventana = ventana;
+		this.empleado = empleado;
 
-        JPanel contenido = new JPanel();
-        contenido.setLayout(new BoxLayout(contenido, BoxLayout.Y_AXIS));
-        contenido.setBackground(VentanaPrincipal.COLOR_FONDO);
+		setLayout(new BorderLayout());
+		setBackground(VentanaPrincipal.COLOR_FONDO);
+	}
 
-        JLabel labelTitulo = new JLabel(titulo);
-        labelTitulo.setFont(VentanaPrincipal.FUENTE_TITULO);
-        labelTitulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
-        labelTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
+	protected JPanel crearPanelBase(String titulo) {
+		JPanel wrapper = new JPanel(new BorderLayout());
+		wrapper.setBackground(VentanaPrincipal.COLOR_FONDO);
+		wrapper.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(22), VentanaPrincipal.escalar(22),
+				VentanaPrincipal.escalar(22), VentanaPrincipal.escalar(22)));
 
-        contenido.add(labelTitulo);
-        contenido.add(Box.createVerticalStrut(20));
+		JPanel contenido = new JPanel();
+		contenido.setLayout(new BoxLayout(contenido, BoxLayout.Y_AXIS));
+		contenido.setBackground(VentanaPrincipal.COLOR_FONDO);
 
-        JScrollPane scroll = new JScrollPane(contenido);
-        scroll.setBorder(null);
-        scroll.getViewport().setBackground(VentanaPrincipal.COLOR_FONDO);
-        scroll.setBackground(VentanaPrincipal.COLOR_FONDO);
-        scroll.getVerticalScrollBar().setUnitIncrement(16);
+		JLabel labelTitulo = new JLabel(titulo);
+		labelTitulo.setFont(VentanaPrincipal.FUENTE_TITULO);
+		labelTitulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
+		labelTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        wrapper.add(scroll, BorderLayout.CENTER);
-        wrapper.putClientProperty("contenido", contenido);
-        return wrapper;
-    }
+		contenido.add(labelTitulo);
+		contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(20)));
 
-    protected JPanel getContenido(JPanel base) {
-        return (JPanel) base.getClientProperty("contenido");
-    }
+		JScrollPane scroll = new JScrollPane(contenido);
+		scroll.setBorder(null);
+		scroll.getViewport().setBackground(VentanaPrincipal.COLOR_FONDO);
+		scroll.setBackground(VentanaPrincipal.COLOR_FONDO);
+		scroll.getVerticalScrollBar().setUnitIncrement(VentanaPrincipal.escalar(16));
 
-    protected JPanel crearBloque(String titulo) {
-        JPanel bloque = new JPanel(new GridBagLayout());
-        bloque.setAlignmentX(Component.CENTER_ALIGNMENT);
-        bloque.setMaximumSize(new Dimension(1180, Integer.MAX_VALUE));
-        bloque.setBackground(new Color(34, 34, 34));
-        bloque.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createCompoundBorder(
-                        BorderFactory.createMatteBorder(0, 4, 0, 0, VentanaPrincipal.COLOR_ACENTO),
-                        BorderFactory.createLineBorder(new Color(68, 68, 68), 1)),
-                BorderFactory.createEmptyBorder(18, 18, 18, 18)));
+		wrapper.add(scroll, BorderLayout.CENTER);
+		wrapper.putClientProperty("contenido", contenido);
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(0, 0, 14, 0);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1.0;
+		return wrapper;
+	}
 
-        JLabel label = new JLabel(titulo);
-        label.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
-        label.setForeground(VentanaPrincipal.COLOR_ACENTO);
-        bloque.add(label, gbc);
-        return bloque;
-    }
+	protected JPanel getContenido(JPanel base) {
+		return (JPanel) base.getClientProperty("contenido");
+	}
 
-    protected GridBagConstraints gbcCampo(int y) {
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = y;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1.0;
-        gbc.insets = new Insets(6, 0, 6, 0);
-        return gbc;
-    }
+	protected JPanel crearBloque(String titulo) {
+		JPanel bloque = new JPanel(new GridBagLayout());
+		bloque.setAlignmentX(Component.CENTER_ALIGNMENT);
+		bloque.setMaximumSize(new Dimension(1180, Integer.MAX_VALUE));
+		bloque.setBackground(VentanaPrincipal.COLOR_TARJETA);
 
-    protected GridBagConstraints gbcBoton(int y) {
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = y;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.weightx = 0;
-        gbc.insets = new Insets(12, 0, 6, 0);
-        return gbc;
-    }
+		bloque.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createCompoundBorder(
+						BorderFactory.createMatteBorder(0, 4, 0, 0, VentanaPrincipal.COLOR_ACENTO),
+						BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE, 1)),
+				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(18), VentanaPrincipal.escalar(18),
+						VentanaPrincipal.escalar(18), VentanaPrincipal.escalar(18))));
 
-    protected GridBagConstraints gbcFiltro(int x, int y) {
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = x;
-        gbc.gridy = y;
-        gbc.insets = new Insets(6, 6, 6, 6);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.NORTHWEST;
-        gbc.weightx = 1.0;
-        return gbc;
-    }
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.insets = new Insets(0, 0, VentanaPrincipal.escalar(14), 0);
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.weightx = 1.0;
 
-    protected JLabel crearLabel(String texto) {
-        JLabel label = new JLabel(texto);
-        label.setFont(VentanaPrincipal.FUENTE_NORMAL);
-        label.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-        return label;
-    }
+		JLabel label = new JLabel(titulo);
+		label.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
+		label.setForeground(VentanaPrincipal.COLOR_TEXTO);
 
-    protected JTextField crearCampo() {
-        JTextField campo = new JTextField();
-        campo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        campo.setPreferredSize(new Dimension(0, 40));
-        campo.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
-        campo.setBackground(new Color(24, 24, 24));
-        campo.setForeground(VentanaPrincipal.COLOR_TEXTO);
-        campo.setCaretColor(VentanaPrincipal.COLOR_ACENTO);
-        campo.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(85, 85, 85), 1),
-                BorderFactory.createEmptyBorder(8, 12, 8, 12)));
-        return campo;
-    }
+		bloque.add(label, gbc);
 
-    protected JTextField crearCampoCompacto() {
-        JTextField campo = new JTextField();
-        campo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        campo.setPreferredSize(new Dimension(0, 34));
-        campo.setMaximumSize(new Dimension(Integer.MAX_VALUE, 34));
-        campo.setBackground(new Color(24, 24, 24));
-        campo.setForeground(VentanaPrincipal.COLOR_TEXTO);
-        campo.setCaretColor(VentanaPrincipal.COLOR_ACENTO);
-        campo.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(85, 85, 85), 1),
-                BorderFactory.createEmptyBorder(6, 10, 6, 10)));
-        return campo;
-    }
+		return bloque;
+	}
 
-    protected JTextArea crearArea() {
-        JTextArea area = new JTextArea(5, 20);
-        area.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        area.setLineWrap(true);
-        area.setWrapStyleWord(true);
-        area.setBackground(new Color(24, 24, 24));
-        area.setForeground(VentanaPrincipal.COLOR_TEXTO);
-        area.setCaretColor(VentanaPrincipal.COLOR_ACENTO);
-        area.setBorder(BorderFactory.createEmptyBorder(10, 12, 10, 12));
-        return area;
-    }
+	protected GridBagConstraints gbcCampo(int y) {
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = y;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.weightx = 1.0;
+		gbc.insets = new Insets(VentanaPrincipal.escalar(6), 0, VentanaPrincipal.escalar(6), 0);
+		return gbc;
+	}
 
-    protected <T> JComboBox<T> crearCombo(T[] valores) {
-        JComboBox<T> combo = new JComboBox<>(valores);
-        combo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        combo.setBackground(new Color(24, 24, 24));
-        combo.setForeground(VentanaPrincipal.COLOR_TEXTO);
-        combo.setPreferredSize(new Dimension(0, 34));
-        combo.setBorder(BorderFactory.createLineBorder(new Color(85, 85, 85), 1));
-        return combo;
-    }
+	protected GridBagConstraints gbcBoton(int y) {
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = y;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.weightx = 0;
+		gbc.insets = new Insets(VentanaPrincipal.escalar(12), 0, VentanaPrincipal.escalar(6), 0);
+		return gbc;
+	}
 
-    protected JScrollPane estilizarScroll(Component comp) {
-        JScrollPane scroll = new JScrollPane(comp);
-        scroll.setBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE, 1));
+	protected GridBagConstraints gbcFiltro(int x, int y) {
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = x;
+		gbc.gridy = y;
+		gbc.insets = new Insets(VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(6),
+				VentanaPrincipal.escalar(6));
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.anchor = GridBagConstraints.NORTHWEST;
+		gbc.weightx = 1.0;
+		return gbc;
+	}
 
-        Color fondo = Color.WHITE;
-        if (comp instanceof JComponent) {
-            fondo = ((JComponent) comp).getBackground();
-        }
+	protected JLabel crearLabel(String texto) {
+		JLabel label = new JLabel(texto);
+		label.setFont(VentanaPrincipal.FUENTE_NORMAL);
+		label.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+		return label;
+	}
 
-        scroll.getViewport().setBackground(fondo);
-        scroll.setBackground(fondo);
-        scroll.getVerticalScrollBar().setUnitIncrement(16);
-        scroll.getHorizontalScrollBar().setUnitIncrement(16);
-        return scroll;
-    }
+	protected JTextField crearCampo() {
+		JTextField campo = new JTextField();
+		campo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+		campo.setPreferredSize(new Dimension(0, VentanaPrincipal.escalar(40)));
+		campo.setMaximumSize(new Dimension(Integer.MAX_VALUE, VentanaPrincipal.escalar(40)));
+		campo.setBackground(Color.WHITE);
+		campo.setForeground(Color.BLACK);
+		campo.setCaretColor(VentanaPrincipal.COLOR_ACENTO);
+		campo.setBorder(
+				BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE, 1),
+						BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(12),
+								VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(12))));
+		return campo;
+	}
 
-    protected JButton crearBotonAccion(String texto) {
-        JButton boton = new JButton(texto);
-        boton.setUI(new BasicButtonUI());
-        boton.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        boton.setBackground(VentanaPrincipal.COLOR_ACENTO);
-        boton.setForeground(new Color(18, 18, 18));
-        boton.setFocusPainted(false);
-        boton.setBorderPainted(false);
-        boton.setOpaque(true);
-        boton.setContentAreaFilled(true);
-        boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        boton.setPreferredSize(new Dimension(210, 40));
-        boton.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+	protected JTextField crearCampoCompacto() {
+		JTextField campo = new JTextField();
+		campo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		campo.setPreferredSize(new Dimension(0, VentanaPrincipal.escalar(34)));
+		campo.setMaximumSize(new Dimension(Integer.MAX_VALUE, VentanaPrincipal.escalar(34)));
+		campo.setBackground(Color.WHITE);
+		campo.setForeground(Color.BLACK);
+		campo.setCaretColor(VentanaPrincipal.COLOR_ACENTO);
+		campo.setBorder(
+				BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE, 1),
+						BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(10),
+								VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(10))));
+		return campo;
+	}
 
-        boton.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseEntered(java.awt.event.MouseEvent e) {
-                boton.setBackground(VentanaPrincipal.COLOR_ACENTO2);
-            }
+	protected JTextArea crearArea() {
+		JTextArea area = new JTextArea(5, 20);
+		area.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+		area.setLineWrap(true);
+		area.setWrapStyleWord(true);
+		area.setBackground(Color.WHITE);
+		area.setForeground(Color.BLACK);
+		area.setCaretColor(VentanaPrincipal.COLOR_ACENTO);
+		area.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(12),
+				VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(12)));
+		return area;
+	}
 
-            @Override
-            public void mouseExited(java.awt.event.MouseEvent e) {
-                boton.setBackground(VentanaPrincipal.COLOR_ACENTO);
-            }
-        });
+	protected <T> JComboBox<T> crearCombo(T[] valores) {
+		JComboBox<T> combo = new JComboBox<>(valores);
+		combo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		combo.setBackground(Color.WHITE);
+		combo.setForeground(Color.BLACK);
+		combo.setPreferredSize(new Dimension(0, VentanaPrincipal.escalar(34)));
+		combo.setBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE, 1));
+		return combo;
+	}
 
-        return boton;
-    }
+	protected JScrollPane estilizarScroll(Component comp) {
+		JScrollPane scroll = new JScrollPane(comp);
+		scroll.setBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE, 1));
 
-    protected JButton crearBotonSecundario(String texto) {
-        JButton boton = new JButton(texto);
-        boton.setUI(new BasicButtonUI());
-        boton.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        boton.setBackground(new Color(70, 70, 70));
-        boton.setForeground(VentanaPrincipal.COLOR_TEXTO);
-        boton.setFocusPainted(false);
-        boton.setBorderPainted(false);
-        boton.setOpaque(true);
-        boton.setContentAreaFilled(true);
-        boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        boton.setPreferredSize(new Dimension(160, 34));
-        boton.setBorder(BorderFactory.createEmptyBorder(6, 12, 6, 12));
+		if (comp instanceof JComponent) {
+			Color fondo = ((JComponent) comp).getBackground();
+			scroll.getViewport().setBackground(fondo);
+			scroll.setBackground(fondo);
+		} else {
+			scroll.getViewport().setBackground(Color.WHITE);
+			scroll.setBackground(Color.WHITE);
+		}
 
-        boton.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseEntered(java.awt.event.MouseEvent e) {
-                boton.setBackground(new Color(90, 90, 90));
-            }
+		scroll.getVerticalScrollBar().setUnitIncrement(VentanaPrincipal.escalar(16));
+		scroll.getHorizontalScrollBar().setUnitIncrement(VentanaPrincipal.escalar(16));
 
-            @Override
-            public void mouseExited(java.awt.event.MouseEvent e) {
-                boton.setBackground(new Color(70, 70, 70));
-            }
-        });
+		return scroll;
+	}
 
-        return boton;
-    }
+	protected JButton crearBotonAccion(String texto) {
+		JButton boton = new JButton(texto);
+		boton.setFont(VentanaPrincipal.FUENTE_BOTON);
+		boton.setBackground(VentanaPrincipal.COLOR_ACENTO);
+		boton.setForeground(Color.BLACK);
+		boton.setFocusPainted(false);
+		boton.setBorderPainted(false);
+		boton.setOpaque(true);
+		boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		boton.setPreferredSize(new Dimension(VentanaPrincipal.escalar(210), VentanaPrincipal.escalar(40)));
+		boton.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(16),
+				VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(16)));
+		return boton;
+	}
 
-    protected JPanel crearCampoFormulario(String etiqueta, JComponent campo) {
-        JPanel panel = new JPanel();
-        panel.setOpaque(false);
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+	protected JButton crearBotonSecundario(String texto) {
+		JButton boton = new JButton(texto);
+		boton.setFont(VentanaPrincipal.FUENTE_BOTON);
+		boton.setBackground(VentanaPrincipal.COLOR_PANEL);
+		boton.setForeground(VentanaPrincipal.COLOR_TEXTO_BARRA);
+		boton.setFocusPainted(false);
+		boton.setBorderPainted(false);
+		boton.setOpaque(true);
+		boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		boton.setPreferredSize(new Dimension(VentanaPrincipal.escalar(160), VentanaPrincipal.escalar(36)));
+		boton.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(7), VentanaPrincipal.escalar(14),
+				VentanaPrincipal.escalar(7), VentanaPrincipal.escalar(14)));
+		return boton;
+	}
 
-        JLabel label = new JLabel(etiqueta);
-        label.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        label.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+	protected JButton crearBotonPeligro(String texto) {
+		JButton boton = new JButton(texto);
+		boton.setFont(VentanaPrincipal.FUENTE_BOTON);
+		boton.setBackground(new Color(180, 60, 60));
+		boton.setForeground(Color.WHITE);
+		boton.setFocusPainted(false);
+		boton.setBorderPainted(false);
+		boton.setOpaque(true);
+		boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		boton.setPreferredSize(new Dimension(VentanaPrincipal.escalar(170), VentanaPrincipal.escalar(36)));
+		boton.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(7), VentanaPrincipal.escalar(14),
+				VentanaPrincipal.escalar(7), VentanaPrincipal.escalar(14)));
+		return boton;
+	}
 
-        panel.add(label);
-        panel.add(Box.createVerticalStrut(4));
-        panel.add(campo);
-        return panel;
-    }
+	protected JPanel crearCampoFormulario(String etiqueta, JComponent campo) {
+		JPanel panel = new JPanel();
+		panel.setOpaque(false);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-    protected void mostrarMensaje(String mensaje) {
-        JOptionPane.showMessageDialog(this, mensaje);
-    }
+		JLabel label = new JLabel(etiqueta);
+		label.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+		label.setForeground(VentanaPrincipal.COLOR_TEXTO2);
 
-    protected void mostrarError(String mensaje) {
-        JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
-    }
+		panel.add(label);
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(4)));
+		panel.add(campo);
 
-    protected void escucharCambios(JTextField campo, Runnable accion) {
-        campo.getDocument().addDocumentListener(new DocumentListener() {
-            @Override public void insertUpdate(DocumentEvent e) { accion.run(); }
-            @Override public void removeUpdate(DocumentEvent e) { accion.run(); }
-            @Override public void changedUpdate(DocumentEvent e) { accion.run(); }
-        });
-    }
+		return panel;
+	}
 
-    protected String normalizarTexto(String texto) {
-        return texto == null ? "" : texto.trim().toLowerCase(Locale.ROOT);
-    }
+	protected void mostrarMensaje(String mensaje) {
+		JOptionPane.showMessageDialog(this, mensaje, "Información", JOptionPane.INFORMATION_MESSAGE);
+	}
 
-    protected Double leerDoubleSeguro(String texto) {
-        if (texto == null || texto.trim().isBlank()) return null;
-        try {
-            return Double.parseDouble(texto.trim().replace(",", "."));
-        } catch (Exception e) {
-            return null;
-        }
-    }
+	protected void mostrarError(String mensaje) {
+		JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
+	}
 
-    protected Integer leerEnteroSeguro(String texto) {
-        if (texto == null || texto.trim().isBlank()) return null;
-        try {
-            return Integer.parseInt(texto.trim());
-        } catch (Exception e) {
-            return null;
-        }
-    }
+	protected void escucharCambios(JTextField campo, Runnable accion) {
+		campo.getDocument().addDocumentListener(new DocumentListener() {
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				accion.run();
+			}
 
-    protected boolean contieneTexto(String base, String buscado) {
-        if (buscado == null || buscado.isBlank()) return true;
-        if (base == null) return false;
-        return base.toLowerCase(Locale.ROOT).contains(buscado);
-    }
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				accion.run();
+			}
 
-    protected String valorTexto(Object value) {
-        return value == null ? "" : String.valueOf(value).trim();
-    }
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				accion.run();
+			}
+		});
+	}
 
-    protected Double valorDouble(Object value) {
-        if (value == null) return null;
-        if (value instanceof Number) return ((Number) value).doubleValue();
-        try {
-            String txt = String.valueOf(value).replace("€", "").replace(",", ".").trim();
-            if (txt.isBlank()) return null;
-            return Double.parseDouble(txt);
-        } catch (Exception e) {
-            return null;
-        }
-    }
+	protected String normalizarTexto(String texto) {
+		if (texto == null) {
+			return "";
+		}
+		return texto.trim().toLowerCase(Locale.ROOT);
+	}
 
-    protected Integer valorInteger(Object value) {
-        if (value == null) return null;
-        if (value instanceof Number) return ((Number) value).intValue();
-        try {
-            String txt = String.valueOf(value).trim();
-            if (txt.isBlank()) return null;
-            return Integer.parseInt(txt);
-        } catch (Exception e) {
-            return null;
-        }
-    }
+	protected Double leerDoubleSeguro(String texto) {
+		if (texto == null || texto.trim().isBlank()) {
+			return null;
+		}
+
+		try {
+			return Double.parseDouble(texto.trim().replace(",", "."));
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	protected Integer leerEnteroSeguro(String texto) {
+		if (texto == null || texto.trim().isBlank()) {
+			return null;
+		}
+
+		try {
+			return Integer.parseInt(texto.trim());
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	protected boolean contieneTexto(String base, String buscado) {
+		if (buscado == null || buscado.isBlank()) {
+			return true;
+		}
+
+		if (base == null) {
+			return false;
+		}
+
+		return base.toLowerCase(Locale.ROOT).contains(buscado.toLowerCase(Locale.ROOT));
+	}
+
+	protected String valorTexto(Object value) {
+		if (value == null) {
+			return "";
+		}
+		return String.valueOf(value).trim();
+	}
+
+	protected Double valorDouble(Object value) {
+		if (value == null) {
+			return null;
+		}
+
+		if (value instanceof Number) {
+			return ((Number) value).doubleValue();
+		}
+
+		try {
+			String texto = String.valueOf(value).replace("€", "").replace(",", ".").trim();
+
+			if (texto.isBlank()) {
+				return null;
+			}
+
+			return Double.parseDouble(texto);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	protected Integer valorInteger(Object value) {
+		if (value == null) {
+			return null;
+		}
+
+		if (value instanceof Number) {
+			return ((Number) value).intValue();
+		}
+
+		try {
+			String texto = String.valueOf(value).trim();
+
+			if (texto.isBlank()) {
+				return null;
+			}
+
+			return Integer.parseInt(texto);
+		} catch (Exception e) {
+			return null;
+		}
+	}
 }

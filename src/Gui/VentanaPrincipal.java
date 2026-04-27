@@ -200,7 +200,7 @@ public class VentanaPrincipal extends JFrame {
      */
     public static int escalar(int tamano) {
         int dpi = Toolkit.getDefaultToolkit().getScreenResolution();
-        double escala = dpi / 96.0;
+        double escala = dpi / 200.0;
         return (int) (tamano * escala);
     }
 
