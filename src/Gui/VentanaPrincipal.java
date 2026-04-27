@@ -199,13 +199,26 @@ public class VentanaPrincipal extends JFrame {
      * @return El tamaño escalado
      */
     public static int escalar(int tamano) {
-        int dpi = Toolkit.getDefaultToolkit().getScreenResolution();
-        double escala = dpi / 200.0;
-        return (int) (tamano * escala);
+        // Obtenemos el factor de escala real que está usando el sistema
+        GraphicsDevice gd = GraphicsEnvironment
+            .getLocalGraphicsEnvironment()
+            .getDefaultScreenDevice();
+        double escalaReal = gd.getDefaultConfiguration()
+            .getDefaultTransform()
+            .getScaleX();
+        
+        // Si Windows ya está escalando (escalaReal > 1) no escalamos nosotros
+        // Si Windows no escala (escalaReal == 1) escalamos por DPI
+        if (escalaReal > 1.0) {
+            return tamano; // Windows ya escala, no hacemos nada
+        } else {
+            int dpi = Toolkit.getDefaultToolkit().getScreenResolution();
+            double escala = dpi / 96.0;
+            return (int) (tamano * escala);
+        }
     }
 
     public static void main(String[] args) {
-        System.setProperty("sun.java2d.uiScale", "1.0");
         SwingUtilities.invokeLater(() -> {
             try {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
