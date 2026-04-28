@@ -75,11 +75,8 @@ public class PantallaLogin extends JPanel {
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.anchor = GridBagConstraints.CENTER;
-		gbc.insets = new Insets(
-				VentanaPrincipal.escalar(15),
-				VentanaPrincipal.escalar(30),
-				VentanaPrincipal.escalar(15),
-				VentanaPrincipal.escalar(30));
+		gbc.insets = new Insets(VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(30),
+				VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(30));
 
 		JLabel labelImagen = crearLogo();
 		gbc.gridy = 0;
@@ -101,28 +98,18 @@ public class PantallaLogin extends JPanel {
 
 		JSeparator separador = new JSeparator();
 		separador.setForeground(VentanaPrincipal.COLOR_ACENTO);
-		separador.setPreferredSize(new Dimension(
-				VentanaPrincipal.escalar(220),
-				VentanaPrincipal.escalar(2)));
+		separador.setPreferredSize(new Dimension(VentanaPrincipal.escalar(220), VentanaPrincipal.escalar(2)));
 
 		gbc.gridy = 3;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.insets = new Insets(
-				VentanaPrincipal.escalar(20),
-				VentanaPrincipal.escalar(30),
-				VentanaPrincipal.escalar(20),
-				VentanaPrincipal.escalar(30));
+		gbc.insets = new Insets(VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(30),
+				VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(30));
 		panel.add(separador, gbc);
 
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.anchor = GridBagConstraints.WEST;
 
-		String[] lineas = {
-				"Comics y Manga",
-				"Juegos de Mesa",
-				"Figuras de Colección",
-				"Segunda Mano e Intercambios"
-		};
+		String[] lineas = { "Comics y Manga", "Juegos de Mesa", "Figuras de Colección", "Segunda Mano e Intercambios" };
 
 		for (int i = 0; i < lineas.length; i++) {
 			JLabel label = new JLabel(lineas[i]);
@@ -130,11 +117,8 @@ public class PantallaLogin extends JPanel {
 			label.setForeground(new Color(210, 210, 210));
 
 			gbc.gridy = 4 + i;
-			gbc.insets = new Insets(
-					VentanaPrincipal.escalar(10),
-					VentanaPrincipal.escalar(60),
-					VentanaPrincipal.escalar(10),
-					VentanaPrincipal.escalar(20));
+			gbc.insets = new Insets(VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(60),
+					VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(20));
 
 			panel.add(label, gbc);
 		}
@@ -147,10 +131,8 @@ public class PantallaLogin extends JPanel {
 
 		if (urlImagen != null) {
 			ImageIcon icono = new ImageIcon(urlImagen);
-			Image imagen = icono.getImage().getScaledInstance(
-					VentanaPrincipal.escalar(440),
-					VentanaPrincipal.escalar(270),
-					Image.SCALE_SMOOTH);
+			Image imagen = icono.getImage().getScaledInstance(VentanaPrincipal.escalar(440),
+					VentanaPrincipal.escalar(270), Image.SCALE_SMOOTH);
 
 			return new JLabel(new ImageIcon(imagen));
 		}
@@ -262,8 +244,9 @@ public class PantallaLogin extends JPanel {
 		gbc.gridy = 1;
 		panel.add(crearEtiqueta("Tipo de cuenta"), gbc);
 
-		comboTipoRegistro = new JComboBox<>(new String[] { "Cliente", "Empleado" });
+		comboTipoRegistro = new JComboBox<>(new String[] { "Cliente" });
 		estilizarCombo(comboTipoRegistro);
+		comboTipoRegistro.setEnabled(false);
 		gbc.gridy = 2;
 		panel.add(comboTipoRegistro, gbc);
 
@@ -281,9 +264,8 @@ public class PantallaLogin extends JPanel {
 		gbc.gridy = 6;
 		panel.add(campoPasswordReg, gbc);
 
-		JLabel infoPassword = new JLabel(
-				"<html><small>La contraseña debe tener mayúsculas, minúsculas,"
-						+ "<br>números y caracteres especiales.</small></html>");
+		JLabel infoPassword = new JLabel("<html><small>La contraseña debe tener mayúsculas, minúsculas,"
+				+ "<br>números y caracteres especiales.</small></html>");
 		infoPassword.setFont(VentanaPrincipal.FUENTE_PEQUENA);
 		infoPassword.setForeground(VentanaPrincipal.COLOR_TEXTO2);
 
@@ -294,16 +276,18 @@ public class PantallaLogin extends JPanel {
 		gbc.insets = new Insets(VentanaPrincipal.escalar(8), 0, VentanaPrincipal.escalar(4), 0);
 
 		gbc.gridy = 8;
-		panel.add(crearEtiqueta("DNI (solo cliente)"), gbc);
+		panel.add(crearEtiqueta("DNI"), gbc);
 
 		campoDNI = crearCampoTexto();
 		gbc.gridy = 9;
 		panel.add(campoDNI, gbc);
 
-		comboTipoRegistro.addActionListener(e -> actualizarCampoDNI());
-
 		JButton botonRegistrar = crearBoton("Crear Cuenta", true);
 		botonRegistrar.addActionListener(e -> hacerRegistro());
+
+		campoDNI.addActionListener(e -> hacerRegistro());
+		campoPasswordReg.addActionListener(e -> campoDNI.requestFocus());
+		campoNicknameReg.addActionListener(e -> campoPasswordReg.requestFocus());
 
 		gbc.gridy = 10;
 		gbc.insets = new Insets(VentanaPrincipal.escalar(20), 0, VentanaPrincipal.escalar(8), 0);
@@ -325,11 +309,8 @@ public class PantallaLogin extends JPanel {
 	private JPanel crearPanelFormulario() {
 		JPanel panel = new JPanel(new GridBagLayout());
 		panel.setBackground(VentanaPrincipal.COLOR_PANEL);
-		panel.setBorder(BorderFactory.createEmptyBorder(
-				VentanaPrincipal.escalar(40),
-				VentanaPrincipal.escalar(60),
-				VentanaPrincipal.escalar(40),
-				VentanaPrincipal.escalar(60)));
+		panel.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(40), VentanaPrincipal.escalar(60),
+				VentanaPrincipal.escalar(40), VentanaPrincipal.escalar(60)));
 
 		return panel;
 	}
@@ -354,18 +335,13 @@ public class PantallaLogin extends JPanel {
 		String nickname = campoNicknameReg.getText().trim();
 		String password = new String(campoPasswordReg.getPassword());
 		String dni = campoDNI.getText().trim().toUpperCase();
-		String tipo = String.valueOf(comboTipoRegistro.getSelectedItem());
 
-		controlador.realizarRegistro(nickname, password, dni, tipo);
+		controlador.realizarRegistro(nickname, password, dni, "Cliente");
 	}
 
 	private void actualizarCampoDNI() {
-		boolean esCliente = "Cliente".equals(comboTipoRegistro.getSelectedItem());
-
-		campoDNI.setEnabled(esCliente);
-
-		if (!esCliente) {
-			campoDNI.setText("");
+		if (campoDNI != null) {
+			campoDNI.setEnabled(true);
 		}
 	}
 
@@ -398,7 +374,7 @@ public class PantallaLogin extends JPanel {
 	}
 
 	public void mostrarExito(String mensaje) {
-		JOptionPane.showMessageDialog(this, mensaje, "¡Éxito!", JOptionPane.INFORMATION_MESSAGE);
+		JOptionPane.showMessageDialog(this, mensaje, "Éxito", JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	private JLabel crearTitulo(String texto) {
@@ -421,13 +397,9 @@ public class PantallaLogin extends JPanel {
 		campo.setForeground(Color.BLACK);
 		campo.setBackground(Color.WHITE);
 		campo.setCaretColor(Color.BLACK);
-		campo.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
-				BorderFactory.createEmptyBorder(
-						VentanaPrincipal.escalar(8),
-						VentanaPrincipal.escalar(10),
-						VentanaPrincipal.escalar(8),
-						VentanaPrincipal.escalar(10))));
+		campo.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
+				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(10),
+						VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(10))));
 		return campo;
 	}
 
@@ -437,13 +409,9 @@ public class PantallaLogin extends JPanel {
 		campo.setForeground(Color.BLACK);
 		campo.setBackground(Color.WHITE);
 		campo.setCaretColor(Color.BLACK);
-		campo.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
-				BorderFactory.createEmptyBorder(
-						VentanaPrincipal.escalar(8),
-						VentanaPrincipal.escalar(10),
-						VentanaPrincipal.escalar(8),
-						VentanaPrincipal.escalar(10))));
+		campo.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
+				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(10),
+						VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(10))));
 		return campo;
 	}
 
@@ -454,11 +422,8 @@ public class PantallaLogin extends JPanel {
 		boton.setFocusPainted(false);
 		boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		boton.setBorderPainted(false);
-		boton.setBorder(BorderFactory.createEmptyBorder(
-				VentanaPrincipal.escalar(10),
-				VentanaPrincipal.escalar(20),
-				VentanaPrincipal.escalar(10),
-				VentanaPrincipal.escalar(20)));
+		boton.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(20),
+				VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(20)));
 
 		if (principal) {
 			boton.setBackground(VentanaPrincipal.COLOR_ACENTO);

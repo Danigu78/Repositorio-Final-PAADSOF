@@ -72,6 +72,9 @@ public class ComprobadorTiempos {
 			tiempoRevision = 1;
 		}
 
+		revisarCarritosCaducados();
+		revisarPedidosPendientesCaducados();
+
 		this.scheduler.scheduleAtFixedRate(() -> {
 			revisarCarritosCaducados();
 			revisarPedidosPendientesCaducados();
@@ -97,7 +100,13 @@ public class ComprobadorTiempos {
 	 * Revisa los pedidos pendientes y cancela los que han caducado
 	 */
 	public void revisarPedidosPendientesCaducados() {
+		revisarPedidosRegistrados();
+		revisarPedidosDelHistorial();
+	}
+
+	private void revisarPedidosRegistrados() {
 		Iterator<Map.Entry<String, List<Pedido>>> itMapa = pedidosPendientesPorUsuario.entrySet().iterator();
+
 		while (itMapa.hasNext()) {
 			Map.Entry<String, List<Pedido>> entry = itMapa.next();
 			List<Pedido> pedidos = entry.getValue();
@@ -108,9 +117,16 @@ public class ComprobadorTiempos {
 			}
 
 			Iterator<Pedido> it = pedidos.iterator();
+
 			while (it.hasNext()) {
 				Pedido pedido = it.next();
-				if (pedido != null && pedido.isCaducado()) {
+
+				if (pedido == null) {
+					it.remove();
+					continue;
+				}
+
+				if (pedido.isCaducado()) {
 					pedido.cancelarPedido();
 					it.remove();
 				}
@@ -118,6 +134,14 @@ public class ComprobadorTiempos {
 
 			if (pedidos.isEmpty()) {
 				itMapa.remove();
+			}
+		}
+	}
+
+	private void revisarPedidosDelHistorial() {
+		for (Pedido pedido : Tienda.getInstancia().getHistorialVentas()) {
+			if (pedido != null && pedido.isCaducado()) {
+				pedido.cancelarPedido();
 			}
 		}
 	}

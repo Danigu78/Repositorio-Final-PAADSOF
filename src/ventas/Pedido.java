@@ -389,7 +389,14 @@ public class Pedido implements Serializable {
 		if (this.estado != EstadoPedido.PENDIENTE_PAGO) {
 			return false;
 		}
-		return LocalDateTime.now().isAfter(this.fechaCreacion.plusMinutes(Tienda.getInstancia().getTiempoMaxPago()));
+
+		int tiempoMaxPago = Tienda.getInstancia().getTiempoMaxPago();
+
+		if (tiempoMaxPago <= 0) {
+			return false;
+		}
+
+		return LocalDateTime.now().isAfter(this.fechaCreacion.plusMinutes(tiempoMaxPago));
 	}
 
 	/**

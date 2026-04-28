@@ -16,6 +16,7 @@ import usuarios.Cliente;
 import ventas.EstadoPedido;
 import ventas.LineaPedido;
 import ventas.Pedido;
+import tienda.*;
 
 /**
  * Subpanel de mis pedidos de CheckPoint. Muestra todos los pedidos del cliente
@@ -69,7 +70,7 @@ public class SubpanelPedidos extends JPanel {
 		// Panel lista de pedidos
 		panelContenido.add(crearPanelLista(), "LISTA");
 
-		// Panel detalle pedido  se rellena al pulsar ver pedido
+		// Panel detalle pedido se rellena al pulsar ver pedido
 		panelDetallePedido = new JPanel(new BorderLayout());
 		panelDetallePedido.setBackground(VentanaPrincipal.COLOR_FONDO);
 		panelContenido.add(panelDetallePedido, "DETALLE");
@@ -79,7 +80,7 @@ public class SubpanelPedidos extends JPanel {
 		panelContenido.add(subpanelProducto, "PRODUCTO");
 
 		add(panelContenido, BorderLayout.CENTER);
-		cardLayout.show(panelContenido, "LISTA");//inicialmente muestras la lista de pedidos
+		cardLayout.show(panelContenido, "LISTA");// inicialmente muestras la lista de pedidos
 	}
 
 	/**
@@ -244,7 +245,7 @@ public class SubpanelPedidos extends JPanel {
 				botonVolver.setForeground(VentanaPrincipal.COLOR_TEXTO);
 			}
 		});
-		botonVolver.addActionListener(e -> cardLayout.show(panelContenido, "LISTA")); 
+		botonVolver.addActionListener(e -> cardLayout.show(panelContenido, "LISTA"));
 		barra.add(botonVolver);
 		panelDetallePedido.add(barra, BorderLayout.NORTH);
 
@@ -451,6 +452,10 @@ public class SubpanelPedidos extends JPanel {
 	 */
 	public void actualizar(Cliente cliente) {
 		this.cliente = cliente;
+
+		Tienda.getInstancia().getComprobadorTiempos().revisarCarritosCaducados();
+		Tienda.getInstancia().getComprobadorTiempos().revisarPedidosPendientesCaducados();
+
 		this.controlador = new ControladorPedidos(this, cliente);
 
 		panelListaPedidos.removeAll();
