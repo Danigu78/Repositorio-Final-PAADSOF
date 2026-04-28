@@ -1,5 +1,6 @@
 package tienda;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import productos.Categoria;
@@ -12,7 +13,10 @@ import productos.ProductoVenta;
  * @author Danie Gonzalez
  * @version 1.0
  */
-public class FiltroVenta {
+public class FiltroVenta implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
 	/** Límite inferior del precio de venta aceptado. */
 	private double precioMinimo;
 
@@ -183,5 +187,30 @@ public class FiltroVenta {
 		return "FiltroVenta [" + "precio: " + precioMinimo + "-"
 				+ (precioMaximo == Double.MAX_VALUE ? "MAX" : precioMaximo) + " | puntuacion min: " + puntuacionMinima
 				+ " | categorias: " + cats + "]";
+	}
+
+	/**
+	 * Método llamado automáticamente cuando se guarda un FiltroVenta en fichero.
+	 */
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		inicializarCamposNulos();
+		out.defaultWriteObject();
+	}
+
+	/**
+	 * Método llamado automáticamente cuando se carga un FiltroVenta desde fichero.
+	 */
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		inicializarCamposNulos();
+	}
+
+	/**
+	 * Evita que la lista de categorías quede a null al guardar/cargar.
+	 */
+	private void inicializarCamposNulos() {
+		if (this.categorias == null) {
+			this.categorias = new ArrayList<>();
+		}
 	}
 }

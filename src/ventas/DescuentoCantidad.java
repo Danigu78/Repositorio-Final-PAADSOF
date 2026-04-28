@@ -10,14 +10,17 @@ import java.time.LocalDateTime;
  * @version 1.0
  */
 public class DescuentoCantidad extends Descuento {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Número de unidades de un mismo artículo necesarias para activar la promoción.
 	 */
 	private int cantidadMinima;
 
 	/**
-	 * Factor de descuento a aplicar ( 0.1 para un 10%) sobre las líneas que
-	 * cumplan el mínimo.
+	 * Factor de descuento a aplicar ( 0.1 para un 10%) sobre las líneas que cumplan
+	 * el mínimo.
 	 */
 	private double porcentaje;
 

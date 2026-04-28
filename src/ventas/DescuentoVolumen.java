@@ -1,13 +1,21 @@
 package ventas;
 
 import java.time.LocalDateTime;
+
 /**
- * Clase que aplica una reducción de precio al total del carrito si se supera un importe mínimo de compra.
+ * Clase que aplica una reducción de precio al total del carrito si se supera un
+ * importe mínimo de compra.
+ * 
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
 public class DescuentoVolumen extends Descuento {
-	/** Importe total mínimo que debe alcanzar el carrito para activar el descuento. */
+
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * Importe total mínimo que debe alcanzar el carrito para activar el descuento.
+	 */
 	private double umbralMinimo;
 
 	/** Factor de descuento aplicado sobre el total del subtotal. */
@@ -42,11 +50,16 @@ public class DescuentoVolumen extends Descuento {
 	 */
 	@Override
 	public double aplicarDescuento(Carrito carrito) {
-		if (!estaActivo())
+		if (!estaActivo()) {
 			return carrito.calcularSubtotal();
+		}
+
 		double subtotal = carrito.calcularSubtotal();
-		if (subtotal < umbralMinimo)
+
+		if (subtotal < umbralMinimo) {
 			return subtotal;
+		}
+
 		return subtotal * (1 - porcentaje);
 	}
 

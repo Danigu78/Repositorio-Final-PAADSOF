@@ -11,6 +11,9 @@ import productos.ProductoVenta;
  * @version 1.0
  */
 public class Regalo extends Descuento {
+
+	private static final long serialVersionUID = 1L;
+
 	/** Importe mínimo de compra requerido para obtener el artículo de obsequio. */
 	private double umbral;
 
@@ -53,6 +56,10 @@ public class Regalo extends Descuento {
 	 */
 	public ProductoVenta getProductoRegalo() {
 		return producto;
+	}
+
+	public double getUmbral() {
+		return umbral;
 	}
 
 	/**

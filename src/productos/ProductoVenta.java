@@ -1,5 +1,6 @@
 package productos;
 
+import java.io.*;
 import java.util.*;
 
 import excepciones.*;
@@ -11,7 +12,12 @@ import tienda.Estadistica;
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
-public abstract class ProductoVenta extends Producto {
+public abstract class ProductoVenta extends Producto implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	/** Precio base de venta al público. */
 	protected double precioOficial;
@@ -308,5 +314,35 @@ public abstract class ProductoVenta extends Producto {
 			cats += c.getNombre();
 		}
 		System.out.println("  [" + id + "] " + nombre + " -> " + cats);
+	}
+
+	/**
+	 * Método llamado automáticamente cuando se guarda un ProductoVenta en fichero.
+	 */
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		inicializarCamposNulos();
+		out.defaultWriteObject();
+	}
+
+	/**
+	 * Método llamado automáticamente cuando se carga un ProductoVenta desde
+	 * fichero.
+	 */
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		inicializarCamposNulos();
+	}
+
+	/**
+	 * Evita que las listas de reseñas o categorías queden a null al guardar/cargar.
+	 */
+	private void inicializarCamposNulos() {
+		if (this.reseñas == null) {
+			this.reseñas = new ArrayList<>();
+		}
+
+		if (this.categorias == null) {
+			this.categorias = new ArrayList<>();
+		}
 	}
 }

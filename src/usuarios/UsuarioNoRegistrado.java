@@ -1,5 +1,6 @@
 package usuarios;
 
+import java.io.Serializable;
 import java.util.*;
 import tienda.*;
 import productos.*;
@@ -12,7 +13,9 @@ import productos.*;
  * @version 1.0
  */
 
-public class UsuarioNoRegistrado {
+public class UsuarioNoRegistrado implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 	/** Identificador de sesión del usuario */
 	protected String sessionId;
 	/** Identificador de sesión del usuario */

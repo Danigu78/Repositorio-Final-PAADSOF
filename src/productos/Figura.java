@@ -11,6 +11,8 @@ import excepciones.*;
  * @version 1.0
  */
 public class Figura extends ProductoVenta {
+
+	private static final long serialVersionUID = 1L;
 	/**
 	 * Altura de la figura .
 	 */

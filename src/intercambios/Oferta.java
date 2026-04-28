@@ -1,6 +1,8 @@
 package intercambios;
 
+import java.io.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import excepciones.*;
@@ -18,34 +20,37 @@ import usuarios.*;
  * @author Antonino Albarrán
  * @version 1.0
  */
-public class Oferta {
+public class Oferta implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 	/**
-     * Identificador único de la oferta .
-     */
+	 * Identificador único de la oferta .
+	 */
 	private String id;
 	/**
-     * Fecha y hora en la que se realizó la propuesta de intercambio.
-     */
+	 * Fecha y hora en la que se realizó la propuesta de intercambio.
+	 */
 	private LocalDateTime fechaOferta;
 	/**
-     * Estado actual de la oferta (PENDIENTE, ACEPTADA, CANCELADA, etc.).
-     */
+	 * Estado actual de la oferta (PENDIENTE, ACEPTADA, CANCELADA, etc.).
+	 */
 	private EstadoOferta estado;
 	/**
-     * Cliente que inicia la oferta y propone el intercambio.
-     */
+	 * Cliente que inicia la oferta y propone el intercambio.
+	 */
 	private Cliente origen;
 	/**
-     * Cliente que recibe la oferta y debe decidir si la acepta o rechaza.
-     */
+	 * Cliente que recibe la oferta y debe decidir si la acepta o rechaza.
+	 */
 	private Cliente destino;
 	/**
-     * Lista de productos de segunda mano que el cliente origen ofrece entregar.
-     */
+	 * Lista de productos de segunda mano que el cliente origen ofrece entregar.
+	 */
 	private List<Producto2Mano> productosOfertados;
 	/**
-     * Lista de productos de segunda mano que el cliente origen desea recibir del destino.
-     */
+	 * Lista de productos de segunda mano que el cliente origen desea recibir del
+	 * destino.
+	 */
 	private List<Producto2Mano> productosSolicitados;
 
 	/**
@@ -61,26 +66,40 @@ public class Oferta {
 	public Oferta(Cliente origen, Cliente destino, List<Producto2Mano> productosOfertados,
 			List<Producto2Mano> productosSolicitados) throws ProductoNoTasadoException {
 
+		if (origen == null || destino == null) {
+			throw new IllegalArgumentException("Los clientes de la oferta no pueden ser null.");
+		}
+
+		if (productosOfertados == null || productosSolicitados == null) {
+			throw new IllegalArgumentException("Las listas de productos no pueden ser null.");
+		}
+
+		if (productosOfertados.isEmpty() || productosSolicitados.isEmpty()) {
+			throw new IllegalArgumentException("La oferta debe tener productos ofertados y solicitados.");
+		}
+
 		for (Producto2Mano p : productosOfertados) {
-			if (p.getEstado() == null) { // Si el estado es null, es que no ha sido tasado
-				throw new ProductoNoTasadoException(p.getId(), p.getNombre());
+			if (p == null || p.getEstado() == null) {
+				throw new ProductoNoTasadoException(p != null ? p.getId() : "null", p != null ? p.getNombre() : "null");
 			}
 		}
+
 		for (Producto2Mano p : productosSolicitados) {
-			if (p.getEstado() == null) {
-				throw new ProductoNoTasadoException(p.getId(), p.getNombre());
+			if (p == null || p.getEstado() == null) {
+				throw new ProductoNoTasadoException(p != null ? p.getId() : "null", p != null ? p.getNombre() : "null");
 			}
 		}
 
 		Estadistica est = Estadistica.getInstancia();
 		this.id = "OFER-" + String.valueOf(est.getnIntercambiosFinalizados());
 		est.setnIntercambiosFinalizados(est.getnIntercambiosFinalizados() + 1);
+
 		this.fechaOferta = LocalDateTime.now();
 		this.estado = EstadoOferta.PENDIENTE;
 		this.origen = origen;
 		this.destino = destino;
-		this.productosOfertados = productosOfertados;
-		this.productosSolicitados = productosSolicitados;
+		this.productosOfertados = new ArrayList<>(productosOfertados);
+		this.productosSolicitados = new ArrayList<>(productosSolicitados);
 	}
 
 	/**
@@ -253,5 +272,34 @@ public class Oferta {
 	 */
 	public Cliente getDestino() {
 		return this.destino;
+	}
+
+	/**
+	 * Método llamado automáticamente cuando se guarda una Oferta en fichero.
+	 */
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		inicializarCamposNulos();
+		out.defaultWriteObject();
+	}
+
+	/**
+	 * Método llamado automáticamente cuando se carga una Oferta desde fichero.
+	 */
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		inicializarCamposNulos();
+	}
+
+	/**
+	 * Evita que las listas de productos queden a null al guardar/cargar.
+	 */
+	private void inicializarCamposNulos() {
+		if (this.productosOfertados == null) {
+			this.productosOfertados = new ArrayList<>();
+		}
+
+		if (this.productosSolicitados == null) {
+			this.productosSolicitados = new ArrayList<>();
+		}
 	}
 }

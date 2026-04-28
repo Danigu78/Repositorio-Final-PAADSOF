@@ -1,5 +1,7 @@
 package productos;
 
+import java.io.Serializable;
+
 import excepciones.*;
 
 /**
@@ -10,7 +12,9 @@ import excepciones.*;
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
-public class LineaPack {
+public class LineaPack implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 	/**
 	 * El producto individual que se incluye dentro del pack.
 	 */

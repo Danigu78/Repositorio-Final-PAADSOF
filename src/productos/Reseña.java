@@ -2,6 +2,8 @@ package productos;
 
 import usuarios.Cliente;
 import tienda.Estadistica;
+
+import java.io.Serializable;
 import java.time.*;
 
 import excepciones.*;
@@ -12,7 +14,9 @@ import excepciones.*;
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
-public class Reseña {
+public class Reseña implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	/** Identificador único de la reseña. */
 	private String idReseña;

@@ -1,20 +1,25 @@
 package productos;
 
 import java.util.ArrayList;
+import java.io.*;
 
 import excepciones.*;
+
 /**
  * Clase que representa un conjunto de productos vendidos como una única unidad.
- * Un Pack es un {@link ProductoVenta} compuesto por múltiples {@link LineaPack}.
- * Incluye lógica para validar que el precio del pack sea inferior a la suma 
- * de sus componentes y gestiona automáticamente el stock de los productos incluidos.
- * *@author Lucas Manuel Blanco Rodríguez
+ * Un Pack es un {@link ProductoVenta} compuesto por múltiples
+ * {@link LineaPack}. Incluye lógica para validar que el precio del pack sea
+ * inferior a la suma de sus componentes y gestiona automáticamente el stock de
+ * los productos incluidos. *@author Lucas Manuel Blanco Rodríguez
+ * 
  * @version 1.0
  */
 public class Pack extends ProductoVenta {
+
+	private static final long serialVersionUID = 1L;
 	/**
-	 * Lista de relaciones entre productos y cantidades que componen el pack.
-	 * Cada elemento de la lista detalla qué producto se incluye y cuántas unidades.
+	 * Lista de relaciones entre productos y cantidades que componen el pack. Cada
+	 * elemento de la lista detalla qué producto se incluye y cuántas unidades.
 	 */
 	private ArrayList<LineaPack> lineas;
 
@@ -47,8 +52,10 @@ public class Pack extends ProductoVenta {
 		super(nombre, descripcion, imagenRuta, precioOficial, stockDisponible);
 		this.lineas = new ArrayList<>();
 
-		for (LineaPack lp : lineas) {
-			this.addLinea(lp);
+		if (lineas != null) {
+			for (LineaPack lp : lineas) {
+				this.addLinea(lp);
+			}
 		}
 	}
 
@@ -310,7 +317,11 @@ public class Pack extends ProductoVenta {
 	 * @param lineas la nueva lista de líneas
 	 */
 	public void setLineas(ArrayList<LineaPack> lineas) {
-		this.lineas = lineas;
+		if (lineas == null) {
+			this.lineas = new ArrayList<>();
+		} else {
+			this.lineas = lineas;
+		}
 	}
 
 	/**
@@ -323,5 +334,30 @@ public class Pack extends ProductoVenta {
 
 		double ahorro = this.calcularSumaProductos() - this.calcularPrecioFinal();
 		System.out.printf(" Ahorro total:   %.2f€\n", ahorro);
+	}
+
+	/**
+	 * Método llamado automáticamente cuando se guarda un Pack en fichero.
+	 */
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		inicializarCamposNulos();
+		out.defaultWriteObject();
+	}
+
+	/**
+	 * Método llamado automáticamente cuando se carga un Pack desde fichero.
+	 */
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		inicializarCamposNulos();
+	}
+
+	/**
+	 * Evita que la lista de líneas del pack quede a null al guardar/cargar.
+	 */
+	private void inicializarCamposNulos() {
+		if (this.lineas == null) {
+			this.lineas = new ArrayList<>();
+		}
 	}
 }

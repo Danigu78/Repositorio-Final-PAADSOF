@@ -1,16 +1,21 @@
 package productos;
 
+import java.io.*;
 import java.util.*;
 
 import excepciones.ProductoYaEnCategoriaException;
+
 /**
- * Representa una categoría de productos en el sistema de la tienda.
- * Permite agrupar productos de venta y gestionar la relación bidireccional
- * entre las categorías y los productos.
+ * Representa una categoría de productos en el sistema de la tienda. Permite
+ * agrupar productos de venta y gestionar la relación bidireccional entre las
+ * categorías y los productos.
+ * 
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
-public class Categoria {
+public class Categoria implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 	/**
 	 * Nombre identificativo de la categoría .
 	 */
@@ -20,8 +25,8 @@ public class Categoria {
 	 */
 	private String descripcion;
 	/**
-	 * Lista de productos asociados a esta categoría. 
-	 * Mantiene la integridad de la relación bidireccional con ProductoVenta.
+	 * Lista de productos asociados a esta categoría. Mantiene la integridad de la
+	 * relación bidireccional con ProductoVenta.
 	 */
 	private ArrayList<ProductoVenta> productos;
 
@@ -156,5 +161,27 @@ public class Categoria {
 	 */
 	public ArrayList<ProductoVenta> getProductos() {
 		return productos;
+	}
+
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		inicializarCamposNulos();
+		out.defaultWriteObject();
+	}
+
+	/**
+	 * Método llamado automáticamente cuando se carga una Categoria desde fichero.
+	 */
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		inicializarCamposNulos();
+	}
+
+	/**
+	 * Evita que la lista de productos quede a null al guardar/cargar.
+	 */
+	private void inicializarCamposNulos() {
+		if (this.productos == null) {
+			this.productos = new ArrayList<>();
+		}
 	}
 }

@@ -7,6 +7,7 @@ import tienda.Tienda;
 import tienda.TipoNotificacion;
 import usuarios.Cliente;
 import productos.ProductoVenta;
+import java.io.*;
 
 /**
  * Clase que gestiona la selección temporal de productos por parte de un
@@ -15,7 +16,10 @@ import productos.ProductoVenta;
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
-public class Carrito {
+public class Carrito implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
 	/** Identificador único del carrito. */
 	private final String idCarrito;
 

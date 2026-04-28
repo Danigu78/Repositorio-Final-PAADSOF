@@ -1,5 +1,6 @@
 package tienda;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -8,7 +9,9 @@ import java.time.LocalDateTime;
  * @author Antonino Albarrán
  * @version 1.0
  */
-public class Notificacion {
+public class Notificacion implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	/** Identificador único de la notificación. */
 	private String id;

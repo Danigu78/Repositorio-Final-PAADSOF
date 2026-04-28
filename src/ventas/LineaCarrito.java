@@ -1,5 +1,7 @@
 package ventas;
 
+import java.io.*;
+
 import productos.ProductoVenta;
 
 /**
@@ -9,7 +11,10 @@ import productos.ProductoVenta;
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
-public class LineaCarrito {
+public class LineaCarrito implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
 	/** El artículo de venta asociado a esta línea del carrito. */
 	private ProductoVenta producto;
 

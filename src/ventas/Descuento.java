@@ -1,5 +1,6 @@
 package ventas;
 
+import java.io.*;
 import java.time.LocalDateTime;
 
 import tienda.Estadistica;
@@ -10,7 +11,9 @@ import tienda.Estadistica;
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
-public abstract class Descuento {
+public abstract class Descuento implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 	/** Identificador alfanumérico único de la promoción. */
 	protected String id;
 

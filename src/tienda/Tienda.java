@@ -1,6 +1,7 @@
 package tienda;
 
 import java.util.*;
+import java.io.*;
 
 import intercambios.Oferta;
 import usuarios.Cliente;
@@ -23,7 +24,10 @@ import productos.*;
  * @author Antonino Albarrán, Lucas y Daniel
  * @version 1.0
  */
-public class Tienda {
+public class Tienda implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
 	/** Nombre comercial de la tienda. */
 	private String nombre;
 
@@ -72,7 +76,7 @@ public class Tienda {
 	private double precioValoracion;
 
 	/** Lista de usuarios que han iniciado sesión actualmente. */
-	private List<UsuarioRegistrado> usuariosConSesionActiva = new ArrayList<>();
+	private transient List<UsuarioRegistrado> usuariosConSesionActiva = new ArrayList<>();
 
 	/** Registro global de avisos y notificaciones generadas. */
 	private List<Notificacion> historialNotificaciones = new ArrayList<>();
@@ -87,12 +91,16 @@ public class Tienda {
 	private static Tienda instancia;
 
 	/** Componente encargado de monitorizar la caducidad de carritos y ofertas. */
-	private ComprobadorTiempos comprobadorTiempos;
+	private transient ComprobadorTiempos comprobadorTiempos;
+
+	private Estadistica estadistica;
 
 	/**
 	 * Constructor del objeto que es Singleton de la tienda
 	 */
 	private Tienda() {
+		this.estadistica = Estadistica.getInstancia();
+
 		this.nombre = "CheckPoint";
 		this.usuarios = new ArrayList<>();
 		this.stockVentas = new ArrayList<>();
@@ -108,14 +116,15 @@ public class Tienda {
 		this.tiempoMaxOferta = 0;
 		this.tiempoMaxPago = 0;
 		this.precioValoracion = 10;
-		// El gestor es el primer usuario del sistema, siempre tendrá id USR-1
+
 		Gestor gestor = new Gestor();
 		this.usuarios.add(gestor);
+
 		this.usuariosConSesionActiva = new ArrayList<>();
 		this.usuariosConSesionActiva.add(gestor);
+
 		this.historialNotificaciones = new ArrayList<>();
 		this.historialProductos2Mano = new ArrayList<>();
-
 	}
 
 	/**
@@ -991,8 +1000,12 @@ public class Tienda {
 	 *
 	 * @param instancia la nueva instancia
 	 */
-	public static void setInstancia(Tienda instancia) {
-		Tienda.instancia = instancia;
+	public static void setInstancia(Tienda nuevaInstancia) {
+		if (nuevaInstancia == null) {
+			instancia = new Tienda();
+		} else {
+			instancia = nuevaInstancia;
+		}
 	}
 
 	/**
@@ -1143,11 +1156,13 @@ public class Tienda {
 	}
 
 	/**
-	 * Reinicia la tienda y deja sus datos preparados para los tests
+	 * Deja la tienda vacía y preparada para empezar de nuevo. Se usa sobre todo
+	 * para pruebas o para reiniciar los datos de ejemplo.
 	 */
-	// Metodo para los test
 	public void vaciarTienda() {
 		Estadistica est = Estadistica.getInstancia();
+		this.estadistica = est;
+
 		est.setnProductosVentas(1);
 		est.setnUsuarioRegistrado(1);
 		est.setnUsuarioNoRegistrado(1);
@@ -1161,50 +1176,74 @@ public class Tienda {
 		est.setnTasacionesCobradas(0);
 		est.setnNotificaciones(1);
 
-		// 1. Limpiamos las listas de usuarios y sesiones
-		if (this.usuarios != null) {
+		if (this.usuarios == null) {
+			this.usuarios = new ArrayList<>();
+		} else {
 			this.usuarios.clear();
-			// RE-CREAMOS EL GESTOR: Al ser el "USR-1", los tests lo necesitan vivo
-			Gestor gestor = new Gestor();
-			this.usuarios.add(gestor);
-
-			// También reseteamos las sesiones activas
-			if (this.usuariosConSesionActiva != null) {
-				this.usuariosConSesionActiva.clear();
-				this.usuariosConSesionActiva.add(gestor);
-			}
 		}
 
-		// 2. Limpiamos el stock y catálogos
-		if (this.stockVentas != null)
+		Gestor gestor = new Gestor();
+		this.usuarios.add(gestor);
+
+		if (this.usuariosConSesionActiva == null) {
+			this.usuariosConSesionActiva = new ArrayList<>();
+		} else {
+			this.usuariosConSesionActiva.clear();
+		}
+
+		this.usuariosConSesionActiva.add(gestor);
+
+		if (this.stockVentas != null) {
 			this.stockVentas.clear();
-		if (this.catalogoIntercambio != null)
+		}
+
+		if (this.catalogoIntercambio != null) {
 			this.catalogoIntercambio.clear();
-		if (this.pendientes_Tasacion != null)
+		}
+
+		if (this.pendientes_Tasacion != null) {
 			this.pendientes_Tasacion.clear();
+		}
 
-		// 3. Limpiamos categorías y descuentos
-		if (this.categorias != null)
+		if (this.categorias != null) {
 			this.categorias.clear();
-		if (this.descuentosActivos != null)
+		}
+
+		if (this.descuentosActivos != null) {
 			this.descuentosActivos.clear();
-		if (this.historialDescuentos != null)
+		}
+
+		if (this.historialDescuentos != null) {
 			this.historialDescuentos.clear();
+		}
 
-		// 4. Limpiamos historial de ventas y notificaciones
-		if (this.historialVentas != null)
+		if (this.historialVentas != null) {
 			this.historialVentas.clear();
-		if (this.historialNotificaciones != null)
-			this.historialNotificaciones.clear();
-		if (this.intercambiosFinalizados != null)
-			this.intercambiosFinalizados.clear();
+		}
 
-		// 5. Opcional: Resetear tiempos si quieres que cada test los configure
+		if (this.historialNotificaciones != null) {
+			this.historialNotificaciones.clear();
+		}
+
+		if (this.intercambiosFinalizados != null) {
+			this.intercambiosFinalizados.clear();
+		}
+
+		if (this.historialProductos2Mano != null) {
+			this.historialProductos2Mano.clear();
+		}
+
+		this.recomendador = new Recomendador();
+
 		this.tiempoMaxCarrito = 0;
 		this.tiempoMaxOferta = 0;
 		this.tiempoMaxPago = 0;
-		// Resetear contadores de Estadistica
+		this.precioValoracion = 10;
 
+		if (this.comprobadorTiempos != null) {
+			this.comprobadorTiempos.cerrarGestorTiempo();
+			this.comprobadorTiempos = null;
+		}
 	}
 
 	/**
@@ -1285,5 +1324,110 @@ public class Tienda {
 
 		usuarios.add(nuevo);
 		return nuevo;
+	}
+
+	/**
+	 * Método llamado automáticamente cuando se guarda la tienda en fichero.
+	 */
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		inicializarCamposNulos();
+		this.estadistica = Estadistica.getInstancia();
+		out.defaultWriteObject();
+	}
+
+	/**
+	 * Método llamado automáticamente cuando se carga la tienda desde fichero.
+	 */
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+
+		inicializarCamposNulos();
+
+		if (this.estadistica == null) {
+			this.estadistica = Estadistica.getInstancia();
+		} else {
+			Estadistica.setInstancia(this.estadistica);
+		}
+
+		this.usuariosConSesionActiva = new ArrayList<>();
+		this.comprobadorTiempos = null;
+
+		cerrarSesionesUsuarios();
+	}
+
+	/**
+	 * Evita que las listas principales queden a null al guardar/cargar.
+	 */
+	private void inicializarCamposNulos() {
+		if (this.nombre == null) {
+			this.nombre = "CheckPoint";
+		}
+
+		if (this.usuarios == null) {
+			this.usuarios = new ArrayList<>();
+		}
+
+		if (this.stockVentas == null) {
+			this.stockVentas = new ArrayList<>();
+		}
+
+		if (this.catalogoIntercambio == null) {
+			this.catalogoIntercambio = new ArrayList<>();
+		}
+
+		if (this.historialVentas == null) {
+			this.historialVentas = new ArrayList<>();
+		}
+
+		if (this.pendientes_Tasacion == null) {
+			this.pendientes_Tasacion = new ArrayList<>();
+		}
+
+		if (this.descuentosActivos == null) {
+			this.descuentosActivos = new ArrayList<>();
+		}
+
+		if (this.historialDescuentos == null) {
+			this.historialDescuentos = new ArrayList<>();
+		}
+
+		if (this.intercambiosFinalizados == null) {
+			this.intercambiosFinalizados = new ArrayList<>();
+		}
+
+		if (this.categorias == null) {
+			this.categorias = new ArrayList<>();
+		}
+
+		if (this.historialNotificaciones == null) {
+			this.historialNotificaciones = new ArrayList<>();
+		}
+
+		if (this.historialProductos2Mano == null) {
+			this.historialProductos2Mano = new ArrayList<>();
+		}
+
+		if (this.recomendador == null) {
+			this.recomendador = new Recomendador();
+		}
+
+		if (this.usuariosConSesionActiva == null) {
+			this.usuariosConSesionActiva = new ArrayList<>();
+		}
+	}
+
+	/**
+	 * Al cargar la tienda, nadie debería seguir con sesión iniciada.
+	 */
+	private void cerrarSesionesUsuarios() {
+		if (this.usuarios == null) {
+			return;
+		}
+
+		for (UsuarioRegistrado usuario : this.usuarios) {
+			if (usuario != null) {
+				usuario.setSesionIniciada(false);
+			}
+		}
 	}
 }

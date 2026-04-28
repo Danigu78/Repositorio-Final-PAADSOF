@@ -1,5 +1,6 @@
 package productos;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -10,10 +11,13 @@ import ventas.Pago;
 
 /**
  * Clase que gestiona el resultado de la tasación de un producto.
+ * 
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
-public class Valoracion {
+public class Valoracion implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	/** Fecha y hora en la que se realizó la valoración. */
 	private LocalDateTime fecha;
@@ -21,7 +25,7 @@ public class Valoracion {
 	/** Estado físico o de conservación del producto (ej. EXCELENTE, DAÑADO). */
 	private EstadoProducto estadoProducto;
 
-	/** Estado administrativo del cobro de la tasación  */
+	/** Estado administrativo del cobro de la tasación */
 	private EstadoValoracion estadoValoracion = EstadoValoracion.PENDIENTE_DE_PAGO;
 
 	/** Empleado responsable de realizar la tasación. */
@@ -35,6 +39,7 @@ public class Valoracion {
 
 	/** Importe abonado por el cliente por el servicio de tasación. */
 	private double precioPagado;
+
 	/**
 	 * Constructor de la clase Valoracion
 	 *
@@ -94,6 +99,7 @@ public class Valoracion {
 		this.estadoValoracion = estadoValoracion;
 		this.empleado = empleado;
 		this.pago = pago;
+		this.precioPagado = Tienda.getInstancia().getPrecioTasacion();
 	}
 
 	/**

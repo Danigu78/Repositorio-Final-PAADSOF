@@ -11,6 +11,8 @@ import excepciones.ProductoInvalidoException;
  * @version 1.0
  */
 public class Comic extends ProductoVenta {
+
+	private static final long serialVersionUID = 1L;
 	/**
 	 * Cantidad total de páginas que componen la obra.
 	 */

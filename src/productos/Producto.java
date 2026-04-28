@@ -1,5 +1,7 @@
 package productos;
 
+import java.io.Serializable;
+
 import excepciones.*;
 
 /**
@@ -10,7 +12,9 @@ import excepciones.*;
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
-public abstract class Producto {
+public abstract class Producto implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 	/** Identificador único del producto. */
 	protected String id;
 	/** Nombre del producto. */

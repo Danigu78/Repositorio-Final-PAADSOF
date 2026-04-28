@@ -1,8 +1,6 @@
 package usuarios;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.time.*;
 import java.util.*;
 
@@ -19,13 +17,15 @@ import tienda.*;
  * @version 1.0
  */
 
-public class Gestor extends UsuarioRegistrado {
+public class Gestor extends UsuarioRegistrado implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 	/** Nickname inicial del gestor */
 	private static final String NICKNAME_INICIAL = "admin_Gestor";
 	/** Contraseña inicial del gestor */
 	private static final String PASSWORD_INICIAL = "Admin@1234";
 	/** Motor encargado de calcular estadísticas */
-	private MotorEstadistico motorEstadistico;
+	private transient MotorEstadistico motorEstadistico;
 
 	/**
 	 * Constructor del gestor. Inicializa el gestor con valores por defecto y sesión
@@ -746,6 +746,31 @@ public class Gestor extends UsuarioRegistrado {
 		double total = motorEstadistico.calcularIngresosTasacion();
 		System.out.println("  Ingresos tasacion: " + String.format("%.2f", total) + "€");
 		return total;
+	}
+
+	/**
+	 * Método llamado automáticamente cuando se guarda un Gestor en fichero.
+	 */
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		inicializarCamposNulos();
+		out.defaultWriteObject();
+	}
+
+	/**
+	 * Método llamado automáticamente cuando se carga un Gestor desde fichero.
+	 */
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		inicializarCamposNulos();
+	}
+
+	/**
+	 * Evita que el motor estadístico quede a null al guardar/cargar.
+	 */
+	private void inicializarCamposNulos() {
+		if (this.motorEstadistico == null) {
+			this.motorEstadistico = new MotorEstadistico();
+		}
 	}
 
 }

@@ -1,5 +1,7 @@
 package tienda;
 
+import java.io.Serializable;
+
 import productos.EstadoProducto;
 import productos.Producto2Mano;
 
@@ -10,7 +12,9 @@ import productos.Producto2Mano;
  * @author Antonino Albarrán
  * @version 1.0
  */
-public class FiltroSegundaMano {
+public class FiltroSegundaMano implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	/** Límite inferior del precio de tasación aceptado en la búsqueda. */
 	private double valorMinimo;

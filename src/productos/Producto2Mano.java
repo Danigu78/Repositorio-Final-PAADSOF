@@ -1,14 +1,21 @@
 package productos;
 
 import usuarios.*;
+
+import java.io.Serializable;
+
 import excepciones.*;
 import tienda.*;
+
 /**
- * Clase que representa un producto de segunda mano  aportado por un cliente.
+ * Clase que representa un producto de segunda mano aportado por un cliente.
+ * 
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
-public class Producto2Mano extends Producto {
+public class Producto2Mano extends Producto implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 	/** Resultado de la tasación oficial realizada por un empleado. */
 	private Valoracion valoracion = null;
 	/** Cliente que posee actualmente el artículo. */
@@ -200,6 +207,10 @@ public class Producto2Mano extends Producto {
 	 * @return el estado asociado a la valoración
 	 */
 	public Object getEstado() {
+		if (this.valoracion == null) {
+			return null;
+		}
+
 		return this.valoracion.getEstadoValoracion();
 	}
 

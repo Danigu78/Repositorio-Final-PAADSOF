@@ -1,5 +1,6 @@
 package usuarios;
 
+import java.io.*;
 import java.util.*;
 
 import productos.*;
@@ -12,14 +13,16 @@ import tienda.*;
  * @author Daniel Gonzalez Ureta
  * @version 1.0
  */
-public abstract class UsuarioRegistrado {
+public abstract class UsuarioRegistrado implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	protected String id;
 	protected String nickname;
 	protected String password;
-	protected boolean sesionIniciada;
-	private FiltroVenta filtroVenta;
-	private FiltroSegundaMano filtro2Mano;
+	protected transient boolean sesionIniciada;
+	private transient FiltroVenta filtroVenta;
+	private transient FiltroSegundaMano filtro2Mano;
 
 	/**
 	 * Constructor de la clase UsuarioRegistrado
@@ -479,11 +482,34 @@ public abstract class UsuarioRegistrado {
 	}
 
 	/**
-	 * Muestra el panel principal del usuario
+	 * Método llamado automáticamente cuando se guarda un UsuarioRegistrado.
 	 */
-	public void mostrarPanelPrincipal() {
-		return;
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		inicializarCamposNulos();
+		out.defaultWriteObject();
+	}
 
+	/**
+	 * Método llamado automáticamente cuando se carga un UsuarioRegistrado.
+	 */
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		inicializarCamposNulos();
+	}
+
+	/**
+	 * Reinicia los campos que no se guardan o que podrían quedar a null.
+	 */
+	private void inicializarCamposNulos() {
+		this.sesionIniciada = false;
+
+		if (this.filtroVenta == null) {
+			this.filtroVenta = new FiltroVenta();
+		}
+
+		if (this.filtro2Mano == null) {
+			this.filtro2Mano = new FiltroSegundaMano();
+		}
 	}
 
 }

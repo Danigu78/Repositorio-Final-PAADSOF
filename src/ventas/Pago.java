@@ -1,7 +1,9 @@
 package ventas;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Date;
+
 import es.uam.eps.padsof.telecard.*;
 
 /**
@@ -10,18 +12,21 @@ import es.uam.eps.padsof.telecard.*;
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
-public class Pago {
-	/** Número identificativo de la tarjeta de crédito o débito. */
-	private String numeroTarjeta;
+public class Pago implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
+	/** Número identificativo de la tarjeta de crédito o débito. No se guarda. */
+	private transient String numeroTarjeta;
 
 	/** Registro de la fecha y hora exacta en la que se intentó el cobro. */
 	private LocalDateTime fechaTransaccion;
 
-	/** Fecha de caducidad de la tarjeta empleada. */
-	private Date fechaTarjeta;
+	/** Fecha de caducidad de la tarjeta empleada. No se guarda. */
+	private transient Date fechaTarjeta;
 
-	/** Código de seguridad de la tarjeta. */
-	private int CVV;
+	/** Código de seguridad de la tarjeta. No se guarda. */
+	private transient int CVV;
 
 	/** Cantidad económica total a cargar en la cuenta. */
 	private double importe;
@@ -30,7 +35,7 @@ public class Pago {
 	private boolean exito;
 
 	/**
-	 * Constructor de la clase Pago
+	 * Constructor de la clase Pago.
 	 *
 	 * @param numeroTarjeta el número de la tarjeta con la que se paga
 	 * @param importe       la cantidad que se quiere cobrar
@@ -38,7 +43,7 @@ public class Pago {
 	 * @param CVV           el código de seguridad de la tarjeta
 	 */
 	public Pago(String numeroTarjeta, double importe, Date fechaTarjeta, int CVV) {
-		this.setFechaTransaccion(LocalDateTime.now());
+		this.fechaTransaccion = LocalDateTime.now();
 		this.fechaTarjeta = fechaTarjeta;
 		this.CVV = CVV;
 		this.importe = importe;
@@ -47,15 +52,15 @@ public class Pago {
 	}
 
 	/**
-	 * Comprueba los datos de la tarjeta e intenta realizar el cobro
+	 * Comprueba los datos de la tarjeta e intenta realizar el cobro.
 	 *
 	 * @return true si el pago se procesa bien, false si falla
 	 */
 	private boolean procesarConBanco() {
-		String cvvString = String.valueOf(this.CVV);// convertimos a string
+		String cvvString = String.valueOf(this.CVV);
 		Date hoy = new Date();
 
-		if (this.numeroTarjeta.length() != 16) {
+		if (this.numeroTarjeta == null || this.numeroTarjeta.length() != 16) {
 			return false;
 		}
 
@@ -64,10 +69,11 @@ public class Pago {
 			return false;
 		}
 
-		if (this.fechaTarjeta.before(hoy)) {
+		if (this.fechaTarjeta == null || this.fechaTarjeta.before(hoy)) {
 			System.out.println("La tarjeta está caducada");
 			return false;
 		}
+
 		try {
 			TeleChargeAndPaySystem.charge(this.numeroTarjeta, "Pago CheckPoint", this.importe, true);
 			return true;
@@ -79,12 +85,12 @@ public class Pago {
 		} catch (OrderRejectedException e) {
 			System.out.println("Pago rechazado por el banco");
 		}
-		return false;
 
+		return false;
 	}
 
 	/**
-	 * Indica si el pago se realizó correctamente
+	 * Indica si el pago se realizó correctamente.
 	 *
 	 * @return true si el pago tuvo éxito, false en caso contrario
 	 */
@@ -108,5 +114,9 @@ public class Pago {
 	 */
 	public void setFechaTransaccion(LocalDateTime fechaTransaccion) {
 		this.fechaTransaccion = fechaTransaccion;
+	}
+
+	public double getImporte() {
+		return importe;
 	}
 }

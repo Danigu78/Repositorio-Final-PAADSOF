@@ -1,5 +1,6 @@
 package usuarios;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +21,10 @@ import tienda.TipoNotificacion;
  * @author Daniel Gonzalez Ureta
  * @version 1.0
  */
-public class PreferenciaNotificacion {
+public class PreferenciaNotificacion implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
 	/** Indica si el usuario desea recibir notificaciones de descuentos */
 	private boolean descuentos;
 	/** Indica si el usuario desea recibir notificaciones de pedidos caducados */
@@ -316,7 +320,11 @@ public class PreferenciaNotificacion {
 	 * @param categoriasInteres nueva lista
 	 */
 	public void setCategoriasInteres(List<Categoria> categoriasInteres) {
-		this.categoriasInteres = categoriasInteres;
+		if (categoriasInteres == null) {
+			this.categoriasInteres = new ArrayList<>();
+		} else {
+			this.categoriasInteres = categoriasInteres;
+		}
 	}
 
 	/**
@@ -342,6 +350,31 @@ public class PreferenciaNotificacion {
 				+ (oferta_caducada ? "Activado" : "Desactivado") + "\n"
 				+ "Categorías de interés sobre las que recibir informacion respecto a los productos: "
 				+ (cats.isEmpty() ? "Ninguna" : cats);
+	}
+
+	/**
+	 * Método llamado automáticamente cuando se guarda una PreferenciaNotificacion.
+	 */
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		inicializarCamposNulos();
+		out.defaultWriteObject();
+	}
+
+	/**
+	 * Método llamado automáticamente cuando se carga una PreferenciaNotificacion.
+	 */
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		inicializarCamposNulos();
+	}
+
+	/**
+	 * Evita que la lista de categorías de interés quede a null al guardar/cargar.
+	 */
+	private void inicializarCamposNulos() {
+		if (this.categoriasInteres == null) {
+			this.categoriasInteres = new ArrayList<>();
+		}
 	}
 
 }

@@ -2,12 +2,18 @@ package ventas;
 
 import java.time.LocalDateTime;
 import productos.Categoria;
+
 /**
- * Clase que aplica una reducción de precio a todos los productos pertenecientes a una categoría específica.
+ * Clase que aplica una reducción de precio a todos los productos pertenecientes
+ * a una categoría específica.
+ * 
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
 public class DescuentoCategoria extends Descuento {
+
+	private static final long serialVersionUID = 1L;
+
 	/** Categoría de productos sobre la cual se aplicará la promoción. */
 	private Categoria categoria;
 

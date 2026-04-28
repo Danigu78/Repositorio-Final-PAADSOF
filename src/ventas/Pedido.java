@@ -2,6 +2,7 @@ package ventas;
 
 import java.time.*;
 import java.util.*;
+import java.io.*;
 
 import productos.ProductoVenta;
 import tienda.Estadistica;
@@ -11,10 +12,14 @@ import usuarios.Cliente;
 
 /**
  * Clase que representa una reserva de un carrito.
+ * 
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
-public class Pedido {
+public class Pedido implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
 	/** Indica si el cliente ha marcado el pedido para recoger en tienda física. */
 	private boolean recogidaSolicitada;
 
@@ -24,7 +29,9 @@ public class Pedido {
 	/** Fecha y hora en la que se generó el pedido a partir del carrito. */
 	private final LocalDateTime fechaCreacion;
 
-	/** Fecha y hora en la que el personal de tienda terminó de preparar el pedido. */
+	/**
+	 * Fecha y hora en la que el personal de tienda terminó de preparar el pedido.
+	 */
 	private LocalDateTime fechaPreparado;
 
 	/** Fecha y hora en la que el pedido fue retirado o entregado al cliente. */

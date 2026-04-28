@@ -1,5 +1,7 @@
 package tienda;
 
+import java.io.Serializable;
+
 /**
  * Clase encargada de gestionar los contadores globales del sistema. Implementa
  * el patrón Singleton para centralizar la generación de identificadores únicos
@@ -8,7 +10,10 @@ package tienda;
  * @author Antonino Albarrán
  * @version 1.0
  */
-public class Estadistica {
+public class Estadistica implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
 	/** Instancia única de la clase (Patrón Singleton). */
 	private static Estadistica instancia;
 
@@ -24,6 +29,14 @@ public class Estadistica {
 		if (instancia == null)
 			instancia = new Estadistica();
 		return instancia;
+	}
+
+	public static void setInstancia(Estadistica nuevaInstancia) {
+		if (nuevaInstancia == null) {
+			instancia = new Estadistica();
+		} else {
+			instancia = nuevaInstancia;
+		}
 	}
 
 	/** Contador para IDs de productos de venta. */

@@ -1151,7 +1151,11 @@ public class Empleado extends UsuarioRegistrado implements Serializable {
 	 * @param notificaciones lista de notificaciones a asignar
 	 */
 	public void setNotificaciones(List<Notificacion> notificaciones) {
-		this.notificaciones = notificaciones;
+		if (notificaciones == null) {
+			this.notificaciones = new ArrayList<>();
+		} else {
+			this.notificaciones = notificaciones;
+		}
 	}
 
 	/**
@@ -1169,7 +1173,11 @@ public class Empleado extends UsuarioRegistrado implements Serializable {
 	 * @param permisos conjunto de permisos a asignar
 	 */
 	public void setPermisos(Set<TipoPermisos> permisos) {
-		this.permisos = permisos;
+		if (permisos == null) {
+			this.permisos = new TreeSet<>();
+		} else {
+			this.permisos = permisos;
+		}
 	}
 
 	/**
@@ -1187,7 +1195,11 @@ public class Empleado extends UsuarioRegistrado implements Serializable {
 	 * @param valoraciones lista de valoraciones a asignar
 	 */
 	public void setValoraciones(List<Valoracion> valoraciones) {
-		this.valoraciones = valoraciones;
+		if (valoraciones == null) {
+			this.valoraciones = new ArrayList<>();
+		} else {
+			this.valoraciones = valoraciones;
+		}
 	}
 
 	/**

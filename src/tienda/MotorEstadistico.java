@@ -1,5 +1,6 @@
 package tienda;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
@@ -21,7 +22,9 @@ import productos.*;
  * @author Antonino Albarrán
  * @version 1.0
  */
-public class MotorEstadistico {
+public class MotorEstadistico implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Obtiene los clientes ordenados según la cantidad de pedidos cancelados

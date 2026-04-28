@@ -11,6 +11,8 @@ import excepciones.*;
  * @version 1.0
  */
 public class JuegoMesa extends ProductoVenta {
+
+	private static final long serialVersionUID = 1L;
 	/**
 	 * Número mínimo de personas necesarias para poder jugar una partida.
 	 */

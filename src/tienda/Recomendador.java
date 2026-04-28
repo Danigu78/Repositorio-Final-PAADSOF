@@ -1,5 +1,6 @@
 package tienda;
 
+import java.io.Serializable;
 import java.util.*;
 
 import excepciones.PesosInvalidosException;
@@ -14,7 +15,9 @@ import ventas.*;
  * @author Antonino Albarrán
  * @version 1.0
  */
-public class Recomendador {
+public class Recomendador implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	/** Cantidad máxima de sugerencias que se mostrarán al usuario. */
 	private int limiteMaximo = 5;
