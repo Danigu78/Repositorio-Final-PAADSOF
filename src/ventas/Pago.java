@@ -57,16 +57,17 @@ public class Pago implements Serializable {
 	 * @return true si el pago se procesa bien, false si falla
 	 */
 	private boolean procesarConBanco() {
-		String cvvString = String.valueOf(this.CVV);
+		
 		Date hoy = new Date();
 
 		if (this.numeroTarjeta == null || this.numeroTarjeta.length() != 16) {
 			return false;
 		}
 
-		if (cvvString.length() != 3) {
-			System.out.println("El CVV debe tener 3 dígitos");
-			return false;
+		
+		if (this.CVV < 0 || this.CVV > 999) {
+		    System.out.println("El CVV debe tener 3 dígitos");
+		    return false;
 		}
 
 		if (this.fechaTarjeta == null || this.fechaTarjeta.before(hoy)) {

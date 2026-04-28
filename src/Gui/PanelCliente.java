@@ -5,6 +5,7 @@ import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
 import usuarios.Cliente;
+import ventas.Pedido;
 
 /**
  * Panel principal del cliente en CheckPoint.
@@ -80,6 +81,7 @@ public class PanelCliente extends JPanel {
 
 	/** Panel del catálogo de productos */
 	private SubpanelCatalogo subpanelCatalogo;
+	private SubpanelPago subpanelPago;
 
 	/** Panel del carrito de compra */
 	private SubpanelCarrito subpanelCarrito;
@@ -121,37 +123,35 @@ public class PanelCliente extends JPanel {
 	 * superior y el área de contenido con CardLayout.
 	 */
 	private void inicializarUI() {
-		// Barra superior de navegación
-		JPanel barraNavegacion = crearBarraNavegacion();
-		add(barraNavegacion, BorderLayout.NORTH);
+	    JPanel barraNavegacion = crearBarraNavegacion();
+	    add(barraNavegacion, BorderLayout.NORTH);
 
-		// Área de contenido (secciones)
-		cardSecciones = new CardLayout();
-		panelSecciones = new JPanel(cardSecciones);
-		panelSecciones.setBackground(VentanaPrincipal.COLOR_FONDO);
+	    cardSecciones = new CardLayout();
+	    panelSecciones = new JPanel(cardSecciones);
+	    panelSecciones.setBackground(VentanaPrincipal.COLOR_FONDO);
 
-		// Crear todas las secciones
-		subpanelCatalogo = new SubpanelCatalogo(ventana);
-		subpanelCarrito = new SubpanelCarrito(ventana);
-		subpanelPedidos = new SubpanelPedidos(ventana);
-		subpanelSegundaMano = new SubpanelSegundaMano(ventana);
-		subpanelIntercambios = new SubpanelIntercambios(ventana);
-		subpanelNotificaciones = new SubpanelNotificaciones(ventana);
-		subpanelPerfil = new SubpanelPerfil(ventana);
+	    subpanelCatalogo = new SubpanelCatalogo(ventana);
+	    subpanelCarrito = new SubpanelCarrito(ventana);
+	    subpanelPedidos = new SubpanelPedidos(ventana);
+	    subpanelSegundaMano = new SubpanelSegundaMano(ventana);
+	    subpanelIntercambios = new SubpanelIntercambios(ventana);
+	    subpanelNotificaciones = new SubpanelNotificaciones(ventana);
+	    subpanelPerfil = new SubpanelPerfil(ventana);
+	    subpanelPago = new SubpanelPago(ventana, this); // ← añade esto
 
-		// Añadir secciones al CardLayout
-		panelSecciones.add(subpanelCatalogo, SEC_CATALOGO);
-		panelSecciones.add(subpanelCarrito, SEC_CARRITO);
-		panelSecciones.add(subpanelPedidos, SEC_PEDIDOS);
-		panelSecciones.add(subpanelSegundaMano, SEC_SEGUNDA_MANO);
-		panelSecciones.add(subpanelIntercambios, SEC_INTERCAMBIOS);
-		panelSecciones.add(subpanelNotificaciones, SEC_NOTIFICACIONES);
-		panelSecciones.add(subpanelPerfil, SEC_PERFIL);
+	    subpanelPedidos.setPanelCliente(this);
 
-		add(panelSecciones, BorderLayout.CENTER);
+	    panelSecciones.add(subpanelCatalogo, SEC_CATALOGO);
+	    panelSecciones.add(subpanelCarrito, SEC_CARRITO);
+	    panelSecciones.add(subpanelPedidos, SEC_PEDIDOS);
+	    panelSecciones.add(subpanelSegundaMano, SEC_SEGUNDA_MANO);
+	    panelSecciones.add(subpanelIntercambios, SEC_INTERCAMBIOS);
+	    panelSecciones.add(subpanelNotificaciones, SEC_NOTIFICACIONES);
+	    panelSecciones.add(subpanelPerfil, SEC_PERFIL);
+	    panelSecciones.add(subpanelPago, "PAGO");
 
-		// Mostrar catálogo por defecto
-		mostrarSeccion(SEC_CATALOGO);
+	    add(panelSecciones, BorderLayout.CENTER);
+	    mostrarSeccion(SEC_CATALOGO);
 	}
 
 	/**
@@ -405,5 +405,19 @@ public class PanelCliente extends JPanel {
 		subpanelPerfil.actualizar(cliente);
 		// Mostrar catálogo por defecto al hacer login
 		mostrarSeccion(SEC_CATALOGO);
+	}
+	
+	/**
+	 * Navega al subpanel de pago con el pedido indicado.
+	 *
+	 * @param pedido  El pedido a pagar
+	 * @param cliente El cliente logueado
+	 */
+	public void mostrarPago(Pedido pedido, Cliente cliente) {
+	    subpanelPago.mostrarPago(pedido, cliente);
+	    mostrarSeccion("PAGO");
+	}
+	public void actualizarSeccionPedidos() {
+	    subpanelPedidos.actualizar(cliente);
 	}
 }
