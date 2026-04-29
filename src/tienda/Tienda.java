@@ -202,6 +202,15 @@ public class Tienda implements Serializable {
 		return null;
 	}
 
+	
+	public List<Producto2Mano> verCartera(String nombre) {
+		Cliente cl=buscarClientePorNickname(nombre);
+		if (cl==null) {
+			return null;
+		}
+		return cl.getCarteraIntercambio();
+		
+	}
 	/**
 	 * Busca clientes en base al nick dado devolviendo su objeto
 	 *

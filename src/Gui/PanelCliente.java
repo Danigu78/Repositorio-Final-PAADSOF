@@ -4,6 +4,8 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.security.PrivateKey;
+
 import usuarios.Cliente;
 import ventas.Pedido;
 
@@ -57,6 +59,8 @@ public class PanelCliente extends JPanel {
 	/** Identificador de la sección perfil */
 	private static final String SEC_PERFIL = "PERFIL";
 
+	private static final String SEC_CARTERA = "MI_CARTERA";
+
 	// ── Atributos ─────────────────────────────────────────────────────────────
 
 	/** Referencia a la ventana principal para navegar */
@@ -101,6 +105,9 @@ public class PanelCliente extends JPanel {
 	/** Panel del perfil del usuario */
 	private SubpanelPerfil subpanelPerfil;
 
+	/** Panel de la cartera del cliente */
+	private subpanelCartera subpanelCartera;
+
 	// ── Constructor ───────────────────────────────────────────────────────────
 
 	/**
@@ -123,35 +130,37 @@ public class PanelCliente extends JPanel {
 	 * superior y el área de contenido con CardLayout.
 	 */
 	private void inicializarUI() {
-	    JPanel barraNavegacion = crearBarraNavegacion();
-	    add(barraNavegacion, BorderLayout.NORTH);
+		JPanel barraNavegacion = crearBarraNavegacion();
+		add(barraNavegacion, BorderLayout.NORTH);
 
-	    cardSecciones = new CardLayout();
-	    panelSecciones = new JPanel(cardSecciones);
-	    panelSecciones.setBackground(VentanaPrincipal.COLOR_FONDO);
+		cardSecciones = new CardLayout();
+		panelSecciones = new JPanel(cardSecciones);
+		panelSecciones.setBackground(VentanaPrincipal.COLOR_FONDO);
 
-	    subpanelCatalogo = new SubpanelCatalogo(ventana);
-	    subpanelCarrito = new SubpanelCarrito(ventana);
-	    subpanelPedidos = new SubpanelPedidos(ventana);
-	    subpanelSegundaMano = new SubpanelSegundaMano(ventana);
-	    subpanelIntercambios = new SubpanelIntercambios(ventana);
-	    subpanelNotificaciones = new SubpanelNotificaciones(ventana);
-	    subpanelPerfil = new SubpanelPerfil(ventana);
-	    subpanelPago = new SubpanelPago(ventana, this); // ← añade esto
+		subpanelCatalogo = new SubpanelCatalogo(ventana);
+		subpanelCarrito = new SubpanelCarrito(ventana);
+		subpanelPedidos = new SubpanelPedidos(ventana);
+		subpanelSegundaMano = new SubpanelSegundaMano(ventana);
+		subpanelIntercambios = new SubpanelIntercambios(ventana);
+		subpanelNotificaciones = new SubpanelNotificaciones(ventana);
+		subpanelPerfil = new SubpanelPerfil(ventana);
+		subpanelPago = new SubpanelPago(ventana, this);
+		// subpanelCartera = new SubpanelCartera(ventana);
 
-	    subpanelPedidos.setPanelCliente(this);
+		subpanelPedidos.setPanelCliente(this);
 
-	    panelSecciones.add(subpanelCatalogo, SEC_CATALOGO);
-	    panelSecciones.add(subpanelCarrito, SEC_CARRITO);
-	    panelSecciones.add(subpanelPedidos, SEC_PEDIDOS);
-	    panelSecciones.add(subpanelSegundaMano, SEC_SEGUNDA_MANO);
-	    panelSecciones.add(subpanelIntercambios, SEC_INTERCAMBIOS);
-	    panelSecciones.add(subpanelNotificaciones, SEC_NOTIFICACIONES);
-	    panelSecciones.add(subpanelPerfil, SEC_PERFIL);
-	    panelSecciones.add(subpanelPago, "PAGO");
+		panelSecciones.add(subpanelCatalogo, SEC_CATALOGO);
+		panelSecciones.add(subpanelCarrito, SEC_CARRITO);
+		panelSecciones.add(subpanelPedidos, SEC_PEDIDOS);
+		panelSecciones.add(subpanelSegundaMano, SEC_SEGUNDA_MANO);
+		panelSecciones.add(subpanelIntercambios, SEC_INTERCAMBIOS);
+		panelSecciones.add(subpanelNotificaciones, SEC_NOTIFICACIONES);
+		panelSecciones.add(subpanelPerfil, SEC_PERFIL);
+		panelSecciones.add(subpanelPago, "PAGO");
+		// panelSecciones.add(subpanelCartera, SEC_CARTERA);
 
-	    add(panelSecciones, BorderLayout.CENTER);
-	    mostrarSeccion(SEC_CATALOGO);
+		add(panelSecciones, BorderLayout.CENTER);
+		mostrarSeccion(SEC_CATALOGO);
 	}
 
 	/**
@@ -192,8 +201,8 @@ public class PanelCliente extends JPanel {
 		// Definir las JLabelpestañas: [texto visible, icono emoji, id de sección]
 		String[][] pestanas = { { "Catálogo", "🛍️", SEC_CATALOGO }, { "Carrito", "🛒", SEC_CARRITO },
 				{ "Mis Pedidos", "📦", SEC_PEDIDOS }, { "Segunda Mano", "🔄", SEC_SEGUNDA_MANO },
-				{ "Intercambios", "🤝", SEC_INTERCAMBIOS }, { "Notificaciones", "🔔", SEC_NOTIFICACIONES },
-				{ "Mi Perfil", "👤", SEC_PERFIL } };
+				{ "Mi cartera", " ", SEC_CARTERA }, { "Intercambios", "🤝", SEC_INTERCAMBIOS },
+				{ "Notificaciones", "🔔", SEC_NOTIFICACIONES }, { "Mi Perfil", "👤", SEC_PERFIL } };
 
 		// Crear un botón por cada pestaña
 		for (String[] pestana : pestanas) {
@@ -220,18 +229,16 @@ public class PanelCliente extends JPanel {
 		labelUsuario.setForeground(VentanaPrincipal.COLOR_TEXTO2);
 		panelUsuario.add(labelUsuario);
 
-		
 //Separador
 		JPanel sep = new JPanel();
 		sep.setBackground(VentanaPrincipal.COLOR_ACENTO);
 
-		
-		int anchoSep = VentanaPrincipal.escalar(3); 
+		int anchoSep = VentanaPrincipal.escalar(3);
 		int altoSep = VentanaPrincipal.escalar(25);
 		sep.setPreferredSize(new Dimension(anchoSep, altoSep));
 
 		panelUsuario.add(sep);
-		
+
 		// Botón de logout
 		JButton botonLogout = new JButton("🚪 Salir");
 		botonLogout.setFont(VentanaPrincipal.FUENTE_PEQUENA);
@@ -348,7 +355,6 @@ public class PanelCliente extends JPanel {
 		cardSecciones.show(panelSecciones, seccion);
 	}
 
-	
 	/**
 	 * Actualiza los datos de una sección cuando el usuario navega a ella. De esta
 	 * forma los datos siempre están frescos al entrar en cada sección.
@@ -380,6 +386,9 @@ public class PanelCliente extends JPanel {
 		case SEC_PERFIL:
 			subpanelPerfil.actualizar(cliente);
 			break;
+		case SEC_CARTERA:
+			// subpanelCartera.actualizar(cliente);
+			break;
 		}
 	}
 
@@ -403,10 +412,11 @@ public class PanelCliente extends JPanel {
 		subpanelIntercambios.actualizar(cliente);
 		subpanelNotificaciones.actualizar(cliente);
 		subpanelPerfil.actualizar(cliente);
+		// subpanelCartera.actualizar(cliente);
 		// Mostrar catálogo por defecto al hacer login
 		mostrarSeccion(SEC_CATALOGO);
 	}
-	
+
 	/**
 	 * Navega al subpanel de pago con el pedido indicado.
 	 *
@@ -414,10 +424,11 @@ public class PanelCliente extends JPanel {
 	 * @param cliente El cliente logueado
 	 */
 	public void mostrarPago(Pedido pedido, Cliente cliente) {
-	    subpanelPago.mostrarPago(pedido, cliente);
-	    mostrarSeccion("PAGO");
+		subpanelPago.mostrarPago(pedido, cliente);
+		mostrarSeccion("PAGO");
 	}
+
 	public void actualizarSeccionPedidos() {
-	    subpanelPedidos.actualizar(cliente);
+		subpanelPedidos.actualizar(cliente);
 	}
 }

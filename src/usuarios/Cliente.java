@@ -830,6 +830,9 @@ public class Cliente extends UsuarioRegistrado implements Serializable {
 			}
 		}
 	}
+	public List<Producto2Mano> verCarteraDe(String nombre) {
+		return Tienda.getInstancia().verCartera(nombre);
+	}
 
 	/**
 	 * Crea una lista de productos de segunda mano a partir de un número variable de
