@@ -1,6 +1,7 @@
-package Gui;
+package Gui.Gestor;
 
 import Gui.Controladores.ControladorPacksGestor;
+import Gui.VentanaPrincipal;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;

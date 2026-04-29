@@ -1,6 +1,7 @@
-package Gui;
+package Gui.Gestor;
 
 import Gui.Controladores.ControladorEstadisticasGestor;
+import Gui.VentanaPrincipal;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;

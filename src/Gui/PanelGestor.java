@@ -2,6 +2,14 @@ package Gui;
 
 import javax.swing.*;
 import javax.swing.border.*;
+
+import Gui.Gestor.SubpanelCategoriasGestor;
+import Gui.Gestor.SubpanelConfiguracionGestor;
+import Gui.Gestor.SubpanelEmpleadosGestor;
+import Gui.Gestor.SubpanelEstadisticasGestor;
+import Gui.Gestor.SubpanelGestionPack;
+import Gui.Gestor.SubpanelProductosDescuentosGestor;
+
 import java.awt.*;
 import java.awt.event.*;
 import usuarios.Gestor;
