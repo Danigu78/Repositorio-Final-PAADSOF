@@ -111,7 +111,7 @@ public class PanelInvitado extends JPanel {
 		for (String[] p : datosPestanas) {
 			// p[0] es el Texto ("Catálogo")
 			// p[1] es el ID (SEC_CATALOGO)
-			JButton boton = crearBotonPestana(p[0], p[1]);
+			JButton boton = crearBotonPestaña(p[0], p[1]);
 
 			zonaPestañas.add(boton);
 
@@ -204,7 +204,7 @@ public class PanelInvitado extends JPanel {
 
 	}
 
-	private JButton crearBotonPestana(String texto, String seccion) {
+	private JButton crearBotonPestaña(String texto, String seccion) {
 		JButton boton = new JButton(texto);
 		boton.setFont(new Font("Segoe UI", Font.PLAIN, VentanaPrincipal.escalar(13)));
 		boton.setForeground(VentanaPrincipal.COLOR_TEXTO2);
