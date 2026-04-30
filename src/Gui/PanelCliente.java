@@ -106,7 +106,7 @@ public class PanelCliente extends JPanel {
 	private SubpanelPerfil subpanelPerfil;
 
 	/** Panel de la cartera del cliente */
-	private subpanelCartera subpanelCartera;
+	private SubpanelCartera subpanelCartera;
 
 	// ── Constructor ───────────────────────────────────────────────────────────
 
@@ -145,9 +145,10 @@ public class PanelCliente extends JPanel {
 		subpanelNotificaciones = new SubpanelNotificaciones(ventana);
 		subpanelPerfil = new SubpanelPerfil(ventana);
 		subpanelPago = new SubpanelPago(ventana, this);
-		// subpanelCartera = new SubpanelCartera(ventana);
+		subpanelCartera = new SubpanelCartera(ventana);
 
 		subpanelPedidos.setPanelCliente(this);
+		subpanelCartera.setPanelCliente(this);
 
 		panelSecciones.add(subpanelCatalogo, SEC_CATALOGO);
 		panelSecciones.add(subpanelCarrito, SEC_CARRITO);
@@ -157,7 +158,7 @@ public class PanelCliente extends JPanel {
 		panelSecciones.add(subpanelNotificaciones, SEC_NOTIFICACIONES);
 		panelSecciones.add(subpanelPerfil, SEC_PERFIL);
 		panelSecciones.add(subpanelPago, "PAGO");
-		// panelSecciones.add(subpanelCartera, SEC_CARTERA);
+		panelSecciones.add(subpanelCartera, SEC_CARTERA);
 
 		add(panelSecciones, BorderLayout.CENTER);
 		mostrarSeccion(SEC_CATALOGO);
@@ -199,10 +200,10 @@ public class PanelCliente extends JPanel {
 		panelPestanas.setBorder(BorderFactory.createEmptyBorder(8, 0, 0, 0));
 
 		// Definir las JLabelpestañas: [texto visible, icono emoji, id de sección]
-		String[][] pestanas = { { "Catálogo", "🛍️", SEC_CATALOGO }, { "Carrito", "🛒", SEC_CARRITO },
-				{ "Mis Pedidos", "📦", SEC_PEDIDOS }, { "Segunda Mano", "🔄", SEC_SEGUNDA_MANO },
-				{ "Mi cartera", " ", SEC_CARTERA }, { "Intercambios", "🤝", SEC_INTERCAMBIOS },
-				{ "Notificaciones", "🔔", SEC_NOTIFICACIONES }, { "Mi Perfil", "👤", SEC_PERFIL } };
+		String[][] pestanas = { { "Catálogo", "", SEC_CATALOGO }, { "Carrito", "", SEC_CARRITO },
+				{ "Mis Pedidos", "", SEC_PEDIDOS }, { "Segunda Mano", "", SEC_SEGUNDA_MANO },
+				{ "Mi cartera", " ", SEC_CARTERA }, { "Intercambios", "", SEC_INTERCAMBIOS },
+				{ "Notificaciones", "", SEC_NOTIFICACIONES }, { "Mi Perfil", "", SEC_PERFIL } };
 
 		// Crear un botón por cada pestaña
 		for (String[] pestana : pestanas) {
@@ -377,6 +378,10 @@ public class PanelCliente extends JPanel {
 		case SEC_SEGUNDA_MANO:
 			subpanelSegundaMano.actualizar(cliente);
 			break;
+		case SEC_CARTERA:
+			subpanelCartera.actualizar(cliente);
+			break;
+
 		case SEC_INTERCAMBIOS:
 			subpanelIntercambios.actualizar(cliente);
 			break;
@@ -385,9 +390,6 @@ public class PanelCliente extends JPanel {
 			break;
 		case SEC_PERFIL:
 			subpanelPerfil.actualizar(cliente);
-			break;
-		case SEC_CARTERA:
-			// subpanelCartera.actualizar(cliente);
 			break;
 		}
 	}
@@ -403,7 +405,7 @@ public class PanelCliente extends JPanel {
 	public void actualizarCliente(Cliente cliente) {
 		this.cliente = cliente;
 		// Actualizar nombre en la barra superior
-		labelUsuario.setText("👤 " + cliente.getNickname());
+		labelUsuario.setText(cliente.getNickname());
 		// Cargar datos en todas las secciones
 		subpanelCatalogo.actualizar(cliente);
 		subpanelCarrito.actualizar(cliente);
@@ -412,7 +414,7 @@ public class PanelCliente extends JPanel {
 		subpanelIntercambios.actualizar(cliente);
 		subpanelNotificaciones.actualizar(cliente);
 		subpanelPerfil.actualizar(cliente);
-		// subpanelCartera.actualizar(cliente);
+		subpanelCartera.actualizar(cliente);
 		// Mostrar catálogo por defecto al hacer login
 		mostrarSeccion(SEC_CATALOGO);
 	}
@@ -430,5 +432,9 @@ public class PanelCliente extends JPanel {
 
 	public void actualizarSeccionPedidos() {
 		subpanelPedidos.actualizar(cliente);
+	}
+	public void volverACartera() {
+	    mostrarSeccion(SEC_CARTERA);
+	    subpanelCartera.actualizar(cliente);
 	}
 }
