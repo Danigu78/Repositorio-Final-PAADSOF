@@ -4,9 +4,9 @@ import java.io.*;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 
 import excepciones.*;
 import tienda.*;
@@ -175,6 +175,11 @@ public class Cliente extends UsuarioRegistrado implements Serializable {
 	 * @return lista de ofertas para decidir
 	 */
 	public List<Oferta> getOfertasParaDecidir() {
+
+		for (Oferta o : new ArrayList<>(ofertasPendientes)) {
+			o.haCaducado();
+		}
+
 		List<Oferta> paraDecidir = new ArrayList<>();
 		for (Oferta o : ofertasPendientes) {
 			// Si el destino de la oferta soy yo, es que tengo que contestar por lo que son
@@ -186,6 +191,26 @@ public class Cliente extends UsuarioRegistrado implements Serializable {
 		return paraDecidir;
 	}
 
+	public List<Oferta> getIntercambiosRealizados() {
+		List<Oferta> realizados = new ArrayList<>();
+		for (Oferta o : historialIntercambios) {
+			if (o.getEstado() == EstadoOferta.REALIZADA) {
+				realizados.add(o);
+			}
+		}
+		return realizados;
+	}
+
+	public List<Oferta> getOfertasRechazadasCaducadas() {
+		List<Oferta> resultado = new ArrayList<>();
+		for (Oferta o : historialIntercambios) {
+			if (o.getEstado() == EstadoOferta.RECHAZADA || o.getEstado() == EstadoOferta.CADUCADA) {
+				resultado.add(o);
+			}
+		}
+		return resultado;
+	}
+
 	/**
 	 * Obtiene las ofertas enviadas por el cliente que aún no han sido respondidas
 	 * por los otros clientes.
@@ -193,6 +218,10 @@ public class Cliente extends UsuarioRegistrado implements Serializable {
 	 * @return lista de ofertas en espera
 	 */
 	public List<Oferta> getOfertasEnEspera() {
+
+		for (Oferta o : new ArrayList<>(ofertasPendientes)) {
+			o.haCaducado();// limpiamos las que hayan caducado
+		}
 		List<Oferta> enEspera = new ArrayList<>();
 		for (Oferta o : ofertasPendientes) {
 			if (o.getOrigen().equals(this)) {// Si yo soy el origen de la oferta, la añado a las ofertas que he hecho
@@ -831,6 +860,7 @@ public class Cliente extends UsuarioRegistrado implements Serializable {
 			}
 		}
 	}
+
 	public List<Producto2Mano> verCarteraDe(String nombre) {
 		return Tienda.getInstancia().verCartera(nombre);
 	}

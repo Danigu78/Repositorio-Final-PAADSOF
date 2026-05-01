@@ -3,6 +3,7 @@ package intercambios;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import excepciones.*;
@@ -115,7 +116,9 @@ public class Oferta implements Serializable {
 		this.estado = EstadoOferta.RECHAZADA;
 		for (Producto2Mano p : productosOfertados)
 			p.setBloqueado(false);
-		
+		this.origen.getHistorialIntercambios().add(this);
+		this.destino.getHistorialIntercambios().add(this);
+
 		this.origen.getOfertasPendientes().remove(this);
 		this.destino.getOfertasPendientes().remove(this);
 		this.origen.recibirNotificacionTipo("Tu oferta con ID " + this.getId() + " ha sido RECHAZADA por el cliente "
@@ -182,6 +185,13 @@ public class Oferta implements Serializable {
 		boolean caducada = LocalDateTime.now().isAfter(fechaOferta.plusMinutes(tiempoMax));
 		if (caducada && this.estado == EstadoOferta.PENDIENTE) {
 			this.estado = EstadoOferta.CADUCADA;
+			this.origen.getHistorialIntercambios().add(this);
+			this.destino.getHistorialIntercambios().add(this);
+			this.origen.getOfertasPendientes().remove(this);
+			this.destino.getOfertasPendientes().remove(this);
+			for (Producto2Mano p : productosOfertados) {
+				p.setBloqueado(false);
+			}
 		}
 		return caducada;
 	}

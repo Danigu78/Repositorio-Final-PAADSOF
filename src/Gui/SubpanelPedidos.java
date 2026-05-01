@@ -181,6 +181,28 @@ public class SubpanelPedidos extends JPanel {
 			gbcB.gridy = 1;
 			panelBotones.add(botonPagar, gbcB);
 		}
+		else if (pedido.getEstado() == EstadoPedido.LISTO_PARA_RECOGER && !pedido.isRecogida_solicitada()) {
+		    JButton botonRecoger = crearBotonPrincipal("Solicitar recogida");
+		    
+		    botonRecoger.addActionListener(e -> {
+		        String codigo = JOptionPane.showInputDialog(this, 
+		            "Introduce el código de recogida para el pedido: " + pedido.getIdPedido(), 
+		            "Confirmar Recogida", JOptionPane.QUESTION_MESSAGE);
+		            
+		        if (codigo != null && !codigo.trim().isEmpty()) {
+		            if (controlador.gestionarSolicitudRecogida(pedido, codigo)) {
+		                JOptionPane.showMessageDialog(this, "¡Solicitud enviada! Ya puedes pasar a por tu pedido.");
+		                actualizar(cliente);
+		            } else {
+		                JOptionPane.showMessageDialog(this, "El código no coincide o el pedido no es válido.", 
+		                    "Error de validación", JOptionPane.ERROR_MESSAGE);
+		            }
+		        }
+		    });
+		    
+		    gbcB.gridy = 1;
+		    panelBotones.add(botonRecoger, gbcB);
+		}
 
 		tarjeta.add(panelBotones, BorderLayout.EAST);
 		return tarjeta;

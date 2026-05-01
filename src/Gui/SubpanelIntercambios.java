@@ -3,6 +3,7 @@ package Gui;
 import javax.swing.*;
 
 import Gui.Controladores.ControladorIntercambios;
+import intercambios.EstadoOferta;
 import intercambios.Oferta;
 import java.util.List;
 import java.awt.*;
@@ -29,6 +30,7 @@ public class SubpanelIntercambios extends JPanel {
 	private JButton botonEnviados;
 	private JButton botonRecibidos;
 	private JButton botonHistorial;
+	private JButton botonRechazadas;
 	private JButton botonActivo;
 
 	// CardLayout para las tres secciones
@@ -39,6 +41,7 @@ public class SubpanelIntercambios extends JPanel {
 	private JPanel panelEnviadas;
 	private JPanel panelRecibidos;
 	private JPanel panelHistorial;
+	private JPanel contenidoRechazadas;
 
 	public SubpanelIntercambios(VentanaPrincipal ventana) {
 		this.ventana = ventana;
@@ -54,6 +57,7 @@ public class SubpanelIntercambios extends JPanel {
 		panelSecciones.add(crearPanelEnviadas(), "ENVIADAS");
 		panelSecciones.add(crearPanelRecibidas(), "RECIBIDAS");
 		panelSecciones.add(crearPanelHistorial(), "HISTORIAL");
+		panelSecciones.add(crearPanelRechazadas(), "RECHAZADAS");
 
 		add(panelSecciones, BorderLayout.CENTER);
 		cardSecciones.show(panelSecciones, "ENVIADAS");
@@ -64,6 +68,7 @@ public class SubpanelIntercambios extends JPanel {
 		botonEnviados.addActionListener(c);
 		botonRecibidos.addActionListener(c);
 		botonHistorial.addActionListener(c);
+		botonRechazadas.addActionListener(c);
 	}
 
 	private JPanel crearBarraInterna() {
@@ -81,10 +86,12 @@ public class SubpanelIntercambios extends JPanel {
 		botonEnviados = crearBotonPestaña("Ofertas enviadas", "enviadas");
 		botonRecibidos = crearBotonPestaña("Ofertas recibidas", "recibidas");
 		botonHistorial = crearBotonPestaña("Historial", "historial");
+		botonRechazadas = crearBotonPestaña("Rechazadas/caducadas", "rechazadas");
 		marcarBotonActivo(botonEnviados);// primero vemos la pantalla de botonenviados
 		zonaPestañas.add(botonEnviados);
 		zonaPestañas.add(botonRecibidos);
 		zonaPestañas.add(botonHistorial);
+		zonaPestañas.add(botonRechazadas);
 		barra.add(zonaPestañas, BorderLayout.CENTER);
 		return barra;
 
@@ -134,7 +141,11 @@ public class SubpanelIntercambios extends JPanel {
 		case "HISTORIAL":
 			marcarBotonActivo(botonHistorial);
 			break;
+		case "RECHAZADAS":
+			marcarBotonActivo(botonRechazadas);
+			break;
 		}
+
 	}
 
 	private void marcarBotonActivo(JButton boton) {
@@ -206,6 +217,24 @@ public class SubpanelIntercambios extends JPanel {
 		return pan;
 	}
 
+	private JPanel crearPanelRechazadas() {
+		contenidoRechazadas = new JPanel();
+		contenidoRechazadas.setLayout(new BoxLayout(contenidoRechazadas, BoxLayout.Y_AXIS));
+		contenidoRechazadas.setBackground(VentanaPrincipal.COLOR_FONDO);
+
+		JScrollPane scroll = new JScrollPane(contenidoRechazadas);
+		scroll.setBorder(null);
+		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scroll.getViewport().setBackground(VentanaPrincipal.COLOR_FONDO);
+
+		JPanel pan = new JPanel(new BorderLayout());
+		pan.setBackground(VentanaPrincipal.COLOR_FONDO);
+		pan.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(20),
+				VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(20)));
+		pan.add(scroll, BorderLayout.CENTER);
+		return pan;
+	}
+
 	/**
 	 * Rellena el panel de ofertas enviadas.
 	 */
@@ -258,6 +287,21 @@ public class SubpanelIntercambios extends JPanel {
 		}
 		contenidoHistorial.revalidate();
 		contenidoHistorial.repaint();
+	}
+
+	private void rellenarRechazadas() {
+		contenidoRechazadas.removeAll();
+		List<Oferta> ofertas = controlador.getHistorialRechazadasCaducadas();
+		if (ofertas.isEmpty()) {
+			contenidoRechazadas.add(crearLabelVacío("No tienes ofertas rechazadas ni caducadas."));
+		} else {
+			for (Oferta o : ofertas) {
+				contenidoRechazadas.add(crearTarjetaRechazada(o));
+				contenidoRechazadas.add(Box.createVerticalStrut(VentanaPrincipal.escalar(8)));
+			}
+		}
+		contenidoRechazadas.revalidate();
+		contenidoRechazadas.repaint();
 	}
 
 	/**
@@ -407,6 +451,65 @@ public class SubpanelIntercambios extends JPanel {
 		return tarjeta;
 	}
 
+	private JPanel crearTarjetaRechazada(Oferta oferta) {
+		JPanel tarjeta = new JPanel(new BorderLayout(VentanaPrincipal.escalar(15), 0));
+		tarjeta.setBackground(VentanaPrincipal.COLOR_TARJETA);
+		tarjeta.setMaximumSize(new Dimension(Integer.MAX_VALUE, VentanaPrincipal.escalar(120)));
+		tarjeta.setAlignmentX(Component.LEFT_ALIGNMENT);
+		tarjeta.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createMatteBorder(0, 0, 1, 0, VentanaPrincipal.COLOR_BORDE),
+				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(12), VentanaPrincipal.escalar(15),
+						VentanaPrincipal.escalar(12), VentanaPrincipal.escalar(15))));
+
+		JPanel panelInfo = new JPanel(new GridBagLayout());
+		panelInfo.setBackground(VentanaPrincipal.COLOR_TARJETA);
+
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.insets = new Insets(VentanaPrincipal.escalar(2), 0, VentanaPrincipal.escalar(2),
+				VentanaPrincipal.escalar(10));
+		gbc.weightx = 1;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridx = 0;
+
+		String motivo = oferta.getEstado() == EstadoOferta.CADUCADA ? "Caducada" : "Rechazada";
+
+		Color colorEstado = oferta.getEstado() == EstadoOferta.CADUCADA ? new Color(150, 100, 0) // amarillo oscuro para
+																									// caducada
+				: new Color(180, 50, 50); // rojo para rechazada
+
+		JLabel labelId = new JLabel(oferta.getId() + "  —  " + motivo);
+		labelId.setFont(VentanaPrincipal.FUENTE_BOTON);
+		labelId.setForeground(colorEstado);
+		gbc.gridy = 0;
+		panelInfo.add(labelId, gbc);
+		// Con quién
+		boolean soyOrigen = oferta.getOrigen().equals(cliente);
+		String conQuien = soyOrigen ? "Para: " + oferta.getDestino().getNickname()
+				: "De: " + oferta.getOrigen().getNickname();
+		JLabel labelConQuien = new JLabel(conQuien);
+		labelConQuien.setFont(VentanaPrincipal.FUENTE_NORMAL);
+		labelConQuien.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+		gbc.gridy = 1;
+		panelInfo.add(labelConQuien, gbc);
+
+		// Productos
+		JLabel labelOfrece = new JLabel("Ofrecía: " + getListaProductos(oferta.getProductosOfertados()));
+		labelOfrece.setFont(VentanaPrincipal.FUENTE_PEQUENA);
+		labelOfrece.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+		gbc.gridy = 2;
+		panelInfo.add(labelOfrece, gbc);
+
+		JLabel labelSolicita = new JLabel("Solicitaba: " + getListaProductos(oferta.getProductosSolicitados()));
+		labelSolicita.setFont(VentanaPrincipal.FUENTE_PEQUENA);
+		labelSolicita.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+		gbc.gridy = 3;
+		panelInfo.add(labelSolicita, gbc);
+
+		tarjeta.add(panelInfo, BorderLayout.CENTER);
+		return tarjeta;
+	}
+
 	private String getListaProductos(List<Producto2Mano> productos) {
 		if (productos == null || productos.isEmpty())
 			return "ninguno";
@@ -508,6 +611,7 @@ public class SubpanelIntercambios extends JPanel {
 		rellenarEnviadas();
 		rellenarRecibidas();
 		rellenarHistorial();
+		rellenarRechazadas();
 		cardSecciones.show(panelSecciones, "ENVIADAS");
 		marcarBotonActivo(botonEnviados);
 	}
