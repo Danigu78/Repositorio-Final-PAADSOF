@@ -182,8 +182,13 @@ public class SubpanelCartera extends JPanel {
 		labelDesc.setForeground(VentanaPrincipal.COLOR_TEXTO2);
 		gbc.gridy = 1;
 		panelInfo.add(labelDesc, gbc);
-
-		if (controlador.estaValorado(producto)) {
+		if (controlador.estaValorado(producto) && producto.isBloqueado()) {
+		    JLabel labelBloqueado = new JLabel("Bloqueado — Has enviado una oferta ofreciendo este producto. Se desbloqueará cuando se responda a la oferta.");
+		    labelBloqueado.setFont(VentanaPrincipal.FUENTE_PEQUENA);
+		    labelBloqueado.setForeground(new Color(180, 50, 50));
+		    gbc.gridy = 2;
+		    panelInfo.add(labelBloqueado, gbc);}
+		else if (controlador.estaValorado(producto)) {
 			JLabel labelEstado = new JLabel("Estado: " + producto.getValoracion().getEstadoProducto()
 					+ "  —  Precio tasado: " + String.format("%.2f€", producto.getValoracion().getPrecioTasacion()));
 			labelEstado.setFont(VentanaPrincipal.FUENTE_PEQUENA);

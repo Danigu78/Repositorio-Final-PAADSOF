@@ -2,6 +2,7 @@ package Gui.Controladores;
 
 import Gui.SubpanelCartera;
 import productos.Producto2Mano;
+import tienda.GuardadoTienda;
 import tienda.Tienda;
 import usuarios.Cliente;
 import java.awt.event.ActionEvent;
@@ -66,6 +67,7 @@ public class ControladorCartera implements ActionListener {
         }
         String rutaImagen = (imagen == null || imagen.isBlank()) ? "default.png" : imagen;
         cliente.subirProducto(nombre, descripcion, rutaImagen);
+        GuardadoTienda.guardar(Tienda.getInstancia());
         vista.mostrarExito("Producto añadido a tu cartera correctamente.");
         vista.actualizar(cliente);
     }

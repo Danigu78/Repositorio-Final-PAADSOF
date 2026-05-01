@@ -115,6 +115,7 @@ public class Oferta implements Serializable {
 		this.estado = EstadoOferta.RECHAZADA;
 		for (Producto2Mano p : productosOfertados)
 			p.setBloqueado(false);
+		
 		this.origen.getOfertasPendientes().remove(this);
 		this.destino.getOfertasPendientes().remove(this);
 		this.origen.recibirNotificacionTipo("Tu oferta con ID " + this.getId() + " ha sido RECHAZADA por el cliente "

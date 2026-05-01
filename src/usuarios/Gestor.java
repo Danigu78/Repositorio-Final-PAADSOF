@@ -18,7 +18,6 @@ import tienda.*;
  */
 
 public class Gestor extends UsuarioRegistrado implements Serializable {
-
 	private static final long serialVersionUID = 1L;
 	/** Nickname inicial del gestor */
 	private static final String NICKNAME_INICIAL = "admin_Gestor";

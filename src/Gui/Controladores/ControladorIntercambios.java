@@ -6,6 +6,7 @@ import intercambios.Oferta;
 import usuarios.Cliente;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -45,7 +46,9 @@ public class ControladorIntercambios implements ActionListener {
      * Devuelve las ofertas enviadas por el cliente pendientes de respuesta.
      */
     public List<Oferta> getOfertasEnviadas() {
-        return cliente.getOfertasEnEspera();
+     for (Oferta o : cliente.getOfertasEnEspera()) {
+		o.haCaducado()
+	}
     }
 
     /**

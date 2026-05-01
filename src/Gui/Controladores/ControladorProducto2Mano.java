@@ -1,8 +1,8 @@
 package Gui.Controladores;
 
+import Gui.SubpanelProducto2Mano;
 import productos.Producto2Mano;
 import usuarios.Cliente;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -26,6 +26,9 @@ public class ControladorProducto2Mano implements ActionListener {
         this.cliente = cliente;
     }
 
+    /**
+     * Gestiona los eventos de los botones de la vista.
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("volver")) {
@@ -38,16 +41,28 @@ public class ControladorProducto2Mano implements ActionListener {
     /**
      * Indica si hay cliente logueado y no es el propietario del producto.
      * Solo en ese caso se muestra el botón de ofertar.
+     *
+     * @return true si puede ofertar
      */
     public boolean puedeOfertar() {
         if (cliente == null) return false;
         return !producto.getPropietario().getNickname().equals(cliente.getNickname());
     }
 
+    /**
+     * Devuelve el producto que se está mostrando.
+     *
+     * @return El producto de segunda mano
+     */
     public Producto2Mano getProducto() {
         return producto;
     }
 
+    /**
+     * Devuelve el cliente logueado.
+     *
+     * @return El cliente
+     */
     public Cliente getCliente() {
         return cliente;
     }

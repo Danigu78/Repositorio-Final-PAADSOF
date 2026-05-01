@@ -6,6 +6,9 @@ import productos.Producto2Mano;
 import tienda.FiltroSegundaMano;
 import tienda.Tienda;
 import usuarios.Cliente;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,18 +18,31 @@ import java.util.List;
  * @author Daniel
  * @version 1.0
  */
-public class ControladorSegundaMano {
+public class ControladorSegundaMano implements ActionListener{
 
     private SubpanelSegundaMano vista;
     private Cliente cliente;
     private Tienda tienda;
-
+private Producto2Mano productoSeleccionado;
+    
     public ControladorSegundaMano(SubpanelSegundaMano vista, Cliente cliente) {
         this.vista = vista;
         this.cliente = cliente;
         this.tienda = Tienda.getInstancia();
     }
-
+    public void actionPerformed(ActionEvent e) {
+        String cmd = e.getActionCommand();
+        if (cmd.startsWith("ver:")) {
+            String idProducto = cmd.substring(4);
+            for (Producto2Mano p : tienda.buscarSegundaMano()) {
+                if (p.getId().equals(idProducto)) {
+                    productoSeleccionado = p;
+                    vista.verProducto2Mano(p);
+                    return;
+                }
+            }
+        }
+    }
     /**
      * Devuelve todos los productos de segunda mano disponibles
      * excluyendo los del propio cliente.

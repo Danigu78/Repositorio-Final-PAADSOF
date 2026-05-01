@@ -100,6 +100,8 @@ public class SubpanelIntercambios extends JPanel {
 				VentanaPrincipal.escalar(12)));
 		boton.setFocusPainted(false);
 		boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		boton.setActionCommand(comando);
+		;
 		boton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
