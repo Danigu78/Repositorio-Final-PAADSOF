@@ -32,8 +32,8 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 	private JTextField campoFichero;
 
 	/*
-	 * Selector común de productos de venta. Nos interesa guardarlo para poder
-	 * refrescar la tabla después de hacer cambios.
+	 * Selector común de productos de venta. Lo guardamos para poder refrescar la
+	 * tabla cuando cambie el stock.
 	 */
 	private SelectorVenta selectorProductos;
 
@@ -63,11 +63,18 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 		campoFichero = crearCampo();
 
 		/*
-		 * Esta tabla ya viene preparada desde la clase padre. Además, al pulsar una
-		 * fila, mete el ID del producto en campoIdProducto.
+		 * Esta tabla solo sirve para consultar los productos actuales. El ID se escribe
+		 * a mano abajo cuando se quiera reponer stock.
 		 */
 		selectorProductos = crearSelectorProductosVenta("Productos actuales",
-				"Filtra los productos y pulsa una fila para cargar su ID.", true, campoIdProducto);
+				"Filtra los productos para consultar el stock disponible.", true);
+
+		/*
+		 * La dejamos como tabla de consulta, sin seleccionar filas. Así no parece que
+		 * al pinchar tenga que hacer algo raro.
+		 */
+		selectorProductos.tabla.setRowSelectionAllowed(false);
+		selectorProductos.tabla.setCellSelectionEnabled(false);
 
 		contenido.add(selectorProductos.bloque);
 		contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(18)));

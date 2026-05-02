@@ -59,15 +59,57 @@ public abstract class UsuarioRegistrado implements Serializable {
 	 * @return true si es válida, false en caso contrario
 	 */
 	public static boolean validarPassword(String pass) {
-		if (pass == null || pass.length() < 8// longitud minimo 8
-				|| !pass.matches(".*[A-Z].*")// busca al menos una letra mayuscula
-				|| !pass.matches(".*[a-z].*")// busca al menos una letra minuscula
-				|| !pass.matches(".*\\d.*")// busca al menos un digito numerico
-				|| !pass.matches(".*[^a-zA-Z0-9].*")) {// buscamos al menos unn caracter especial{
-			System.out.println("La contraseña debe tener al menos 8 caracteres, "
-					+ "una mayúscula, una minúscula, un número y un carácter especial.");
+		if (pass == null) {
+			System.out.println("La contraseña no puede ser null.");
 			return false;
 		}
+
+		if (pass.length() < 8) {
+			System.out.println("La contraseña debe tener al menos 8 caracteres.");
+			return false;
+		}
+
+		boolean tieneMayuscula = false;
+		boolean tieneMinuscula = false;
+		boolean tieneNumero = false;
+		boolean tieneEspecial = false;
+
+		// Recorremos la contraseña para comprobar qué tipos de caracteres tiene
+		for (int i = 0; i < pass.length(); i++) {
+			char c = pass.charAt(i);
+
+			if (Character.isUpperCase(c)) {
+				tieneMayuscula = true;
+			} else if (Character.isLowerCase(c)) {
+				tieneMinuscula = true;
+			} else if (Character.isDigit(c)) {
+				tieneNumero = true;
+			} else {
+				// Si no es letra ni número, lo contamos como carácter especial.
+				tieneEspecial = true;
+			}
+		}
+
+		if (!tieneMayuscula) {
+			System.out.println("La contraseña debe tener al menos una mayúscula.");
+			return false;
+		}
+
+		if (!tieneMinuscula) {
+			System.out.println("La contraseña debe tener al menos una minúscula.");
+			return false;
+		}
+
+		if (!tieneNumero) {
+			System.out.println("La contraseña debe tener al menos un número.");
+			return false;
+		}
+
+		if (!tieneEspecial) {
+			System.out.println("La contraseña debe tener al menos un carácter especial.");
+			return false;
+		}
+
 		return true;
 	}
 
