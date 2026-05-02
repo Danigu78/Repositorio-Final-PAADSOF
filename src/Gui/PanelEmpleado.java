@@ -15,15 +15,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.plaf.basic.BasicButtonUI;
 
-import Gui.Empleado.SeccionCategoriasEmpleado;
-import Gui.Empleado.SeccionEntregasEmpleado;
-import Gui.Empleado.SeccionIntercambiosEmpleado;
-import Gui.Empleado.SeccionModificarEmpleado;
-import Gui.Empleado.SeccionNotificacionesEmpleado;
-import Gui.Empleado.SeccionPacksEmpleado;
-import Gui.Empleado.SeccionPedidosEmpleado;
-import Gui.Empleado.SeccionStockEmpleado;
-import Gui.Empleado.SeccionTasacionEmpleado;
 import usuarios.Empleado;
 import usuarios.TipoPermisos;
 

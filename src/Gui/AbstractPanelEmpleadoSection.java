@@ -89,12 +89,10 @@ public abstract class AbstractPanelEmpleadoSection extends JPanel {
 		bloque.setMaximumSize(new Dimension(1180, Integer.MAX_VALUE));
 		bloque.setBackground(VentanaPrincipal.COLOR_TARJETA);
 
-		bloque.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createCompoundBorder(
-						BorderFactory.createMatteBorder(0, 4, 0, 0, VentanaPrincipal.COLOR_ACENTO),
-						BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE, 1)),
-				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(18), VentanaPrincipal.escalar(18),
-						VentanaPrincipal.escalar(18), VentanaPrincipal.escalar(18))));
+		bloque.setBorder(
+				BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE, 1),
+						BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(18), VentanaPrincipal.escalar(18),
+								VentanaPrincipal.escalar(18), VentanaPrincipal.escalar(18))));
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
@@ -243,16 +241,23 @@ public abstract class AbstractPanelEmpleadoSection extends JPanel {
 
 	protected JButton crearBotonSecundario(String texto) {
 		JButton boton = new JButton(texto);
+
 		boton.setFont(VentanaPrincipal.FUENTE_BOTON);
-		boton.setBackground(VentanaPrincipal.COLOR_PANEL);
-		boton.setForeground(VentanaPrincipal.COLOR_TEXTO_BARRA);
+		boton.setBackground(VentanaPrincipal.COLOR_ACENTO);
+		boton.setForeground(Color.BLACK);
+
 		boton.setFocusPainted(false);
 		boton.setBorderPainted(false);
+		boton.setContentAreaFilled(true);
 		boton.setOpaque(true);
+
 		boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
 		boton.setPreferredSize(new Dimension(VentanaPrincipal.escalar(160), VentanaPrincipal.escalar(36)));
+
 		boton.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(7), VentanaPrincipal.escalar(14),
 				VentanaPrincipal.escalar(7), VentanaPrincipal.escalar(14)));
+
 		return boton;
 	}
 
