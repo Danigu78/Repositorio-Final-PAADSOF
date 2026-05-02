@@ -9,14 +9,14 @@ import tienda.Estadistica;
 /**
  * Clase abstracta para productos destinados a la venta directa.
  * 
+ * Añade a Producto los datos propios de los productos que se venden en la
+ * tienda: precio, stock y reseñas.
+ * 
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
  */
 public abstract class ProductoVenta extends Producto implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	/** Precio base de venta al público. */
@@ -25,21 +25,17 @@ public abstract class ProductoVenta extends Producto implements Serializable {
 	/** Cantidad de unidades disponibles en el inventario. */
 	protected int stockDisponible;
 
-	/** Listado de opiniones y puntuaciones de los clientes. */
+	/** Opiniones y puntuaciones que han dejado los clientes. */
 	protected ArrayList<Reseña> reseñas;
 
-	/** Listado de categorías a las que está asignado el producto. */
-	protected ArrayList<Categoria> categorias;
-	/* CONSTRUCTORES DEL PRODUCTO CON DIFERENTES PARAMETROS */
-
 	/**
-	 * Constructor de la clase ProductoVenta
+	 * Constructor de la clase ProductoVenta.
 	 *
-	 * @param nombre          el nombre del producto
-	 * @param descripcion     la descripción del producto
-	 * @param imagenRuta      la ruta de la imagen asociada
-	 * @param precioOficial   el precio base del producto
-	 * @param stockDisponible la cantidad disponible en stock
+	 * @param nombre          nombre del producto
+	 * @param descripcion     descripción del producto
+	 * @param imagenRuta      ruta de la imagen asociada
+	 * @param precioOficial   precio base del producto
+	 * @param stockDisponible cantidad disponible en stock
 	 */
 	public ProductoVenta(String nombre, String descripcion, String imagenRuta, double precioOficial,
 			int stockDisponible) {
@@ -49,88 +45,82 @@ public abstract class ProductoVenta extends Producto implements Serializable {
 		if (precioOficial < 0) {
 			throw new ProductoInvalidoException("El precio oficial no puede ser negativo.");
 		}
+
 		if (stockDisponible < 0) {
 			throw new ProductoInvalidoException("El stock disponible no puede ser negativo.");
 		}
 
 		Estadistica est = Estadistica.getInstancia();
+
 		this.id = "PV-" + est.getnProductosVentas();
 		est.setnProductosVentas(est.getnProductosVentas() + 1);
+
 		this.precioOficial = precioOficial;
 		this.stockDisponible = stockDisponible;
-		this.reseñas = new ArrayList<Reseña>();
-		this.categorias = new ArrayList<Categoria>();
+		this.reseñas = new ArrayList<>();
 	}
 
 	/**
-	 * Calcula la puntuación media a partir de las reseñas del producto
+	 * Calcula la puntuación media a partir de las reseñas del producto.
 	 *
-	 * @return la media de puntuaciones o 0 si no tiene reseñas
+	 * @return media de puntuaciones, o 0 si no tiene reseñas
 	 */
 	public double getMediaPuntuacion() {
-		double suma = 0;
-		if (this.reseñas.size() == 0) {
+		if (this.reseñas.isEmpty()) {
 			return 0;
 		}
+
+		double suma = 0;
 
 		for (Reseña r : this.reseñas) {
 			suma += r.getPuntuacion();
 		}
 
-		suma = suma / this.reseñas.size();
-
-		return suma;
+		return suma / this.reseñas.size();
 	}
 
 	/**
-	 * Recupera las reseñas del producto
+	 * Recupera las reseñas del producto.
 	 *
-	 * @return la lista de reseñas asociadas
+	 * @return lista de reseñas asociadas
 	 */
 	public ArrayList<Reseña> getReseñas() {
 		return this.reseñas;
 	}
 
 	/**
-	 * Devuelve el stock disponible del producto
+	 * Devuelve el stock disponible del producto.
 	 *
-	 * @return las unidades que quedan disponibles
+	 * @return unidades que quedan disponibles
 	 */
 	public int getStockDisponible() {
 		return this.stockDisponible;
 	}
 
 	/**
-	 * Actualiza la cantidad disponible del producto
+	 * Actualiza la cantidad disponible del producto.
 	 *
-	 * @param cantidad el nuevo stock
+	 * @param cantidad nuevo stock
 	 */
 	public void setStockDisponible(int cantidad) {
 		if (cantidad < 0) {
 			throw new ProductoInvalidoException("El stock disponible no puede ser negativo.");
 		}
+
 		this.stockDisponible = cantidad;
 	}
 
 	/**
-	 * Recupera las categorías del producto
+	 * Añade una categoría al producto y actualiza también la categoría.
 	 *
-	 * @return la lista de categorías a las que pertenece
-	 */
-	public ArrayList<Categoria> getCategorias() {
-		return this.categorias;
-	}
-
-	/**
-	 * Añade una categoría al producto
-	 *
-	 * @param c la categoría que se quiere añadir
-	 * @return true si se añade correctamente, false en caso contrario
+	 * @param c categoría que se quiere añadir
+	 * @return true si se añade correctamente
 	 */
 	public boolean addCategoria(Categoria c) {
 		if (c == null) {
 			return false;
 		}
+
 		if (this.categorias.contains(c)) {
 			throw new ProductoYaEnCategoriaException(
 					"El producto " + this.getNombre() + " ya pertenece a la categoría " + c.getNombre() + ".");
@@ -138,69 +128,78 @@ public abstract class ProductoVenta extends Producto implements Serializable {
 
 		this.categorias.add(c);
 		c.addProductoInterno(this);
+
 		return true;
 	}
 
 	/**
-	 * Elimina una categoría del producto
+	 * Elimina una categoría del producto y actualiza también la categoría.
 	 *
-	 * @param c la categoría que se quiere quitar
-	 * @return true si se elimina correctamente, false en cualquier otro caso
+	 * @param c categoría que se quiere quitar
+	 * @return true si se elimina correctamente
 	 */
 	public boolean deleteCategoria(Categoria c) {
 		if (c == null) {
 			return false;
 		}
+
 		if (!this.categorias.contains(c)) {
 			return false;
 		}
 
 		this.categorias.remove(c);
 		c.deleteProductoInterno(this);
+
 		return true;
 	}
 
 	/**
-	 * Añade internamente una categoría al producto para mantener la relación
-	 * bidireccional
+	 * Añade internamente una categoría al producto.
+	 * 
+	 * Se usa para evitar llamadas infinitas al mantener la relación producto -
+	 * categoría por los dos lados.
 	 *
-	 * @param c la categoría a añadir
-	 * @return true si se añade, false si no se puede hacer
+	 * @param c categoría a añadir
+	 * @return true si se añade, false si no
 	 */
 	protected boolean addCategoriaInterno(Categoria c) {
 		if (c == null || this.categorias.contains(c)) {
 			return false;
 		}
+
 		this.categorias.add(c);
 		return true;
 	}
 
 	/**
-	 * Elimina internamente una categoría del producto para mantener la relación
-	 * bidireccional
+	 * Elimina internamente una categoría del producto.
 	 *
-	 * @param c la categoría a eliminar
-	 * @return true si se elimina, false en caso contrario
+	 * @param c categoría a eliminar
+	 * @return true si se elimina, false si no
 	 */
 	protected boolean deleteCategoriaInterno(Categoria c) {
 		if (c == null || !this.categorias.contains(c)) {
 			return false;
 		}
+
 		this.categorias.remove(c);
 		return true;
 	}
 
 	/**
-	 * Añade una reseña al producto
+	 * Añade una reseña al producto.
 	 *
-	 * @param r la reseña que se quiere guardar
-	 * @return true si se añade correctamente, false si no se puede añadir
+	 * @param r reseña que se quiere guardar
+	 * @return true si se añade correctamente
 	 */
 	public boolean addReseña(Reseña r) {
-		if (r == null)
+		if (r == null) {
 			return false;
-		if (this.reseñas.contains(r))
+		}
+
+		if (this.reseñas.contains(r)) {
 			return false;
+		}
 
 		for (Reseña existente : this.reseñas) {
 			if (existente.getAutor() != null && existente.getAutor().equals(r.getAutor())) {
@@ -210,19 +209,21 @@ public abstract class ProductoVenta extends Producto implements Serializable {
 
 		this.reseñas.add(r);
 		r.setProducto(this);
+
 		return true;
 	}
 
 	/**
-	 * Elimina una reseña del producto
+	 * Elimina una reseña del producto.
 	 *
-	 * @param r la reseña que se quiere borrar
-	 * @return true si se elimina, false si no existe o no es válida
+	 * @param r reseña que se quiere borrar
+	 * @return true si se elimina, false si no existe
 	 */
 	public boolean deleteReseña(Reseña r) {
 		if (r == null) {
 			return false;
 		}
+
 		if (!this.reseñas.contains(r)) {
 			return false;
 		}
@@ -232,66 +233,40 @@ public abstract class ProductoVenta extends Producto implements Serializable {
 	}
 
 	/**
-	 * Devuelve una representación general del producto con sus datos más
-	 * importantes
+	 * Recupera el precio oficial del producto.
 	 *
-	 * @return un texto con el tipo, precio, stock, puntuación y categorías
-	 */
-	@Override
-	public String toString() {
-		String tipo = "Producto";
-		if (this instanceof Comic)
-			tipo = "CÓMIC";
-		else if (this instanceof Figura)
-			tipo = "FIGURA";
-		else if (this instanceof JuegoMesa)
-			tipo = "JUEGO";
-		else if (this instanceof Pack)
-			tipo = "PACK";
-
-		String cats = "";
-		for (Categoria c : categorias)
-			cats += c.getNombre() + " ";
-
-		String valoracion = reseñas.isEmpty() ? "Sin reseñas" : String.format("%.1f", getMediaPuntuacion()) + "/5";
-
-		return "[" + tipo + "][" + id + "] " + nombre + " | Precio: " + precioOficial + "€" + " | Stock: "
-				+ stockDisponible + " | Puntuación: " + valoracion + " | Categorías: "
-				+ (cats.isBlank() ? "ninguna" : cats);
-	}
-
-	/**
-	 * Recupera el precio oficial del producto
-	 *
-	 * @return el precio actual
+	 * @return precio actual
 	 */
 	public double getPrecioOficial() {
-		return precioOficial;
+		return this.precioOficial;
 	}
 
 	/**
-	 * Cambia el precio oficial del producto
+	 * Cambia el precio oficial del producto.
 	 *
-	 * @param precioOficial el nuevo precio
+	 * @param precioOficial nuevo precio
 	 * @return true si se actualiza correctamente
 	 */
 	public boolean setPrecioOficial(double precioOficial) {
 		if (precioOficial < 0) {
 			throw new ProductoInvalidoException("El precio oficial no puede ser negativo.");
 		}
+
 		this.precioOficial = precioOficial;
 		return true;
 	}
 
 	/**
-	 * Genera un resumen breve del producto
+	 * Genera un resumen breve del producto.
 	 *
-	 * @return una cadena con la información principal del producto
+	 * @return cadena con la información principal del producto
 	 */
 	public String resumen() {
 		String cats = "";
-		for (Categoria c : categorias)
+
+		for (Categoria c : categorias) {
 			cats += c.getNombre() + " ";
+		}
 
 		String valoracion = reseñas.isEmpty() ? "Sin reseñas" : String.format("%.1f", getMediaPuntuacion()) + "/10";
 
@@ -300,20 +275,58 @@ public abstract class ProductoVenta extends Producto implements Serializable {
 	}
 
 	/**
-	 * Muestra por pantalla las categorías a las que pertenece el producto
+	 * Muestra por pantalla las categorías a las que pertenece el producto.
 	 */
 	public void imprimirCategorias() {
 		if (categorias.isEmpty()) {
 			System.out.println("  [" + id + "] " + nombre + " -> sin categorias");
 			return;
 		}
+
 		String cats = "";
+
 		for (Categoria c : categorias) {
-			if (!cats.equals(""))
+			if (!cats.equals("")) {
 				cats += ", ";
+			}
+
 			cats += c.getNombre();
 		}
+
 		System.out.println("  [" + id + "] " + nombre + " -> " + cats);
+	}
+
+	/**
+	 * Devuelve una representación general del producto con sus datos más
+	 * importantes.
+	 *
+	 * @return texto con tipo, precio, stock, puntuación y categorías
+	 */
+	@Override
+	public String toString() {
+		String tipo = "Producto";
+
+		if (this instanceof Comic) {
+			tipo = "CÓMIC";
+		} else if (this instanceof Figura) {
+			tipo = "FIGURA";
+		} else if (this instanceof JuegoMesa) {
+			tipo = "JUEGO";
+		} else if (this instanceof Pack) {
+			tipo = "PACK";
+		}
+
+		String cats = "";
+
+		for (Categoria c : categorias) {
+			cats += c.getNombre() + " ";
+		}
+
+		String valoracion = reseñas.isEmpty() ? "Sin reseñas" : String.format("%.1f", getMediaPuntuacion()) + "/5";
+
+		return "[" + tipo + "][" + id + "] " + nombre + " | Precio: " + precioOficial + "€" + " | Stock: "
+				+ stockDisponible + " | Puntuación: " + valoracion + " | Categorías: "
+				+ (cats.isBlank() ? "ninguna" : cats.trim());
 	}
 
 	/**
@@ -334,7 +347,7 @@ public abstract class ProductoVenta extends Producto implements Serializable {
 	}
 
 	/**
-	 * Evita que las listas de reseñas o categorías queden a null al guardar/cargar.
+	 * Evita que las listas queden a null al guardar o cargar.
 	 */
 	private void inicializarCamposNulos() {
 		if (this.reseñas == null) {

@@ -4,7 +4,6 @@ import java.io.*;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -61,16 +60,41 @@ public class Cliente extends UsuarioRegistrado implements Serializable {
 	}
 
 	/**
-	 * Permite al cliente subir un producto de segunda mano a su cartera.
+	 * Permite al cliente subir un producto de segunda mano sin indicar categorías.
 	 *
-	 * @param nombre        nombre del producto
-	 * @param descripString descripción del producto
-	 * @param imagen        ruta o identificador de la imagen
+	 * Se deja este método para los casos sencillos y para no romper código
+	 * anterior.
+	 *
+	 * @param nombre      nombre del producto
+	 * @param descripcion descripción del producto
+	 * @param imagen      ruta o identificador de la imagen
 	 */
-	public void subirProducto(String nombre, String descripString, String imagen) {
-		Producto2Mano product = new Producto2Mano(this, nombre, descripString, imagen);
-		carteraIntercambio.add(product);
-		System.out.println("Producto subido correctamente a tu cartera personal de objetos de sgeunda mano.");
+	public void subirProducto(String nombre, String descripcion, String imagen) {
+		subirProducto(nombre, descripcion, imagen, null);
+	}
+
+	/**
+	 * Permite al cliente subir un producto de segunda mano a su cartera,
+	 * asociándolo opcionalmente a varias categorías.
+	 *
+	 * @param nombre      nombre del producto
+	 * @param descripcion descripción del producto
+	 * @param imagen      ruta o identificador de la imagen
+	 * @param categorias  categorías del producto
+	 */
+	public void subirProducto(String nombre, String descripcion, String imagen, List<Categoria> categorias) {
+		Producto2Mano producto = new Producto2Mano(this, nombre, descripcion, imagen);
+
+		if (categorias != null) {
+			for (Categoria categoria : categorias) {
+				if (categoria != null && !producto.getCategorias().contains(categoria)) {
+					producto.getCategorias().add(categoria);
+				}
+			}
+		}
+
+		carteraIntercambio.add(producto);
+		System.out.println("Producto subido correctamente a tu cartera personal de objetos de segunda mano.");
 	}
 
 	/**

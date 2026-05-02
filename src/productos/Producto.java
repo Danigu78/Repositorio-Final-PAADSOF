@@ -1,13 +1,16 @@
 package productos;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import excepciones.*;
 
 /**
- * Clase abstracta que define la estructura base de cualquier artículo del
- * sistema. Proporciona los atributos comunes de identificación, denominación y
- * descripcion .
+ * Clase abstracta que define la estructura base de cualquier producto del
+ * sistema.
+ * 
+ * Guarda los datos comunes que van a tener tanto los productos de venta como
+ * los productos de segunda mano.
  * 
  * @author Lucas Manuel Blanco Rodríguez
  * @version 1.0
@@ -15,29 +18,38 @@ import excepciones.*;
 public abstract class Producto implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+
 	/** Identificador único del producto. */
 	protected String id;
+
 	/** Nombre del producto. */
 	protected String nombre;
+
 	/** Descripción del producto. */
 	protected String descripcion;
+
 	/** Ruta del archivo de imagen del producto. */
 	protected String imagenRuta;
 
+	/** Categorías a las que pertenece el producto. */
+	protected ArrayList<Categoria> categorias;
+
 	/**
-	 * Constructor de la clase Producto
+	 * Constructor de la clase Producto.
 	 *
-	 * @param nombre      el nombre del producto
-	 * @param descripcion una pequeña descripción del producto
-	 * @param imagenRuta  la ruta de la imagen asociada
+	 * @param nombre      nombre del producto
+	 * @param descripcion descripción del producto
+	 * @param imagenRuta  ruta o nombre del archivo de imagen
 	 */
 	public Producto(String nombre, String descripcion, String imagenRuta) {
 		if (nombre == null || nombre.isBlank()) {
 			throw new ProductoInvalidoException("El nombre del producto no puede estar vacío.");
 		}
+
 		if (descripcion == null || descripcion.isBlank()) {
 			throw new ProductoInvalidoException("La descripción del producto no puede estar vacía.");
 		}
+
 		if (imagenRuta == null || imagenRuta.isBlank()) {
 			throw new ProductoInvalidoException("La ruta de la imagen no puede estar vacía.");
 		}
@@ -46,75 +58,133 @@ public abstract class Producto implements Serializable {
 		this.nombre = nombre;
 		this.descripcion = descripcion;
 		this.imagenRuta = imagenRuta;
+		this.categorias = new ArrayList<>();
 	}
 
 	/**
-	 * Devuelve el identificador del producto
+	 * Devuelve el identificador del producto.
 	 *
-	 * @return el id del producto
+	 * @return id del producto
 	 */
 	public String getId() {
 		return this.id;
 	}
 
 	/**
-	 * Recupera el nombre del producto
+	 * Devuelve el nombre del producto.
 	 *
-	 * @return el nombre actual
+	 * @return nombre del producto
 	 */
 	public String getNombre() {
 		return this.nombre;
 	}
 
 	/**
-	 * Muestra una representación sencilla del producto
+	 * Devuelve la descripción del producto.
 	 *
-	 * @return un texto con su id, nombre e imagen
-	 */
-	@Override
-	public String toString() {
-		return "[" + this.id + "] " + this.getNombre() + " | Imagen: " + this.getImagenRuta() + " |";
-	}
-
-	/**
-	 * Recupera la descripción del producto
-	 *
-	 * @return la descripción guardada
+	 * @return descripción guardada
 	 */
 	public String getDescripcion() {
-		return descripcion;
+		return this.descripcion;
 	}
 
 	/**
-	 * Cambia la descripción del producto
+	 * Cambia la descripción del producto.
 	 *
-	 * @param descripcion la nueva descripción
+	 * @param descripcion nueva descripción
 	 */
 	public void setDescripcion(String descripcion) {
 		if (descripcion == null || descripcion.isBlank()) {
 			throw new ProductoInvalidoException("La descripción del producto no puede estar vacía.");
 		}
+
 		this.descripcion = descripcion;
 	}
 
 	/**
-	 * Recupera la ruta de la imagen del producto
+	 * Devuelve la ruta de la imagen del producto.
 	 *
-	 * @return la ruta de la imagen
+	 * @return ruta de la imagen
 	 */
 	public String getImagenRuta() {
-		return imagenRuta;
+		return this.imagenRuta;
 	}
 
 	/**
-	 * Actualiza la ruta de la imagen del producto
+	 * Cambia la ruta de la imagen del producto.
 	 *
-	 * @param imagenRuta la nueva ruta de la imagen
+	 * @param imagenRuta nueva ruta de la imagen
 	 */
 	public void setImagenRuta(String imagenRuta) {
 		if (imagenRuta == null || imagenRuta.isBlank()) {
 			throw new ProductoInvalidoException("La ruta de la imagen no puede estar vacía.");
 		}
+
 		this.imagenRuta = imagenRuta;
+	}
+
+	/**
+	 * Devuelve las categorías del producto.
+	 *
+	 * @return lista de categorías
+	 */
+	public ArrayList<Categoria> getCategorias() {
+		return this.categorias;
+	}
+
+	/**
+	 * Cambia la lista de categorías del producto.
+	 *
+	 * @param categorias nuevas categorías
+	 */
+	public void setCategorias(ArrayList<Categoria> categorias) {
+		if (categorias == null) {
+			this.categorias = new ArrayList<>();
+		} else {
+			this.categorias = categorias;
+		}
+	}
+
+	/**
+	 * Añade una categoría al producto si todavía no la tiene.
+	 *
+	 * @param categoria categoría que se quiere añadir
+	 * @return true si se añade, false si no se puede
+	 */
+	public boolean añadirCategoria(Categoria categoria) {
+		if (categoria == null) {
+			return false;
+		}
+
+		if (this.categorias.contains(categoria)) {
+			return false;
+		}
+
+		this.categorias.add(categoria);
+		return true;
+	}
+
+	/**
+	 * Quita una categoría del producto.
+	 *
+	 * @param categoria categoría que se quiere quitar
+	 * @return true si se ha quitado, false si no estaba
+	 */
+	public boolean eliminarCategoria(Categoria categoria) {
+		if (categoria == null) {
+			return false;
+		}
+
+		return this.categorias.remove(categoria);
+	}
+
+	/**
+	 * Muestra una representación sencilla del producto.
+	 *
+	 * @return texto con id, nombre e imagen
+	 */
+	@Override
+	public String toString() {
+		return "[" + this.id + "] " + this.nombre + " | Imagen: " + this.imagenRuta + " |";
 	}
 }

@@ -1,16 +1,8 @@
 package Gui;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
+import java.awt.*;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 import productos.Categoria;
 import tienda.Tienda;
@@ -29,7 +21,8 @@ public class SeccionCategoriasEmpleado extends AbstractPanelEmpleadoVentaSection
 	private JTextField campoIdProducto;
 	private JComboBox<String> comboCategoria;
 
-	private SelectorVenta selectorProductos;
+	/* La usamos como tabla de consulta, igual que en stock */
+	private SelectorVenta tablaProductos;
 
 	public SeccionCategoriasEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
@@ -47,21 +40,15 @@ public class SeccionCategoriasEmpleado extends AbstractPanelEmpleadoVentaSection
 		comboCategoria = crearCombo(new String[] { "Selecciona una categoría" });
 		cargarCategorias();
 
-		/*
-		 * Igual que en stock: la tabla solo se usa para consultar. El ID del producto
-		 * se escribe a mano abajo.
-		 */
-		selectorProductos = crearSelectorProductosVenta("Productos actuales",
+		// La tabla es solo para mirar productos y sus categorías.
+		tablaProductos = crearSelectorProductosVenta("Productos actuales",
 				"Filtra los productos para consultar sus categorías.", true);
 
-		/*
-		 * Dejamos la tabla como tabla de consulta. Así al pulsar una fila no se marca
-		 * en amarillo ni parece que haga algo raro.
-		 */
-		selectorProductos.tabla.setRowSelectionAllowed(false);
-		selectorProductos.tabla.setCellSelectionEnabled(false);
+		// No queremos que al pinchar una fila parezca que hace algo especial.
+		tablaProductos.tabla.setRowSelectionAllowed(false);
+		tablaProductos.tabla.setCellSelectionEnabled(false);
 
-		contenido.add(selectorProductos.bloque);
+		contenido.add(tablaProductos.bloque);
 		contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(18)));
 		contenido.add(crearBloqueCategorias());
 
@@ -82,6 +69,7 @@ public class SeccionCategoriasEmpleado extends AbstractPanelEmpleadoVentaSection
 		return bloque;
 	}
 
+	// Parte izquierda: ID del producto y categoría elegida
 	private JPanel crearPanelDatosCategoria() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -97,6 +85,7 @@ public class SeccionCategoriasEmpleado extends AbstractPanelEmpleadoVentaSection
 		return panel;
 	}
 
+	// Parte derecha: botones para añadir o quitar la categoría
 	private JPanel crearPanelBotonesCategoria() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -133,7 +122,7 @@ public class SeccionCategoriasEmpleado extends AbstractPanelEmpleadoVentaSection
 		boolean cambiado = empleado.añadirProductoACategoria(idProducto, categoria);
 
 		if (cambiado) {
-			recargarTablaProductos(selectorProductos.tabla);
+			recargarTablaProductos(tablaProductos.tabla);
 			mostrarMensaje("Categoría añadida correctamente");
 		} else {
 			mostrarError("No se pudo añadir la categoría");
@@ -151,7 +140,7 @@ public class SeccionCategoriasEmpleado extends AbstractPanelEmpleadoVentaSection
 		boolean cambiado = empleado.eliminarProductoDeCategoria(idProducto, categoria);
 
 		if (cambiado) {
-			recargarTablaProductos(selectorProductos.tabla);
+			recargarTablaProductos(tablaProductos.tabla);
 			mostrarMensaje("Categoría quitada correctamente");
 		} else {
 			mostrarError("No se pudo quitar la categoría");

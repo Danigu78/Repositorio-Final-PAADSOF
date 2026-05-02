@@ -345,6 +345,30 @@ public class Empleado extends UsuarioRegistrado implements Serializable {
 	}
 
 	/**
+	 * Mete las categorías en el producto recién creado.
+	 * 
+	 * Lo hacemos con Categoria.addProducto porque esa función ya actualiza también
+	 * la lista de categorías del producto.
+	 */
+	private void meterCategoriasAlProducto(ProductoVenta producto, ArrayList<Categoria> categorias) {
+		if (producto == null || categorias == null) {
+			return;
+		}
+
+		for (Categoria categoria : categorias) {
+			if (categoria == null) {
+				continue;
+			}
+
+			try {
+				categoria.addProducto(producto);
+			} catch (ProductoYaEnCategoriaException e) {
+				System.out.println("  Aviso: " + e.getMessage());
+			}
+		}
+	}
+
+	/**
 	 * Añade un nuevo producto a la tienda según su tipo y atributos.
 	 * 
 	 * @param letra           Tipo de producto (C, J, F)
@@ -375,34 +399,34 @@ public class Empleado extends UsuarioRegistrado implements Serializable {
 			int minNumjugadores, int maxNumjugadores, int minEdad, int maxEdad, String Estilo) {
 
 		if (!puedeRealizarTarea(TipoPermisos.GESTION_STOCK)) {
-
 			return false;
 		}
+
 		Tienda tienda = Tienda.getInstancia();
 
-		// 1. Validar atributos básicos
 		if (nombre == null || precioOficial <= 0 || Stock <= 0 || descripcion == null || imagen == null) {
 			System.out.println("Los atributos de producto deben aparecer correctamente");
 			return false;
 		}
+
 		if (categorias == null) {
 			return false;
 		}
-		boolean flag = true;
 
-		for (Categoria c : categorias) {
-			if (!tienda.getCategorias().contains(c)) {
-				flag = false;
+		boolean categoriasCorrectas = true;
+
+		for (Categoria categoria : categorias) {
+			if (!tienda.getCategorias().contains(categoria)) {
+				categoriasCorrectas = false;
 				break;
 			}
 		}
 
-		if (!flag) {
+		if (!categoriasCorrectas) {
 			System.out.println("Las categorias que se introduzcan deben existir en la tienda");
 			return false;
 		}
 
-		// Validar letra ANTES de comprobar existencia
 		if (letra == null || letra.length() != 1) {
 			this.recibirNotificacion(
 					"El tipo de producto que has intentado crear no es correcta. Deben ser Comics(C), Figuras(F) o Juegos(J)");
@@ -415,16 +439,13 @@ public class Empleado extends UsuarioRegistrado implements Serializable {
 				System.out.println("Estas añadiendo un comic, los atributos deben cumplir las condiciones necesarias");
 				return false;
 			}
+
 			ProductoVenta comic = new Comic(nombre, descripcion, imagen, precioOficial, Stock, numpaginas, editorial,
 					añoPublicacion);
+
 			tienda.añadirProducto(comic);
-			for (Categoria cats : categorias) {
-				try {
-					cats.addProducto(comic);
-				} catch (ProductoYaEnCategoriaException e) {
-					System.out.println("  Aviso: " + e.getMessage());
-				}
-			}
+			meterCategoriasAlProducto(comic, categorias);
+
 			this.recibirNotificacion("Has añadido el comic " + comic.getNombre() + " a la tienda");
 			return true;
 
@@ -433,54 +454,53 @@ public class Empleado extends UsuarioRegistrado implements Serializable {
 				System.out.println("La edad minima del juego tiene que ser mayor que 0");
 				return false;
 			}
+
 			if (maxEdad <= 0 || maxEdad > 100) {
 				System.out.println("La edad maxima del juego debe estar entre 1 y 100 años");
 				return false;
 			}
+
 			if (minNumjugadores <= 0) {
 				System.out.println("El juego tendrá mínimo 1 jugador");
 				return false;
 			}
+
 			if (maxNumjugadores <= 0) {
 				System.out.println("El juego debe tener por lo menos un jugador");
 				return false;
 			}
+
 			ProductoVenta juego = new JuegoMesa(nombre, descripcion, imagen, precioOficial, Stock, minNumjugadores,
 					maxNumjugadores, minEdad, maxEdad, Estilo);
+
 			tienda.añadirProducto(juego);
-			for (Categoria cats : categorias) {
-				try {
-					cats.addProducto(juego);
-				} catch (ProductoYaEnCategoriaException e) {
-					System.out.println("  Aviso: " + e.getMessage());
-				}
-			}
+			meterCategoriasAlProducto(juego, categorias);
+
 			this.recibirNotificacion("Has añadido el juego " + juego.getNombre() + " a la tienda");
-			return true; // <-- faltaba el return Y el break
+			return true;
 
 		case "F":
 			if (altura <= 0 || ancho <= 0 || largo <= 0) {
 				System.out.println("Las dimensiones deben ser positivas");
 				return false;
 			}
+
 			if (material == null) {
 				System.out.println("Las figuras deben tener material");
 				return false;
 			}
+
 			if (marca == null) {
 				System.out.println("Las figuras deben tener marca");
 				return false;
 			}
+
 			ProductoVenta figura = new Figura(nombre, descripcion, imagen, precioOficial, Stock, altura, ancho, largo,
 					material, marca);
+
 			tienda.añadirProducto(figura);
-			for (Categoria cats : categorias) {
-				try {
-					cats.addProducto(figura);
-				} catch (ProductoYaEnCategoriaException e) {
-					System.out.println("  Aviso: " + e.getMessage());
-				}
-			}
+			meterCategoriasAlProducto(figura, categorias);
+
 			this.recibirNotificacion("Has añadido la figura " + figura.getNombre() + " a la tienda");
 			return true;
 
@@ -1134,6 +1154,50 @@ public class Empleado extends UsuarioRegistrado implements Serializable {
 	public void recibirNotificacion(String mensaje) {
 		this.notificaciones.add(new Notificacion(mensaje));
 		System.out.println("[Notificación Empleado]: " + mensaje);
+	}
+
+	/**
+	 * Elimina una notificación concreta del empleado.
+	 *
+	 * @param notificacion notificación que se quiere borrar
+	 * @return true si se ha borrado correctamente, false en caso contrario
+	 */
+	public boolean eliminarNotificacion(Notificacion notificacion) {
+		if (notificacion == null || this.notificaciones.isEmpty() || !this.notificaciones.contains(notificacion)) {
+			System.out.println("No se puede borrar la notificación.");
+			return false;
+		}
+
+		this.notificaciones.remove(notificacion);
+		System.out.println("Notificación eliminada correctamente.");
+		return true;
+	}
+
+	/**
+	 * Elimina todas las notificaciones que ya están marcadas como leídas.
+	 *
+	 * @return número de notificaciones eliminadas
+	 */
+	public int eliminarNotificacionesLeidas() {
+		if (this.notificaciones == null || this.notificaciones.isEmpty()) {
+			System.out.println("No hay notificaciones para borrar.");
+			return 0;
+		}
+
+		int eliminadas = 0;
+
+		/* De atrás a adelante para que no se nos joroben los índices de la lista */
+		for (int i = this.notificaciones.size() - 1; i >= 0; i--) {
+			Notificacion notificacion = this.notificaciones.get(i);
+
+			if (notificacion != null && notificacion.isLeida()) {
+				this.notificaciones.remove(i);
+				eliminadas++;
+			}
+		}
+
+		System.out.println("Se han eliminado " + eliminadas + " notificaciones leídas.");
+		return eliminadas;
 	}
 
 	/**

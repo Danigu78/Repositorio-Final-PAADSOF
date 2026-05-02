@@ -1,100 +1,61 @@
 package Gui;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
+import java.awt.*;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 import usuarios.Empleado;
 
 /**
  * Panel de gestión de stock para el empleado.
  * 
- * Desde aquí el empleado puede ver los productos de la tienda, reponer unidades
- * de un producto concreto y cargar productos nuevos desde un fichero de texto.
+ * Desde aquí se pueden consultar productos, reponer stock y cargar productos
+ * desde un fichero.
  */
 public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 
 	private static final long serialVersionUID = 1L;
 
-	/* Campos que se usan en la parte de reponer stock */
 	private JTextField campoIdProducto;
 	private JTextField campoUnidades;
-
-	/* Aquí se guarda la ruta del fichero elegido por el empleado */
 	private JTextField campoFichero;
 
-	/*
-	 * Selector común de productos de venta. Lo guardamos para poder refrescar la
-	 * tabla cuando cambie el stock.
-	 */
-	private SelectorVenta selectorProductos;
+	/* La guardamos para poder refrescarla después de cambiar algo */
+	private SelectorVenta tablaProductos;
 
-	/**
-	 * Crea la sección de stock asociada a una ventana y a un empleado concreto.
-	 *
-	 * @param ventana  ventana principal de la aplicación
-	 * @param empleado empleado que está usando esta pantalla
-	 */
 	public SeccionStockEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
 		construirUI();
 	}
 
-	/**
-	 * Monta toda la interfaz de esta pantalla.
-	 */
 	private void construirUI() {
 		setLayout(new BorderLayout());
 
 		JPanel panelBase = crearPanelBase("Gestión de Stock");
 		JPanel contenido = getContenido(panelBase);
 
-		// Creamos los campos una vez y luego los reutilizamos en los paneles.
 		campoIdProducto = crearCampo();
 		campoUnidades = crearCampo();
 		campoFichero = crearCampo();
 
-		/*
-		 * Esta tabla solo sirve para consultar los productos actuales. El ID se escribe
-		 * a mano abajo cuando se quiera reponer stock.
-		 */
-		selectorProductos = crearSelectorProductosVenta("Productos actuales",
+		// La tabla es solo para mirar el stock. El ID se escribe a mano abajo.
+		tablaProductos = crearSelectorProductosVenta("Productos actuales",
 				"Filtra los productos para consultar el stock disponible.", true);
 
-		/*
-		 * La dejamos como tabla de consulta, sin seleccionar filas. Así no parece que
-		 * al pinchar tenga que hacer algo raro.
-		 */
-		selectorProductos.tabla.setRowSelectionAllowed(false);
-		selectorProductos.tabla.setCellSelectionEnabled(false);
+		// No queremos que al pinchar una fila parezca que hace algo especial.
+		tablaProductos.tabla.setRowSelectionAllowed(false);
+		tablaProductos.tabla.setCellSelectionEnabled(false);
 
-		contenido.add(selectorProductos.bloque);
+		contenido.add(tablaProductos.bloque);
 		contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(18)));
 		contenido.add(crearBloqueAccionesStock());
 
 		add(panelBase, BorderLayout.CENTER);
 	}
 
-	/**
-	 * Crea el bloque inferior de acciones.
-	 * 
-	 * Está dividido en dos columnas: una para reponer stock y otra para cargar
-	 * productos desde fichero.
-	 *
-	 * @return panel con las acciones de stock
-	 */
 	private JPanel crearBloqueAccionesStock() {
 		JPanel bloque = crearBloque("Acciones de stock");
 
-		// Dos columnas sencillas: izquierda reponer, derecha cargar fichero.
 		JPanel panelAcciones = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(25), 0));
 		panelAcciones.setOpaque(false);
 
@@ -106,11 +67,7 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 		return bloque;
 	}
 
-	/**
-	 * Crea la parte visual para reponer unidades de un producto.
-	 *
-	 * @return panel de reposición de stock
-	 */
+	// Panel de la izquierda: sirve para sumar unidades a un producto
 	private JPanel crearPanelReponerStock() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -128,7 +85,6 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 
 		JButton botonReponer = crearBotonAccion("Reponer stock");
 
-		// Metemos el botón en una fila para que no se estire raro.
 		JPanel filaBoton = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		filaBoton.setOpaque(false);
 		filaBoton.add(botonReponer);
@@ -140,11 +96,7 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 		return panel;
 	}
 
-	/**
-	 * Crea la zona para seleccionar y cargar un fichero de productos.
-	 *
-	 * @return panel de carga de fichero
-	 */
+	// Panel de la derecha: cargar productos desde un txt
 	private JPanel crearPanelCargarFichero() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -175,9 +127,6 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 		return panel;
 	}
 
-	/**
-	 * Intenta reponer stock del producto indicado.
-	 */
 	private void reponerStock() {
 		String idProducto = campoIdProducto.getText().trim();
 		Integer unidades = leerEnteroSeguro(campoUnidades.getText());
@@ -188,7 +137,7 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 			return;
 		}
 
-		// Aquí evitamos cantidades negativas, cero o texto raro.
+		// Evitamos negativos, cero o texto raro.
 		if (unidades == null || unidades <= 0) {
 			mostrarError("La cantidad debe ser positiva");
 			return;
@@ -197,7 +146,7 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 		boolean repuesto = empleado.reponerStockProducto(idProducto, unidades);
 
 		if (repuesto) {
-			recargarTablaProductos(selectorProductos.tabla);
+			recargarTablaProductos(tablaProductos.tabla);
 			campoUnidades.setText("");
 			mostrarMensaje("Stock repuesto correctamente");
 		} else {
@@ -205,23 +154,17 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 		}
 	}
 
-	/**
-	 * Abre el explorador de archivos para elegir el fichero de productos.
-	 */
 	private void seleccionarFichero() {
-		JFileChooser selectorFichero = new JFileChooser(); // Permite abrir ficheros del sistema
+		JFileChooser selectorFichero = new JFileChooser(); // Para abrir archivos del ordenador
 
 		int opcion = selectorFichero.showOpenDialog(this);
 
-		// Si el usuario cancela, simplemente no hacemos nada.
+		// Si cancela, no hacemos nada.
 		if (opcion == JFileChooser.APPROVE_OPTION && selectorFichero.getSelectedFile() != null) {
 			campoFichero.setText(selectorFichero.getSelectedFile().getAbsolutePath());
 		}
 	}
 
-	/**
-	 * Carga los productos del fichero escrito o seleccionado.
-	 */
 	private void cargarFichero() {
 		String rutaFichero = campoFichero.getText().trim();
 
@@ -230,14 +173,11 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 			return;
 		}
 
-		/*
-		 * La lógica de verdad está en Empleado. Aquí solo validamos un poco, llamamos
-		 * al método y actualizamos la pantalla.
-		 */
+		// Aquí solo comprobamos la ruta y dejamos que Empleado haga la carga.
 		boolean cargado = empleado.cargarProductosFicheroTexto(rutaFichero);
 
 		if (cargado) {
-			recargarTablaProductos(selectorProductos.tabla);
+			recargarTablaProductos(tablaProductos.tabla);
 			mostrarMensaje("Fichero cargado correcto");
 		} else {
 			mostrarError("Error al cargar del fichero");
