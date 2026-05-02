@@ -1,12 +1,20 @@
 package Gui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.util.Locale;
 
 import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -22,10 +30,11 @@ import tienda.Tienda;
 import usuarios.Empleado;
 
 /**
- * Sección para tasar productos de segunda mano.
+ * Pantalla para tasar productos de segunda mano.
  * 
- * Muestra solo los productos pendientes de tasación y permite asignarles precio
- * y estado.
+ * Muestra los productos pendientes de tasación. Para tasar uno, el empleado
+ * escribe el ID, revisa la información o la imagen si quiere, y después pone el
+ * precio y el estado.
  */
 public class SeccionTasacionEmpleado extends AbstractPanelEmpleadoSection {
 
@@ -34,10 +43,9 @@ public class SeccionTasacionEmpleado extends AbstractPanelEmpleadoSection {
 	private JTable tablaPendientes;
 	private DefaultTableModel modeloPendientes;
 
-	private JTextField campoId;
-	private JTextField campoPrecio;
-	private JComboBox<EstadoProducto> comboEstado;
-	private JTextArea areaInfoProducto;
+	private JTextField campoIdProducto;
+	private JTextField campoPrecioTasado;
+	private JComboBox<EstadoProducto> comboEstadoProducto;
 
 	public SeccionTasacionEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
@@ -45,14 +53,16 @@ public class SeccionTasacionEmpleado extends AbstractPanelEmpleadoSection {
 	}
 
 	private void construirUI() {
-		JPanel base = crearPanelBase("Tasación de Productos");
-		JPanel contenido = getContenido(base);
+		setLayout(new BorderLayout());
+
+		JPanel panelBase = crearPanelBase("Tasación de Productos");
+		JPanel contenido = getContenido(panelBase);
 
 		contenido.add(crearBloquePendientes());
 		contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(18)));
-		contenido.add(crearBloqueTasar());
+		contenido.add(crearBloqueTasarProducto());
 
-		add(base);
+		add(panelBase, BorderLayout.CENTER);
 	}
 
 	private JPanel crearBloquePendientes() {
@@ -68,140 +78,212 @@ public class SeccionTasacionEmpleado extends AbstractPanelEmpleadoSection {
 		};
 
 		tablaPendientes = new JTable(modeloPendientes);
-		tablaPendientes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		estilizarTablaTasaciones(tablaPendientes);
 
-		areaInfoProducto = crearArea();
-		areaInfoProducto.setEditable(false);
-
-		JButton botonRefrescar = crearBotonAccion("Refrescar pendientes");
-
-		cargarTablaPendientes();
-
-		tablaPendientes.getSelectionModel().addListSelectionListener(e -> {
-			if (e.getValueIsAdjusting()) {
-				return;
-			}
-
-			int fila = tablaPendientes.getSelectedRow();
-
-			if (fila < 0) {
-				return;
-			}
-
-			String idProducto = String.valueOf(tablaPendientes.getValueAt(fila, 0));
-
-			if (campoId != null) {
-				campoId.setText(idProducto);
-			}
-
-			mostrarInfoProducto(idProducto);
-		});
-
-		botonRefrescar.addActionListener(e -> {
-			cargarTablaPendientes();
-			areaInfoProducto.setText("");
-		});
+		/*
+		 * Como en stock y pedidos: la tabla es solo para consultar. El ID se escribe
+		 * abajo a mano.
+		 */
+		tablaPendientes.setRowSelectionAllowed(false);
+		tablaPendientes.setCellSelectionEnabled(false);
 
 		JScrollPane scrollTabla = estilizarScroll(tablaPendientes);
 		scrollTabla.setPreferredSize(new Dimension(VentanaPrincipal.escalar(1050), VentanaPrincipal.escalar(240)));
 
-		JScrollPane scrollInfo = estilizarScroll(areaInfoProducto);
-		scrollInfo.setPreferredSize(new Dimension(VentanaPrincipal.escalar(1050), VentanaPrincipal.escalar(180)));
+		JButton botonRefrescar = crearBotonSecundario("Refrescar");
+		botonRefrescar.addActionListener(e -> cargarTablaPendientes());
 
-		bloque.add(crearLabel("Selecciona un producto pendiente para cargar su ID."), gbcCampo(1));
+		bloque.add(crearLabel("Consulta los productos pendientes. Para tasar uno, escribe su ID abajo."), gbcCampo(1));
 		bloque.add(scrollTabla, gbcCampo(2));
+		bloque.add(botonRefrescar, gbcBoton(3));
 
-		bloque.add(crearLabel("Información del producto seleccionado"), gbcCampo(3));
-		bloque.add(scrollInfo, gbcCampo(4));
-
-		bloque.add(botonRefrescar, gbcBoton(5));
+		cargarTablaPendientes();
 
 		return bloque;
 	}
 
-	private JPanel crearBloqueTasar() {
-		JPanel bloque = crearBloque("Tasar producto");
+	private JPanel crearBloqueTasarProducto() {
+		JPanel bloque = crearBloque("Consultar o tasar producto");
 
-		campoId = crearCampo();
-		campoPrecio = crearCampo();
-		comboEstado = crearCombo(EstadoProducto.values());
+		campoIdProducto = crearCampo();
+		campoPrecioTasado = crearCampo();
+		comboEstadoProducto = crearCombo(EstadoProducto.values());
 
-		JButton botonTasar = crearBotonAccion("Tasar");
+		JPanel panelTasar = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(30), 0));
+		panelTasar.setOpaque(false);
 
-		bloque.add(crearLabel("ID producto"), gbcCampo(1));
-		bloque.add(campoId, gbcCampo(2));
+		panelTasar.add(crearPanelDatosTasacion());
+		panelTasar.add(crearPanelAccionesTasacion());
 
-		bloque.add(crearLabel("Precio tasado"), gbcCampo(3));
-		bloque.add(campoPrecio, gbcCampo(4));
-
-		bloque.add(crearLabel("Estado del producto"), gbcCampo(5));
-		bloque.add(comboEstado, gbcCampo(6));
-
-		bloque.add(botonTasar, gbcBoton(7));
-
-		botonTasar.addActionListener(e -> {
-			String id = campoId.getText().trim();
-			Double precio = leerDoubleSeguro(campoPrecio.getText());
-			EstadoProducto estado = (EstadoProducto) comboEstado.getSelectedItem();
-
-			if (id.isBlank()) {
-				mostrarError("Introduce o selecciona un ID de producto.");
-				return;
-			}
-
-			if (precio == null || precio < 0) {
-				mostrarError("Introduce un precio válido.");
-				return;
-			}
-
-			if (estado == null) {
-				mostrarError("Selecciona un estado.");
-				return;
-			}
-
-			Producto2Mano productoAntes = buscarProductoPendientePorId(id);
-
-			if (productoAntes == null) {
-				mostrarError("No existe ningún producto pendiente con ese ID.");
-				return;
-			}
-
-			empleado.tasarProducto(id, precio, estado);
-
-			Producto2Mano productoDespues = buscarProductoPendientePorId(id);
-
-			if (productoDespues == null) {
-				cargarTablaPendientes();
-				campoId.setText("");
-				campoPrecio.setText("");
-				areaInfoProducto.setText("");
-
-				if (estado == EstadoProducto.NO_ACEPTADO) {
-					mostrarMensaje("Producto rechazado correctamente.");
-				} else {
-					mostrarMensaje("Producto tasado y publicado para intercambio.");
-				}
-			} else {
-				mostrarError("No se pudo tasar el producto.");
-			}
-		});
+		bloque.add(panelTasar, gbcCampo(1));
 
 		return bloque;
+	}
+
+	private JPanel crearPanelDatosTasacion() {
+		JPanel panel = new JPanel();
+		panel.setOpaque(false);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+		JLabel titulo = crearLabel("Datos de tasación");
+		titulo.setAlignmentX(0.0f);
+		panel.add(titulo);
+
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+
+		JPanel filaId = crearCampoFormulario("ID producto", campoIdProducto);
+		filaId.setAlignmentX(0.0f);
+		panel.add(filaId);
+
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+
+		JPanel filaPrecio = crearCampoFormulario("Precio tasado", campoPrecioTasado);
+		filaPrecio.setAlignmentX(0.0f);
+		panel.add(filaPrecio);
+
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+
+		JPanel filaEstado = crearCampoFormulario("Estado del producto", comboEstadoProducto);
+		filaEstado.setAlignmentX(0.0f);
+		panel.add(filaEstado);
+
+		return panel;
+	}
+
+	private JPanel crearPanelAccionesTasacion() {
+		JPanel panel = new JPanel();
+		panel.setOpaque(false);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+		JLabel titulo = crearLabel("Acciones");
+		titulo.setAlignmentX(0.0f);
+		panel.add(titulo);
+
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+
+		JButton botonVerProducto = crearBotonSecundario("Ver producto");
+		JButton botonVerImagen = crearBotonSecundario("Ver imagen");
+		JButton botonTasar = crearBotonAccion("Tasar producto");
+
+		ajustarBotonTasacion(botonVerProducto);
+		ajustarBotonTasacion(botonVerImagen);
+		ajustarBotonTasacion(botonTasar);
+
+		JPanel botones = new JPanel(new GridLayout(3, 1, 0, VentanaPrincipal.escalar(10)));
+		botones.setOpaque(false);
+		botones.setAlignmentX(0.0f);
+
+		botones.add(botonVerProducto);
+		botones.add(botonVerImagen);
+		botones.add(botonTasar);
+
+		Dimension tamanoBotones = new Dimension(VentanaPrincipal.escalar(230), VentanaPrincipal.escalar(150));
+		botones.setPreferredSize(tamanoBotones);
+		botones.setMaximumSize(tamanoBotones);
+
+		panel.add(botones);
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(12)));
+
+		botonVerProducto.addActionListener(e -> verProducto());
+		botonVerImagen.addActionListener(e -> verImagenProducto());
+		botonTasar.addActionListener(e -> tasarProducto());
+
+		return panel;
+	}
+
+	private void ajustarBotonTasacion(JButton boton) {
+		Dimension tamano = new Dimension(VentanaPrincipal.escalar(230), VentanaPrincipal.escalar(40));
+
+		boton.setPreferredSize(tamano);
+		boton.setMinimumSize(tamano);
+		boton.setMaximumSize(tamano);
 	}
 
 	private void cargarTablaPendientes() {
 		modeloPendientes.setRowCount(0);
 
 		for (Producto2Mano producto : Tienda.getInstancia().getPendientesTasacion()) {
-			String propietario = "Sin propietario";
+			modeloPendientes.addRow(new Object[] { producto.getId(), obtenerNombrePropietario(producto),
+					producto.getNombre(), obtenerRutaImagen(producto) });
+		}
+	}
 
-			if (producto.getPropietario() != null) {
-				propietario = producto.getPropietario().getNickname();
+	private void verProducto() {
+		String idProducto = campoIdProducto.getText().trim();
+
+		if (idProducto.isBlank()) {
+			mostrarError("Escribe el ID del producto.");
+			return;
+		}
+
+		Producto2Mano producto = buscarProductoPendientePorId(idProducto);
+
+		if (producto == null) {
+			mostrarError("No existe ningún producto pendiente con ese ID.");
+			return;
+		}
+
+		mostrarProductoEnVentana(producto);
+	}
+
+	private void verImagenProducto() {
+		String idProducto = campoIdProducto.getText().trim();
+
+		if (idProducto.isBlank()) {
+			mostrarError("Escribe el ID del producto.");
+			return;
+		}
+
+		Producto2Mano producto = buscarProductoPendientePorId(idProducto);
+
+		if (producto == null) {
+			mostrarError("No existe ningún producto pendiente con ese ID.");
+			return;
+		}
+
+		abrirImagenProducto(producto);
+	}
+
+	private void tasarProducto() {
+		String idProducto = campoIdProducto.getText().trim();
+		Double precio = leerDoubleSeguro(campoPrecioTasado.getText());
+		EstadoProducto estado = (EstadoProducto) comboEstadoProducto.getSelectedItem();
+
+		if (idProducto.isBlank()) {
+			mostrarError("Escribe el ID del producto.");
+			return;
+		}
+
+		if (precio == null || precio < 0) {
+			mostrarError("Escribe un precio válido.");
+			return;
+		}
+
+		if (estado == null) {
+			mostrarError("Selecciona un estado.");
+			return;
+		}
+
+		Producto2Mano producto = buscarProductoPendientePorId(idProducto);
+
+		if (producto == null) {
+			mostrarError("No existe ningún producto pendiente con ese ID.");
+			return;
+		}
+
+		empleado.tasarProducto(idProducto, precio, estado);
+
+		if (buscarProductoPendientePorId(idProducto) == null) {
+			cargarTablaPendientes();
+			limpiarCamposTasacion();
+
+			if (estado == EstadoProducto.NO_ACEPTADO) {
+				mostrarMensaje("Producto rechazado correctamente.");
+			} else {
+				mostrarMensaje("Producto tasado y publicado para intercambio.");
 			}
-
-			modeloPendientes.addRow(
-					new Object[] { producto.getId(), propietario, producto.getNombre(), producto.getImagenRuta() });
+		} else {
+			mostrarError("No se pudo tasar el producto.");
 		}
 	}
 
@@ -211,7 +293,7 @@ public class SeccionTasacionEmpleado extends AbstractPanelEmpleadoSection {
 		}
 
 		for (Producto2Mano producto : Tienda.getInstancia().getPendientesTasacion()) {
-			if (producto.getId().equals(idProducto.trim())) {
+			if (producto.getId().equalsIgnoreCase(idProducto.trim())) {
 				return producto;
 			}
 		}
@@ -219,55 +301,117 @@ public class SeccionTasacionEmpleado extends AbstractPanelEmpleadoSection {
 		return null;
 	}
 
-	private void mostrarInfoProducto(String idProducto) {
-		Producto2Mano producto = buscarProductoPendientePorId(idProducto);
+	private void mostrarProductoEnVentana(Producto2Mano producto) {
+		JTextArea areaProducto = crearArea();
+		areaProducto.setEditable(false);
+		areaProducto.setText(crearTextoProducto(producto));
+		areaProducto.setCaretPosition(0);
 
-		if (producto == null) {
-			areaInfoProducto.setText("No existe ningún producto pendiente con ese ID.");
+		JScrollPane scroll = estilizarScroll(areaProducto);
+		scroll.setPreferredSize(new Dimension(VentanaPrincipal.escalar(650), VentanaPrincipal.escalar(280)));
+
+		JOptionPane.showMessageDialog(this, scroll, "Información del producto", JOptionPane.INFORMATION_MESSAGE);
+	}
+
+	private String crearTextoProducto(Producto2Mano producto) {
+		StringBuilder texto = new StringBuilder();
+
+		texto.append("Producto: ").append(producto.getId()).append(" - ").append(producto.getNombre()).append("\n");
+		texto.append("Propietario: ").append(obtenerNombrePropietario(producto)).append("\n");
+		texto.append("Descripción: ").append(producto.getDescripcion()).append("\n");
+		texto.append("Imagen: ").append(obtenerRutaImagen(producto)).append("\n");
+		texto.append("Visible: ").append(producto.isVisible() ? "Sí" : "No").append("\n");
+		texto.append("Bloqueado: ").append(producto.isBloqueado() ? "Sí" : "No").append("\n");
+		texto.append("Valoración actual: ");
+
+		if (producto.getValoracion() == null) {
+			texto.append("Sin valorar");
+		} else {
+			texto.append(formatearPrecio(producto.getValoracion().getPrecioTasacion())).append(" - ")
+					.append(producto.getValoracion().getEstadoProducto());
+		}
+
+		return texto.toString();
+	}
+
+	private void abrirImagenProducto(Producto2Mano producto) {
+		String rutaImagen = producto.getImagenRuta();
+
+		if (rutaImagen == null || rutaImagen.isBlank()) {
+			mostrarError("Este producto no tiene ruta de imagen.");
 			return;
 		}
 
-		StringBuilder sb = new StringBuilder();
+		ImageIcon imagen = new ImageIcon(rutaImagen);
 
-		sb.append("Producto: ").append(producto.getId()).append(" - ").append(producto.getNombre()).append("\n");
-
-		if (producto.getPropietario() != null) {
-			sb.append("Propietario: ").append(producto.getPropietario().getNickname()).append("\n");
-		} else {
-			sb.append("Propietario: Sin propietario\n");
+		if (imagen.getIconWidth() <= 0 || imagen.getIconHeight() <= 0) {
+			mostrarError("No se pudo abrir la imagen:\n" + rutaImagen);
+			return;
 		}
 
-		sb.append("Descripción: ").append(producto.getDescripcion()).append("\n");
-		sb.append("Imagen: ").append(producto.getImagenRuta()).append("\n");
-		sb.append("Visible: ").append(producto.isVisible() ? "Sí" : "No").append("\n");
-		sb.append("Bloqueado: ").append(producto.isBloqueado() ? "Sí" : "No").append("\n");
-		sb.append("Valoración actual: ");
+		Image imagenEscalada = imagen.getImage().getScaledInstance(VentanaPrincipal.escalar(420),
+				VentanaPrincipal.escalar(320), Image.SCALE_SMOOTH);
 
-		if (producto.getValoracion() == null) {
-			sb.append("Sin valorar\n");
-		} else {
-			sb.append(producto.getValoracion().getPrecioTasacion()).append(" € - ")
-					.append(producto.getValoracion().getEstadoProducto()).append("\n");
+		JLabel labelImagen = new JLabel(new ImageIcon(imagenEscalada));
+		labelImagen.setHorizontalAlignment(JLabel.CENTER);
+
+		JScrollPane scrollImagen = new JScrollPane(labelImagen);
+		scrollImagen.setPreferredSize(new Dimension(VentanaPrincipal.escalar(470), VentanaPrincipal.escalar(370)));
+
+		JOptionPane.showMessageDialog(this, scrollImagen, "Imagen del producto", JOptionPane.PLAIN_MESSAGE);
+	}
+
+	private String obtenerNombrePropietario(Producto2Mano producto) {
+		if (producto.getPropietario() == null) {
+			return "Sin propietario";
 		}
 
-		areaInfoProducto.setText(sb.toString());
-		areaInfoProducto.setCaretPosition(0);
+		return producto.getPropietario().getNickname();
+	}
+
+	private String obtenerRutaImagen(Producto2Mano producto) {
+		if (producto.getImagenRuta() == null || producto.getImagenRuta().isBlank()) {
+			return "-";
+		}
+
+		return producto.getImagenRuta();
+	}
+
+	private void limpiarCamposTasacion() {
+		campoIdProducto.setText("");
+		campoPrecioTasado.setText("");
+
+		if (comboEstadoProducto.getItemCount() > 0) {
+			comboEstadoProducto.setSelectedIndex(0);
+		}
+	}
+
+	private String formatearPrecio(double precio) {
+		return String.format(Locale.US, "%.2f €", precio).replace('.', ',');
 	}
 
 	private void estilizarTablaTasaciones(JTable tabla) {
-		tabla.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		tabla.setRowHeight(VentanaPrincipal.escalar(30));
-		tabla.setBackground(Color.WHITE);
-		tabla.setForeground(VentanaPrincipal.COLOR_TEXTO);
-		tabla.setGridColor(new Color(225, 225, 225));
-		tabla.setSelectionBackground(VentanaPrincipal.COLOR_ACENTO);
-		tabla.setSelectionForeground(Color.BLACK);
-		tabla.setFillsViewportHeight(true);
+		tabla.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		tabla.setRowHeight(VentanaPrincipal.escalar(28));
+		tabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-		JTableHeader header = tabla.getTableHeader();
-		header.setFont(new Font("Segoe UI", Font.BOLD, 13));
-		header.setBackground(new Color(232, 232, 232));
-		header.setForeground(VentanaPrincipal.COLOR_TEXTO);
-		header.setReorderingAllowed(false);
+		tabla.setBackground(Color.WHITE);
+		tabla.setForeground(Color.BLACK);
+		tabla.setGridColor(new Color(225, 225, 225));
+
+		tabla.setFillsViewportHeight(true);
+		tabla.setShowHorizontalLines(true);
+		tabla.setShowVerticalLines(true);
+
+		JTableHeader cabecera = tabla.getTableHeader();
+		cabecera.setFont(new Font("Segoe UI", Font.BOLD, 13));
+		cabecera.setBackground(new Color(235, 235, 235));
+		cabecera.setForeground(Color.BLACK);
+		cabecera.setReorderingAllowed(false);
+
+		tabla.getColumnModel().getColumn(0).setPreferredWidth(120);
+		tabla.getColumnModel().getColumn(1).setPreferredWidth(180);
+		tabla.getColumnModel().getColumn(2).setPreferredWidth(260);
+		tabla.getColumnModel().getColumn(3).setPreferredWidth(420);
 	}
 }

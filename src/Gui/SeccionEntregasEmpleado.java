@@ -1,11 +1,17 @@
 package Gui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridLayout;
+import java.util.Locale;
 
 import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -23,20 +29,19 @@ import ventas.LineaPedido;
 import ventas.Pedido;
 
 /**
- * Sección para entregar pedidos.
+ * Pantalla para entregar pedidos.
  * 
- * Muestra los pedidos listos para recoger y permite entregarlos usando el
- * código de recogida.
+ * Muestra los pedidos que ya están listos para recoger. Para entregar uno, el
+ * empleado escribe el código de recogida y pulsa el botón correspondiente.
  */
 public class SeccionEntregasEmpleado extends AbstractPanelEmpleadoSection {
 
 	private static final long serialVersionUID = 1L;
 
-	private JTable tablaEntregas;
-	private DefaultTableModel modeloEntregas;
+	private JTable tablaPedidosListos;
+	private DefaultTableModel modeloPedidosListos;
 
-	private JTextField campoCodigo;
-	private JTextArea areaInfoPedido;
+	private JTextField campoCodigoRecogida;
 
 	public SeccionEntregasEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
@@ -44,21 +49,23 @@ public class SeccionEntregasEmpleado extends AbstractPanelEmpleadoSection {
 	}
 
 	private void construirUI() {
-		JPanel base = crearPanelBase("Entrega de Pedidos");
-		JPanel contenido = getContenido(base);
+		setLayout(new BorderLayout());
+
+		JPanel panelBase = crearPanelBase("Entrega de Pedidos");
+		JPanel contenido = getContenido(panelBase);
 
 		contenido.add(crearBloquePedidosListos());
 		contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(18)));
-		contenido.add(crearBloqueEntregarPedido());
+		contenido.add(crearBloqueEntrega());
 
-		add(base);
+		add(panelBase, BorderLayout.CENTER);
 	}
 
 	private JPanel crearBloquePedidosListos() {
 		JPanel bloque = crearBloque("Pedidos listos para recoger");
 
-		modeloEntregas = new DefaultTableModel(
-				new String[] { "ID", "Cliente", "Código recogida", "Recogida solicitada", "Total", "Líneas" }, 0) {
+		modeloPedidosListos = new DefaultTableModel(
+				new String[] { "ID", "Cliente", "Código recogida", "Recogida solicitada", "Total", "Productos" }, 0) {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -67,132 +74,191 @@ public class SeccionEntregasEmpleado extends AbstractPanelEmpleadoSection {
 			}
 		};
 
-		tablaEntregas = new JTable(modeloEntregas);
-		tablaEntregas.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		estilizarTablaEntregas(tablaEntregas);
+		tablaPedidosListos = new JTable(modeloPedidosListos);
+		estilizarTablaEntregas(tablaPedidosListos);
 
-		areaInfoPedido = crearArea();
-		areaInfoPedido.setEditable(false);
+		/*
+		 * La tabla es solo para mirar. El empleado escribe el código abajo cuando
+		 * quiera consultar o entregar un pedido.
+		 */
+		tablaPedidosListos.setRowSelectionAllowed(false);
+		tablaPedidosListos.setCellSelectionEnabled(false);
 
-		JButton botonRefrescar = crearBotonAccion("Refrescar entregas");
+		JScrollPane scrollTabla = estilizarScroll(tablaPedidosListos);
+		scrollTabla.setPreferredSize(new Dimension(VentanaPrincipal.escalar(1050), VentanaPrincipal.escalar(240)));
+
+		JButton botonRefrescar = crearBotonSecundario("Refrescar");
+		botonRefrescar.addActionListener(e -> cargarTablaEntregas());
+
+		bloque.add(crearLabel("Consulta los pedidos preparados. Para entregarlo, escribe el código abajo."),
+				gbcCampo(1));
+		bloque.add(scrollTabla, gbcCampo(2));
+		bloque.add(botonRefrescar, gbcBoton(3));
 
 		cargarTablaEntregas();
 
-		tablaEntregas.getSelectionModel().addListSelectionListener(e -> {
-			if (e.getValueIsAdjusting()) {
-				return;
-			}
+		return bloque;
+	}
 
-			int fila = tablaEntregas.getSelectedRow();
+	private JPanel crearBloqueEntrega() {
+		JPanel bloque = crearBloque("Consultar o entregar pedido");
 
-			if (fila < 0) {
-				return;
-			}
+		campoCodigoRecogida = crearCampo();
 
-			String idPedido = String.valueOf(tablaEntregas.getValueAt(fila, 0));
-			String codigo = String.valueOf(tablaEntregas.getValueAt(fila, 2));
+		JPanel panelEntrega = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(30), 0));
+		panelEntrega.setOpaque(false);
 
-			if (campoCodigo != null && !codigo.equals("-")) {
-				campoCodigo.setText(codigo);
-			}
+		panelEntrega.add(crearPanelDatosEntrega());
+		panelEntrega.add(crearPanelBotonesEntrega());
 
-			mostrarInfoPedido(idPedido);
-		});
-
-		botonRefrescar.addActionListener(e -> {
-			cargarTablaEntregas();
-			areaInfoPedido.setText("");
-		});
-
-		JScrollPane scrollTabla = estilizarScroll(tablaEntregas);
-		scrollTabla.setPreferredSize(new Dimension(VentanaPrincipal.escalar(1050), VentanaPrincipal.escalar(240)));
-
-		JScrollPane scrollInfo = estilizarScroll(areaInfoPedido);
-		scrollInfo.setPreferredSize(new Dimension(VentanaPrincipal.escalar(1050), VentanaPrincipal.escalar(180)));
-
-		bloque.add(crearLabel("Selecciona un pedido para cargar su código de recogida."), gbcCampo(1));
-		bloque.add(scrollTabla, gbcCampo(2));
-
-		bloque.add(crearLabel("Información del pedido seleccionado"), gbcCampo(3));
-		bloque.add(scrollInfo, gbcCampo(4));
-
-		bloque.add(botonRefrescar, gbcBoton(5));
+		bloque.add(panelEntrega, gbcCampo(1));
 
 		return bloque;
 	}
 
-	private JPanel crearBloqueEntregarPedido() {
-		JPanel bloque = crearBloque("Entregar pedido");
+	private JPanel crearPanelDatosEntrega() {
+		JPanel panel = new JPanel();
+		panel.setOpaque(false);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-		campoCodigo = crearCampo();
+		JLabel titulo = crearLabel("Datos de entrega");
+		titulo.setAlignmentX(0.0f);
+		panel.add(titulo);
 
-		JButton botonEntregar = crearBotonAccion("Entregar pedido");
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
-		bloque.add(crearLabel("Código de recogida"), gbcCampo(1));
-		bloque.add(campoCodigo, gbcCampo(2));
-		bloque.add(crearLabel("Solo se pueden entregar pedidos listos para recoger y con recogida solicitada."),
-				gbcCampo(3));
-		bloque.add(botonEntregar, gbcBoton(4));
+		JPanel filaCodigo = crearCampoFormulario("Código de recogida", campoCodigoRecogida);
+		filaCodigo.setAlignmentX(0.0f);
+		panel.add(filaCodigo);
 
-		botonEntregar.addActionListener(e -> {
-			String codigo = campoCodigo.getText().trim();
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(12)));
 
-			if (codigo.isBlank()) {
-				mostrarError("Introduce o selecciona un código de recogida.");
-				return;
-			}
+		JLabel ayuda = crearLabel("Solo se puede entregar si el cliente ya ha solicitado la recogida.");
+		ayuda.setAlignmentX(0.0f);
+		panel.add(ayuda);
 
-			Pedido pedido = buscarPedidoPorCodigo(codigo);
+		return panel;
+	}
 
-			if (pedido == null) {
-				mostrarError("No existe ningún pedido con ese código de recogida.");
-				return;
-			}
+	private JPanel crearPanelBotonesEntrega() {
+		JPanel panel = new JPanel();
+		panel.setOpaque(false);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-			if (!pedido.isRecogida_solicitada()) {
-				mostrarError("El cliente todavía no ha solicitado la recogida del pedido.");
-				return;
-			}
+		JLabel titulo = crearLabel("Acciones");
+		titulo.setAlignmentX(0.0f);
+		panel.add(titulo);
 
-			boolean ok = empleado.entregarPedido(codigo);
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
-			if (ok) {
-				cargarTablaEntregas();
-				areaInfoPedido.setText("Pedido entregado correctamente:\n" + pedido.getIdPedido());
-				campoCodigo.setText("");
-				mostrarMensaje("Pedido entregado correctamente.");
-			} else {
-				mostrarError("No se pudo entregar el pedido.");
-			}
-		});
+		JButton botonVerPedido = crearBotonSecundario("Ver pedido");
+		JButton botonEntregarPedido = crearBotonAccion("Entregar pedido");
 
-		return bloque;
+		ajustarBotonAccion(botonVerPedido);
+		ajustarBotonAccion(botonEntregarPedido);
+
+		JPanel filaBotones = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(10), 0));
+		filaBotones.setOpaque(false);
+		filaBotones.setAlignmentX(0.0f);
+
+		filaBotones.add(botonVerPedido);
+		filaBotones.add(botonEntregarPedido);
+
+		Dimension tamanoFila = new Dimension(VentanaPrincipal.escalar(430), VentanaPrincipal.escalar(42));
+		filaBotones.setPreferredSize(tamanoFila);
+		filaBotones.setMaximumSize(tamanoFila);
+
+		panel.add(filaBotones);
+
+		botonVerPedido.addActionListener(e -> verPedido());
+		botonEntregarPedido.addActionListener(e -> entregarPedido());
+
+		return panel;
+	}
+
+	private void ajustarBotonAccion(JButton boton) {
+		Dimension tamano = new Dimension(VentanaPrincipal.escalar(210), VentanaPrincipal.escalar(42));
+
+		boton.setPreferredSize(tamano);
+		boton.setMinimumSize(tamano);
+		boton.setMaximumSize(tamano);
 	}
 
 	private void cargarTablaEntregas() {
-		modeloEntregas.setRowCount(0);
+		modeloPedidosListos.setRowCount(0);
 
 		for (Pedido pedido : Tienda.getInstancia().getHistorialVentas()) {
 			if (pedido.getEstado() != EstadoPedido.LISTO_PARA_RECOGER) {
 				continue;
 			}
 
-			String codigo = pedido.getCodigoRecogida();
+			modeloPedidosListos.addRow(new Object[] { pedido.getIdPedido(), pedido.getCliente().getNickname(),
+					obtenerCodigoRecogida(pedido), pedido.isRecogida_solicitada() ? "Sí" : "No",
+					formatearPrecio(pedido.getTotal()), pedido.getLineas().size() });
+		}
+	}
 
-			if (codigo == null) {
-				codigo = "-";
-			}
+	private void verPedido() {
+		String codigo = campoCodigoRecogida.getText().trim();
 
-			modeloEntregas.addRow(new Object[] { pedido.getIdPedido(), pedido.getCliente().getNickname(), codigo,
-					pedido.isRecogida_solicitada() ? "Sí" : "No",
-					String.format(java.util.Locale.US, "%.2f €", pedido.getTotal()).replace('.', ','),
-					pedido.getLineas().size() });
+		if (codigo.isBlank()) {
+			mostrarError("Escribe el código de recogida.");
+			return;
+		}
+
+		Pedido pedido = buscarPedidoPorCodigo(codigo);
+
+		if (pedido == null) {
+			mostrarError("No existe ningún pedido con ese código.");
+			return;
+		}
+
+		mostrarPedidoEnVentana(pedido);
+	}
+
+	private void entregarPedido() {
+		String codigo = campoCodigoRecogida.getText().trim();
+
+		if (codigo.isBlank()) {
+			mostrarError("Escribe el código de recogida.");
+			return;
+		}
+
+		Pedido pedido = buscarPedidoPorCodigo(codigo);
+
+		if (pedido == null) {
+			mostrarError("No existe ningún pedido con ese código.");
+			return;
+		}
+
+		if (pedido.getEstado() != EstadoPedido.LISTO_PARA_RECOGER) {
+			mostrarError("Este pedido no está listo para recoger.");
+			return;
+		}
+
+		if (!pedido.isRecogida_solicitada()) {
+			mostrarError("El cliente todavía no ha solicitado la recogida.");
+			return;
+		}
+
+		boolean entregado = empleado.entregarPedido(codigo);
+
+		if (entregado) {
+			cargarTablaEntregas();
+			campoCodigoRecogida.setText("");
+			mostrarMensaje("Pedido entregado correctamente.");
+		} else {
+			mostrarError("No se pudo entregar el pedido.");
 		}
 	}
 
 	private Pedido buscarPedidoPorCodigo(String codigo) {
+		if (codigo == null || codigo.isBlank()) {
+			return null;
+		}
+
 		for (Pedido pedido : Tienda.getInstancia().getHistorialVentas()) {
-			if (pedido.getCodigoRecogida() != null && pedido.getCodigoRecogida().equals(codigo)) {
+			if (pedido.getCodigoRecogida() != null && pedido.getCodigoRecogida().equalsIgnoreCase(codigo.trim())) {
 				return pedido;
 			}
 		}
@@ -200,74 +266,101 @@ public class SeccionEntregasEmpleado extends AbstractPanelEmpleadoSection {
 		return null;
 	}
 
-	private Pedido buscarPedidoPorId(String idPedido) {
-		for (Pedido pedido : Tienda.getInstancia().getHistorialVentas()) {
-			if (pedido.getIdPedido().equals(idPedido)) {
-				return pedido;
-			}
-		}
+	private void mostrarPedidoEnVentana(Pedido pedido) {
+		JTextArea areaPedido = crearArea();
+		areaPedido.setEditable(false);
+		areaPedido.setText(crearTextoPedido(pedido));
+		areaPedido.setCaretPosition(0);
 
-		return null;
+		JScrollPane scroll = estilizarScroll(areaPedido);
+		scroll.setPreferredSize(new Dimension(VentanaPrincipal.escalar(680), VentanaPrincipal.escalar(320)));
+
+		JOptionPane.showMessageDialog(this, scroll, "Información del pedido", JOptionPane.INFORMATION_MESSAGE);
 	}
 
-	private void mostrarInfoPedido(String idPedido) {
-		Pedido pedido = buscarPedidoPorId(idPedido);
+	private String crearTextoPedido(Pedido pedido) {
+		StringBuilder texto = new StringBuilder();
 
-		if (pedido == null) {
-			areaInfoPedido.setText("No existe ningún pedido con ese ID.");
-			return;
+		texto.append("Pedido: ").append(pedido.getIdPedido()).append("\n");
+		texto.append("Cliente: ").append(pedido.getCliente().getNickname()).append("\n");
+		texto.append("Estado: ").append(pedido.getEstado()).append("\n");
+		texto.append("Total: ").append(formatearPrecio(pedido.getTotal())).append("\n");
+		texto.append("Código recogida: ").append(obtenerCodigoRecogida(pedido)).append("\n");
+		texto.append("Recogida solicitada: ").append(pedido.isRecogida_solicitada() ? "Sí" : "No").append("\n");
+
+		if (pedido.getFechaPreparado() != null) {
+			texto.append("Fecha preparado: ").append(pedido.getFechaPreparado()).append("\n");
 		}
 
-		StringBuilder sb = new StringBuilder();
-
-		sb.append("Pedido: ").append(pedido.getIdPedido()).append("\n");
-		sb.append("Cliente: ").append(pedido.getCliente().getNickname()).append("\n");
-		sb.append("Estado: ").append(pedido.getEstado()).append("\n");
-		sb.append("Total: ").append(pedido.getTotal()).append(" €\n");
-
-		if (pedido.getCodigoRecogida() != null) {
-			sb.append("Código recogida: ").append(pedido.getCodigoRecogida()).append("\n");
-		} else {
-			sb.append("Código recogida: -\n");
+		if (pedido.getFechaEntregado() != null) {
+			texto.append("Fecha entregado: ").append(pedido.getFechaEntregado()).append("\n");
 		}
 
-		sb.append("Recogida solicitada: ");
-		sb.append(pedido.isRecogida_solicitada() ? "Sí" : "No");
-		sb.append("\n\n");
+		texto.append("\nProductos del pedido:\n");
+		texto.append(crearTextoProductosPedido(pedido));
 
-		sb.append("Productos del pedido:\n");
+		return texto.toString();
+	}
+
+	private String crearTextoProductosPedido(Pedido pedido) {
+		StringBuilder texto = new StringBuilder();
 
 		if (pedido.getLineas().isEmpty()) {
-			sb.append("  Sin productos.\n");
-		} else {
-			for (LineaPedido linea : pedido.getLineas()) {
-				ProductoVenta producto = linea.getProducto();
-
-				sb.append("  - ").append(producto.getId()).append(" | ").append(producto.getNombre())
-						.append(" | cantidad: ").append(linea.getCantidad()).append(" | precio unidad: ")
-						.append(linea.getPrecioVenta()).append(" € | subtotal: ").append(linea.getSubtotal())
-						.append(" €\n");
-			}
+			texto.append("Sin productos.");
+			return texto.toString();
 		}
 
-		areaInfoPedido.setText(sb.toString());
-		areaInfoPedido.setCaretPosition(0);
+		for (LineaPedido linea : pedido.getLineas()) {
+			ProductoVenta producto = linea.getProducto();
+
+			texto.append("- ");
+			texto.append(producto.getId()).append(" | ");
+			texto.append(producto.getNombre()).append(" | ");
+			texto.append("cantidad: ").append(linea.getCantidad()).append(" | ");
+			texto.append("precio unidad: ").append(formatearPrecio(linea.getPrecioVenta())).append(" | ");
+			texto.append("subtotal: ").append(formatearPrecio(linea.getSubtotal()));
+			texto.append("\n");
+		}
+
+		return texto.toString();
+	}
+
+	private String obtenerCodigoRecogida(Pedido pedido) {
+		if (pedido.getCodigoRecogida() == null || pedido.getCodigoRecogida().isBlank()) {
+			return "-";
+		}
+
+		return pedido.getCodigoRecogida();
+	}
+
+	private String formatearPrecio(double precio) {
+		return String.format(Locale.US, "%.2f €", precio).replace('.', ',');
 	}
 
 	private void estilizarTablaEntregas(JTable tabla) {
-		tabla.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		tabla.setRowHeight(VentanaPrincipal.escalar(30));
-		tabla.setBackground(Color.WHITE);
-		tabla.setForeground(VentanaPrincipal.COLOR_TEXTO);
-		tabla.setGridColor(new Color(225, 225, 225));
-		tabla.setSelectionBackground(VentanaPrincipal.COLOR_ACENTO);
-		tabla.setSelectionForeground(Color.BLACK);
-		tabla.setFillsViewportHeight(true);
+		tabla.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		tabla.setRowHeight(VentanaPrincipal.escalar(28));
+		tabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-		JTableHeader header = tabla.getTableHeader();
-		header.setFont(new Font("Segoe UI", Font.BOLD, 13));
-		header.setBackground(new Color(232, 232, 232));
-		header.setForeground(VentanaPrincipal.COLOR_TEXTO);
-		header.setReorderingAllowed(false);
+		tabla.setBackground(Color.WHITE);
+		tabla.setForeground(Color.BLACK);
+		tabla.setGridColor(new Color(225, 225, 225));
+
+		tabla.setFillsViewportHeight(true);
+		tabla.setShowHorizontalLines(true);
+		tabla.setShowVerticalLines(true);
+
+		JTableHeader cabecera = tabla.getTableHeader();
+		cabecera.setFont(new Font("Segoe UI", Font.BOLD, 13));
+		cabecera.setBackground(new Color(235, 235, 235));
+		cabecera.setForeground(Color.BLACK);
+		cabecera.setReorderingAllowed(false);
+
+		tabla.getColumnModel().getColumn(0).setPreferredWidth(130);
+		tabla.getColumnModel().getColumn(1).setPreferredWidth(160);
+		tabla.getColumnModel().getColumn(2).setPreferredWidth(180);
+		tabla.getColumnModel().getColumn(3).setPreferredWidth(160);
+		tabla.getColumnModel().getColumn(4).setPreferredWidth(100);
+		tabla.getColumnModel().getColumn(5).setPreferredWidth(90);
 	}
 }

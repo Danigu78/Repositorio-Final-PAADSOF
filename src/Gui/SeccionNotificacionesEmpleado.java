@@ -1,38 +1,47 @@
 package Gui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridLayout;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
 
 import tienda.Notificacion;
 import usuarios.Empleado;
 
 /**
- * Sección de notificaciones del empleado.
+ * Pantalla de notificaciones del empleado.
  * 
- * Permite ver las notificaciones, filtrarlas por leídas/no leídas y marcarlas
- * como leídas.
+ * Se muestra como una bandeja sencilla. La lista solo enseña un resumen de cada
+ * aviso. Para ver el mensaje completo, el empleado selecciona una notificación
+ * y pulsa el botón de ver.
  */
 public class SeccionNotificacionesEmpleado extends AbstractPanelEmpleadoSection {
 
 	private static final long serialVersionUID = 1L;
 
-	private JTable tablaNotificaciones;
-	private DefaultTableModel modeloNotificaciones;
-	private JTextArea areaDetalle;
+	private DefaultListModel<String> modeloNotificaciones;
+	private JList<String> listaNotificaciones;
+
+	private List<Notificacion> notificacionesMostradas;
+
 	private JComboBox<String> comboFiltro;
+	private JLabel labelResumen;
 
 	public SeccionNotificacionesEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
@@ -40,221 +49,284 @@ public class SeccionNotificacionesEmpleado extends AbstractPanelEmpleadoSection 
 	}
 
 	private void construirUI() {
-		JPanel base = crearPanelBase("Notificaciones");
-		JPanel contenido = getContenido(base);
+		setLayout(new BorderLayout());
 
-		contenido.add(crearBloqueNotificaciones());
+		JPanel panelBase = crearPanelBase("Notificaciones");
+		JPanel contenido = getContenido(panelBase);
 
-		add(base);
+		contenido.add(crearBloqueBandeja());
+		contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(18)));
+		contenido.add(crearBloqueAcciones());
+
+		add(panelBase, BorderLayout.CENTER);
 	}
 
-	private JPanel crearBloqueNotificaciones() {
-		JPanel bloque = crearBloque("Mis notificaciones");
+	private JPanel crearBloqueBandeja() {
+		JPanel bloque = crearBloque("Bandeja de notificaciones");
 
-		modeloNotificaciones = new DefaultTableModel(new String[] { "ID", "Tipo", "Leída", "Fecha", "Mensaje" }, 0) {
-			private static final long serialVersionUID = 1L;
+		notificacionesMostradas = new ArrayList<>();
 
-			@Override
-			public boolean isCellEditable(int fila, int columna) {
-				return false;
-			}
-		};
+		modeloNotificaciones = new DefaultListModel<>();
+		listaNotificaciones = new JList<>(modeloNotificaciones);
+		estilizarLista();
 
-		tablaNotificaciones = new JTable(modeloNotificaciones);
-		tablaNotificaciones.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		estilizarTablaNotificaciones(tablaNotificaciones);
+		comboFiltro = crearCombo(new String[] { "Todas", "No vistas", "Vistas" });
+		comboFiltro.addActionListener(e -> cargarNotificaciones());
 
-		areaDetalle = crearArea();
-		areaDetalle.setEditable(false);
+		JButton botonRefrescar = crearBotonSecundario("Refrescar");
+		botonRefrescar.addActionListener(e -> cargarNotificaciones());
 
-		comboFiltro = crearCombo(new String[] { "Todas", "No leídas", "Leídas" });
+		labelResumen = crearLabel("");
 
-		JButton botonRefrescar = crearBotonAccion("Refrescar");
-		JButton botonMarcarLeida = crearBotonSecundario("Marcar seleccionada como leída");
-		JButton botonMarcarTodas = crearBotonSecundario("Marcar todas como leídas");
+		JPanel filaFiltro = new JPanel(new BorderLayout(VentanaPrincipal.escalar(12), 0));
+		filaFiltro.setOpaque(false);
 
-		cargarTablaNotificaciones();
+		JPanel zonaFiltro = new JPanel(new BorderLayout(0, VentanaPrincipal.escalar(4)));
+		zonaFiltro.setOpaque(false);
+		zonaFiltro.add(crearLabel("Mostrar"), BorderLayout.NORTH);
+		zonaFiltro.add(comboFiltro, BorderLayout.CENTER);
 
-		tablaNotificaciones.getSelectionModel().addListSelectionListener(e -> {
-			if (e.getValueIsAdjusting()) {
-				return;
-			}
+		JPanel zonaBoton = new JPanel(new BorderLayout());
+		zonaBoton.setOpaque(false);
+		zonaBoton.add(botonRefrescar, BorderLayout.SOUTH);
 
-			int fila = tablaNotificaciones.getSelectedRow();
+		filaFiltro.add(zonaFiltro, BorderLayout.CENTER);
+		filaFiltro.add(zonaBoton, BorderLayout.EAST);
 
-			if (fila < 0) {
-				return;
-			}
+		JScrollPane scrollLista = estilizarScroll(listaNotificaciones);
+		scrollLista.setPreferredSize(new Dimension(VentanaPrincipal.escalar(1050), VentanaPrincipal.escalar(330)));
 
-			String id = String.valueOf(tablaNotificaciones.getValueAt(fila, 0));
-			mostrarDetalleNotificacion(id);
-		});
+		bloque.add(labelResumen, gbcCampo(1));
+		bloque.add(filaFiltro, gbcCampo(2));
+		bloque.add(scrollLista, gbcCampo(3));
 
-		comboFiltro.addActionListener(e -> {
-			cargarTablaNotificaciones();
-			areaDetalle.setText("");
-		});
-
-		botonRefrescar.addActionListener(e -> {
-			cargarTablaNotificaciones();
-			areaDetalle.setText("");
-		});
-
-		botonMarcarLeida.addActionListener(e -> {
-			int fila = tablaNotificaciones.getSelectedRow();
-
-			if (fila < 0) {
-				mostrarError("Selecciona una notificación.");
-				return;
-			}
-
-			String id = String.valueOf(tablaNotificaciones.getValueAt(fila, 0));
-			Notificacion notificacion = buscarNotificacionPorId(id);
-
-			if (notificacion == null) {
-				mostrarError("No se encontró la notificación.");
-				return;
-			}
-
-			notificacion.marcarComoLeida();
-			cargarTablaNotificaciones();
-			mostrarDetalleNotificacion(id);
-			mostrarMensaje("Notificación marcada como leída.");
-		});
-
-		botonMarcarTodas.addActionListener(e -> {
-			if (empleado.getNotificaciones() == null || empleado.getNotificaciones().isEmpty()) {
-				mostrarError("No hay notificaciones.");
-				return;
-			}
-
-			for (Notificacion n : empleado.getNotificaciones()) {
-				if (n != null) {
-					n.marcarComoLeida();
-				}
-			}
-
-			cargarTablaNotificaciones();
-			areaDetalle.setText("");
-			mostrarMensaje("Todas las notificaciones se han marcado como leídas.");
-		});
-
-		JScrollPane scrollTabla = estilizarScroll(tablaNotificaciones);
-		scrollTabla.setPreferredSize(new Dimension(VentanaPrincipal.escalar(1050), VentanaPrincipal.escalar(280)));
-
-		JScrollPane scrollDetalle = estilizarScroll(areaDetalle);
-		scrollDetalle.setPreferredSize(new Dimension(VentanaPrincipal.escalar(1050), VentanaPrincipal.escalar(170)));
-
-		JPanel filaBotones = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 0));
-		filaBotones.setOpaque(false);
-		filaBotones.add(botonRefrescar);
-		filaBotones.add(botonMarcarLeida);
-		filaBotones.add(botonMarcarTodas);
-
-		bloque.add(crearLabel("Filtrar notificaciones"), gbcCampo(1));
-		bloque.add(comboFiltro, gbcCampo(2));
-
-		bloque.add(crearLabel("Listado de notificaciones"), gbcCampo(3));
-		bloque.add(scrollTabla, gbcCampo(4));
-
-		bloque.add(crearLabel("Detalle de la notificación seleccionada"), gbcCampo(5));
-		bloque.add(scrollDetalle, gbcCampo(6));
-
-		bloque.add(filaBotones, gbcBoton(7));
+		cargarNotificaciones();
 
 		return bloque;
 	}
 
-	private void cargarTablaNotificaciones() {
-		modeloNotificaciones.setRowCount(0);
+	private JPanel crearBloqueAcciones() {
+		JPanel bloque = crearBloque("Consultar notificación");
+
+		JPanel panelAcciones = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(30), 0));
+		panelAcciones.setOpaque(false);
+
+		panelAcciones.add(crearPanelAyuda());
+		panelAcciones.add(crearPanelBotones());
+
+		bloque.add(panelAcciones, gbcCampo(1));
+
+		return bloque;
+	}
+
+	private JPanel crearPanelAyuda() {
+		JPanel panel = new JPanel();
+		panel.setOpaque(false);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+		JLabel titulo = crearLabel("Cómo funciona");
+		panel.add(titulo);
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+
+		panel.add(crearLabel("Selecciona una notificación de la bandeja."));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(8)));
+		panel.add(crearLabel("Al abrirla, pasa automáticamente a vista."));
+
+		return panel;
+	}
+
+	private JPanel crearPanelBotones() {
+		JPanel panel = new JPanel();
+		panel.setOpaque(false);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+		panel.add(crearLabel("Acciones"));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+
+		JButton botonVer = crearBotonAccion("Ver notificación");
+		JButton botonMarcarTodas = crearBotonSecundario("Marcar todas vistas");
+
+		JPanel filaBotones = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(10), 0));
+		filaBotones.setOpaque(false);
+
+		filaBotones.add(botonVer);
+		filaBotones.add(botonMarcarTodas);
+
+		Dimension tamanoFila = new Dimension(VentanaPrincipal.escalar(460), VentanaPrincipal.escalar(42));
+		filaBotones.setPreferredSize(tamanoFila);
+		filaBotones.setMaximumSize(tamanoFila);
+
+		panel.add(filaBotones);
+
+		botonVer.addActionListener(e -> verNotificacionSeleccionada());
+		botonMarcarTodas.addActionListener(e -> marcarTodasComoVistas());
+
+		return panel;
+	}
+
+	private void cargarNotificaciones() {
+		modeloNotificaciones.clear();
+		notificacionesMostradas.clear();
 
 		List<Notificacion> notificaciones = empleado.getNotificaciones();
 
-		if (notificaciones == null) {
+		if (notificaciones == null || notificaciones.isEmpty()) {
+			labelResumen.setText("No tienes notificaciones.");
 			return;
 		}
 
-		String filtro = "Todas";
+		String filtro = obtenerFiltroActual();
 
-		if (comboFiltro != null && comboFiltro.getSelectedItem() != null) {
-			filtro = String.valueOf(comboFiltro.getSelectedItem());
+		int totalMostradas = 0;
+		int noVistas = 0;
+
+		for (Notificacion notificacion : notificaciones) {
+			if (notificacion == null) {
+				continue;
+			}
+
+			if (!notificacion.isLeida()) {
+				noVistas++;
+			}
+
+			if (!pasaFiltro(notificacion, filtro)) {
+				continue;
+			}
+
+			notificacionesMostradas.add(notificacion);
+			modeloNotificaciones.addElement(crearTextoLista(notificacion));
+			totalMostradas++;
 		}
 
-		for (Notificacion n : notificaciones) {
-			if (n == null) {
-				continue;
-			}
-
-			if ("No leídas".equals(filtro) && n.isLeida()) {
-				continue;
-			}
-
-			if ("Leídas".equals(filtro) && !n.isLeida()) {
-				continue;
-			}
-
-			modeloNotificaciones.addRow(new Object[] { n.getId(), n.getTipo(), n.isLeida() ? "Sí" : "No",
-					n.getFechaEnvio().toLocalDate() + " " + n.getFechaEnvio().toLocalTime().withNano(0),
-					n.getMensaje() });
-		}
+		actualizarResumen(totalMostradas, noVistas);
+		listaNotificaciones.clearSelection();
 	}
 
-	private Notificacion buscarNotificacionPorId(String id) {
-		if (id == null || empleado.getNotificaciones() == null) {
-			return null;
+	private String obtenerFiltroActual() {
+		if (comboFiltro == null || comboFiltro.getSelectedItem() == null) {
+			return "Todas";
 		}
 
-		for (Notificacion n : empleado.getNotificaciones()) {
-			if (n != null && n.getId().equals(id)) {
-				return n;
-			}
-		}
-
-		return null;
+		return String.valueOf(comboFiltro.getSelectedItem());
 	}
 
-	private void mostrarDetalleNotificacion(String id) {
-		Notificacion n = buscarNotificacionPorId(id);
+	private boolean pasaFiltro(Notificacion notificacion, String filtro) {
+		if ("No vistas".equals(filtro) && notificacion.isLeida()) {
+			return false;
+		}
 
-		if (n == null) {
-			areaDetalle.setText("No se encontró la notificación.");
+		if ("Vistas".equals(filtro) && !notificacion.isLeida()) {
+			return false;
+		}
+
+		return true;
+	}
+
+	private String crearTextoLista(Notificacion notificacion) {
+		String estado = notificacion.isLeida() ? "Vista" : "Nueva";
+		String tipo = obtenerTipo(notificacion);
+		String fecha = formatearFecha(notificacion);
+
+		return estado + "   |   " + tipo + "   |   " + fecha;
+	}
+
+	private void actualizarResumen(int totalMostradas, int noVistas) {
+		if (totalMostradas == 0) {
+			labelResumen.setText("No hay notificaciones para mostrar con este filtro.");
 			return;
 		}
 
-		StringBuilder sb = new StringBuilder();
-
-		sb.append("ID: ").append(n.getId()).append("\n");
-		sb.append("Tipo: ").append(n.getTipo()).append("\n");
-		sb.append("Leída: ").append(n.isLeida() ? "Sí" : "No").append("\n");
-		sb.append("Fecha: ").append(n.getFechaEnvio().toLocalDate()).append(" ")
-				.append(n.getFechaEnvio().toLocalTime().withNano(0)).append("\n\n");
-		sb.append("Mensaje:\n");
-		sb.append(n.getMensaje());
-
-		areaDetalle.setText(sb.toString());
-		areaDetalle.setCaretPosition(0);
+		labelResumen.setText("Mostrando " + totalMostradas + " notificaciones. No vistas: " + noVistas + ".");
 	}
 
-	private void estilizarTablaNotificaciones(JTable tabla) {
-		tabla.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		tabla.setRowHeight(VentanaPrincipal.escalar(30));
-		tabla.setBackground(Color.WHITE);
-		tabla.setForeground(VentanaPrincipal.COLOR_TEXTO);
-		tabla.setGridColor(new Color(225, 225, 225));
-		tabla.setSelectionBackground(VentanaPrincipal.COLOR_ACENTO);
-		tabla.setSelectionForeground(Color.BLACK);
-		tabla.setFillsViewportHeight(true);
+	private void verNotificacionSeleccionada() {
+		int posicion = listaNotificaciones.getSelectedIndex();
 
-		tabla.getColumnModel().getColumn(0).setPreferredWidth(90);
-		tabla.getColumnModel().getColumn(1).setPreferredWidth(140);
-		tabla.getColumnModel().getColumn(2).setPreferredWidth(70);
-		tabla.getColumnModel().getColumn(3).setPreferredWidth(150);
-		tabla.getColumnModel().getColumn(4).setPreferredWidth(520);
+		if (posicion < 0) {
+			mostrarError("Selecciona una notificación de la bandeja.");
+			return;
+		}
 
-		JTableHeader header = tabla.getTableHeader();
-		header.setFont(new Font("Segoe UI", Font.BOLD, 13));
-		header.setBackground(new Color(232, 232, 232));
-		header.setForeground(VentanaPrincipal.COLOR_TEXTO);
-		header.setReorderingAllowed(false);
+		Notificacion notificacion = notificacionesMostradas.get(posicion);
+
+		if (notificacion == null) {
+			mostrarError("No se pudo abrir la notificación.");
+			return;
+		}
+
+		notificacion.marcarComoLeida();
+		mostrarNotificacionEnVentana(notificacion);
+		cargarNotificaciones();
+	}
+
+	private void marcarTodasComoVistas() {
+		List<Notificacion> notificaciones = empleado.getNotificaciones();
+
+		if (notificaciones == null || notificaciones.isEmpty()) {
+			mostrarError("No hay notificaciones.");
+			return;
+		}
+
+		for (Notificacion notificacion : notificaciones) {
+			if (notificacion != null) {
+				notificacion.marcarComoLeida();
+			}
+		}
+
+		cargarNotificaciones();
+		mostrarMensaje("Todas las notificaciones se han marcado como vistas.");
+	}
+
+	private void mostrarNotificacionEnVentana(Notificacion notificacion) {
+		JTextArea areaNotificacion = crearArea();
+		areaNotificacion.setEditable(false);
+		areaNotificacion.setText(crearTextoNotificacion(notificacion));
+		areaNotificacion.setCaretPosition(0);
+
+		JScrollPane scroll = estilizarScroll(areaNotificacion);
+		scroll.setPreferredSize(new Dimension(VentanaPrincipal.escalar(640), VentanaPrincipal.escalar(260)));
+
+		JOptionPane.showMessageDialog(this, scroll, "Notificación", JOptionPane.INFORMATION_MESSAGE);
+	}
+
+	private String crearTextoNotificacion(Notificacion notificacion) {
+		StringBuilder texto = new StringBuilder();
+
+		texto.append("Tipo: ").append(obtenerTipo(notificacion)).append("\n");
+		texto.append("Fecha: ").append(formatearFecha(notificacion)).append("\n");
+		texto.append("Vista: Sí").append("\n\n");
+
+		texto.append(notificacion.getMensaje());
+
+		return texto.toString();
+	}
+
+	private String obtenerTipo(Notificacion notificacion) {
+		if (notificacion.getTipo() == null) {
+			return "General";
+		}
+
+		return String.valueOf(notificacion.getTipo());
+	}
+
+	private String formatearFecha(Notificacion notificacion) {
+		if (notificacion == null || notificacion.getFechaEnvio() == null) {
+			return "-";
+		}
+
+		return notificacion.getFechaEnvio().toLocalDate() + " "
+				+ notificacion.getFechaEnvio().toLocalTime().withNano(0);
+	}
+
+	private void estilizarLista() {
+		listaNotificaciones.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		listaNotificaciones.setFixedCellHeight(VentanaPrincipal.escalar(34));
+
+		listaNotificaciones.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		listaNotificaciones.setBackground(Color.WHITE);
+		listaNotificaciones.setForeground(Color.BLACK);
+
+		listaNotificaciones.setSelectionBackground(new Color(235, 235, 235));
+		listaNotificaciones.setSelectionForeground(Color.BLACK);
 	}
 }

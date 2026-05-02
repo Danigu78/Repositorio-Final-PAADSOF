@@ -1,22 +1,23 @@
 package Gui;
 
-import java.awt.Color;
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 
 import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
 
 import productos.LineaPack;
 import productos.Pack;
@@ -25,20 +26,17 @@ import tienda.Tienda;
 import usuarios.Empleado;
 
 /**
- * Sección para gestionar packs. Permite crear packs, consultar su contenido y
- * modificar packs existentes.
+ * Pantalla para gestionar packs de productos.
+ * 
+ * Permite consultar productos, crear packs y modificar packs ya existentes.
  */
 public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 
 	private static final long serialVersionUID = 1L;
 
-	private JTable tablaPacks;
-	private DefaultTableModel modeloPacks;
+	private SelectorVenta selectorProductos;
 
-	private JTextArea areaInfoPack;
-	private JTextArea areaInfoPackGestion;
-	private JTextArea areaLineas;
-	private JTextArea areaVistaPrevia;
+	private JTextArea areaLineasPack;
 
 	private JTextField campoIdPack;
 	private JTextField campoIdProducto;
@@ -51,8 +49,10 @@ public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 	}
 
 	private void construirUI() {
-		JPanel base = crearPanelBase("Gestión de Packs");
-		JPanel contenido = getContenido(base);
+		setLayout(new BorderLayout());
+
+		JPanel panelBase = crearPanelBase("Gestión de Packs");
+		JPanel contenido = getContenido(panelBase);
 
 		contenido.add(crearBloquePacksExistentes());
 		contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(18)));
@@ -60,234 +60,192 @@ public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 		contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(18)));
 		contenido.add(crearBloqueModificarPack());
 
-		add(base);
+		add(panelBase, BorderLayout.CENTER);
 	}
 
 	private JPanel crearBloquePacksExistentes() {
-		JPanel bloque = crearBloque("Packs existentes");
+		selectorProductos = crearSelectorProductosVenta("Packs existentes",
+				"Busca productos igual que en el resto de secciones. Por defecto se muestran los packs.", false);
 
-		modeloPacks = new DefaultTableModel(new String[] { "ID", "Nombre", "Precio", "Stock", "Productos incluidos" },
-				0) {
-			private static final long serialVersionUID = 1L;
+		/*
+		 * Esta tabla es solo de consulta. No queremos que al pulsar una fila copie
+		 * nada.
+		 */
+		selectorProductos.tabla.setRowSelectionAllowed(false);
+		selectorProductos.tabla.setCellSelectionEnabled(false);
 
-			@Override
-			public boolean isCellEditable(int fila, int columna) {
-				return false;
+		JButton botonRefrescar = crearBotonSecundario("Refrescar");
+
+		JPanel filaBoton = crearFilaBotones();
+		filaBoton.add(botonRefrescar);
+
+		selectorProductos.bloque.add(filaBoton, gbcBoton(4));
+
+		botonRefrescar.addActionListener(e -> dejarSoloPacks());
+
+		dejarSoloPacks();
+
+		return selectorProductos.bloque;
+	}
+
+	private void dejarSoloPacks() {
+		if (selectorProductos == null) {
+			return;
+		}
+
+		limpiarCamposDeFiltro(selectorProductos.bloque);
+		desmarcarChecks(selectorProductos.bloque);
+
+		JCheckBox checkPack = buscarCheck(selectorProductos.bloque, "Pack");
+
+		if (checkPack != null) {
+			checkPack.setSelected(true);
+		}
+
+		ArrayList<String> tipos = new ArrayList<>();
+		tipos.add("Pack");
+
+		cargarModeloProductosVenta((DefaultTableModel) selectorProductos.tabla.getModel(), "", tipos,
+				new ArrayList<>());
+	}
+
+	private JCheckBox buscarCheck(Component componente, String texto) {
+		if (componente instanceof JCheckBox) {
+			JCheckBox check = (JCheckBox) componente;
+
+			if (texto.equals(check.getText())) {
+				return check;
 			}
-		};
+		}
 
-		tablaPacks = new JTable(modeloPacks);
-		tablaPacks.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		estilizarTablaPacks(tablaPacks);
+		if (componente instanceof JPanel) {
+			JPanel panel = (JPanel) componente;
 
-		areaInfoPack = crearArea();
-		areaInfoPack.setEditable(false);
+			for (Component hijo : panel.getComponents()) {
+				JCheckBox encontrado = buscarCheck(hijo, texto);
 
-		JButton botonRefrescar = crearBotonAccion("Refrescar packs");
-
-		cargarTablaPacks();
-
-		tablaPacks.getSelectionModel().addListSelectionListener(e -> {
-			if (e.getValueIsAdjusting()) {
-				return;
+				if (encontrado != null) {
+					return encontrado;
+				}
 			}
+		}
 
-			int fila = tablaPacks.getSelectedRow();
+		return null;
+	}
 
-			if (fila < 0) {
-				return;
+	private void desmarcarChecks(Component componente) {
+		if (componente instanceof JCheckBox) {
+			((JCheckBox) componente).setSelected(false);
+		}
+
+		if (componente instanceof JPanel) {
+			JPanel panel = (JPanel) componente;
+
+			for (Component hijo : panel.getComponents()) {
+				desmarcarChecks(hijo);
 			}
+		}
+	}
 
-			String idPack = String.valueOf(tablaPacks.getValueAt(fila, 0));
+	private void limpiarCamposDeFiltro(Component componente) {
+		if (componente instanceof JTextField) {
+			((JTextField) componente).setText("");
+		}
 
-			if (campoIdPack != null) {
-				campoIdPack.setText(idPack);
+		if (componente instanceof JPanel) {
+			JPanel panel = (JPanel) componente;
+
+			for (Component hijo : panel.getComponents()) {
+				limpiarCamposDeFiltro(hijo);
 			}
-
-			mostrarInfoPack(idPack);
-		});
-
-		botonRefrescar.addActionListener(e -> cargarTablaPacks());
-
-		JScrollPane scrollTabla = estilizarScroll(tablaPacks);
-		scrollTabla.setPreferredSize(new Dimension(VentanaPrincipal.escalar(1050), VentanaPrincipal.escalar(230)));
-
-		JScrollPane scrollInfo = estilizarScroll(areaInfoPack);
-		scrollInfo.setPreferredSize(new Dimension(VentanaPrincipal.escalar(1050), VentanaPrincipal.escalar(150)));
-
-		bloque.add(crearLabel("Selecciona un pack para ver sus productos y cantidades."), gbcCampo(1));
-		bloque.add(scrollTabla, gbcCampo(2));
-		bloque.add(crearLabel("Información del pack seleccionado"), gbcCampo(3));
-		bloque.add(scrollInfo, gbcCampo(4));
-		bloque.add(botonRefrescar, gbcBoton(5));
-
-		return bloque;
+		}
 	}
 
 	private JPanel crearBloqueCrearPack() {
 		JPanel bloque = crearBloque("Crear pack");
 
 		JTextField campoNombre = crearCampo();
-		JTextArea areaDescripcionPack = crearArea();
+		JTextArea areaDescripcion = crearArea();
 		JTextField campoImagen = crearCampo();
 		JTextField campoPrecio = crearCampo();
 		JTextField campoStock = crearCampo();
 
-		JTextField campoIdProductoLinea = crearCampo();
-		JTextField campoUnidadesLinea = crearCampo();
+		areaLineasPack = crearArea();
 
-		areaLineas = crearArea();
-		areaVistaPrevia = crearArea();
-		areaVistaPrevia.setEditable(false);
+		JPanel panelCrear = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(25), 0));
+		panelCrear.setOpaque(false);
 
-		JButton botonAgregarLinea = crearBotonSecundario("Añadir línea");
-		JButton botonVistaPrevia = crearBotonSecundario("Ver contenido");
-		JButton botonLimpiarLineas = crearBotonSecundario("Limpiar líneas");
+		panelCrear.add(crearPanelDatosPack(campoNombre, areaDescripcion, campoImagen, campoPrecio, campoStock));
+		panelCrear.add(crearPanelProductosPack());
+
+		bloque.add(panelCrear, gbcCampo(1));
+
+		JButton botonVerLineas = crearBotonSecundario("Ver contenido");
+		JButton botonLimpiar = crearBotonSecundario("Limpiar");
 		JButton botonCrear = crearBotonAccion("Crear pack");
 
-		bloque.add(crearLabel("Nombre"), gbcCampo(1));
-		bloque.add(campoNombre, gbcCampo(2));
+		JPanel filaBotones = crearFilaBotones();
+		filaBotones.add(botonVerLineas);
+		filaBotones.add(Box.createHorizontalStrut(VentanaPrincipal.escalar(10)));
+		filaBotones.add(botonLimpiar);
+		filaBotones.add(Box.createHorizontalStrut(VentanaPrincipal.escalar(10)));
+		filaBotones.add(botonCrear);
 
-		bloque.add(crearLabel("Descripción"), gbcCampo(3));
-		bloque.add(estilizarScroll(areaDescripcionPack), gbcCampo(4));
+		bloque.add(filaBotones, gbcBoton(2));
 
-		bloque.add(crearLabel("Imagen"), gbcCampo(5));
-		bloque.add(campoImagen, gbcCampo(6));
-
-		bloque.add(crearLabel("Precio"), gbcCampo(7));
-		bloque.add(campoPrecio, gbcCampo(8));
-
-		bloque.add(crearLabel("Stock"), gbcCampo(9));
-		bloque.add(campoStock, gbcCampo(10));
-
-		JPanel helperLinea = new JPanel(new GridLayout(1, 3, 10, 0));
-		helperLinea.setOpaque(false);
-		helperLinea.add(crearCampoFormulario("ID producto", campoIdProductoLinea));
-		helperLinea.add(crearCampoFormulario("Unidades", campoUnidadesLinea));
-		helperLinea.add(crearCampoFormulario(" ", botonAgregarLinea));
-
-		bloque.add(crearLabel("Añadir producto al pack"), gbcCampo(11));
-		bloque.add(helperLinea, gbcCampo(12));
-
-		bloque.add(crearLabel("Líneas del pack: una por línea con formato ID;UNIDADES"), gbcCampo(13));
-		bloque.add(estilizarScroll(areaLineas), gbcCampo(14));
-
-		JPanel botonesLineas = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
-		botonesLineas.setOpaque(false);
-		botonesLineas.add(botonVistaPrevia);
-		botonesLineas.add(botonLimpiarLineas);
-
-		bloque.add(botonesLineas, gbcBoton(15));
-
-		bloque.add(crearLabel("Vista previa del contenido del pack"), gbcCampo(16));
-		bloque.add(estilizarScroll(areaVistaPrevia), gbcCampo(17));
-
-		bloque.add(botonCrear, gbcBoton(18));
-
-		botonAgregarLinea.addActionListener(e -> {
-			String id = campoIdProductoLinea.getText().trim();
-			Integer unidades = leerEnteroSeguro(campoUnidadesLinea.getText());
-
-			if (id.isBlank()) {
-				mostrarError("Introduce el ID del producto.");
-				return;
-			}
-
-			if (unidades == null || unidades <= 0) {
-				mostrarError("Introduce unidades válidas.");
-				return;
-			}
-
-			ProductoVenta producto = Tienda.getInstancia().buscarProductoVentaPorId(id);
-
-			if (producto == null) {
-				mostrarError("No existe un producto con ese ID.");
-				return;
-			}
-
-			if (!areaLineas.getText().isBlank() && !areaLineas.getText().endsWith("\n")) {
-				areaLineas.append("\n");
-			}
-
-			areaLineas.append(id + ";" + unidades);
-
-			campoIdProductoLinea.setText("");
-			campoUnidadesLinea.setText("");
-
-			actualizarVistaPrevia();
-		});
-
-		botonVistaPrevia.addActionListener(e -> actualizarVistaPrevia());
-
-		botonLimpiarLineas.addActionListener(e -> {
-			areaLineas.setText("");
-			areaVistaPrevia.setText("");
-		});
-
-		botonCrear.addActionListener(e -> {
-			try {
-				String nombre = campoNombre.getText().trim();
-				String descripcion = areaDescripcionPack.getText().trim();
-				String imagen = campoImagen.getText().trim();
-
-				Double precio = leerDoubleSeguro(campoPrecio.getText());
-				Integer stock = leerEnteroSeguro(campoStock.getText());
-
-				if (nombre.isBlank()) {
-					mostrarError("Introduce el nombre del pack.");
-					return;
-				}
-
-				if (descripcion.isBlank()) {
-					mostrarError("Introduce la descripción del pack.");
-					return;
-				}
-
-				if (imagen.isBlank()) {
-					mostrarError("Introduce una ruta de imagen.");
-					return;
-				}
-
-				if (precio == null || precio <= 0) {
-					mostrarError("Introduce un precio válido.");
-					return;
-				}
-
-				if (stock == null || stock <= 0) {
-					mostrarError("Introduce un stock válido.");
-					return;
-				}
-
-				ArrayList<LineaPack> lineas = construirLineasPack(areaLineas.getText());
-
-				if (lineas.size() < 2) {
-					mostrarError("Un pack debe tener al menos dos productos.");
-					return;
-				}
-
-				boolean ok = empleado.crearPack(nombre, descripcion, imagen, precio, stock, lineas);
-
-				if (ok) {
-					cargarTablaPacks();
-					mostrarMensaje("Pack creado correctamente.");
-
-					campoNombre.setText("");
-					areaDescripcionPack.setText("");
-					campoImagen.setText("");
-					campoPrecio.setText("");
-					campoStock.setText("");
-					areaLineas.setText("");
-					areaVistaPrevia.setText("");
-				} else {
-					mostrarError("No se pudo crear el pack.");
-				}
-
-			} catch (Exception ex) {
-				mostrarError("No se pudo crear el pack: " + ex.getMessage());
-			}
-		});
+		botonVerLineas.addActionListener(e -> verContenidoEscrito());
+		botonLimpiar.addActionListener(
+				e -> limpiarFormularioCrear(campoNombre, areaDescripcion, campoImagen, campoPrecio, campoStock));
+		botonCrear
+				.addActionListener(e -> crearPack(campoNombre, areaDescripcion, campoImagen, campoPrecio, campoStock));
 
 		return bloque;
+	}
+
+	private JPanel crearPanelDatosPack(JTextField campoNombre, JTextArea areaDescripcion, JTextField campoImagen,
+			JTextField campoPrecio, JTextField campoStock) {
+
+		JPanel panel = new JPanel();
+		panel.setOpaque(false);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+		panel.add(crearLabel("Datos generales"));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(8)));
+
+		panel.add(crearCampoFormulario("Nombre", campoNombre));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+
+		panel.add(crearCampoFormulario("Descripción", estilizarScroll(areaDescripcion)));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+
+		panel.add(crearCampoFormulario("Imagen", campoImagen));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+
+		panel.add(crearCampoFormulario("Precio", campoPrecio));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+
+		panel.add(crearCampoFormulario("Stock", campoStock));
+
+		return panel;
+	}
+
+	private JPanel crearPanelProductosPack() {
+		JPanel panel = new JPanel();
+		panel.setOpaque(false);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+		panel.add(crearLabel("Productos incluidos"));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(8)));
+
+		panel.add(crearLabel("Escribe una línea por producto con este formato: ID;UNIDADES"));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(6)));
+
+		JScrollPane scrollLineas = estilizarScroll(areaLineasPack);
+		scrollLineas.setPreferredSize(new Dimension(VentanaPrincipal.escalar(330), VentanaPrincipal.escalar(190)));
+
+		panel.add(scrollLineas);
+
+		return panel;
 	}
 
 	private JPanel crearBloqueModificarPack() {
@@ -298,297 +256,372 @@ public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 		campoUnidades = crearCampo();
 		campoNuevoPrecio = crearCampo();
 
-		areaInfoPackGestion = crearArea();
-		areaInfoPackGestion.setEditable(false);
+		JPanel panelModificar = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(25), 0));
+		panelModificar.setOpaque(false);
 
-		JButton botonVerPack = crearBotonSecundario("Ver pack");
-		JButton botonAnadir = crearBotonAccion("Añadir producto");
-		JButton botonModificarUnidades = crearBotonAccion("Modificar unidades");
-		JButton botonEliminarProducto = crearBotonPeligro("Eliminar producto");
-		JButton botonModificarPrecio = crearBotonAccion("Modificar precio");
-		JButton botonEliminarPack = crearBotonPeligro("Eliminar pack");
+		panelModificar.add(crearPanelCamposModificar());
+		panelModificar.add(crearPanelAccionesModificar());
 
-		bloque.add(crearLabel("ID pack"), gbcCampo(1));
-		bloque.add(campoIdPack, gbcCampo(2));
-		bloque.add(botonVerPack, gbcBoton(3));
-
-		bloque.add(crearLabel("Información del pack que se está modificando"), gbcCampo(4));
-		JScrollPane scrollInfoGestion = estilizarScroll(areaInfoPackGestion);
-		scrollInfoGestion
-				.setPreferredSize(new Dimension(VentanaPrincipal.escalar(1050), VentanaPrincipal.escalar(150)));
-		bloque.add(scrollInfoGestion, gbcCampo(5));
-
-		bloque.add(crearLabel("ID producto"), gbcCampo(6));
-		bloque.add(campoIdProducto, gbcCampo(7));
-
-		bloque.add(crearLabel("Unidades"), gbcCampo(8));
-		bloque.add(campoUnidades, gbcCampo(9));
-
-		bloque.add(crearLabel("Nuevo precio"), gbcCampo(10));
-		bloque.add(campoNuevoPrecio, gbcCampo(11));
-
-		JPanel botones = new JPanel(new GridLayout(0, 2, 10, 10));
-		botones.setOpaque(false);
-		botones.add(botonAnadir);
-		botones.add(botonModificarUnidades);
-		botones.add(botonEliminarProducto);
-		botones.add(botonModificarPrecio);
-		botones.add(botonEliminarPack);
-
-		bloque.add(botones, gbcCampo(12));
-
-		botonVerPack.addActionListener(e -> {
-			String idPack = campoIdPack.getText().trim();
-
-			if (idPack.isBlank()) {
-				mostrarError("Introduce o selecciona un ID de pack.");
-				return;
-			}
-
-			mostrarInfoPack(idPack);
-		});
-
-		botonAnadir.addActionListener(e -> {
-			Integer unidades = leerEnteroSeguro(campoUnidades.getText());
-
-			if (!datosProductoPackValidos(unidades)) {
-				return;
-			}
-
-			try {
-				boolean ok = empleado.añadirProductoaPack(campoIdProducto.getText().trim(),
-						campoIdPack.getText().trim(), unidades);
-
-				if (ok) {
-					cargarTablaPacks();
-					mostrarInfoPack(campoIdPack.getText().trim());
-					mostrarMensaje("Producto añadido al pack.");
-				} else {
-					mostrarError("No se pudo añadir el producto al pack.");
-				}
-			} catch (Exception ex) {
-				mostrarError("No se pudo añadir el producto al pack: " + ex.getMessage());
-			}
-		});
-
-		botonModificarUnidades.addActionListener(e -> {
-			Integer unidades = leerEnteroSeguro(campoUnidades.getText());
-
-			if (!datosProductoPackValidos(unidades)) {
-				return;
-			}
-
-			try {
-				boolean ok = empleado.modificarUnidadesProductoEnPack(campoIdProducto.getText().trim(),
-						campoIdPack.getText().trim(), unidades);
-
-				if (ok) {
-					cargarTablaPacks();
-					mostrarInfoPack(campoIdPack.getText().trim());
-					mostrarMensaje("Unidades modificadas correctamente.");
-				} else {
-					mostrarError("No se pudieron modificar las unidades.");
-				}
-			} catch (Exception ex) {
-				mostrarError("No se pudieron modificar las unidades: " + ex.getMessage());
-			}
-		});
-
-		botonEliminarProducto.addActionListener(e -> {
-			String idPack = campoIdPack.getText().trim();
-			String idProducto = campoIdProducto.getText().trim();
-
-			if (idPack.isBlank() || idProducto.isBlank()) {
-				mostrarError("Introduce el ID del pack y el ID del producto.");
-				return;
-			}
-
-			boolean ok = empleado.eliminarProductoDePack(idPack, idProducto);
-
-			if (ok) {
-				cargarTablaPacks();
-				mostrarInfoPack(idPack);
-				mostrarMensaje("Producto eliminado del pack.");
-			} else {
-				mostrarError("No se pudo eliminar el producto del pack.");
-			}
-		});
-
-		botonModificarPrecio.addActionListener(e -> {
-			String idPack = campoIdPack.getText().trim();
-			Double precio = leerDoubleSeguro(campoNuevoPrecio.getText());
-
-			if (idPack.isBlank()) {
-				mostrarError("Introduce el ID del pack.");
-				return;
-			}
-
-			if (precio == null || precio <= 0) {
-				mostrarError("Introduce un precio válido.");
-				return;
-			}
-
-			try {
-				boolean ok = empleado.modificarPrecioPack(idPack, precio);
-
-				if (ok) {
-					cargarTablaPacks();
-					mostrarInfoPack(idPack);
-					mostrarMensaje("Precio del pack modificado.");
-				} else {
-					mostrarError("No se pudo modificar el precio.");
-				}
-			} catch (Exception ex) {
-				mostrarError("No se pudo modificar el precio: " + ex.getMessage());
-			}
-		});
-
-		botonEliminarPack.addActionListener(e -> {
-			String idPack = campoIdPack.getText().trim();
-
-			if (idPack.isBlank()) {
-				mostrarError("Introduce el ID del pack.");
-				return;
-			}
-
-			boolean ok = empleado.eliminarPack(idPack);
-
-			if (ok) {
-				cargarTablaPacks();
-				limpiarInfoPack();
-				campoIdPack.setText("");
-				mostrarMensaje("Pack eliminado correctamente.");
-			} else {
-				mostrarError("No se pudo eliminar el pack.");
-			}
-		});
+		bloque.add(panelModificar, gbcCampo(1));
 
 		return bloque;
 	}
 
-	private void cargarTablaPacks() {
-		modeloPacks.setRowCount(0);
+	private JPanel crearPanelCamposModificar() {
+		JPanel panel = new JPanel();
+		panel.setOpaque(false);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-		for (ProductoVenta producto : Tienda.getInstancia().getStockVentas()) {
-			if (producto instanceof Pack) {
-				Pack pack = (Pack) producto;
+		panel.add(crearLabel("Datos para modificar"));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(8)));
 
-				modeloPacks.addRow(new Object[] { pack.getId(), pack.getNombre(),
-						String.format(java.util.Locale.US, "%.2f €", pack.getPrecioOficial()).replace('.', ','),
-						pack.getStockDisponible(), pack.getLineas().size() });
-			}
-		}
+		panel.add(crearCampoFormulario("ID pack", campoIdPack));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+
+		panel.add(crearCampoFormulario("ID producto", campoIdProducto));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+
+		panel.add(crearCampoFormulario("Unidades", campoUnidades));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+
+		panel.add(crearCampoFormulario("Nuevo precio", campoNuevoPrecio));
+
+		return panel;
 	}
 
-	private void mostrarInfoPack(String idPack) {
-		ProductoVenta producto = Tienda.getInstancia().buscarProductoVentaPorId(idPack);
+	private JPanel crearPanelAccionesModificar() {
+		JPanel panel = new JPanel();
+		panel.setOpaque(false);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-		if (!(producto instanceof Pack)) {
-			actualizarInfoPack("No existe ningún pack con ese ID.");
+		JLabel titulo = crearLabel("Acciones");
+		titulo.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+		panel.add(titulo);
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+
+		JButton botonVerPack = crearBotonAccion("Ver pack");
+		JButton botonAnadir = crearBotonAccion("Añadir producto");
+		JButton botonCambiarUnidades = crearBotonAccion("Cambiar unidades");
+		JButton botonQuitarProducto = crearBotonAccion("Quitar producto");
+		JButton botonCambiarPrecio = crearBotonAccion("Cambiar precio");
+		JButton botonEliminarPack = crearBotonAccion("Eliminar pack");
+
+		JPanel botones = new JPanel(new GridLayout(3, 2, VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(10)));
+		botones.setOpaque(false);
+		botones.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+		botones.add(botonVerPack);
+		botones.add(botonAnadir);
+		botones.add(botonCambiarUnidades);
+		botones.add(botonQuitarProducto);
+		botones.add(botonCambiarPrecio);
+		botones.add(botonEliminarPack);
+
+		botones.setMaximumSize(new Dimension(VentanaPrincipal.escalar(480), VentanaPrincipal.escalar(165)));
+
+		panel.add(botones);
+
+		botonVerPack.addActionListener(e -> verPack());
+		botonAnadir.addActionListener(e -> anadirProductoAPack());
+		botonCambiarUnidades.addActionListener(e -> cambiarUnidadesPack());
+		botonQuitarProducto.addActionListener(e -> quitarProductoDelPack());
+		botonCambiarPrecio.addActionListener(e -> cambiarPrecioPack());
+		botonEliminarPack.addActionListener(e -> eliminarPack());
+
+		return panel;
+	}
+
+	private JPanel crearFilaBotones() {
+		JPanel fila = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		fila.setOpaque(false);
+		return fila;
+	}
+
+	private void verPack() {
+		String idPack = campoIdPack.getText().trim();
+
+		if (idPack.isBlank()) {
+			mostrarError("Escribe el ID del pack.");
 			return;
 		}
 
-		Pack pack = (Pack) producto;
-
-		StringBuilder sb = new StringBuilder();
-
-		sb.append("Pack: ").append(pack.getId()).append(" - ").append(pack.getNombre()).append("\n");
-		sb.append("Precio pack: ").append(pack.getPrecioOficial()).append(" €\n");
-		sb.append("Stock pack: ").append(pack.getStockDisponible()).append("\n");
-		sb.append("Suma productos por separado: ").append(pack.calcularSumaProductos()).append(" €\n\n");
-
-		sb.append("Productos incluidos:\n");
-
-		if (pack.getLineas().isEmpty()) {
-			sb.append("  Sin productos.\n");
-		} else {
-			for (LineaPack linea : pack.getLineas()) {
-				ProductoVenta p = linea.getProducto();
-
-				sb.append("  - ").append(p.getId()).append(" | ").append(p.getNombre()).append(" | unidades: ")
-						.append(linea.getUnidades()).append(" | precio unidad: ").append(p.getPrecioOficial())
-						.append(" € | subtotal: ").append(linea.getSubtotal()).append(" €\n");
-			}
-		}
-
-		actualizarInfoPack(sb.toString());
+		mostrarPackEnVentana(idPack);
 	}
 
-	private void actualizarInfoPack(String texto) {
-		if (areaInfoPack != null) {
-			areaInfoPack.setText(texto);
-			areaInfoPack.setCaretPosition(0);
-		}
-
-		if (areaInfoPackGestion != null) {
-			areaInfoPackGestion.setText(texto);
-			areaInfoPackGestion.setCaretPosition(0);
-		}
-	}
-
-	private void limpiarInfoPack() {
-		actualizarInfoPack("");
-	}
-
-	private void actualizarVistaPrevia() {
+	private void verContenidoEscrito() {
 		try {
-			ArrayList<LineaPack> lineas = construirLineasPack(areaLineas.getText());
-
-			StringBuilder sb = new StringBuilder();
+			ArrayList<LineaPack> lineas = construirLineasPack(areaLineasPack.getText());
 
 			if (lineas.isEmpty()) {
-				sb.append("No hay líneas añadidas.");
-			} else {
-				for (LineaPack linea : lineas) {
-					ProductoVenta p = linea.getProducto();
-
-					sb.append("- ").append(p.getId()).append(" | ").append(p.getNombre()).append(" | unidades: ")
-							.append(linea.getUnidades()).append(" | subtotal: ").append(linea.getSubtotal())
-							.append(" €\n");
-				}
+				mostrarMensaje("Todavía no has escrito productos para el pack.");
+				return;
 			}
 
-			areaVistaPrevia.setText(sb.toString());
-			areaVistaPrevia.setCaretPosition(0);
+			String texto = crearTextoLineas(lineas);
+			mostrarTextoLargo("Contenido escrito", texto);
 
-		} catch (Exception ex) {
-			areaVistaPrevia.setText("No se puede mostrar la vista previa: " + ex.getMessage());
+		} catch (Exception e) {
+			mostrarError("No se puede mostrar el contenido: " + e.getMessage());
+		}
+	}
+
+	private void crearPack(JTextField campoNombre, JTextArea areaDescripcion, JTextField campoImagen,
+			JTextField campoPrecio, JTextField campoStock) {
+
+		try {
+			String nombre = campoNombre.getText().trim();
+			String descripcion = areaDescripcion.getText().trim();
+			String imagen = campoImagen.getText().trim();
+			Double precio = leerDoubleSeguro(campoPrecio.getText());
+			Integer stock = leerEnteroSeguro(campoStock.getText());
+
+			if (nombre.isBlank()) {
+				mostrarError("Escribe el nombre del pack.");
+				return;
+			}
+
+			if (descripcion.isBlank()) {
+				mostrarError("Escribe una descripción.");
+				return;
+			}
+
+			if (imagen.isBlank()) {
+				mostrarError("Escribe la ruta de la imagen.");
+				return;
+			}
+
+			if (precio == null || precio <= 0) {
+				mostrarError("Escribe un precio válido.");
+				return;
+			}
+
+			if (stock == null || stock <= 0) {
+				mostrarError("Escribe un stock válido.");
+				return;
+			}
+
+			ArrayList<LineaPack> lineas = construirLineasPack(areaLineasPack.getText());
+
+			if (lineas.size() < 2) {
+				mostrarError("Un pack debe tener al menos dos productos.");
+				return;
+			}
+
+			boolean creado = empleado.crearPack(nombre, descripcion, imagen, precio, stock, lineas);
+
+			if (creado) {
+				dejarSoloPacks();
+				limpiarFormularioCrear(campoNombre, areaDescripcion, campoImagen, campoPrecio, campoStock);
+				mostrarMensaje("Pack creado correctamente.");
+			} else {
+				mostrarError("No se pudo crear el pack.");
+			}
+
+		} catch (Exception e) {
+			mostrarError("No se pudo crear el pack: " + e.getMessage());
+		}
+	}
+
+	private void limpiarFormularioCrear(JTextField campoNombre, JTextArea areaDescripcion, JTextField campoImagen,
+			JTextField campoPrecio, JTextField campoStock) {
+
+		campoNombre.setText("");
+		areaDescripcion.setText("");
+		campoImagen.setText("");
+		campoPrecio.setText("");
+		campoStock.setText("");
+		areaLineasPack.setText("");
+	}
+
+	private void anadirProductoAPack() {
+		Integer unidades = leerEnteroSeguro(campoUnidades.getText());
+
+		if (!datosProductoPackValidos(unidades)) {
+			return;
+		}
+
+		try {
+			boolean ok = empleado.añadirProductoaPack(campoIdProducto.getText().trim(), campoIdPack.getText().trim(),
+					unidades);
+
+			if (ok) {
+				dejarSoloPacks();
+				mostrarMensaje("Producto añadido al pack.");
+			} else {
+				mostrarError("No se pudo añadir el producto.");
+			}
+		} catch (Exception e) {
+			mostrarError("No se pudo añadir el producto: " + e.getMessage());
+		}
+	}
+
+	private void cambiarUnidadesPack() {
+		Integer unidades = leerEnteroSeguro(campoUnidades.getText());
+
+		if (!datosProductoPackValidos(unidades)) {
+			return;
+		}
+
+		try {
+			boolean ok = empleado.modificarUnidadesProductoEnPack(campoIdProducto.getText().trim(),
+					campoIdPack.getText().trim(), unidades);
+
+			if (ok) {
+				dejarSoloPacks();
+				mostrarMensaje("Unidades modificadas correctamente.");
+			} else {
+				mostrarError("No se pudieron modificar las unidades.");
+			}
+		} catch (Exception e) {
+			mostrarError("No se pudieron modificar las unidades: " + e.getMessage());
+		}
+	}
+
+	private void quitarProductoDelPack() {
+		String idPack = campoIdPack.getText().trim();
+		String idProducto = campoIdProducto.getText().trim();
+
+		if (idPack.isBlank() || idProducto.isBlank()) {
+			mostrarError("Escribe el ID del pack y el ID del producto.");
+			return;
+		}
+
+		boolean ok = empleado.eliminarProductoDePack(idPack, idProducto);
+
+		if (ok) {
+			dejarSoloPacks();
+			mostrarMensaje("Producto quitado del pack.");
+		} else {
+			mostrarError("No se pudo quitar el producto.");
+		}
+	}
+
+	private void cambiarPrecioPack() {
+		String idPack = campoIdPack.getText().trim();
+		Double precio = leerDoubleSeguro(campoNuevoPrecio.getText());
+
+		if (idPack.isBlank()) {
+			mostrarError("Escribe el ID del pack.");
+			return;
+		}
+
+		if (precio == null || precio <= 0) {
+			mostrarError("Escribe un precio válido.");
+			return;
+		}
+
+		boolean ok = empleado.modificarPrecioPack(idPack, precio);
+
+		if (ok) {
+			dejarSoloPacks();
+			mostrarMensaje("Precio modificado correctamente.");
+		} else {
+			mostrarError("No se pudo modificar el precio.");
+		}
+	}
+
+	private void eliminarPack() {
+		String idPack = campoIdPack.getText().trim();
+
+		if (idPack.isBlank()) {
+			mostrarError("Escribe el ID del pack.");
+			return;
+		}
+
+		boolean ok = empleado.eliminarPack(idPack);
+
+		if (ok) {
+			dejarSoloPacks();
+			campoIdPack.setText("");
+			mostrarMensaje("Pack eliminado correctamente.");
+		} else {
+			mostrarError("No se pudo eliminar el pack.");
 		}
 	}
 
 	private boolean datosProductoPackValidos(Integer unidades) {
 		if (campoIdPack.getText().trim().isBlank()) {
-			mostrarError("Introduce el ID del pack.");
+			mostrarError("Escribe el ID del pack.");
 			return false;
 		}
 
 		if (campoIdProducto.getText().trim().isBlank()) {
-			mostrarError("Introduce el ID del producto.");
+			mostrarError("Escribe el ID del producto.");
 			return false;
 		}
 
 		if (unidades == null || unidades <= 0) {
-			mostrarError("Introduce unidades válidas.");
+			mostrarError("Escribe unidades válidas.");
 			return false;
 		}
 
 		return true;
 	}
 
-	private void estilizarTablaPacks(JTable tabla) {
-		tabla.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		tabla.setRowHeight(VentanaPrincipal.escalar(30));
-		tabla.setBackground(Color.WHITE);
-		tabla.setForeground(VentanaPrincipal.COLOR_TEXTO);
-		tabla.setGridColor(new Color(225, 225, 225));
-		tabla.setSelectionBackground(VentanaPrincipal.COLOR_ACENTO);
-		tabla.setSelectionForeground(Color.BLACK);
-		tabla.setFillsViewportHeight(true);
+	private void mostrarPackEnVentana(String idPack) {
+		ProductoVenta producto = Tienda.getInstancia().buscarProductoVentaPorId(idPack);
 
-		JTableHeader header = tabla.getTableHeader();
-		header.setFont(new Font("Segoe UI", Font.BOLD, 13));
-		header.setBackground(new Color(232, 232, 232));
-		header.setForeground(VentanaPrincipal.COLOR_TEXTO);
-		header.setReorderingAllowed(false);
+		if (!(producto instanceof Pack)) {
+			mostrarError("No existe ningún pack con ese ID.");
+			return;
+		}
+
+		Pack pack = (Pack) producto;
+		String texto = crearTextoPack(pack);
+
+		mostrarTextoLargo("Información del pack", texto);
+	}
+
+	private String crearTextoPack(Pack pack) {
+		StringBuilder texto = new StringBuilder();
+
+		texto.append("Pack: ").append(pack.getId()).append(" - ").append(pack.getNombre()).append("\n");
+		texto.append("Precio: ").append(formatearPrecio(pack.getPrecioOficial())).append("\n");
+		texto.append("Stock: ").append(pack.getStockDisponible()).append("\n");
+		texto.append("Productos por separado: ").append(formatearPrecio(pack.calcularSumaProductos())).append("\n\n");
+
+		texto.append("Productos incluidos:\n");
+
+		if (pack.getLineas().isEmpty()) {
+			texto.append("Sin productos.");
+		} else {
+			texto.append(crearTextoLineas(new ArrayList<>(pack.getLineas())));
+		}
+
+		return texto.toString();
+	}
+
+	private String crearTextoLineas(ArrayList<LineaPack> lineas) {
+		StringBuilder texto = new StringBuilder();
+
+		for (LineaPack linea : lineas) {
+			ProductoVenta producto = linea.getProducto();
+
+			texto.append("- ");
+			texto.append(producto.getId()).append(" | ");
+			texto.append(producto.getNombre()).append(" | ");
+			texto.append("unidades: ").append(linea.getUnidades()).append(" | ");
+			texto.append("subtotal: ").append(formatearPrecio(linea.getSubtotal()));
+			texto.append("\n");
+		}
+
+		return texto.toString();
+	}
+
+	private void mostrarTextoLargo(String titulo, String texto) {
+		JTextArea area = crearArea();
+		area.setEditable(false);
+		area.setText(texto);
+		area.setCaretPosition(0);
+
+		JScrollPane scroll = estilizarScroll(area);
+		scroll.setPreferredSize(new Dimension(VentanaPrincipal.escalar(620), VentanaPrincipal.escalar(260)));
+
+		JOptionPane.showMessageDialog(this, scroll, titulo, JOptionPane.INFORMATION_MESSAGE);
+	}
+
+	private String formatearPrecio(double precio) {
+		return String.format(java.util.Locale.US, "%.2f €", precio).replace('.', ',');
 	}
 }

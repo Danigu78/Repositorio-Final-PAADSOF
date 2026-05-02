@@ -1,22 +1,16 @@
 package Gui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
+import javax.swing.*;
+import javax.swing.table.*;
 
 import intercambios.EstadoOferta;
 import intercambios.Oferta;
@@ -26,10 +20,10 @@ import usuarios.Cliente;
 import usuarios.Empleado;
 
 /**
- * Sección para confirmar intercambios.
+ * Pantalla para confirmar intercambios.
  * 
- * Muestra las ofertas de intercambio y permite al empleado confirmar las que ya
- * han sido aceptadas por los clientes.
+ * Muestra las ofertas de intercambio de la tienda. Para consultar o confirmar
+ * una oferta concreta, el empleado escribe su ID abajo.
  */
 public class SeccionIntercambiosEmpleado extends AbstractPanelEmpleadoSection {
 
@@ -39,8 +33,7 @@ public class SeccionIntercambiosEmpleado extends AbstractPanelEmpleadoSection {
 	private DefaultTableModel modeloOfertas;
 
 	private JTextField campoIdOferta;
-	private JTextArea areaInfoOferta;
-	private JComboBox<String> comboEstado;
+	private JComboBox<String> comboEstadoOferta;
 
 	public SeccionIntercambiosEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
@@ -48,14 +41,16 @@ public class SeccionIntercambiosEmpleado extends AbstractPanelEmpleadoSection {
 	}
 
 	private void construirUI() {
-		JPanel base = crearPanelBase("Confirmación de Intercambios");
-		JPanel contenido = getContenido(base);
+		setLayout(new BorderLayout());
+
+		JPanel panelBase = crearPanelBase("Confirmación de Intercambios");
+		JPanel contenido = getContenido(panelBase);
 
 		contenido.add(crearBloqueOfertas());
 		contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(18)));
-		contenido.add(crearBloqueConfirmar());
+		contenido.add(crearBloqueAccionesOferta());
 
-		add(base);
+		add(panelBase, BorderLayout.CENTER);
 	}
 
 	private JPanel crearBloqueOfertas() {
@@ -72,111 +67,131 @@ public class SeccionIntercambiosEmpleado extends AbstractPanelEmpleadoSection {
 		};
 
 		tablaOfertas = new JTable(modeloOfertas);
-		tablaOfertas.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		estilizarTablaOfertas(tablaOfertas);
 
-		areaInfoOferta = crearArea();
-		areaInfoOferta.setEditable(false);
+		/*
+		 * Como en las otras pantallas: la tabla solo sirve para mirar. El ID se escribe
+		 * abajo cuando se quiera hacer algo.
+		 */
+		tablaOfertas.setRowSelectionAllowed(false);
+		tablaOfertas.setCellSelectionEnabled(false);
 
-		comboEstado = crearCombo(crearOpcionesEstado());
-		JButton botonRefrescar = crearBotonAccion("Refrescar ofertas");
+		comboEstadoOferta = crearCombo(crearOpcionesEstado());
 
-		cargarTablaOfertas();
+		JButton botonRefrescar = crearBotonSecundario("Refrescar");
+		botonRefrescar.addActionListener(e -> cargarTablaOfertas());
 
-		tablaOfertas.getSelectionModel().addListSelectionListener(e -> {
-			if (e.getValueIsAdjusting()) {
-				return;
-			}
+		comboEstadoOferta.addActionListener(e -> cargarTablaOfertas());
 
-			int fila = tablaOfertas.getSelectedRow();
+		JPanel filaFiltro = new JPanel(new BorderLayout(VentanaPrincipal.escalar(12), 0));
+		filaFiltro.setOpaque(false);
 
-			if (fila < 0) {
-				return;
-			}
+		JPanel zonaCombo = new JPanel(new BorderLayout(0, VentanaPrincipal.escalar(4)));
+		zonaCombo.setOpaque(false);
+		zonaCombo.add(crearLabel("Filtrar por estado"), BorderLayout.NORTH);
+		zonaCombo.add(comboEstadoOferta, BorderLayout.CENTER);
 
-			String idOferta = String.valueOf(tablaOfertas.getValueAt(fila, 0));
+		JPanel zonaBoton = new JPanel(new BorderLayout());
+		zonaBoton.setOpaque(false);
+		zonaBoton.add(botonRefrescar, BorderLayout.SOUTH);
 
-			if (campoIdOferta != null) {
-				campoIdOferta.setText(idOferta);
-			}
-
-			mostrarInfoOferta(idOferta);
-		});
-
-		comboEstado.addActionListener(e -> {
-			cargarTablaOfertas();
-			areaInfoOferta.setText("");
-		});
-
-		botonRefrescar.addActionListener(e -> {
-			cargarTablaOfertas();
-			areaInfoOferta.setText("");
-		});
+		filaFiltro.add(zonaCombo, BorderLayout.CENTER);
+		filaFiltro.add(zonaBoton, BorderLayout.EAST);
 
 		JScrollPane scrollTabla = estilizarScroll(tablaOfertas);
 		scrollTabla.setPreferredSize(new Dimension(VentanaPrincipal.escalar(1050), VentanaPrincipal.escalar(260)));
 
-		JScrollPane scrollInfo = estilizarScroll(areaInfoOferta);
-		scrollInfo.setPreferredSize(new Dimension(VentanaPrincipal.escalar(1050), VentanaPrincipal.escalar(210)));
+		bloque.add(crearLabel("Consulta las ofertas. Para ver o confirmar una, escribe su ID abajo."), gbcCampo(1));
+		bloque.add(filaFiltro, gbcCampo(2));
+		bloque.add(scrollTabla, gbcCampo(3));
 
-		bloque.add(crearLabel("Filtrar por estado"), gbcCampo(1));
-		bloque.add(comboEstado, gbcCampo(2));
-
-		bloque.add(crearLabel("Selecciona una oferta para cargar su ID y ver sus productos."), gbcCampo(3));
-		bloque.add(scrollTabla, gbcCampo(4));
-
-		bloque.add(crearLabel("Información de la oferta seleccionada"), gbcCampo(5));
-		bloque.add(scrollInfo, gbcCampo(6));
-
-		bloque.add(botonRefrescar, gbcBoton(7));
+		cargarTablaOfertas();
 
 		return bloque;
 	}
 
-	private JPanel crearBloqueConfirmar() {
-		JPanel bloque = crearBloque("Confirmar intercambio");
+	private JPanel crearBloqueAccionesOferta() {
+		JPanel bloque = crearBloque("Consultar o confirmar intercambio");
 
 		campoIdOferta = crearCampo();
 
-		JButton botonConfirmar = crearBotonAccion("Confirmar intercambio");
+		JPanel panelAcciones = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(30), 0));
+		panelAcciones.setOpaque(false);
 
-		bloque.add(crearLabel("ID oferta"), gbcCampo(1));
-		bloque.add(campoIdOferta, gbcCampo(2));
-		bloque.add(crearLabel("Solo se pueden confirmar ofertas en estado ACEPTADA."), gbcCampo(3));
-		bloque.add(botonConfirmar, gbcBoton(4));
+		panelAcciones.add(crearPanelDatosOferta());
+		panelAcciones.add(crearPanelBotonesOferta());
 
-		botonConfirmar.addActionListener(e -> {
-			String idOferta = campoIdOferta.getText().trim();
-
-			if (idOferta.isBlank()) {
-				mostrarError("Introduce o selecciona un ID de oferta.");
-				return;
-			}
-
-			Oferta oferta = buscarOfertaPorId(idOferta);
-
-			if (oferta == null) {
-				mostrarError("No existe ninguna oferta con ese ID.");
-				return;
-			}
-
-			if (oferta.getEstado() != EstadoOferta.ACEPTADA) {
-				mostrarError("La oferta debe estar en estado ACEPTADA para poder confirmarla.");
-				return;
-			}
-
-			boolean ok = empleado.confirmarIntercambio(oferta);
-
-			if (ok) {
-				cargarTablaOfertas();
-				mostrarInfoOferta(idOferta);
-				mostrarMensaje("Intercambio confirmado correctamente.");
-			} else {
-				mostrarError("No se pudo confirmar el intercambio.");
-			}
-		});
+		bloque.add(panelAcciones, gbcCampo(1));
 
 		return bloque;
+	}
+
+	private JPanel crearPanelDatosOferta() {
+		JPanel panel = new JPanel();
+		panel.setOpaque(false);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+		JLabel titulo = crearLabel("Datos de la oferta");
+		titulo.setAlignmentX(0.0f);
+		panel.add(titulo);
+
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+
+		JPanel filaId = crearCampoFormulario("ID oferta", campoIdOferta);
+		filaId.setAlignmentX(0.0f);
+		panel.add(filaId);
+
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(12)));
+
+		JLabel ayuda = crearLabel("Solo se pueden confirmar ofertas en estado ACEPTADA.");
+		ayuda.setAlignmentX(0.0f);
+		panel.add(ayuda);
+
+		return panel;
+	}
+
+	private JPanel crearPanelBotonesOferta() {
+		JPanel panel = new JPanel();
+		panel.setOpaque(false);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+		JLabel titulo = crearLabel("Acciones");
+		titulo.setAlignmentX(0.0f);
+		panel.add(titulo);
+
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+
+		JButton botonVerOferta = crearBotonSecundario("Ver oferta");
+		JButton botonConfirmar = crearBotonAccion("Confirmar intercambio");
+
+		ajustarBotonOferta(botonVerOferta);
+		ajustarBotonOferta(botonConfirmar);
+
+		JPanel filaBotones = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(10), 0));
+		filaBotones.setOpaque(false);
+		filaBotones.setAlignmentX(0.0f);
+
+		filaBotones.add(botonVerOferta);
+		filaBotones.add(botonConfirmar);
+
+		Dimension tamanoFila = new Dimension(VentanaPrincipal.escalar(460), VentanaPrincipal.escalar(42));
+		filaBotones.setPreferredSize(tamanoFila);
+		filaBotones.setMaximumSize(tamanoFila);
+
+		panel.add(filaBotones);
+
+		botonVerOferta.addActionListener(e -> verOferta());
+		botonConfirmar.addActionListener(e -> confirmarOferta());
+
+		return panel;
+	}
+
+	private void ajustarBotonOferta(JButton boton) {
+		Dimension tamano = new Dimension(VentanaPrincipal.escalar(225), VentanaPrincipal.escalar(42));
+
+		boton.setPreferredSize(tamano);
+		boton.setMinimumSize(tamano);
+		boton.setMaximumSize(tamano);
 	}
 
 	private String[] crearOpcionesEstado() {
@@ -195,22 +210,70 @@ public class SeccionIntercambiosEmpleado extends AbstractPanelEmpleadoSection {
 	private void cargarTablaOfertas() {
 		modeloOfertas.setRowCount(0);
 
-		String estadoFiltro = "Todos";
+		String estadoElegido = "Todos";
 
-		if (comboEstado != null && comboEstado.getSelectedItem() != null) {
-			estadoFiltro = String.valueOf(comboEstado.getSelectedItem());
+		if (comboEstadoOferta != null && comboEstadoOferta.getSelectedItem() != null) {
+			estadoElegido = String.valueOf(comboEstadoOferta.getSelectedItem());
 		}
 
 		for (Oferta oferta : obtenerTodasLasOfertas()) {
 			oferta.haCaducado();
 
-			if (!"Todos".equals(estadoFiltro) && !oferta.getEstado().name().equals(estadoFiltro)) {
+			if (!"Todos".equals(estadoElegido) && !oferta.getEstado().name().equals(estadoElegido)) {
 				continue;
 			}
 
 			modeloOfertas.addRow(new Object[] { oferta.getId(), oferta.getOrigen().getNickname(),
 					oferta.getDestino().getNickname(), oferta.getEstado(), oferta.getProductosOfertados().size(),
 					oferta.getProductosSolicitados().size() });
+		}
+	}
+
+	private void verOferta() {
+		String idOferta = campoIdOferta.getText().trim();
+
+		if (idOferta.isBlank()) {
+			mostrarError("Escribe el ID de la oferta.");
+			return;
+		}
+
+		Oferta oferta = buscarOfertaPorId(idOferta);
+
+		if (oferta == null) {
+			mostrarError("No existe ninguna oferta con ese ID.");
+			return;
+		}
+
+		mostrarOfertaEnVentana(oferta);
+	}
+
+	private void confirmarOferta() {
+		String idOferta = campoIdOferta.getText().trim();
+
+		if (idOferta.isBlank()) {
+			mostrarError("Escribe el ID de la oferta.");
+			return;
+		}
+
+		Oferta oferta = buscarOfertaPorId(idOferta);
+
+		if (oferta == null) {
+			mostrarError("No existe ninguna oferta con ese ID.");
+			return;
+		}
+
+		if (oferta.getEstado() != EstadoOferta.ACEPTADA) {
+			mostrarError("La oferta debe estar en estado ACEPTADA para poder confirmarla.");
+			return;
+		}
+
+		boolean confirmada = empleado.confirmarIntercambio(oferta);
+
+		if (confirmada) {
+			cargarTablaOfertas();
+			mostrarMensaje("Intercambio confirmado correctamente.");
+		} else {
+			mostrarError("No se pudo confirmar el intercambio.");
 		}
 	}
 
@@ -254,66 +317,88 @@ public class SeccionIntercambiosEmpleado extends AbstractPanelEmpleadoSection {
 		return null;
 	}
 
-	private void mostrarInfoOferta(String idOferta) {
-		Oferta oferta = buscarOfertaPorId(idOferta);
+	private void mostrarOfertaEnVentana(Oferta oferta) {
+		JTextArea areaOferta = crearArea();
+		areaOferta.setEditable(false);
+		areaOferta.setText(crearTextoOferta(oferta));
+		areaOferta.setCaretPosition(0);
 
-		if (oferta == null) {
-			areaInfoOferta.setText("No existe ninguna oferta con ese ID.");
-			return;
-		}
+		JScrollPane scroll = estilizarScroll(areaOferta);
+		scroll.setPreferredSize(new Dimension(VentanaPrincipal.escalar(680), VentanaPrincipal.escalar(340)));
 
-		StringBuilder sb = new StringBuilder();
-
-		sb.append("Oferta: ").append(oferta.getId()).append("\n");
-		sb.append("Estado: ").append(oferta.getEstado()).append("\n");
-		sb.append("Fecha: ").append(oferta.getFechaOferta()).append("\n");
-		sb.append("Origen: ").append(oferta.getOrigen().getNickname()).append("\n");
-		sb.append("Destino: ").append(oferta.getDestino().getNickname()).append("\n\n");
-
-		sb.append("Productos que ofrece ").append(oferta.getOrigen().getNickname()).append(":\n");
-		añadirProductosOferta(sb, oferta.getProductosOfertados());
-
-		sb.append("\nProductos que solicita a ").append(oferta.getDestino().getNickname()).append(":\n");
-		añadirProductosOferta(sb, oferta.getProductosSolicitados());
-
-		areaInfoOferta.setText(sb.toString());
-		areaInfoOferta.setCaretPosition(0);
+		JOptionPane.showMessageDialog(this, scroll, "Información de la oferta", JOptionPane.INFORMATION_MESSAGE);
 	}
 
-	private void añadirProductosOferta(StringBuilder sb, List<Producto2Mano> productos) {
+	private String crearTextoOferta(Oferta oferta) {
+		StringBuilder texto = new StringBuilder();
+
+		texto.append("Oferta: ").append(oferta.getId()).append("\n");
+		texto.append("Estado: ").append(oferta.getEstado()).append("\n");
+		texto.append("Fecha: ").append(oferta.getFechaOferta()).append("\n");
+		texto.append("Origen: ").append(oferta.getOrigen().getNickname()).append("\n");
+		texto.append("Destino: ").append(oferta.getDestino().getNickname()).append("\n\n");
+
+		texto.append("Productos que ofrece ").append(oferta.getOrigen().getNickname()).append(":\n");
+		aniadirProductosOferta(texto, oferta.getProductosOfertados());
+
+		texto.append("\nProductos que solicita a ").append(oferta.getDestino().getNickname()).append(":\n");
+		aniadirProductosOferta(texto, oferta.getProductosSolicitados());
+
+		return texto.toString();
+	}
+
+	private void aniadirProductosOferta(StringBuilder texto, List<Producto2Mano> productos) {
 		if (productos == null || productos.isEmpty()) {
-			sb.append("  Sin productos.\n");
+			texto.append("Sin productos.\n");
 			return;
 		}
 
 		for (Producto2Mano producto : productos) {
-			sb.append("  - ").append(producto.getId()).append(" | ").append(producto.getNombre());
+			texto.append("- ");
+			texto.append(producto.getId()).append(" | ");
+			texto.append(producto.getNombre());
 
 			if (producto.getValoracion() != null) {
-				sb.append(" | valor: ").append(producto.getValoracion().getPrecioTasacion()).append(" € | estado: ")
-						.append(producto.getValoracion().getEstadoProducto());
+				texto.append(" | valor: ");
+				texto.append(formatearPrecio(producto.getValoracion().getPrecioTasacion()));
+				texto.append(" | estado: ");
+				texto.append(producto.getValoracion().getEstadoProducto());
 			} else {
-				sb.append(" | sin valoración");
+				texto.append(" | sin valoración");
 			}
 
-			sb.append("\n");
+			texto.append("\n");
 		}
 	}
 
-	private void estilizarTablaOfertas(JTable tabla) {
-		tabla.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		tabla.setRowHeight(VentanaPrincipal.escalar(30));
-		tabla.setBackground(Color.WHITE);
-		tabla.setForeground(VentanaPrincipal.COLOR_TEXTO);
-		tabla.setGridColor(new Color(225, 225, 225));
-		tabla.setSelectionBackground(VentanaPrincipal.COLOR_ACENTO);
-		tabla.setSelectionForeground(Color.BLACK);
-		tabla.setFillsViewportHeight(true);
+	private String formatearPrecio(double precio) {
+		return String.format(Locale.US, "%.2f €", precio).replace('.', ',');
+	}
 
-		JTableHeader header = tabla.getTableHeader();
-		header.setFont(new Font("Segoe UI", Font.BOLD, 13));
-		header.setBackground(new Color(232, 232, 232));
-		header.setForeground(VentanaPrincipal.COLOR_TEXTO);
-		header.setReorderingAllowed(false);
+	private void estilizarTablaOfertas(JTable tabla) {
+		tabla.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		tabla.setRowHeight(VentanaPrincipal.escalar(28));
+		tabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+		tabla.setBackground(Color.WHITE);
+		tabla.setForeground(Color.BLACK);
+		tabla.setGridColor(new Color(225, 225, 225));
+
+		tabla.setFillsViewportHeight(true);
+		tabla.setShowHorizontalLines(true);
+		tabla.setShowVerticalLines(true);
+
+		JTableHeader cabecera = tabla.getTableHeader();
+		cabecera.setFont(new Font("Segoe UI", Font.BOLD, 13));
+		cabecera.setBackground(new Color(235, 235, 235));
+		cabecera.setForeground(Color.BLACK);
+		cabecera.setReorderingAllowed(false);
+
+		tabla.getColumnModel().getColumn(0).setPreferredWidth(120);
+		tabla.getColumnModel().getColumn(1).setPreferredWidth(160);
+		tabla.getColumnModel().getColumn(2).setPreferredWidth(160);
+		tabla.getColumnModel().getColumn(3).setPreferredWidth(150);
+		tabla.getColumnModel().getColumn(4).setPreferredWidth(110);
+		tabla.getColumnModel().getColumn(5).setPreferredWidth(110);
 	}
 }

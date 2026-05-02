@@ -1,12 +1,17 @@
 package Gui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.util.Locale;
 
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -24,8 +29,10 @@ import ventas.LineaPedido;
 import ventas.Pedido;
 
 /**
- * Sección para gestionar pedidos. Permite consultar pedidos de la tienda,
- * filtrarlos por estado y marcar como preparados los pedidos pagados.
+ * Pantalla para que el empleado consulte y prepare pedidos.
+ * 
+ * La tabla solo sirve para ver los pedidos de la tienda. Para trabajar con un
+ * pedido concreto, se escribe su ID en el campo inferior.
  */
 public class SeccionPedidosEmpleado extends AbstractPanelEmpleadoSection {
 
@@ -34,9 +41,8 @@ public class SeccionPedidosEmpleado extends AbstractPanelEmpleadoSection {
 	private JTable tablaPedidos;
 	private DefaultTableModel modeloPedidos;
 
-	private JTextField campoPedido;
-	private JTextArea areaInfoPedido;
-	private JComboBox<String> comboEstado;
+	private JTextField campoIdPedido;
+	private JComboBox<String> comboEstadoPedido;
 
 	public SeccionPedidosEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
@@ -44,21 +50,23 @@ public class SeccionPedidosEmpleado extends AbstractPanelEmpleadoSection {
 	}
 
 	private void construirUI() {
-		JPanel base = crearPanelBase("Gestión de Pedidos");
-		JPanel contenido = getContenido(base);
+		setLayout(new BorderLayout());
+
+		JPanel panelBase = crearPanelBase("Gestión de Pedidos");
+		JPanel contenido = getContenido(panelBase);
 
 		contenido.add(crearBloquePedidos());
 		contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(18)));
-		contenido.add(crearBloquePrepararPedido());
+		contenido.add(crearBloqueAccionesPedido());
 
-		add(base);
+		add(panelBase, BorderLayout.CENTER);
 	}
 
 	private JPanel crearBloquePedidos() {
 		JPanel bloque = crearBloque("Pedidos de la tienda");
 
-		modeloPedidos = new DefaultTableModel(
-				new String[] { "ID", "Cliente", "Estado", "Total", "Código recogida", "Líneas" }, 0) {
+		modeloPedidos = new DefaultTableModel(new String[] { "ID", "Cliente", "Estado", "Total", "Código recogida",
+				"Recogida solicitada", "Productos" }, 0) {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -68,106 +76,110 @@ public class SeccionPedidosEmpleado extends AbstractPanelEmpleadoSection {
 		};
 
 		tablaPedidos = new JTable(modeloPedidos);
-		tablaPedidos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		estilizarTablaPedidos(tablaPedidos);
 
-		areaInfoPedido = crearArea();
-		areaInfoPedido.setEditable(false);
+		/*
+		 * Igual que en stock: la tabla es solo para consultar. No hace nada al pinchar,
+		 * ni carga IDs automáticamente.
+		 */
+		tablaPedidos.setRowSelectionAllowed(false);
+		tablaPedidos.setCellSelectionEnabled(false);
 
-		comboEstado = crearCombo(crearOpcionesEstado());
-		JButton botonRefrescar = crearBotonAccion("Refrescar pedidos");
+		comboEstadoPedido = crearCombo(crearOpcionesEstado());
 
-		cargarTablaPedidos();
+		JButton botonRefrescar = crearBotonSecundario("Refrescar");
+		botonRefrescar.addActionListener(e -> cargarTablaPedidos());
 
-		tablaPedidos.getSelectionModel().addListSelectionListener(e -> {
-			if (e.getValueIsAdjusting()) {
-				return;
-			}
+		comboEstadoPedido.addActionListener(e -> cargarTablaPedidos());
 
-			int fila = tablaPedidos.getSelectedRow();
+		JPanel filaFiltro = new JPanel(new BorderLayout(VentanaPrincipal.escalar(12), 0));
+		filaFiltro.setOpaque(false);
 
-			if (fila < 0) {
-				return;
-			}
+		JPanel zonaCombo = new JPanel(new BorderLayout(0, VentanaPrincipal.escalar(4)));
+		zonaCombo.setOpaque(false);
+		zonaCombo.add(crearLabel("Filtrar por estado"), BorderLayout.NORTH);
+		zonaCombo.add(comboEstadoPedido, BorderLayout.CENTER);
 
-			String idPedido = String.valueOf(tablaPedidos.getValueAt(fila, 0));
+		JPanel zonaBoton = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		zonaBoton.setOpaque(false);
+		zonaBoton.add(botonRefrescar);
 
-			if (campoPedido != null) {
-				campoPedido.setText(idPedido);
-			}
-
-			mostrarInfoPedido(idPedido);
-		});
-
-		comboEstado.addActionListener(e -> {
-			cargarTablaPedidos();
-			areaInfoPedido.setText("");
-		});
-
-		botonRefrescar.addActionListener(e -> {
-			cargarTablaPedidos();
-			areaInfoPedido.setText("");
-		});
+		filaFiltro.add(zonaCombo, BorderLayout.CENTER);
+		filaFiltro.add(zonaBoton, BorderLayout.EAST);
 
 		JScrollPane scrollTabla = estilizarScroll(tablaPedidos);
 		scrollTabla.setPreferredSize(new Dimension(VentanaPrincipal.escalar(1050), VentanaPrincipal.escalar(260)));
 
-		JScrollPane scrollInfo = estilizarScroll(areaInfoPedido);
-		scrollInfo.setPreferredSize(new Dimension(VentanaPrincipal.escalar(1050), VentanaPrincipal.escalar(180)));
+		bloque.add(crearLabel("Consulta los pedidos. Para ver el detalle o prepararlo, escribe el ID abajo."),
+				gbcCampo(1));
+		bloque.add(filaFiltro, gbcCampo(2));
+		bloque.add(scrollTabla, gbcCampo(3));
 
-		bloque.add(crearLabel("Filtrar por estado"), gbcCampo(1));
-		bloque.add(comboEstado, gbcCampo(2));
-
-		bloque.add(crearLabel("Selecciona un pedido para cargar su ID y ver sus productos."), gbcCampo(3));
-		bloque.add(scrollTabla, gbcCampo(4));
-
-		bloque.add(crearLabel("Información del pedido seleccionado"), gbcCampo(5));
-		bloque.add(scrollInfo, gbcCampo(6));
-
-		bloque.add(botonRefrescar, gbcBoton(7));
+		cargarTablaPedidos();
 
 		return bloque;
 	}
 
-	private JPanel crearBloquePrepararPedido() {
-		JPanel bloque = crearBloque("Preparar pedido");
+	private JPanel crearBloqueAccionesPedido() {
+		JPanel bloque = crearBloque("Consultar o preparar pedido");
 
-		campoPedido = crearCampo();
+		campoIdPedido = crearCampo();
 
-		JButton botonPreparar = crearBotonAccion("Preparar pedido");
+		JPanel panelPedido = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(30), 0));
+		panelPedido.setOpaque(false);
 
-		bloque.add(crearLabel("ID pedido"), gbcCampo(1));
-		bloque.add(campoPedido, gbcCampo(2));
-		bloque.add(crearLabel("Solo se pueden preparar pedidos que estén en estado PAGADO."), gbcCampo(3));
-		bloque.add(botonPreparar, gbcBoton(4));
+		panelPedido.add(crearPanelDatosPedido());
+		panelPedido.add(crearPanelBotonesPedido());
 
-		botonPreparar.addActionListener(e -> {
-			String id = campoPedido.getText().trim();
-
-			if (id.isBlank()) {
-				mostrarError("Introduce o selecciona un ID de pedido.");
-				return;
-			}
-
-			Pedido pedido = buscarPedidoPorId(id);
-
-			if (pedido == null) {
-				mostrarError("No existe ningún pedido con ese ID.");
-				return;
-			}
-
-			boolean ok = empleado.prepararPedido(id);
-
-			if (ok) {
-				cargarTablaPedidos();
-				mostrarInfoPedido(id);
-				mostrarMensaje("Pedido preparado correctamente.");
-			} else {
-				mostrarError("No se pudo preparar el pedido. Comprueba que esté pagado.");
-			}
-		});
+		bloque.add(panelPedido, gbcCampo(1));
 
 		return bloque;
+	}
+
+	private JPanel crearPanelDatosPedido() {
+		JPanel panel = new JPanel();
+		panel.setOpaque(false);
+		panel.setLayout(new javax.swing.BoxLayout(panel, javax.swing.BoxLayout.Y_AXIS));
+
+		panel.add(crearLabel("Datos del pedido"));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+
+		JPanel filaCampo = new JPanel(new BorderLayout());
+		filaCampo.setOpaque(false);
+		filaCampo.add(crearCampoFormulario("ID pedido", campoIdPedido), BorderLayout.CENTER);
+
+		panel.add(filaCampo);
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(12)));
+
+		panel.add(crearLabel("Para prepararlo, el pedido debe estar en estado PAGADO."));
+
+		return panel;
+	}
+
+	private JPanel crearPanelBotonesPedido() {
+		JPanel panel = new JPanel();
+		panel.setOpaque(false);
+		panel.setLayout(new javax.swing.BoxLayout(panel, javax.swing.BoxLayout.Y_AXIS));
+
+		panel.add(crearLabel("Acciones"));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+
+		JButton botonVerPedido = crearBotonSecundario("Ver pedido");
+		JButton botonPrepararPedido = crearBotonAccion("Preparar pedido");
+
+		JPanel filaBotones = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(12), 0));
+		filaBotones.setOpaque(false);
+		filaBotones.setMaximumSize(new Dimension(VentanaPrincipal.escalar(430), VentanaPrincipal.escalar(45)));
+
+		filaBotones.add(botonVerPedido);
+		filaBotones.add(botonPrepararPedido);
+
+		panel.add(filaBotones);
+
+		botonVerPedido.addActionListener(e -> verPedido());
+		botonPrepararPedido.addActionListener(e -> prepararPedido());
+
+		return panel;
 	}
 
 	private String[] crearOpcionesEstado() {
@@ -186,33 +198,73 @@ public class SeccionPedidosEmpleado extends AbstractPanelEmpleadoSection {
 	private void cargarTablaPedidos() {
 		modeloPedidos.setRowCount(0);
 
-		String estadoFiltro = "Todos";
+		String estadoElegido = "Todos";
 
-		if (comboEstado != null && comboEstado.getSelectedItem() != null) {
-			estadoFiltro = String.valueOf(comboEstado.getSelectedItem());
+		if (comboEstadoPedido != null && comboEstadoPedido.getSelectedItem() != null) {
+			estadoElegido = String.valueOf(comboEstadoPedido.getSelectedItem());
 		}
 
 		for (Pedido pedido : Tienda.getInstancia().getHistorialVentas()) {
-			if (!"Todos".equals(estadoFiltro) && !pedido.getEstado().name().equals(estadoFiltro)) {
+			if (!"Todos".equals(estadoElegido) && !pedido.getEstado().name().equals(estadoElegido)) {
 				continue;
 			}
 
-			String codigo = pedido.getCodigoRecogida();
+			modeloPedidos.addRow(new Object[] { pedido.getIdPedido(), pedido.getCliente().getNickname(),
+					pedido.getEstado(), formatearPrecio(pedido.getTotal()), obtenerCodigoRecogida(pedido),
+					obtenerTextoRecogidaSolicitada(pedido), pedido.getLineas().size() });
+		}
+	}
 
-			if (codigo == null) {
-				codigo = "-";
-			}
+	private void verPedido() {
+		String idPedido = campoIdPedido.getText().trim();
 
-			modeloPedidos
-					.addRow(new Object[] { pedido.getIdPedido(), pedido.getCliente().getNickname(), pedido.getEstado(),
-							String.format(java.util.Locale.US, "%.2f €", pedido.getTotal()).replace('.', ','), codigo,
-							pedido.getLineas().size() });
+		if (idPedido.isBlank()) {
+			mostrarError("Escribe el ID del pedido.");
+			return;
+		}
+
+		Pedido pedido = buscarPedidoPorId(idPedido);
+
+		if (pedido == null) {
+			mostrarError("No existe ningún pedido con ese ID.");
+			return;
+		}
+
+		mostrarPedidoEnVentana(pedido);
+	}
+
+	private void prepararPedido() {
+		String idPedido = campoIdPedido.getText().trim();
+
+		if (idPedido.isBlank()) {
+			mostrarError("Escribe el ID del pedido.");
+			return;
+		}
+
+		Pedido pedido = buscarPedidoPorId(idPedido);
+
+		if (pedido == null) {
+			mostrarError("No existe ningún pedido con ese ID.");
+			return;
+		}
+
+		boolean preparado = empleado.prepararPedido(idPedido);
+
+		if (preparado) {
+			cargarTablaPedidos();
+			mostrarMensaje("Pedido preparado correctamente.");
+		} else {
+			mostrarError("No se pudo preparar el pedido. Comprueba que esté pagado.");
 		}
 	}
 
 	private Pedido buscarPedidoPorId(String idPedido) {
+		if (idPedido == null || idPedido.isBlank()) {
+			return null;
+		}
+
 		for (Pedido pedido : Tienda.getInstancia().getHistorialVentas()) {
-			if (pedido.getIdPedido().equals(idPedido)) {
+			if (pedido.getIdPedido().equalsIgnoreCase(idPedido.trim())) {
 				return pedido;
 			}
 		}
@@ -220,73 +272,115 @@ public class SeccionPedidosEmpleado extends AbstractPanelEmpleadoSection {
 		return null;
 	}
 
-	private void mostrarInfoPedido(String idPedido) {
-		Pedido pedido = buscarPedidoPorId(idPedido);
+	private void mostrarPedidoEnVentana(Pedido pedido) {
+		JTextArea areaPedido = crearArea();
+		areaPedido.setEditable(false);
+		areaPedido.setText(crearTextoPedido(pedido));
+		areaPedido.setCaretPosition(0);
 
-		if (pedido == null) {
-			areaInfoPedido.setText("No existe ningún pedido con ese ID.");
-			return;
-		}
+		JScrollPane scroll = estilizarScroll(areaPedido);
+		scroll.setPreferredSize(new Dimension(VentanaPrincipal.escalar(680), VentanaPrincipal.escalar(320)));
 
-		StringBuilder sb = new StringBuilder();
+		JOptionPane.showMessageDialog(this, scroll, "Información del pedido", JOptionPane.INFORMATION_MESSAGE);
+	}
 
-		sb.append("Pedido: ").append(pedido.getIdPedido()).append("\n");
-		sb.append("Cliente: ").append(pedido.getCliente().getNickname()).append("\n");
-		sb.append("Estado: ").append(pedido.getEstado()).append("\n");
-		sb.append("Total: ").append(pedido.getTotal()).append(" €\n");
-		sb.append("Fecha creación: ").append(pedido.getFechaCreacion()).append("\n");
+	private String crearTextoPedido(Pedido pedido) {
+		StringBuilder texto = new StringBuilder();
+
+		texto.append("Pedido: ").append(pedido.getIdPedido()).append("\n");
+		texto.append("Cliente: ").append(pedido.getCliente().getNickname()).append("\n");
+		texto.append("Estado: ").append(pedido.getEstado()).append("\n");
+		texto.append("Total: ").append(formatearPrecio(pedido.getTotal())).append("\n");
+		texto.append("Código recogida: ").append(obtenerCodigoRecogida(pedido)).append("\n");
+		texto.append("Recogida solicitada: ").append(obtenerTextoRecogidaSolicitada(pedido)).append("\n");
+		texto.append("Fecha creación: ").append(pedido.getFechaCreacion()).append("\n");
 
 		if (pedido.getFechaPreparado() != null) {
-			sb.append("Fecha preparado: ").append(pedido.getFechaPreparado()).append("\n");
+			texto.append("Fecha preparado: ").append(pedido.getFechaPreparado()).append("\n");
 		}
 
 		if (pedido.getFechaEntregado() != null) {
-			sb.append("Fecha entregado: ").append(pedido.getFechaEntregado()).append("\n");
+			texto.append("Fecha entregado: ").append(pedido.getFechaEntregado()).append("\n");
 		}
 
-		if (pedido.getCodigoRecogida() != null) {
-			sb.append("Código recogida: ").append(pedido.getCodigoRecogida()).append("\n");
-		} else {
-			sb.append("Código recogida: -\n");
-		}
+		texto.append("\nProductos del pedido:\n");
+		texto.append(crearTextoProductosPedido(pedido));
 
-		sb.append("Recogida solicitada: ");
-		sb.append(pedido.isRecogida_solicitada() ? "Sí" : "No");
-		sb.append("\n\n");
+		return texto.toString();
+	}
 
-		sb.append("Productos del pedido:\n");
+	private String crearTextoProductosPedido(Pedido pedido) {
+		StringBuilder texto = new StringBuilder();
 
 		if (pedido.getLineas().isEmpty()) {
-			sb.append("  Sin productos.\n");
-		} else {
-			for (LineaPedido linea : pedido.getLineas()) {
-				ProductoVenta producto = linea.getProducto();
-
-				sb.append("  - ").append(producto.getId()).append(" | ").append(producto.getNombre())
-						.append(" | cantidad: ").append(linea.getCantidad()).append(" | precio unidad: ")
-						.append(linea.getPrecioVenta()).append(" € | subtotal: ").append(linea.getSubtotal())
-						.append(" €\n");
-			}
+			texto.append("Sin productos.");
+			return texto.toString();
 		}
 
-		areaInfoPedido.setText(sb.toString());
-		areaInfoPedido.setCaretPosition(0);
+		for (LineaPedido linea : pedido.getLineas()) {
+			ProductoVenta producto = linea.getProducto();
+
+			texto.append("- ");
+			texto.append(producto.getId()).append(" | ");
+			texto.append(producto.getNombre()).append(" | ");
+			texto.append("cantidad: ").append(linea.getCantidad()).append(" | ");
+			texto.append("precio unidad: ").append(formatearPrecio(linea.getPrecioVenta())).append(" | ");
+			texto.append("subtotal: ").append(formatearPrecio(linea.getSubtotal()));
+			texto.append("\n");
+		}
+
+		return texto.toString();
+	}
+
+	private String obtenerCodigoRecogida(Pedido pedido) {
+		if (pedido.getCodigoRecogida() == null || pedido.getCodigoRecogida().isBlank()) {
+			return "-";
+		}
+
+		return pedido.getCodigoRecogida();
+	}
+
+	private String obtenerTextoRecogidaSolicitada(Pedido pedido) {
+		if (pedido.getEstado() != EstadoPedido.PAGADO) {
+			return "-";
+		}
+
+		if (pedido.isRecogida_solicitada()) {
+			return "Sí";
+		}
+
+		return "No";
+	}
+
+	private String formatearPrecio(double precio) {
+		return String.format(Locale.US, "%.2f €", precio).replace('.', ',');
 	}
 
 	private void estilizarTablaPedidos(JTable tabla) {
-		tabla.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		tabla.setRowHeight(VentanaPrincipal.escalar(30));
-		tabla.setBackground(Color.WHITE);
-		tabla.setForeground(VentanaPrincipal.COLOR_TEXTO);
-		tabla.setGridColor(new Color(225, 225, 225));
-		tabla.setSelectionBackground(VentanaPrincipal.COLOR_ACENTO);
-		tabla.setSelectionForeground(Color.BLACK);
-		tabla.setFillsViewportHeight(true);
+		tabla.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		tabla.setRowHeight(VentanaPrincipal.escalar(28));
+		tabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-		JTableHeader header = tabla.getTableHeader();
-		header.setFont(new Font("Segoe UI", Font.BOLD, 13));
-		header.setBackground(new Color(232, 232, 232));
-		header.setForeground(VentanaPrincipal.COLOR_TEXTO);
-		header.setReorderingAllowed(false);
+		tabla.setBackground(Color.WHITE);
+		tabla.setForeground(Color.BLACK);
+		tabla.setGridColor(new Color(225, 225, 225));
+
+		tabla.setFillsViewportHeight(true);
+		tabla.setShowHorizontalLines(true);
+		tabla.setShowVerticalLines(true);
+
+		JTableHeader cabecera = tabla.getTableHeader();
+		cabecera.setFont(new Font("Segoe UI", Font.BOLD, 13));
+		cabecera.setBackground(new Color(235, 235, 235));
+		cabecera.setForeground(Color.BLACK);
+		cabecera.setReorderingAllowed(false);
+
+		tabla.getColumnModel().getColumn(0).setPreferredWidth(110); // ID
+		tabla.getColumnModel().getColumn(1).setPreferredWidth(140); // Cliente
+		tabla.getColumnModel().getColumn(2).setPreferredWidth(150); // Estado
+		tabla.getColumnModel().getColumn(3).setPreferredWidth(100); // Total
+		tabla.getColumnModel().getColumn(4).setPreferredWidth(160); // Código recogida
+		tabla.getColumnModel().getColumn(5).setPreferredWidth(160); // Recogida solicitada
+		tabla.getColumnModel().getColumn(6).setPreferredWidth(90); // Productos
 	}
 }

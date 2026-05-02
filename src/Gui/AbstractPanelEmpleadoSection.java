@@ -233,7 +233,7 @@ public abstract class AbstractPanelEmpleadoSection extends JPanel {
 		boton.setBorderPainted(false);
 		boton.setOpaque(true);
 		boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		boton.setPreferredSize(new Dimension(VentanaPrincipal.escalar(210), VentanaPrincipal.escalar(40)));
+		boton.setPreferredSize(new Dimension(VentanaPrincipal.escalar(180), VentanaPrincipal.escalar(36)));
 		boton.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(16),
 				VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(16)));
 		return boton;
@@ -253,7 +253,7 @@ public abstract class AbstractPanelEmpleadoSection extends JPanel {
 
 		boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-		boton.setPreferredSize(new Dimension(VentanaPrincipal.escalar(160), VentanaPrincipal.escalar(36)));
+		boton.setPreferredSize(new Dimension(VentanaPrincipal.escalar(180), VentanaPrincipal.escalar(36)));
 
 		boton.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(7), VentanaPrincipal.escalar(14),
 				VentanaPrincipal.escalar(7), VentanaPrincipal.escalar(14)));
@@ -270,7 +270,7 @@ public abstract class AbstractPanelEmpleadoSection extends JPanel {
 		boton.setBorderPainted(false);
 		boton.setOpaque(true);
 		boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		boton.setPreferredSize(new Dimension(VentanaPrincipal.escalar(170), VentanaPrincipal.escalar(36)));
+		boton.setPreferredSize(new Dimension(VentanaPrincipal.escalar(180), VentanaPrincipal.escalar(36)));
 		boton.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(7), VentanaPrincipal.escalar(14),
 				VentanaPrincipal.escalar(7), VentanaPrincipal.escalar(14)));
 		return boton;
@@ -284,6 +284,10 @@ public abstract class AbstractPanelEmpleadoSection extends JPanel {
 		JLabel label = new JLabel(etiqueta);
 		label.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 		label.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+
+		panel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		label.setAlignmentX(Component.LEFT_ALIGNMENT);
+		campo.setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		panel.add(label);
 		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(4)));

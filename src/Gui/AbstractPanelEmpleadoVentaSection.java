@@ -409,11 +409,9 @@ public abstract class AbstractPanelEmpleadoVentaSection extends AbstractPanelEmp
 	private List<String> obtenerNombresCategoriasVenta() {
 		TreeSet<String> nombres = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 
-		for (ProductoVenta producto : Tienda.getInstancia().getStockVentas()) {
-			for (Categoria categoria : producto.getCategorias()) {
-				if (categoria != null && categoria.getNombre() != null && !categoria.getNombre().isBlank()) {
-					nombres.add(categoria.getNombre().trim());
-				}
+		for (Categoria categoria : Tienda.getInstancia().getCategorias()) {
+			if (categoria != null && categoria.getNombre() != null && !categoria.getNombre().isBlank()) {
+				nombres.add(categoria.getNombre().trim());
 			}
 		}
 

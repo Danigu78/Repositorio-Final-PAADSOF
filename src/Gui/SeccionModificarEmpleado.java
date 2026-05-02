@@ -1,11 +1,18 @@
 package Gui;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 
 import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -14,12 +21,20 @@ import tienda.Tienda;
 import usuarios.Empleado;
 
 /**
- * Sección para modificar datos básicos de productos. Permite cambiar la
- * descripción y la ruta de imagen de un producto existente.
+ * Pantalla para modificar algunos datos básicos de los productos.
+ * 
+ * Desde aquí el empleado puede consultar los productos y cambiar la descripción
+ * o la imagen de un producto concreto.
  */
 public class SeccionModificarEmpleado extends AbstractPanelEmpleadoVentaSection {
 
 	private static final long serialVersionUID = 1L;
+
+	private SelectorVenta selectorProductos;
+
+	private JTextField campoIdProducto;
+	private JTextArea areaDescripcion;
+	private JTextField campoImagen;
 
 	public SeccionModificarEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
@@ -27,122 +42,217 @@ public class SeccionModificarEmpleado extends AbstractPanelEmpleadoVentaSection 
 	}
 
 	private void construirUI() {
-		JPanel base = crearPanelBase("Modificar Productos");
-		JPanel contenido = getContenido(base);
+		setLayout(new BorderLayout());
 
-		JTextField campoId = crearCampo();
+		JPanel panelBase = crearPanelBase("Modificar Productos");
+		JPanel contenido = getContenido(panelBase);
 
-		SelectorVenta selector = crearSelectorProductosVenta("Buscar producto a modificar",
-				"Selecciona una fila para cargar el ID del producto.", true, campoId);
+		campoIdProducto = crearCampo();
+		areaDescripcion = crearArea();
+		campoImagen = crearCampo();
 
-		JPanel bloque = crearBloque("Modificar descripción o imagen");
+		/*
+		 * La tabla se queda como consulta, igual que en stock. El ID se escribe abajo a
+		 * mano para que no haga cosas raras al pulsar una fila.
+		 */
+		selectorProductos = crearSelectorProductosVenta("Productos actuales",
+				"Filtra los productos para consultar sus datos antes de modificarlos.", true);
 
-		JTextArea areaDescripcion = crearArea();
-		JTextField campoImagen = crearCampo();
+		selectorProductos.tabla.setRowSelectionAllowed(false);
+		selectorProductos.tabla.setCellSelectionEnabled(false);
 
-		JButton botonCargarDatos = crearBotonSecundario("Cargar datos actuales");
-		JButton botonExaminar = crearBotonSecundario("Examinar imagen...");
-		JButton botonDescripcion = crearBotonAccion("Guardar descripción");
-		JButton botonImagen = crearBotonAccion("Guardar imagen");
-
-		bloque.add(crearLabel("ID producto"), gbcCampo(1));
-		bloque.add(campoId, gbcCampo(2));
-		bloque.add(botonCargarDatos, gbcBoton(3));
-
-		bloque.add(crearLabel("Nueva descripción"), gbcCampo(4));
-		bloque.add(estilizarScroll(areaDescripcion), gbcCampo(5));
-		bloque.add(botonDescripcion, gbcBoton(6));
-
-		bloque.add(crearLabel("Nueva ruta de imagen"), gbcCampo(7));
-		bloque.add(campoImagen, gbcCampo(8));
-
-		JPanel filaImagen = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
-		filaImagen.setOpaque(false);
-		filaImagen.add(botonExaminar);
-		filaImagen.add(botonImagen);
-
-		bloque.add(filaImagen, gbcBoton(9));
-
-		botonCargarDatos.addActionListener(e -> {
-			String id = campoId.getText().trim();
-
-			if (id.isBlank()) {
-				mostrarError("Introduce o selecciona un ID de producto.");
-				return;
-			}
-
-			ProductoVenta producto = Tienda.getInstancia().buscarProductoVentaPorId(id);
-
-			if (producto == null) {
-				mostrarError("No existe ningún producto con ese ID.");
-				return;
-			}
-
-			areaDescripcion.setText(producto.getDescripcion());
-			campoImagen.setText(producto.getImagenRuta());
-		});
-
-		botonExaminar.addActionListener(e -> {
-			JFileChooser chooser = new JFileChooser();
-			int resultado = chooser.showOpenDialog(this);
-
-			if (resultado == JFileChooser.APPROVE_OPTION && chooser.getSelectedFile() != null) {
-				campoImagen.setText(chooser.getSelectedFile().getAbsolutePath());
-			}
-		});
-
-		botonDescripcion.addActionListener(e -> {
-			String id = campoId.getText().trim();
-			String descripcion = areaDescripcion.getText().trim();
-
-			if (id.isBlank()) {
-				mostrarError("Introduce el ID del producto.");
-				return;
-			}
-
-			if (descripcion.isBlank()) {
-				mostrarError("Introduce una descripción.");
-				return;
-			}
-
-			boolean ok = empleado.modificarDescripcionProducto(id, descripcion);
-
-			if (ok) {
-				recargarTablaProductos(selector.tabla);
-				mostrarMensaje("Descripción modificada correctamente.");
-			} else {
-				mostrarError("No se pudo modificar la descripción.");
-			}
-		});
-
-		botonImagen.addActionListener(e -> {
-			String id = campoId.getText().trim();
-			String imagen = campoImagen.getText().trim();
-
-			if (id.isBlank()) {
-				mostrarError("Introduce el ID del producto.");
-				return;
-			}
-
-			if (imagen.isBlank()) {
-				mostrarError("Introduce una ruta de imagen.");
-				return;
-			}
-
-			boolean ok = empleado.modificarImagenProducto(id, imagen);
-
-			if (ok) {
-				recargarTablaProductos(selector.tabla);
-				mostrarMensaje("Imagen modificada correctamente.");
-			} else {
-				mostrarError("No se pudo modificar la imagen.");
-			}
-		});
-
-		contenido.add(selector.bloque);
+		contenido.add(selectorProductos.bloque);
 		contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(18)));
-		contenido.add(bloque);
+		contenido.add(crearBloqueModificarProducto());
 
-		add(base);
+		add(panelBase, BorderLayout.CENTER);
+	}
+
+	private JPanel crearBloqueModificarProducto() {
+		JPanel bloque = crearBloque("Modificar datos del producto");
+
+		JPanel panelCambios = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(35), 0));
+		panelCambios.setOpaque(false);
+
+		panelCambios.add(crearPanelDatosProducto());
+		panelCambios.add(crearPanelCambiosProducto());
+
+		bloque.add(panelCambios, gbcCampo(1));
+
+		return bloque;
+	}
+
+	private JPanel crearPanelDatosProducto() {
+		JPanel panel = new JPanel();
+		panel.setOpaque(false);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+		JLabel titulo = crearLabel("Producto");
+		titulo.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+		JPanel campoId = crearCampoFormulario("ID producto", campoIdProducto);
+		campoId.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+		JButton botonCargar = crearBotonAccion("Cargar datos");
+
+		JPanel filaBoton = crearFilaBotones();
+		filaBoton.setAlignmentX(Component.LEFT_ALIGNMENT);
+		filaBoton.add(botonCargar);
+
+		panel.add(titulo);
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		panel.add(campoId);
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(12)));
+		panel.add(filaBoton);
+
+		botonCargar.addActionListener(e -> cargarDatosProducto());
+
+		return panel;
+	}
+
+	private JPanel crearPanelCambiosProducto() {
+		JPanel panel = new JPanel();
+		panel.setOpaque(false);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+		JLabel titulo = crearLabel("Cambios");
+		titulo.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+		JScrollPane scrollDescripcion = estilizarScroll(areaDescripcion);
+		scrollDescripcion.setPreferredSize(new Dimension(VentanaPrincipal.escalar(420), VentanaPrincipal.escalar(130)));
+
+		JPanel campoDescripcion = crearCampoFormulario("Descripción", scrollDescripcion);
+		campoDescripcion.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+		JButton botonGuardarDescripcion = crearBotonAccion("Guardar descripción");
+
+		JPanel filaDescripcion = crearFilaBotones();
+		filaDescripcion.setAlignmentX(Component.LEFT_ALIGNMENT);
+		filaDescripcion.add(botonGuardarDescripcion);
+
+		JPanel campoRuta = crearCampoFormulario("Ruta de imagen", campoImagen);
+		campoRuta.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+		JButton botonAbrirImagen = crearBotonSecundario("Abrir...");
+		JButton botonGuardarImagen = crearBotonAccion("Guardar imagen");
+
+		JPanel filaImagen = crearFilaBotones();
+		filaImagen.setAlignmentX(Component.LEFT_ALIGNMENT);
+		filaImagen.add(botonAbrirImagen);
+		filaImagen.add(Box.createHorizontalStrut(VentanaPrincipal.escalar(10)));
+		filaImagen.add(botonGuardarImagen);
+
+		panel.add(titulo);
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+
+		panel.add(campoDescripcion);
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		panel.add(filaDescripcion);
+
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(18)));
+		panel.add(campoRuta);
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		panel.add(filaImagen);
+
+		botonGuardarDescripcion.addActionListener(e -> guardarDescripcion());
+		botonAbrirImagen.addActionListener(e -> seleccionarImagen());
+		botonGuardarImagen.addActionListener(e -> guardarImagen());
+
+		return panel;
+	}
+
+	private JPanel crearFilaBotones() {
+		JPanel fila = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		fila.setOpaque(false);
+		return fila;
+	}
+
+	private void cargarDatosProducto() {
+		ProductoVenta producto = buscarProductoEscrito();
+
+		if (producto == null) {
+			return;
+		}
+
+		areaDescripcion.setText(producto.getDescripcion());
+		campoImagen.setText(producto.getImagenRuta());
+
+		mostrarMensaje("Datos cargados.");
+	}
+
+	private ProductoVenta buscarProductoEscrito() {
+		String idProducto = campoIdProducto.getText().trim();
+
+		if (idProducto.isBlank()) {
+			mostrarError("Escribe el ID del producto.");
+			return null;
+		}
+
+		ProductoVenta producto = Tienda.getInstancia().buscarProductoVentaPorId(idProducto);
+
+		if (producto == null) {
+			mostrarError("No existe ningún producto con ese ID.");
+			return null;
+		}
+
+		return producto;
+	}
+
+	private void seleccionarImagen() {
+		JFileChooser selectorImagen = new JFileChooser();
+
+		int opcion = selectorImagen.showOpenDialog(this);
+
+		if (opcion == JFileChooser.APPROVE_OPTION && selectorImagen.getSelectedFile() != null) {
+			campoImagen.setText(selectorImagen.getSelectedFile().getAbsolutePath());
+		}
+	}
+
+	private void guardarDescripcion() {
+		String idProducto = campoIdProducto.getText().trim();
+		String descripcion = areaDescripcion.getText().trim();
+
+		if (idProducto.isBlank()) {
+			mostrarError("Escribe el ID del producto.");
+			return;
+		}
+
+		if (descripcion.isBlank()) {
+			mostrarError("Escribe una descripción.");
+			return;
+		}
+
+		boolean modificado = empleado.modificarDescripcionProducto(idProducto, descripcion);
+
+		if (modificado) {
+			recargarTablaProductos(selectorProductos.tabla);
+			mostrarMensaje("Descripción guardada correctamente.");
+		} else {
+			mostrarError("No se pudo guardar la descripción.");
+		}
+	}
+
+	private void guardarImagen() {
+		String idProducto = campoIdProducto.getText().trim();
+		String imagen = campoImagen.getText().trim();
+
+		if (idProducto.isBlank()) {
+			mostrarError("Escribe el ID del producto.");
+			return;
+		}
+
+		if (imagen.isBlank()) {
+			mostrarError("Escribe una ruta de imagen.");
+			return;
+		}
+
+		boolean modificada = empleado.modificarImagenProducto(idProducto, imagen);
+
+		if (modificada) {
+			recargarTablaProductos(selectorProductos.tabla);
+			mostrarMensaje("Imagen guardada correctamente.");
+		} else {
+			mostrarError("No se pudo guardar la imagen.");
+		}
 	}
 }
