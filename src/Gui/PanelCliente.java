@@ -149,7 +149,7 @@ public class PanelCliente extends JPanel {
 
 		subpanelPedidos.setPanelCliente(this);
 		subpanelCartera.setPanelCliente(this);
-
+		subpanelPerfil.setPanelCliente(this);
 		panelSecciones.add(subpanelCatalogo, SEC_CATALOGO);
 		panelSecciones.add(subpanelCarrito, SEC_CARRITO);
 		panelSecciones.add(subpanelPedidos, SEC_PEDIDOS);
@@ -436,5 +436,8 @@ public class PanelCliente extends JPanel {
 	public void volverACartera() {
 	    mostrarSeccion(SEC_CARTERA);
 	    subpanelCartera.actualizar(cliente);
+	}
+	public void actualizarNombreUsuario(String nombre) {
+	    labelUsuario.setText(nombre);
 	}
 }
