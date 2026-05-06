@@ -4,6 +4,8 @@ import java.awt.*;
 
 import javax.swing.*;
 
+import Gui.Controladores.ControladorStockEmpleado;
+import Gui.Controladores.ResultadoOperacion;
 import usuarios.Empleado;
 
 /**
@@ -19,12 +21,14 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 	private JTextField campoIdProducto;
 	private JTextField campoUnidades;
 	private JTextField campoFichero;
+	private ControladorStockEmpleado controlador;
 
 	/* La guardamos para poder refrescarla después de cambiar algo */
 	private SelectorVenta tablaProductos;
 
 	public SeccionStockEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
+		this.controlador = new ControladorStockEmpleado(empleado);
 		construirUI();
 	}
 
@@ -128,29 +132,14 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 	}
 
 	private void reponerStock() {
-		String idProducto = campoIdProducto.getText().trim();
-		Integer unidades = leerEnteroSeguro(campoUnidades.getText());
+		ResultadoOperacion resultado = controlador.reponerStock(campoIdProducto.getText(), campoUnidades.getText());
 
-		// Sin ID no sabemos qué producto tocar.
-		if (idProducto.isBlank()) {
-			mostrarError("Escribe el ID del producto");
-			return;
-		}
-
-		// Evitamos negativos, cero o texto raro.
-		if (unidades == null || unidades <= 0) {
-			mostrarError("La cantidad debe ser positiva");
-			return;
-		}
-
-		boolean repuesto = empleado.reponerStockProducto(idProducto, unidades);
-
-		if (repuesto) {
+		if (resultado.isExito()) {
 			recargarTablaProductos(tablaProductos.tabla);
 			campoUnidades.setText("");
-			mostrarMensaje("Stock repuesto correctamente");
+			mostrarMensaje(resultado.getMensaje());
 		} else {
-			mostrarError("No se pudo reponer el stock");
+			mostrarError(resultado.getMensaje());
 		}
 	}
 
@@ -166,21 +155,13 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 	}
 
 	private void cargarFichero() {
-		String rutaFichero = campoFichero.getText().trim();
+		ResultadoOperacion resultado = controlador.cargarProductosDesdeFichero(campoFichero.getText());
 
-		if (rutaFichero.isBlank()) {
-			mostrarError("No has escrito una ruta del fichero");
-			return;
-		}
-
-		// Aquí solo comprobamos la ruta y dejamos que Empleado haga la carga.
-		boolean cargado = empleado.cargarProductosFicheroTexto(rutaFichero);
-
-		if (cargado) {
+		if (resultado.isExito()) {
 			recargarTablaProductos(tablaProductos.tabla);
-			mostrarMensaje("Fichero cargado correcto");
+			mostrarMensaje(resultado.getMensaje());
 		} else {
-			mostrarError("Error al cargar del fichero");
+			mostrarError(resultado.getMensaje());
 		}
 	}
 }

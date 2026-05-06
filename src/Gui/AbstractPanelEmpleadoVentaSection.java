@@ -23,6 +23,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
+import Gui.Controladores.ControladorProductosEmpleado;
 import productos.Categoria;
 import productos.Comic;
 import productos.Figura;
@@ -51,6 +52,8 @@ public abstract class AbstractPanelEmpleadoVentaSection extends AbstractPanelEmp
 	protected static final int COL_VENTA_PRECIO = 4;
 	protected static final int COL_VENTA_STOCK = 5;
 	protected static final int COL_VENTA_PUNTUACION = 6;
+
+	protected final ControladorProductosEmpleado controladorProductos = new ControladorProductosEmpleado();
 
 	protected static class SelectorVenta {
 		JPanel bloque;
@@ -407,108 +410,31 @@ public abstract class AbstractPanelEmpleadoVentaSection extends AbstractPanelEmp
 	}
 
 	private List<String> obtenerNombresCategoriasVenta() {
-		TreeSet<String> nombres = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-
-		for (Categoria categoria : Tienda.getInstancia().getCategorias()) {
-			if (categoria != null && categoria.getNombre() != null && !categoria.getNombre().isBlank()) {
-				nombres.add(categoria.getNombre().trim());
-			}
-		}
-
-		return new ArrayList<>(nombres);
+		return controladorProductos.obtenerNombresCategoriasVenta();
 	}
 
 	protected String obtenerTextoCategorias(ProductoVenta producto) {
-		if (producto == null || producto.getCategorias().isEmpty()) {
-			return "-";
-		}
-
-		List<String> nombres = new ArrayList<>();
-
-		for (Categoria categoria : producto.getCategorias()) {
-			if (categoria != null && categoria.getNombre() != null && !categoria.getNombre().isBlank()) {
-				nombres.add(categoria.getNombre().trim());
-			}
-		}
-
-		nombres.sort(String.CASE_INSENSITIVE_ORDER);
-
-		if (nombres.isEmpty()) {
-			return "-";
-		}
-
-		return String.join(", ", nombres);
+		return controladorProductos.obtenerTextoCategorias(producto);
 	}
 
 	protected String obtenerTipoProductoVenta(ProductoVenta producto) {
-		if (producto instanceof Comic) {
-			return "Comic";
-		}
-
-		if (producto instanceof JuegoMesa) {
-			return "Juego";
-		}
-
-		if (producto instanceof Figura) {
-			return "Figura";
-		}
-
-		if (producto instanceof Pack) {
-			return "Pack";
-		}
-
-		return "Producto";
+		return controladorProductos.obtenerTipoProductoVenta(producto);
 	}
 
 	protected List<ProductoVenta> obtenerProductosOrdenadosPorStock() {
-		ArrayList<ProductoVenta> productos = new ArrayList<>(Tienda.getInstancia().getStockVentas());
-
-		productos.sort(Comparator.comparingInt(ProductoVenta::getStockDisponible)
-				.thenComparing(ProductoVenta::getNombre, String.CASE_INSENSITIVE_ORDER));
-
-		return productos;
+		return controladorProductos.obtenerProductosOrdenadosPorStock();
 	}
 
 	protected ArrayList<LineaPack> construirLineasPack(String texto) throws Exception {
-		ArrayList<LineaPack> lineas = new ArrayList<>();
-
-		String[] filas = texto.split("\\r?\\n");
-
-		for (String fila : filas) {
-			if (fila == null || fila.isBlank()) {
-				continue;
-			}
-
-			String[] partes = fila.split(";");
-
-			if (partes.length != 2) {
-				throw new IllegalArgumentException("Cada línea debe tener formato ID;UNIDADES");
-			}
-
-			String idProducto = partes[0].trim();
-			int unidades = Integer.parseInt(partes[1].trim());
-
-			ProductoVenta producto = Tienda.getInstancia().buscarProductoVentaPorId(idProducto);
-
-			if (producto == null) {
-				throw new IllegalArgumentException("No existe producto con id " + idProducto);
-			}
-
-			if (unidades <= 0) {
-				throw new IllegalArgumentException("Las unidades deben ser mayores que 0.");
-			}
-
-			lineas.add(new LineaPack(producto, unidades));
-		}
-
-		return lineas;
+		return controladorProductos.construirLineasPack(texto);
 	}
 
 	private String formatearPrecio(double precio) {
-		return String.format(java.util.Locale.US, "%.2f €", precio).replace('.', ',');
+		return controladorProductos.formatearPrecio(precio);
 	}
 
 	private String formatearPuntuacion(double puntuacion) {
-		return String.format(java.util.Locale.US, "%.1f", puntuacion).replace('.', ',');
+		return controladorProductos.formatearPuntuacion(puntuacion);
 	}
+
 }

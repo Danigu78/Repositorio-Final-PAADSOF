@@ -1,18 +1,12 @@
 package Gui;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
 import javax.swing.*;
 import javax.swing.table.*;
 
-import intercambios.EstadoOferta;
 import intercambios.Oferta;
-import productos.Producto2Mano;
-import tienda.Tienda;
-import usuarios.Cliente;
+import Gui.Controladores.ControladorIntercambiosEmpleado;
+import Gui.Controladores.ResultadoOperacion;
 import usuarios.Empleado;
 
 /**
@@ -30,9 +24,11 @@ public class SeccionIntercambiosEmpleado extends AbstractPanelEmpleadoSection {
 
 	private JTextField campoIdOferta;
 	private JComboBox<String> comboEstadoOferta;
+	private ControladorIntercambiosEmpleado controlador;
 
 	public SeccionIntercambiosEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
+		this.controlador = new ControladorIntercambiosEmpleado(empleado);
 		construirUI();
 	}
 
@@ -191,16 +187,7 @@ public class SeccionIntercambiosEmpleado extends AbstractPanelEmpleadoSection {
 	}
 
 	private String[] crearOpcionesEstado() {
-		EstadoOferta[] estados = EstadoOferta.values();
-		String[] opciones = new String[estados.length + 1];
-
-		opciones[0] = "Todos";
-
-		for (int i = 0; i < estados.length; i++) {
-			opciones[i + 1] = estados[i].name();
-		}
-
-		return opciones;
+		return controlador.crearOpcionesEstado();
 	}
 
 	private void cargarTablaOfertas() {
@@ -212,13 +199,7 @@ public class SeccionIntercambiosEmpleado extends AbstractPanelEmpleadoSection {
 			estadoElegido = String.valueOf(comboEstadoOferta.getSelectedItem());
 		}
 
-		for (Oferta oferta : obtenerTodasLasOfertas()) {
-			oferta.haCaducado();
-
-			if (!"Todos".equals(estadoElegido) && !oferta.getEstado().name().equals(estadoElegido)) {
-				continue;
-			}
-
+		for (Oferta oferta : controlador.getOfertas(estadoElegido)) {
 			modeloOfertas.addRow(new Object[] { oferta.getId(), oferta.getOrigen().getNickname(),
 					oferta.getDestino().getNickname(), oferta.getEstado(), oferta.getProductosOfertados().size(),
 					oferta.getProductosSolicitados().size() });
@@ -244,73 +225,18 @@ public class SeccionIntercambiosEmpleado extends AbstractPanelEmpleadoSection {
 	}
 
 	private void confirmarOferta() {
-		String idOferta = campoIdOferta.getText().trim();
+		ResultadoOperacion resultado = controlador.confirmarOferta(campoIdOferta.getText());
 
-		if (idOferta.isBlank()) {
-			mostrarError("Escribe el ID de la oferta.");
-			return;
-		}
-
-		Oferta oferta = buscarOfertaPorId(idOferta);
-
-		if (oferta == null) {
-			mostrarError("No existe ninguna oferta con ese ID.");
-			return;
-		}
-
-		if (oferta.getEstado() != EstadoOferta.ACEPTADA) {
-			mostrarError("La oferta debe estar en estado ACEPTADA para poder confirmarla.");
-			return;
-		}
-
-		boolean confirmada = empleado.confirmarIntercambio(oferta);
-
-		if (confirmada) {
+		if (resultado.isExito()) {
 			cargarTablaOfertas();
-			mostrarMensaje("Intercambio confirmado correctamente.");
+			mostrarMensaje(resultado.getMensaje());
 		} else {
-			mostrarError("No se pudo confirmar el intercambio.");
+			mostrarError(resultado.getMensaje());
 		}
-	}
-
-	private List<Oferta> obtenerTodasLasOfertas() {
-		List<Oferta> ofertas = new ArrayList<>();
-
-		for (Cliente cliente : Tienda.getInstancia().obtenerClientesTienda()) {
-			for (Oferta oferta : cliente.getOfertasPendientes()) {
-				if (!ofertas.contains(oferta)) {
-					ofertas.add(oferta);
-				}
-			}
-
-			for (Oferta oferta : cliente.getHistorialIntercambios()) {
-				if (!ofertas.contains(oferta)) {
-					ofertas.add(oferta);
-				}
-			}
-		}
-
-		for (Oferta oferta : Tienda.getInstancia().getIntercambiosFinalizados()) {
-			if (!ofertas.contains(oferta)) {
-				ofertas.add(oferta);
-			}
-		}
-
-		return ofertas;
 	}
 
 	private Oferta buscarOfertaPorId(String idOferta) {
-		if (idOferta == null || idOferta.isBlank()) {
-			return null;
-		}
-
-		for (Oferta oferta : obtenerTodasLasOfertas()) {
-			if (oferta.getId().equalsIgnoreCase(idOferta.trim())) {
-				return oferta;
-			}
-		}
-
-		return null;
+		return controlador.buscarOfertaPorId(idOferta);
 	}
 
 	private void mostrarOfertaEnVentana(Oferta oferta) {
@@ -326,49 +252,7 @@ public class SeccionIntercambiosEmpleado extends AbstractPanelEmpleadoSection {
 	}
 
 	private String crearTextoOferta(Oferta oferta) {
-		StringBuilder texto = new StringBuilder();
-
-		texto.append("Oferta: ").append(oferta.getId()).append("\n");
-		texto.append("Estado: ").append(oferta.getEstado()).append("\n");
-		texto.append("Fecha: ").append(oferta.getFechaOferta()).append("\n");
-		texto.append("Origen: ").append(oferta.getOrigen().getNickname()).append("\n");
-		texto.append("Destino: ").append(oferta.getDestino().getNickname()).append("\n\n");
-
-		texto.append("Productos que ofrece ").append(oferta.getOrigen().getNickname()).append(":\n");
-		aniadirProductosOferta(texto, oferta.getProductosOfertados());
-
-		texto.append("\nProductos que solicita a ").append(oferta.getDestino().getNickname()).append(":\n");
-		aniadirProductosOferta(texto, oferta.getProductosSolicitados());
-
-		return texto.toString();
-	}
-
-	private void aniadirProductosOferta(StringBuilder texto, List<Producto2Mano> productos) {
-		if (productos == null || productos.isEmpty()) {
-			texto.append("Sin productos.\n");
-			return;
-		}
-
-		for (Producto2Mano producto : productos) {
-			texto.append("- ");
-			texto.append(producto.getId()).append(" | ");
-			texto.append(producto.getNombre());
-
-			if (producto.getValoracion() != null) {
-				texto.append(" | valor: ");
-				texto.append(formatearPrecio(producto.getValoracion().getPrecioTasacion()));
-				texto.append(" | estado: ");
-				texto.append(producto.getValoracion().getEstadoProducto());
-			} else {
-				texto.append(" | sin valoración");
-			}
-
-			texto.append("\n");
-		}
-	}
-
-	private String formatearPrecio(double precio) {
-		return String.format(Locale.US, "%.2f €", precio).replace('.', ',');
+		return controlador.crearTextoOferta(oferta);
 	}
 
 	private void estilizarTablaOfertas(JTable tabla) {

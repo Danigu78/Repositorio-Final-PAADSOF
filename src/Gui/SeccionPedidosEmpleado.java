@@ -1,17 +1,14 @@
 package Gui;
 
 import java.awt.*;
-import java.util.Locale;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
-import productos.ProductoVenta;
-import tienda.Tienda;
+import Gui.Controladores.ControladorPedidosEmpleado;
+import Gui.Controladores.ResultadoOperacion;
 import usuarios.Empleado;
 import ventas.EstadoPedido;
-import ventas.LineaPedido;
 import ventas.Pedido;
 
 /**
@@ -29,9 +26,11 @@ public class SeccionPedidosEmpleado extends AbstractPanelEmpleadoSection {
 
 	private JTextField campoIdPedido;
 	private JComboBox<String> comboEstadoPedido;
+	private ControladorPedidosEmpleado controlador;
 
 	public SeccionPedidosEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
+		this.controlador = new ControladorPedidosEmpleado(empleado);
 		construirUI();
 	}
 
@@ -169,16 +168,7 @@ public class SeccionPedidosEmpleado extends AbstractPanelEmpleadoSection {
 	}
 
 	private String[] crearOpcionesEstado() {
-		EstadoPedido[] estados = EstadoPedido.values();
-		String[] opciones = new String[estados.length + 1];
-
-		opciones[0] = "Todos";
-
-		for (int i = 0; i < estados.length; i++) {
-			opciones[i + 1] = estados[i].name();
-		}
-
-		return opciones;
+		return controlador.crearOpcionesEstado();
 	}
 
 	private void cargarTablaPedidos() {
@@ -190,14 +180,10 @@ public class SeccionPedidosEmpleado extends AbstractPanelEmpleadoSection {
 			estadoElegido = String.valueOf(comboEstadoPedido.getSelectedItem());
 		}
 
-		for (Pedido pedido : Tienda.getInstancia().getHistorialVentas()) {
-			if (!"Todos".equals(estadoElegido) && !pedido.getEstado().name().equals(estadoElegido)) {
-				continue;
-			}
-
+		for (Pedido pedido : controlador.getPedidos(estadoElegido)) {
 			modeloPedidos.addRow(new Object[] { pedido.getIdPedido(), pedido.getCliente().getNickname(),
-					pedido.getEstado(), formatearPrecio(pedido.getTotal()), obtenerCodigoRecogida(pedido),
-					obtenerTextoRecogidaSolicitada(pedido), pedido.getLineas().size() });
+					pedido.getEstado(), controlador.formatearPrecio(pedido.getTotal()), controlador.obtenerCodigoRecogida(pedido),
+					controlador.obtenerTextoRecogidaSolicitada(pedido), pedido.getLineas().size() });
 		}
 	}
 
@@ -220,42 +206,18 @@ public class SeccionPedidosEmpleado extends AbstractPanelEmpleadoSection {
 	}
 
 	private void prepararPedido() {
-		String idPedido = campoIdPedido.getText().trim();
+		ResultadoOperacion resultado = controlador.prepararPedido(campoIdPedido.getText());
 
-		if (idPedido.isBlank()) {
-			mostrarError("Escribe el ID del pedido.");
-			return;
-		}
-
-		Pedido pedido = buscarPedidoPorId(idPedido);
-
-		if (pedido == null) {
-			mostrarError("No existe ningún pedido con ese ID.");
-			return;
-		}
-
-		boolean preparado = empleado.prepararPedido(idPedido);
-
-		if (preparado) {
+		if (resultado.isExito()) {
 			cargarTablaPedidos();
-			mostrarMensaje("Pedido preparado correctamente.");
+			mostrarMensaje(resultado.getMensaje());
 		} else {
-			mostrarError("No se pudo preparar el pedido. Comprueba que esté pagado.");
+			mostrarError(resultado.getMensaje());
 		}
 	}
 
 	private Pedido buscarPedidoPorId(String idPedido) {
-		if (idPedido == null || idPedido.isBlank()) {
-			return null;
-		}
-
-		for (Pedido pedido : Tienda.getInstancia().getHistorialVentas()) {
-			if (pedido.getIdPedido().equalsIgnoreCase(idPedido.trim())) {
-				return pedido;
-			}
-		}
-
-		return null;
+		return controlador.buscarPedidoPorId(idPedido);
 	}
 
 	private void mostrarPedidoEnVentana(Pedido pedido) {
@@ -271,75 +233,7 @@ public class SeccionPedidosEmpleado extends AbstractPanelEmpleadoSection {
 	}
 
 	private String crearTextoPedido(Pedido pedido) {
-		StringBuilder texto = new StringBuilder();
-
-		texto.append("Pedido: ").append(pedido.getIdPedido()).append("\n");
-		texto.append("Cliente: ").append(pedido.getCliente().getNickname()).append("\n");
-		texto.append("Estado: ").append(pedido.getEstado()).append("\n");
-		texto.append("Total: ").append(formatearPrecio(pedido.getTotal())).append("\n");
-		texto.append("Código recogida: ").append(obtenerCodigoRecogida(pedido)).append("\n");
-		texto.append("Recogida solicitada: ").append(obtenerTextoRecogidaSolicitada(pedido)).append("\n");
-		texto.append("Fecha creación: ").append(pedido.getFechaCreacion()).append("\n");
-
-		if (pedido.getFechaPreparado() != null) {
-			texto.append("Fecha preparado: ").append(pedido.getFechaPreparado()).append("\n");
-		}
-
-		if (pedido.getFechaEntregado() != null) {
-			texto.append("Fecha entregado: ").append(pedido.getFechaEntregado()).append("\n");
-		}
-
-		texto.append("\nProductos del pedido:\n");
-		texto.append(crearTextoProductosPedido(pedido));
-
-		return texto.toString();
-	}
-
-	private String crearTextoProductosPedido(Pedido pedido) {
-		StringBuilder texto = new StringBuilder();
-
-		if (pedido.getLineas().isEmpty()) {
-			texto.append("Sin productos.");
-			return texto.toString();
-		}
-
-		for (LineaPedido linea : pedido.getLineas()) {
-			ProductoVenta producto = linea.getProducto();
-
-			texto.append("- ");
-			texto.append(producto.getId()).append(" | ");
-			texto.append(producto.getNombre()).append(" | ");
-			texto.append("cantidad: ").append(linea.getCantidad()).append(" | ");
-			texto.append("precio unidad: ").append(formatearPrecio(linea.getPrecioVenta())).append(" | ");
-			texto.append("subtotal: ").append(formatearPrecio(linea.getSubtotal()));
-			texto.append("\n");
-		}
-
-		return texto.toString();
-	}
-
-	private String obtenerCodigoRecogida(Pedido pedido) {
-		if (pedido.getCodigoRecogida() == null || pedido.getCodigoRecogida().isBlank()) {
-			return "-";
-		}
-
-		return pedido.getCodigoRecogida();
-	}
-
-	private String obtenerTextoRecogidaSolicitada(Pedido pedido) {
-		if (pedido.getEstado() != EstadoPedido.PAGADO) {
-			return "-";
-		}
-
-		if (pedido.isRecogida_solicitada()) {
-			return "Sí";
-		}
-
-		return "No";
-	}
-
-	private String formatearPrecio(double precio) {
-		return String.format(Locale.US, "%.2f €", precio).replace('.', ',');
+		return controlador.crearTextoPedido(pedido);
 	}
 
 	private void estilizarTablaPedidos(JTable tabla) {
