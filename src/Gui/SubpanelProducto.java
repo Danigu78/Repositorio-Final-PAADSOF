@@ -6,178 +6,130 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.URL;
 import java.util.List;
-import javax.imageio.ImageIO;
 import productos.ProductoVenta;
 import productos.Reseña;
+import tienda.Tienda;
 import usuarios.Cliente;
 
 /**
- * Subpanel que muestra la información completa de un producto. Se muestra
- * cuando el usuario pulsa "Ver información" en el catálogo. Contiene imagen
- * grande, información del producto, reseñas y botón de añadir al carrito solo
- * si hay cliente logueado. Toda la lógica la delega en ControladorProducto.
+ * Subpanel que muestra la información completa de un producto. Extiende
+ * AbstractPanelSection para reutilizar helpers visuales. Sigue el patrón MVC de
+ * los apuntes.
  *
  * @author Daniel
  * @version 1.0
  */
-public class SubpanelProducto extends JPanel {
+public class SubpanelProducto extends AbstractPanelSection {
 
-	/** Referencia a la ventana principal */
-	private VentanaPrincipal ventana;
-	/** Referencia al carrito para poder volver desde el producto */
 	private SubpanelCarrito subpanelCarrito;
-
-	/** Referencia al subpanel catálogo para volver */
 	private SubpanelCatalogo subpanelCatalogo;
-
-	/** Controlador de este subpanel */
-	private ControladorProducto controlador;
-
-	/** Producto que se está mostrando */
-	private ProductoVenta producto;
-
-	/** Panel donde se muestran las reseñas */
-	private JPanel panelReseñas;
-
 	private SubpanelPedidos subpanelPedidos;
+	private ControladorProducto controlador;
+	private ProductoVenta producto;
+	private Cliente cliente;
 
-	/**
-	 * Constructor del subpanel producto.
-	 *
-	 * @param ventana          La ventana principal
-	 * @param subpanelCatalogo El catálogo para poder volver
-	 */
+	// Botones — atributos para registrar el controlador
+	private JButton botonVolver;
+	private JButton botonAñadir;
+
 	public SubpanelProducto(VentanaPrincipal ventana, SubpanelCatalogo subpanelCatalogo) {
-		this.ventana = ventana;
+		super(ventana);
 		this.subpanelCatalogo = subpanelCatalogo;
-		setLayout(new BorderLayout());
-		setBackground(VentanaPrincipal.COLOR_FONDO);
 	}
 
 	/**
-	 * Carga la información del producto y construye la interfaz. Crea el
-	 * controlador con el cliente actual. Se llama cada vez que el usuario pincha en
-	 * "Ver información".
-	 *
-	 * @param producto            El producto a mostrar
-	 * @param cliente             El cliente logueado o null si es invitado
-	 * @param controladorCatalogo El controlador del catálogo
+	 * Carga el producto y construye la interfaz. Crea el controlador y lo registra
+	 * en los botones.
 	 */
 	public void mostrarProducto(ProductoVenta producto, Cliente cliente, ControladorCatalogo controladorCatalogo) {
 		this.producto = producto;
-		// Creamos el controlador con el cliente — puede ser null si es invitado
+		this.cliente = cliente;
 		this.controlador = new ControladorProducto(this, controladorCatalogo, cliente);
 
 		removeAll();
 		add(crearBarraSuperior(), BorderLayout.NORTH);
-		add(crearPanelCentral(), BorderLayout.CENTER);
-		add(crearPanelReseñas(), BorderLayout.SOUTH);
+
+		JPanel panelCompleto = new JPanel(new BorderLayout());
+		panelCompleto.setBackground(VentanaPrincipal.COLOR_FONDO);
+		panelCompleto.add(crearPanelCentral(), BorderLayout.NORTH);
+		panelCompleto.add(crearPanelReseñas(), BorderLayout.CENTER);
+
+		JScrollPane scrollCompleto = new JScrollPane(panelCompleto);
+		scrollCompleto.setBorder(null);
+		scrollCompleto.getVerticalScrollBar().setUnitIncrement(VentanaPrincipal.escalar(16));
+		scrollCompleto.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollCompleto.getViewport().setBackground(VentanaPrincipal.COLOR_FONDO);
+		add(scrollCompleto, BorderLayout.CENTER);
+
+		setControlador(controlador);
 		revalidate();
 		repaint();
 	}
 
 	/**
-	 * Crea la barra superior con el botón de volver al catálogo.
-	 *
-	 * @return El panel de la barra superior
+	 * Registra el controlador en los botones — patrón de los apuntes.
 	 */
-	private JPanel crearBarraSuperior() {
-		JPanel barra = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		barra.setBackground(VentanaPrincipal.COLOR_PANEL);
-		barra.setBorder(
-				BorderFactory.createMatteBorder(0, 0, VentanaPrincipal.escalar(1), 0, VentanaPrincipal.COLOR_BORDE));
-		String textoVolver;
-		if (subpanelCarrito != null) {
-		    textoVolver = " Volver al carrito";
-		} else if (subpanelPedidos != null) {
-		    textoVolver = " Volver al pedido";
-		} else {
-		    textoVolver = " Volver al catálogo";
+	public void setControlador(ActionListener c) {
+		if (botonVolver != null) {
+			for (ActionListener al : botonVolver.getActionListeners())
+				botonVolver.removeActionListener(al);
+			botonVolver.addActionListener(c);
 		}
-		JButton botonVolver = new JButton(textoVolver);
-		botonVolver.setFont(VentanaPrincipal.FUENTE_NORMAL);
-		botonVolver.setForeground(VentanaPrincipal.COLOR_TEXTO);
-		botonVolver.setBackground(VentanaPrincipal.COLOR_BORDE);
-		botonVolver.setOpaque(true);
-		botonVolver.setContentAreaFilled(false);
-		botonVolver.setBorderPainted(true);
-		int grosor = VentanaPrincipal.escalar(2);
-		botonVolver.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createLineBorder(VentanaPrincipal.COLOR_ACENTO, grosor),
-				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(15),
-						VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(15))));
-		botonVolver.setFocusPainted(false);
-		botonVolver.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		botonVolver.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				botonVolver.setForeground(VentanaPrincipal.COLOR_ACENTO);
-			}
+		if (botonAñadir != null) {
+			for (ActionListener al : botonAñadir.getActionListeners())
+				botonAñadir.removeActionListener(al);
+			botonAñadir.addActionListener(c);
+		}
+	}
 
-			@Override
-			public void mouseExited(MouseEvent e) {
-				botonVolver.setForeground(VentanaPrincipal.COLOR_TEXTO);
-			}
-		});
-		botonVolver.addActionListener(e -> controlador.volver());
-		barra.add(botonVolver);
+	private JPanel crearBarraSuperior() {
+		String textoVolver = subpanelCarrito != null ? "← Volver al carrito"
+				: subpanelPedidos != null ? "← Volver al pedido" : "← Volver al catálogo";
 
+		// crearBarraVolver() de AbstractPanelSection
+		JPanel barra = crearBarraVolver(textoVolver);
+		botonVolver = getBotonVolver(barra);
+		botonVolver.setActionCommand("volver");
 		return barra;
 	}
 
-	/**
-	 * Crea el panel central con la imagen a la izquierda y la información del
-	 * producto a la derecha. El botón de añadir al carrito solo aparece si hay
-	 * cliente logueado.
-	 *
-	 * @return El panel central configurado
-	 */
 	private JPanel crearPanelCentral() {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.setBackground(VentanaPrincipal.COLOR_FONDO);
 		panel.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(30),
 				VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(30)));
 
-		// Imagen a la izquierda
 		JLabel labelImagen = new JLabel();
 		labelImagen.setHorizontalAlignment(SwingConstants.CENTER);
 		labelImagen.setPreferredSize(new Dimension(VentanaPrincipal.escalar(300), VentanaPrincipal.escalar(300)));
+		// cargarImagen() de AbstractPanelSection
 		cargarImagen(labelImagen, producto.getImagenRuta(), VentanaPrincipal.escalar(280),
 				VentanaPrincipal.escalar(280));
 		panel.add(labelImagen, BorderLayout.WEST);
 
-		// Info a la derecha
 		JPanel panelInfo = new JPanel();
 		panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.Y_AXIS));
 		panelInfo.setBackground(VentanaPrincipal.COLOR_FONDO);
 		panelInfo.setBorder(BorderFactory.createEmptyBorder(0, VentanaPrincipal.escalar(30), 0, 0));
 
-		// Nombre
 		JLabel labelNombre = new JLabel(producto.getNombre());
 		labelNombre.setFont(VentanaPrincipal.FUENTE_TITULO);
 		labelNombre.setForeground(VentanaPrincipal.COLOR_TEXTO);
 		panelInfo.add(labelNombre);
 		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(15)));
 
-		// Precio
 		JLabel labelPrecio = new JLabel(String.format("%.2f€", producto.getPrecioOficial()));
 		labelPrecio.setFont(new Font("Segoe UI", Font.BOLD, VentanaPrincipal.escalar(24)));
 		labelPrecio.setForeground(VentanaPrincipal.COLOR_ACENTO);
 		panelInfo.add(labelPrecio);
 		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
-		// Stock
-		JLabel labelStock = new JLabel("Stock disponible: " + producto.getStockDisponible());
-		labelStock.setFont(VentanaPrincipal.FUENTE_NORMAL);
-		labelStock.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+		// crearLabel() de AbstractPanelSection
+		JLabel labelStock = crearLabel("Stock disponible: " + producto.getStockDisponible());
 		panelInfo.add(labelStock);
 		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
-		// Descripción
 		JLabel labelDescTitulo = new JLabel("Descripción:");
 		labelDescTitulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
 		labelDescTitulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
@@ -189,7 +141,6 @@ public class SubpanelProducto extends JPanel {
 		panelInfo.add(labelDesc);
 		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
-		// Categorías
 		JLabel labelCatTitulo = new JLabel("Categorías:");
 		labelCatTitulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
 		labelCatTitulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
@@ -197,108 +148,76 @@ public class SubpanelProducto extends JPanel {
 
 		String categorias = producto.getCategorias().stream().map(c -> c.getNombre()).reduce((a, b) -> a + ", " + b)
 				.orElse("Sin categoría");
-		JLabel labelCat = new JLabel(categorias);
-		labelCat.setFont(VentanaPrincipal.FUENTE_NORMAL);
-		labelCat.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+		JLabel labelCat = crearLabel(categorias);
 		panelInfo.add(labelCat);
-		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(20)));
+		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
-		// Puntuación media si hay reseñas
 		if (!producto.getReseñas().isEmpty()) {
-			JLabel labelMedia = new JLabel(String.format("Puntuación: %.1f/10", producto.getMediaPuntuacion()));
+			JLabel labelMedia = new JLabel(String.format("⭐ %.1f/10 (%d reseñas)", producto.getMediaPuntuacion(),
+					producto.getReseñas().size()));
 			labelMedia.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
 			labelMedia.setForeground(VentanaPrincipal.COLOR_ACENTO);
 			panelInfo.add(labelMedia);
 			panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		} else {
+			panelInfo.add(crearLabel("Sin reseñas todavía"));
+			panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 		}
 
-		// Botón añadir al carrito — solo si hay cliente logueado
 		if (controlador.hayCliente()) {
-			JButton botonAnadir = new JButton("Añadir al carrito");
-			botonAnadir.setFont(VentanaPrincipal.FUENTE_BOTON);
-			botonAnadir.setBackground(VentanaPrincipal.COLOR_ACENTO);
-			botonAnadir.setForeground(Color.WHITE);
-			botonAnadir.setOpaque(true);
-
-			botonAnadir.setBorderPainted(false);
-			botonAnadir.setFocusPainted(false);
-			botonAnadir.setCursor(new Cursor(Cursor.HAND_CURSOR));
-			botonAnadir.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(10),
-					VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(20)));
-			// Delega en el controlador
-			botonAnadir.addActionListener(e -> seleccionarUnidades());
-			botonAnadir.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mouseEntered(MouseEvent e) {
-					botonAnadir.setBackground(VentanaPrincipal.COLOR_ACENTO.darker());
-				}
-
-				@Override
-				public void mouseExited(MouseEvent e) {
-					botonAnadir.setBackground(VentanaPrincipal.COLOR_ACENTO);
-				}
-			});
-			panelInfo.add(botonAnadir);
+			// crearBotonNaranja() de AbstractPanelSection
+			botonAñadir = crearBotonNaranja("Añadir al carrito");
+			botonAñadir.setActionCommand("añadirCarrito");
+			panelInfo.add(botonAñadir);
 		}
 
 		panel.add(panelInfo, BorderLayout.CENTER);
 		return panel;
 	}
 
-	/**
-	 * Crea el panel inferior con las reseñas del producto.
-	 *
-	 * @return El panel de reseñas con scroll
-	 */
-	private JScrollPane crearPanelReseñas() {
-		panelReseñas = new JPanel();
+	private JPanel crearPanelReseñas() {
+		JPanel panelReseñas = new JPanel();
 		panelReseñas.setLayout(new BoxLayout(panelReseñas, BoxLayout.Y_AXIS));
 		panelReseñas.setBackground(VentanaPrincipal.COLOR_PANEL);
 		panelReseñas.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(15),
 				VentanaPrincipal.escalar(30), VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(30)));
 
-		JLabel labelTitulo = new JLabel("Reseñas");
+		// Título con número de reseñas
+		JLabel labelTitulo = new JLabel("Reseñas (" + producto.getReseñas().size() + ")");
 		labelTitulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
 		labelTitulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
+		labelTitulo.setAlignmentX(Component.LEFT_ALIGNMENT);
 		panelReseñas.add(labelTitulo);
 		panelReseñas.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
-		List<Reseña> reseñas = producto.getReseñas();
-		if (reseñas.isEmpty()) {
-			JLabel labelSinReseñas = new JLabel("Este producto no tiene reseñas todavía.");
-			labelSinReseñas.setFont(VentanaPrincipal.FUENTE_NORMAL);
-			labelSinReseñas.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-			panelReseñas.add(labelSinReseñas);
+		// Lista de reseñas o mensaje vacío
+		if (producto.getReseñas().isEmpty()) {
+			JLabel labelVacio = crearLabel("Este producto no tiene reseñas todavía.");
+			labelVacio.setAlignmentX(Component.LEFT_ALIGNMENT);
+			panelReseñas.add(labelVacio);
 		} else {
-			for (Reseña r : reseñas) {
+			for (Reseña r : producto.getReseñas()) {
 				panelReseñas.add(crearTarjetaReseña(r));
 				panelReseñas.add(Box.createVerticalStrut(VentanaPrincipal.escalar(8)));
 			}
 		}
 
-		JScrollPane scroll = new JScrollPane(panelReseñas);
-		scroll.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, VentanaPrincipal.COLOR_BORDE));
-		scroll.getVerticalScrollBar().setUnitIncrement(VentanaPrincipal.escalar(16));
-		scroll.setPreferredSize(new Dimension(0, VentanaPrincipal.escalar(200)));
-		scroll.getViewport().setBackground(VentanaPrincipal.COLOR_PANEL);
-		return scroll;
+		return panelReseñas;
 	}
 
-	/**
-	 * Crea una tarjeta visual para una reseña.
-	 *
-	 * @param reseña La reseña a mostrar
-	 * @return El panel con la tarjeta
-	 */
 	private JPanel crearTarjetaReseña(Reseña reseña) {
 		JPanel tarjeta = new JPanel(new BorderLayout());
 		tarjeta.setBackground(VentanaPrincipal.COLOR_TARJETA);
+		tarjeta.setAlignmentX(Component.LEFT_ALIGNMENT);
+		tarjeta.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
 		tarjeta.setBorder(
 				BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
 						BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(15),
 								VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(15))));
-
-		JLabel labelCabecera = new JLabel(reseña.getPuntuacion() + "/10  —  " + reseña.getAutor().getNickname());
+		tarjeta.setMaximumSize(new Dimension(Integer.MAX_VALUE, VentanaPrincipal.escalar(80)));
+		JLabel labelCabecera = new JLabel(String.format(" %.1f/10", reseña.getPuntuacion()) + "  —  "
+				+ (reseña.getAutor() != null ? reseña.getAutor().getNickname() : "Anónimo") + "  —  "
+				+ reseña.getFecha());
 		labelCabecera.setFont(VentanaPrincipal.FUENTE_BOTON);
 		labelCabecera.setForeground(VentanaPrincipal.COLOR_ACENTO);
 		tarjeta.add(labelCabecera, BorderLayout.NORTH);
@@ -311,15 +230,12 @@ public class SubpanelProducto extends JPanel {
 		return tarjeta;
 	}
 
-	/**
-	 * Muestra el diálogo para elegir cantidad y llama al controlador.
-	 */
-	private void seleccionarUnidades() {
+	public void seleccionarUnidades() {
 		JSpinner spinnerCantidad = new JSpinner(new SpinnerNumberModel(1, 1, producto.getStockDisponible(), 1));
 		spinnerCantidad.setFont(VentanaPrincipal.FUENTE_NORMAL);
 
 		JPanel panelDialogo = new JPanel(new FlowLayout());
-		panelDialogo.add(new JLabel("Cantidad (máx. " + producto.getStockDisponible() + "):"));
+		panelDialogo.add(crearLabel("Cantidad (máx. " + producto.getStockDisponible() + "):"));
 		panelDialogo.add(spinnerCantidad);
 
 		int opcion = JOptionPane.showConfirmDialog(this, panelDialogo, "Añadir: " + producto.getNombre(),
@@ -327,14 +243,9 @@ public class SubpanelProducto extends JPanel {
 
 		if (opcion == JOptionPane.OK_OPTION) {
 			int cantidad = (int) spinnerCantidad.getValue();
-
 			controlador.añadirAlCarrito(producto, cantidad);
 		}
 	}
-
-	/**
-	 * Vuelve al catálogo. Lo llama el controlador.
-	 */
 
 	public void volver() {
 		if (subpanelCarrito != null) {
@@ -346,52 +257,13 @@ public class SubpanelProducto extends JPanel {
 		}
 	}
 
-	/**
-	 * Muestra un mensaje de éxito. Lo llama el controlador.
-	 *
-	 * @param mensaje El mensaje a mostrar
-	 */
 	public void mostrarExito(String mensaje) {
-		JOptionPane.showMessageDialog(this, mensaje, "Añadido", JOptionPane.INFORMATION_MESSAGE);
+		mostrarMensaje(mensaje);
 	}
 
-	/**
-	 * Muestra un mensaje de error. Lo llama el controlador.
-	 *
-	 * @param mensaje El mensaje a mostrar
-	 */
+	@Override
 	public void mostrarError(String mensaje) {
 		JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
-	}
-
-	/**
-	 * Carga una imagen desde src/fotos/.
-	 *
-	 * @param label  JLabel donde cargar la imagen
-	 * @param nombre Nombre del archivo
-	 * @param ancho  Ancho deseado
-	 * @param alto   Alto deseado
-	 */
-	private void cargarImagen(JLabel label, String nombre, int ancho, int alto) {
-		try {
-			URL url = getClass().getResource("/fotos/" + nombre);
-			if (url != null) {
-				BufferedImage img = ImageIO.read(url);
-				if (img != null) {
-					Image imgEscalada = img.getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
-					label.setIcon(new ImageIcon(imgEscalada));
-				} else {
-					label.setText("Sin imagen");
-					label.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-				}
-			} else {
-				label.setText("Sin imagen");
-				label.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-			}
-		} catch (IOException e) {
-			label.setText("Sin imagen");
-			label.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-		}
 	}
 
 	public void setSubpanelOrigen(JPanel origen) {

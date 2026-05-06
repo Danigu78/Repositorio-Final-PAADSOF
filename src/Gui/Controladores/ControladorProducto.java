@@ -3,69 +3,63 @@ package Gui.Controladores;
 import Gui.SubpanelProducto;
 import productos.ProductoVenta;
 import usuarios.Cliente;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
- * Controlador del subpanel de detalle de producto. Gestiona la lógica de añadir
- * al carrito.
+ * Controlador del subpanel de detalle de producto.
+ * Implementa ActionListener según el patrón MVC de los apuntes.
  *
  * @author Daniel
  * @version 1.0
  */
-public class ControladorProducto {
+public class ControladorProducto implements ActionListener {
 
-	/** Vista del subpanel producto */
-	private SubpanelProducto vista;
+    private SubpanelProducto vista;
+    private ControladorCatalogo controladorCatalogo;
+    private Cliente cliente;
 
-	/** Controlador del catálogo para añadir al carrito */
-	private ControladorCatalogo controladorCatalogo;
+    public ControladorProducto(SubpanelProducto vista,
+                                ControladorCatalogo controladorCatalogo,
+                                Cliente cliente) {
+        this.vista = vista;
+        this.controladorCatalogo = controladorCatalogo;
+        this.cliente = cliente;
+    }
 
-	/** Cliente actualmente logueado, null si es invitado */
-	private Cliente cliente;
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String cmd = e.getActionCommand();
+        if (cmd.equals("volver")) {
+            volver();
+        } else if (cmd.equals("añadirCarrito")) {
+            vista.seleccionarUnidades();
+        }
+    }
 
-	/**
-	 * Constructor del controlador de producto.
-	 *
-	 * @param vista               El subpanel producto
-	 * @param controladorCatalogo El controlador del catálogo
-	 * @param cliente             El cliente logueado o null si es invitado
-	 */
-	public ControladorProducto(SubpanelProducto vista, ControladorCatalogo controladorCatalogo, Cliente cliente) {
-		this.vista = vista;
-		this.controladorCatalogo = controladorCatalogo;
-		this.cliente = cliente;
-	}
+    public boolean hayCliente() {
+        return cliente != null;
+    }
 
-	/**
-	 * Indica si hay un cliente logueado. Si es false el botón de carrito no debe
-	 * mostrarse.
-	 *
-	 * @return true si hay cliente, false si es invitado
-	 */
-	public boolean hayCliente() {
-		return cliente != null;
-	}
-
-	/**
-     * Añade el producto al carrito del cliente.
-     * Delega en el controlador del catálogo.
-     *
-     * @param producto El producto a añadir
-     * @param cantidad La cantidad a añadir
-     */
     public void añadirAlCarrito(ProductoVenta producto, int cantidad) {
         boolean ok = controladorCatalogo.añadirAlCarrito(producto, cantidad);
         if (ok) {
-            vista.mostrarExito(producto.getNombre() + " x" + cantidad + " añadido al carrito.");
+            vista.mostrarExito(producto.getNombre()
+                + " x" + cantidad + " añadido al carrito.");
             vista.mostrarProducto(producto, cliente, controladorCatalogo);
         } else {
             vista.mostrarError("No se pudo añadir al carrito.");
         }
     }
 
-	/**
-	 * Vuelve al catálogo desde la pantalla de detalle.
-	 */
-	public void volver() {
-		vista.volver();
-	}
+    public boolean yaReseñó(ProductoVenta producto) {
+        if (cliente == null) return false;
+        return producto.getReseñas().stream()
+            .anyMatch(r -> r.getAutor() != null
+                && r.getAutor().getNickname().equals(cliente.getNickname()));
+    }
+
+    public void volver() {
+        vista.volver();
+    }
 }

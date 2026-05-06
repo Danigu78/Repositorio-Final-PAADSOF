@@ -1,79 +1,91 @@
 package Gui.Controladores;
 
 import Gui.SubpanelPedidos;
+import productos.ProductoVenta;
+import productos.Reseña;
 import tienda.GuardadoTienda;
 import tienda.Tienda;
 import usuarios.Cliente;
 import ventas.EstadoPedido;
+import ventas.LineaPedido;
 import ventas.Pedido;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+import excepciones.*;
 
 /**
- * Controlador del subpanel de pedidos. Gestiona la lógica de obtener pedidos y
- * calcular tiempos restantes.
+ * Controlador del subpanel de pedidos. Implementa ActionListener según el
+ * patrón MVC de los apuntes.
  *
  * @author Daniel
  * @version 1.0
  */
-public class ControladorPedidos {
+public class ControladorPedidos implements ActionListener {
 
-	/** Vista del subpanel pedidos */
 	private SubpanelPedidos vista;
-
-	/** Cliente logueado */
 	private Cliente cliente;
-
-	/** Instancia de la tienda */
 	private Tienda tienda;
 
-	/**
-	 * Constructor del controlador de pedidos.
-	 *
-	 * @param vista   El subpanel pedidos
-	 * @param cliente El cliente logueado
-	 */
 	public ControladorPedidos(SubpanelPedidos vista, Cliente cliente) {
 		this.vista = vista;
 		this.cliente = cliente;
 		this.tienda = Tienda.getInstancia();
 	}
 
-	/**
-	 * Devuelve todos los pedidos del cliente ordenados del más reciente al más
-	 * antiguo.
-	 *
-	 * @return Lista de pedidos del cliente
-	 */
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		String cmd = e.getActionCommand();
+		if (cmd.equals("volver")) {
+			vista.mostrarLista();
+		} else if (cmd.startsWith("verPedido:")) {
+			buscarPedidoYEjecutar(cmd.substring(10), p -> vista.verDetallePedido(p));
+		} else if (cmd.startsWith("pagar:")) {
+			buscarPedidoYEjecutar(cmd.substring(6), p -> vista.irAPago(p));
+		} else if (cmd.startsWith("recoger:")) {
+			buscarPedidoYEjecutar(cmd.substring(8), p -> vista.mostrarDialogoRecogida(p));
+		} else if (cmd.startsWith("reseña:")) {
+			buscarProductoYEjecutar(cmd.substring(7), p -> vista.mostrarFormularioReseña(p));
+		}
+	}
+
+	private void buscarPedidoYEjecutar(String id, Consumer<Pedido> accion) {
+		for (Pedido p : cliente.getHistorialPedidos()) {
+			if (p.getIdPedido().equals(id)) {
+				accion.accept(p);
+				return;
+			}
+		}
+	}
+
+	private void buscarProductoYEjecutar(String idProducto, Consumer<ProductoVenta> accion) {
+		for (Pedido p : cliente.getHistorialPedidos()) {
+			for (LineaPedido l : p.getLineas()) {
+				if (l.getProducto().getId().equals(idProducto)) {
+					accion.accept(l.getProducto());
+					return;
+				}
+			}
+		}
+	}
+
 	public List<Pedido> getPedidos() {
 		List<Pedido> todos = new ArrayList<>(cliente.getHistorialPedidos());
-		// Invertimos para mostrar el más reciente primero
 		java.util.Collections.reverse(todos);
 		return todos;
 	}
 
-	/**
-	 * Devuelve los minutos restantes para pagar un pedido pendiente.
-	 *
-	 * @param pedido El pedido pendiente
-	 * @return Minutos restantes o 0 si no está pendiente
-	 */
 	public long getMinutosRestantesPago(Pedido pedido) {
 		if (pedido.getEstado() != EstadoPedido.PENDIENTE_PAGO)
 			return 0;
-		int tiempoMax = tienda.getTiempoMaxPago();
-		LocalDateTime caducidad = pedido.getFechaCreacion().plusMinutes(tiempoMax);
+		LocalDateTime caducidad = pedido.getFechaCreacion().plusMinutes(tienda.getTiempoMaxPago());
 		return Math.max(0, ChronoUnit.MINUTES.between(LocalDateTime.now(), caducidad));
 	}
 
-	/**
-	 * Devuelve un texto descriptivo del estado del pedido.
-	 *
-	 * @param pedido El pedido
-	 * @return Texto del estado
-	 */
 	public String getTextoEstado(Pedido pedido) {
 		switch (pedido.getEstado()) {
 		case PENDIENTE_PAGO:
@@ -91,30 +103,46 @@ public class ControladorPedidos {
 		}
 	}
 
-	/**
-	 * Gestiona la solicitud de recogida y guarda los cambios en el disco.
-	 */
-	public boolean gestionarSolicitudRecogida(Pedido pedido, String codigo) {
-		// 1. Intentamos realizar la acción lógica en el objeto cliente
-		boolean exito = cliente.solicitarRecogidaPedido(codigo);
-
-		if (exito) {
-			// 2. Si tuvo éxito, persistimos el estado de toda la tienda
-			// Usamos la clase que me acabas de pasar
-			GuardadoTienda.guardar(Tienda.getInstancia());
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Indica si el pedido está pendiente de pago y no ha caducado.
-	 *
-	 * @param pedido El pedido
-	 * @return true si está pendiente de pago
-	 */
 	public boolean estaPendientePago(Pedido pedido) {
 		return pedido.getEstado() == EstadoPedido.PENDIENTE_PAGO && !pedido.isCaducado();
+	}
+
+	public boolean gestionarSolicitudRecogida(Pedido pedido, String codigo) {
+		boolean exito = cliente.solicitarRecogidaPedido(codigo);
+		if (exito)
+			GuardadoTienda.guardar(Tienda.getInstancia());
+		return exito;
+	}
+
+	
+	public boolean escribirReseña(ProductoVenta producto, int pts, String comentario) {
+		try {
+			boolean ok = cliente.escribirReseña(producto, pts, comentario);
+			
+			if (ok) {
+				GuardadoTienda.guardar(tienda);
+				
+			}
+			return ok;
+		} catch (ReseñaDuplicadaException e) {
+			vista.mostrarError("Ya has escrito una reseña para este producto.");
+			return false;
+		} catch (Exception e) {
+			vista.mostrarError("Error: " + e.getMessage());
+			return false;
+		}
+	}
+
+	public boolean yaReseñó(ProductoVenta producto) {
+	    for (Reseña r : producto.getReseñas()) {
+	        if (r.getAutor() != null && r.getAutor().getNickname().equals(cliente.getNickname())) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
+
+	public Cliente getCliente() {
+		return cliente;
 	}
 }

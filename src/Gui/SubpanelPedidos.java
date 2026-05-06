@@ -6,11 +6,7 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.URL;
 import java.util.List;
-import javax.imageio.ImageIO;
 import productos.ProductoVenta;
 import usuarios.Cliente;
 import ventas.EstadoPedido;
@@ -19,15 +15,14 @@ import ventas.Pedido;
 import tienda.*;
 
 /**
- * Subpanel de mis pedidos de CheckPoint. Reutiliza el mismo estilo de tarjetas
- * que SubpanelCarrito.
+ * Subpanel de mis pedidos de CheckPoint. Extiende AbstractPanelSection para
+ * reutilizar helpers visuales. Sigue el patrón MVC de los apuntes.
  *
  * @author Daniel
  * @version 1.0
  */
-public class SubpanelPedidos extends JPanel {
+public class SubpanelPedidos extends AbstractPanelSection {
 
-	private VentanaPrincipal ventana;
 	private Cliente cliente;
 	private ControladorPedidos controlador;
 	private CardLayout cardLayout;
@@ -36,16 +31,10 @@ public class SubpanelPedidos extends JPanel {
 	private SubpanelProducto subpanelProducto;
 	private JPanel panelDetallePedido;
 	private PanelCliente panelCliente;
+	private JButton botonVolverDetalle;
 
-	/**
-	 * Constructor del subpanel de pedidos.
-	 *
-	 * @param ventana La ventana principal
-	 */
 	public SubpanelPedidos(VentanaPrincipal ventana) {
-		this.ventana = ventana;
-		setLayout(new BorderLayout());
-		setBackground(VentanaPrincipal.COLOR_FONDO);
+		super(ventana);
 
 		cardLayout = new CardLayout();
 		panelContenido = new JPanel(cardLayout);
@@ -64,11 +53,25 @@ public class SubpanelPedidos extends JPanel {
 		cardLayout.show(panelContenido, "LISTA");
 	}
 
-	/**
-	 * Crea el panel con título y lista de pedidos con scroll.
-	 *
-	 * @return Panel de lista
-	 */
+	public void actualizar(Cliente cliente) {
+		this.cliente = cliente;
+		Tienda.getInstancia().getComprobadorTiempos().revisarCarritosCaducados();
+		Tienda.getInstancia().getComprobadorTiempos().revisarPedidosPendientesCaducados();
+		this.controlador = new ControladorPedidos(this, cliente);
+		rellenarLista();
+		cardLayout.show(panelContenido, "LISTA");
+	}
+
+	public void mostrarLista() {
+		rellenarLista();
+		cardLayout.show(panelContenido, "LISTA");
+	}
+
+	public void irAPago(Pedido pedido) {
+		if (panelCliente != null)
+			panelCliente.mostrarPago(pedido, cliente);
+	}
+
 	private JPanel crearPanelLista() {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.setBackground(VentanaPrincipal.COLOR_FONDO);
@@ -94,15 +97,27 @@ public class SubpanelPedidos extends JPanel {
 		return panel;
 	}
 
-	/**
-	 * Crea una tarjeta para un pedido — mismo estilo que las tarjetas del carrito.
-	 * Contiene id, estado, total, tiempo restante y botones.
-	 *
-	 * @param pedido El pedido a mostrar
-	 * @return Panel con la tarjeta
-	 */
+	private void rellenarLista() {
+		panelListaPedidos.removeAll();
+		List<Pedido> pedidos = controlador.getPedidos();
+		if (pedidos.isEmpty()) {
+			JLabel labelVacio = new JLabel("No tienes pedidos todavía.");
+			labelVacio.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
+			labelVacio.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+			labelVacio.setAlignmentX(Component.LEFT_ALIGNMENT);
+			panelListaPedidos.add(labelVacio);
+		} else {
+			for (Pedido p : pedidos) {
+				JPanel tarjeta = crearTarjetaPedido(p);
+				tarjeta.setAlignmentX(Component.LEFT_ALIGNMENT);
+				panelListaPedidos.add(tarjeta);
+			}
+		}
+		panelListaPedidos.revalidate();
+		panelListaPedidos.repaint();
+	}
+
 	private JPanel crearTarjetaPedido(Pedido pedido) {
-		// Mismo layout y estilo que crearTarjetaProducto en SubpanelCarrito
 		JPanel tarjeta = new JPanel(new BorderLayout(VentanaPrincipal.escalar(15), 0));
 		tarjeta.setBackground(VentanaPrincipal.COLOR_TARJETA);
 		tarjeta.setMaximumSize(new Dimension(Integer.MAX_VALUE, VentanaPrincipal.escalar(120)));
@@ -111,7 +126,6 @@ public class SubpanelPedidos extends JPanel {
 				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(12), VentanaPrincipal.escalar(15),
 						VentanaPrincipal.escalar(12), VentanaPrincipal.escalar(15))));
 
-		// Info central — mismo GridBagLayout que en carrito
 		JPanel panelInfo = new JPanel(new GridBagLayout());
 		panelInfo.setBackground(VentanaPrincipal.COLOR_TARJETA);
 
@@ -123,28 +137,24 @@ public class SubpanelPedidos extends JPanel {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 0;
 
-		// ID del pedido — como el nombre en carrito
 		JLabel labelId = new JLabel(pedido.getIdPedido());
 		labelId.setFont(VentanaPrincipal.FUENTE_BOTON);
 		labelId.setForeground(VentanaPrincipal.COLOR_TEXTO);
 		gbc.gridy = 0;
 		panelInfo.add(labelId, gbc);
 
-		// Estado — como la descripción en carrito
 		JLabel labelEstado = new JLabel(controlador.getTextoEstado(pedido));
 		labelEstado.setFont(VentanaPrincipal.FUENTE_PEQUENA);
 		labelEstado.setForeground(getColorEstado(pedido.getEstado()));
 		gbc.gridy = 1;
 		panelInfo.add(labelEstado, gbc);
 
-		// Total — como el precio en carrito
 		JLabel labelTotal = new JLabel(String.format("Total: %.2f€", pedido.getTotal()));
 		labelTotal.setFont(VentanaPrincipal.FUENTE_NORMAL);
 		labelTotal.setForeground(VentanaPrincipal.COLOR_ACENTO);
 		gbc.gridy = 2;
 		panelInfo.add(labelTotal, gbc);
 
-		// Tiempo restante si está pendiente
 		if (controlador.estaPendientePago(pedido)) {
 			long minutos = controlador.getMinutosRestantesPago(pedido);
 			JLabel labelTiempo = new JLabel(minutos <= 5 ? "⚠ Solo quedan " + minutos + " min para pagar"
@@ -157,7 +167,6 @@ public class SubpanelPedidos extends JPanel {
 
 		tarjeta.add(panelInfo, BorderLayout.CENTER);
 
-		// Botones derecha — mismo estilo que en carrito
 		JPanel panelBotones = new JPanel(new GridBagLayout());
 		panelBotones.setBackground(VentanaPrincipal.COLOR_TARJETA);
 
@@ -166,39 +175,24 @@ public class SubpanelPedidos extends JPanel {
 		gbcB.fill = GridBagConstraints.HORIZONTAL;
 		gbcB.insets = new Insets(VentanaPrincipal.escalar(3), 0, VentanaPrincipal.escalar(3), 0);
 
-		JButton botonVer = crearBotonSecundario("Ver pedido");
-		botonVer.addActionListener(e -> verDetallePedido(pedido));
+		// crearBotonOutline() de AbstractPanelSection
+		JButton botonVer = crearBotonOutline("Ver pedido");
+		botonVer.setActionCommand("verPedido:" + pedido.getIdPedido());
+		botonVer.addActionListener(controlador);
 		gbcB.gridy = 0;
 		panelBotones.add(botonVer, gbcB);
 
 		if (controlador.estaPendientePago(pedido)) {
-			JButton botonPagar = crearBotonPrincipal("Pagar ahora");
-			botonPagar.addActionListener(e -> {
-				if (panelCliente != null) {
-					panelCliente.mostrarPago(pedido, cliente);
-				}
-			});
+			// crearBotonNaranja() de AbstractPanelSection
+			JButton botonPagar = crearBotonNaranja("Pagar ahora");
+			botonPagar.setActionCommand("pagar:" + pedido.getIdPedido());
+			botonPagar.addActionListener(controlador);
 			gbcB.gridy = 1;
 			panelBotones.add(botonPagar, gbcB);
 		} else if (pedido.getEstado() == EstadoPedido.LISTO_PARA_RECOGER && !pedido.isRecogida_solicitada()) {
-			JButton botonRecoger = crearBotonPrincipal("Solicitar recogida");
-
-			botonRecoger.addActionListener(e -> {
-				String codigo = JOptionPane.showInputDialog(this,
-						"Introduce el código de recogida para el pedido: " + pedido.getIdPedido(), "Confirmar Recogida",
-						JOptionPane.QUESTION_MESSAGE);
-
-				if (codigo != null && !codigo.trim().isEmpty()) {
-					if (controlador.gestionarSolicitudRecogida(pedido, codigo)) {
-						JOptionPane.showMessageDialog(this, "¡Solicitud enviada! Ya puedes pasar a por tu pedido.");
-						actualizar(cliente);
-					} else {
-						JOptionPane.showMessageDialog(this, "El código no coincide o el pedido no es válido.",
-								"Error de validación", JOptionPane.ERROR_MESSAGE);
-					}
-				}
-			});
-
+			JButton botonRecoger = crearBotonNaranja("Solicitar recogida");
+			botonRecoger.setActionCommand("recoger:" + pedido.getIdPedido());
+			botonRecoger.addActionListener(controlador);
 			gbcB.gridy = 1;
 			panelBotones.add(botonRecoger, gbcB);
 		}
@@ -207,57 +201,24 @@ public class SubpanelPedidos extends JPanel {
 		return tarjeta;
 	}
 
-	/**
-	 * Muestra el detalle completo de un pedido con sus líneas. Reutiliza el mismo
-	 * estilo de barra superior que SubpanelProducto.
-	 *
-	 * @param pedido El pedido a mostrar
-	 */
-	private void verDetallePedido(Pedido pedido) {
+	public void verDetallePedido(Pedido pedido) {
 		panelDetallePedido.removeAll();
 		panelDetallePedido.setLayout(new BorderLayout());
 		panelDetallePedido.setBackground(VentanaPrincipal.COLOR_FONDO);
 
-		// Barra superior — mismo estilo que SubpanelProducto
-		JPanel barra = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		barra.setBackground(VentanaPrincipal.COLOR_PANEL);
-		barra.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, VentanaPrincipal.COLOR_BORDE));
-
-		JButton botonVolver = new JButton("← Volver a mis pedidos");
-		botonVolver.setFont(VentanaPrincipal.FUENTE_NORMAL);
-		botonVolver.setForeground(VentanaPrincipal.COLOR_TEXTO);
-		botonVolver.setBackground(VentanaPrincipal.COLOR_PANEL);
-		botonVolver.setOpaque(true);
-		botonVolver.setBorderPainted(true);
-		botonVolver.setFocusPainted(false);
-		botonVolver.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		botonVolver.setBorder(
-				BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_ACENTO),
-						BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(15),
-								VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(15))));
-		botonVolver.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				botonVolver.setForeground(VentanaPrincipal.COLOR_ACENTO);
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				botonVolver.setForeground(VentanaPrincipal.COLOR_TEXTO);
-			}
-		});
-		botonVolver.addActionListener(e -> cardLayout.show(panelContenido, "LISTA"));
-		barra.add(botonVolver);
+		// crearBarraVolver() de AbstractPanelSection
+		JPanel barra = crearBarraVolver("← Volver a mis pedidos");
+		botonVolverDetalle = getBotonVolver(barra);
+		botonVolverDetalle.setActionCommand("volver");
+		botonVolverDetalle.addActionListener(controlador);
 		panelDetallePedido.add(barra, BorderLayout.NORTH);
 
-		// Contenido
 		JPanel contenido = new JPanel();
 		contenido.setLayout(new BoxLayout(contenido, BoxLayout.Y_AXIS));
 		contenido.setBackground(VentanaPrincipal.COLOR_FONDO);
 		contenido.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(20),
 				VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(20)));
 
-		// Cabecera
 		JLabel labelId = new JLabel(pedido.getIdPedido());
 		labelId.setFont(VentanaPrincipal.FUENTE_TITULO);
 		labelId.setForeground(VentanaPrincipal.COLOR_TEXTO);
@@ -291,10 +252,10 @@ public class SubpanelPedidos extends JPanel {
 			contenido.add(labelTiempo);
 			contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
-			JButton botonPagar = crearBotonPrincipal("Pagar ahora");
+			JButton botonPagar = crearBotonNaranja("Pagar ahora");
 			botonPagar.setAlignmentX(Component.LEFT_ALIGNMENT);
-			botonPagar.addActionListener(e -> JOptionPane.showMessageDialog(this, "Pantalla de pago próximamente.",
-					"En construcción", JOptionPane.INFORMATION_MESSAGE));
+			botonPagar.setActionCommand("pagar:" + pedido.getIdPedido());
+			botonPagar.addActionListener(controlador);
 			contenido.add(botonPagar);
 			contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(15)));
 		}
@@ -305,6 +266,7 @@ public class SubpanelPedidos extends JPanel {
 		contenido.add(sep);
 		contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
+		// crearLabel() de AbstractPanelSection
 		JLabel labelProductosTitulo = new JLabel("Productos:");
 		labelProductosTitulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
 		labelProductosTitulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
@@ -312,9 +274,8 @@ public class SubpanelPedidos extends JPanel {
 		contenido.add(labelProductosTitulo);
 		contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
-		// Líneas del pedido — mismo estilo que tarjetas del carrito
 		for (LineaPedido linea : pedido.getLineas()) {
-			JPanel fila = crearFilaProducto(linea);
+			JPanel fila = crearFilaProducto(linea, pedido);
 			fila.setAlignmentX(Component.LEFT_ALIGNMENT);
 			contenido.add(fila);
 			contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(8)));
@@ -338,33 +299,24 @@ public class SubpanelPedidos extends JPanel {
 		cardLayout.show(panelContenido, "DETALLE");
 	}
 
-	/**
-	 * Crea una fila para un producto del pedido. Mismo estilo que
-	 * crearTarjetaProducto en SubpanelCarrito.
-	 *
-	 * @param linea La línea del pedido
-	 * @return Panel con la fila
-	 */
-	private JPanel crearFilaProducto(LineaPedido linea) {
+	private JPanel crearFilaProducto(LineaPedido linea, Pedido pedido) {
 		ProductoVenta producto = linea.getProducto();
 
-		// Mismo layout que tarjeta del carrito
 		JPanel fila = new JPanel(new BorderLayout(VentanaPrincipal.escalar(15), 0));
 		fila.setBackground(VentanaPrincipal.COLOR_TARJETA);
-		fila.setMaximumSize(new Dimension(Integer.MAX_VALUE, VentanaPrincipal.escalar(100)));
+		fila.setMaximumSize(new Dimension(Integer.MAX_VALUE, VentanaPrincipal.escalar(110)));
 		fila.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createMatteBorder(0, 0, 1, 0, VentanaPrincipal.COLOR_BORDE),
 				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(15),
 						VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(15))));
 
-		// Imagen — mismo tamaño que en carrito
 		JLabel labelImagen = new JLabel();
 		labelImagen.setHorizontalAlignment(SwingConstants.CENTER);
 		labelImagen.setPreferredSize(new Dimension(VentanaPrincipal.escalar(80), VentanaPrincipal.escalar(80)));
+		// cargarImagen() de AbstractPanelSection
 		cargarImagen(labelImagen, producto.getImagenRuta(), VentanaPrincipal.escalar(70), VentanaPrincipal.escalar(70));
 		fila.add(labelImagen, BorderLayout.WEST);
 
-		// Info — mismo GridBagLayout que en carrito
 		JPanel panelInfo = new JPanel(new GridBagLayout());
 		panelInfo.setBackground(VentanaPrincipal.COLOR_TARJETA);
 
@@ -397,7 +349,6 @@ public class SubpanelPedidos extends JPanel {
 
 		fila.add(panelInfo, BorderLayout.CENTER);
 
-		// Botones derecha — mismo estilo que en carrito
 		JPanel panelBotones = new JPanel(new GridBagLayout());
 		panelBotones.setBackground(VentanaPrincipal.COLOR_TARJETA);
 
@@ -406,20 +357,99 @@ public class SubpanelPedidos extends JPanel {
 		gbcB.fill = GridBagConstraints.HORIZONTAL;
 		gbcB.insets = new Insets(VentanaPrincipal.escalar(3), 0, VentanaPrincipal.escalar(3), 0);
 
-		JButton botonVerProducto = crearBotonSecundario("Ver producto");
+		// crearBotonOutline() de AbstractPanelSection
+		JButton botonVerProducto = crearBotonOutline("Ver producto");
 		botonVerProducto.addActionListener(e -> verProducto(producto));
 		gbcB.gridy = 0;
 		panelBotones.add(botonVerProducto, gbcB);
+
+		if (pedido.getEstado() == EstadoPedido.ENTREGADO) {
+			if (!controlador.yaReseñó(producto)) {
+				// crearBotonNaranja() de AbstractPanelSection
+				JButton botonReseña = crearBotonNaranja("Escribir reseña");
+				botonReseña.setActionCommand("reseña:" + producto.getId());
+				botonReseña.addActionListener(controlador);
+				gbcB.gridy = 1;
+				panelBotones.add(botonReseña, gbcB);
+			} else {
+				JLabel labelYa = new JLabel("✓ Reseñado");
+				labelYa.setFont(VentanaPrincipal.FUENTE_PEQUENA);
+				labelYa.setForeground(new Color(50, 150, 50));
+				labelYa.setHorizontalAlignment(SwingConstants.CENTER);
+				gbcB.gridy = 1;
+				panelBotones.add(labelYa, gbcB);
+			}
+		}
 
 		fila.add(panelBotones, BorderLayout.EAST);
 		return fila;
 	}
 
-	/**
-	 * Navega al detalle del producto.
-	 *
-	 * @param producto El producto a mostrar
-	 */
+	public void mostrarDialogoRecogida(Pedido pedido) {
+		String codigo = JOptionPane.showInputDialog(this,
+				"Introduce el código de recogida para el pedido: " + pedido.getIdPedido(), "Confirmar Recogida",
+				JOptionPane.QUESTION_MESSAGE);
+
+		if (codigo != null && !codigo.trim().isEmpty()) {
+			if (controlador.gestionarSolicitudRecogida(pedido, codigo)) {
+				mostrarMensaje("¡Solicitud enviada! Ya puedes pasar a por tu pedido.");
+				actualizar(cliente);
+			} else {
+				mostrarError("El código no coincide o el pedido no es válido.");
+			}
+		}
+	}
+
+	public void mostrarFormularioReseña(ProductoVenta producto) {
+	    // SpinnerNumberModel con int — porque Cliente.escribirReseña recibe int
+	    JSpinner spinnerPuntuacion = new JSpinner(
+	        new SpinnerNumberModel(5, 0, 10, 1));
+	    spinnerPuntuacion.setFont(VentanaPrincipal.FUENTE_NORMAL);
+
+	    JTextArea areaComentario = crearArea();
+	    areaComentario.setRows(4);
+
+	    JPanel panelForm = new JPanel(new GridBagLayout());
+	    GridBagConstraints gbc = new GridBagConstraints();
+	    gbc.gridx = 0;
+	    gbc.fill = GridBagConstraints.HORIZONTAL;
+	    gbc.weightx = 1;
+	    gbc.insets = new Insets(VentanaPrincipal.escalar(5), 0,
+	        VentanaPrincipal.escalar(5), 0);
+
+	    gbc.gridy = 0;
+	    panelForm.add(crearLabel("Producto: " + producto.getNombre()), gbc);
+	    gbc.gridy = 1;
+	    panelForm.add(crearLabel("Puntuación (0-10):"), gbc);
+	    gbc.gridy = 2;
+	    panelForm.add(spinnerPuntuacion, gbc);
+	    gbc.gridy = 3;
+	    panelForm.add(crearLabel("Comentario:"), gbc);
+	    gbc.gridy = 4;
+	    panelForm.add(new JScrollPane(areaComentario), gbc);
+
+	    int opcion = JOptionPane.showConfirmDialog(
+	        this, panelForm, "Escribir reseña",
+	        JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+	    if (opcion == JOptionPane.OK_OPTION) {
+	        String comentario = areaComentario.getText().trim();
+	        if (comentario.isBlank()) {
+	            mostrarError("El comentario no puede estar vacío.");
+	            return;
+	        }
+	        // Cogemos el valor como int
+	        int puntuacion = (int) spinnerPuntuacion.getValue();
+	        boolean ok = controlador.escribirReseña(producto, puntuacion, comentario);
+	        if (ok) {
+	            mostrarMensaje("¡Reseña publicada correctamente!");
+	            actualizar(cliente);
+	        } else {
+	            mostrarError("No se pudo publicar la reseña.");
+	        }
+	    }
+	}
+
 	private void verProducto(ProductoVenta producto) {
 		ControladorCatalogo controladorCatalogo = new ControladorCatalogo(cliente, null);
 		subpanelProducto.setSubpanelOrigen(this);
@@ -427,19 +457,10 @@ public class SubpanelPedidos extends JPanel {
 		cardLayout.show(panelContenido, "PRODUCTO");
 	}
 
-	/**
-	 * Vuelve al detalle del pedido desde la pantalla de producto.
-	 */
 	public void volverDelProducto() {
 		cardLayout.show(panelContenido, "DETALLE");
 	}
 
-	/**
-	 * Devuelve el color del estado del pedido.
-	 *
-	 * @param estado El estado del pedido
-	 * @return El color asociado
-	 */
 	private Color getColorEstado(EstadoPedido estado) {
 		switch (estado) {
 		case PENDIENTE_PAGO:
@@ -457,112 +478,12 @@ public class SubpanelPedidos extends JPanel {
 		}
 	}
 
-	/**
-	 * Actualiza el subpanel con los pedidos del cliente.
-	 *
-	 * @param cliente El cliente logueado
-	 */
-	public void actualizar(Cliente cliente) {
-		this.cliente = cliente;
-
-		Tienda.getInstancia().getComprobadorTiempos().revisarCarritosCaducados();
-		Tienda.getInstancia().getComprobadorTiempos().revisarPedidosPendientesCaducados();
-
-		this.controlador = new ControladorPedidos(this, cliente);
-
-		panelListaPedidos.removeAll();
-
-		List<Pedido> pedidos = controlador.getPedidos();
-		if (pedidos.isEmpty()) {
-			JLabel labelVacio = new JLabel("No tienes pedidos todavía.");
-			labelVacio.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
-			labelVacio.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-			labelVacio.setAlignmentX(Component.LEFT_ALIGNMENT);
-			panelListaPedidos.add(labelVacio);
-		} else {
-			for (Pedido p : pedidos) {
-				JPanel tarjeta = crearTarjetaPedido(p);
-				tarjeta.setAlignmentX(Component.LEFT_ALIGNMENT);
-				panelListaPedidos.add(tarjeta);
-			}
-		}
-
-		panelListaPedidos.revalidate();
-		panelListaPedidos.repaint();
-		cardLayout.show(panelContenido, "LISTA");
-	}
-
-	/**
-	 * Carga una imagen desde src/fotos/.
-	 *
-	 * @param label  JLabel donde cargar la imagen
-	 * @param nombre Nombre del archivo
-	 * @param ancho  Ancho deseado
-	 * @param alto   Alto deseado
-	 */
-	private void cargarImagen(JLabel label, String nombre, int ancho, int alto) {
-		try {
-			URL url = getClass().getResource("/fotos/" + nombre);
-			if (url != null) {
-				BufferedImage img = ImageIO.read(url);
-				if (img != null) {
-					Image imgEscalada = img.getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
-					label.setIcon(new ImageIcon(imgEscalada));
-				} else {
-					label.setText("Sin imagen");
-					label.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-				}
-			} else {
-				label.setText("Sin imagen");
-				label.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-			}
-		} catch (IOException e) {
-			label.setText("Sin imagen");
-			label.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-		}
-	}
-
-	private JButton crearBotonPrincipal(String texto) {
-		JButton boton = new JButton(texto);
-		boton.setFont(VentanaPrincipal.FUENTE_BOTON);
-		boton.setBackground(VentanaPrincipal.COLOR_ACENTO);
-		boton.setForeground(Color.WHITE);
-		boton.setOpaque(true);
-		boton.setBorderPainted(false);
-		boton.setFocusPainted(false);
-		boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		boton.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(15),
-				VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(15)));
-		boton.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				boton.setBackground(VentanaPrincipal.COLOR_ACENTO.darker());
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				boton.setBackground(VentanaPrincipal.COLOR_ACENTO);
-			}
-		});
-		return boton;
-	}
-
-	private JButton crearBotonSecundario(String texto) {
-		JButton boton = new JButton(texto);
-		boton.setFont(VentanaPrincipal.FUENTE_BOTON);
-		boton.setBackground(VentanaPrincipal.COLOR_PANEL);
-		boton.setForeground(VentanaPrincipal.COLOR_ACENTO);
-		boton.setBorderPainted(true);
-		boton.setFocusPainted(false);
-		boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		boton.setBorder(
-				BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_ACENTO),
-						BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(12),
-								VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(12))));
-		return boton;
-	}
-
 	public void setPanelCliente(PanelCliente panelCliente) {
 		this.panelCliente = panelCliente;
+	}
+	@Override
+	public void mostrarError(String mensaje) {
+	    JOptionPane.showMessageDialog(this, mensaje, "Error",
+	        JOptionPane.ERROR_MESSAGE);
 	}
 }

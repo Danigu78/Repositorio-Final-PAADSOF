@@ -6,153 +6,141 @@ import tienda.Tienda;
 import usuarios.Cliente;
 import ventas.Carrito;
 import ventas.LineaCarrito;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Controlador del subpanel del carrito. Gestiona la lógica del carrito activo:
- * obtener líneas, eliminar productos, cambiar cantidades, calcular totales y
- * reservar.
+ * Controlador del subpanel del carrito.
+ * Implementa ActionListener según el patrón MVC de los apuntes.
  *
  * @author Daniel
  * @version 1.0
  */
-public class ControladorCarrito {
+public class ControladorCarrito implements ActionListener {
 
-	/** Vista del subpanel carrito */
-	private SubpanelCarrito vista;
+    private SubpanelCarrito vista;
+    private Cliente cliente;
+    private Tienda tienda;
 
-	/** Cliente logueado */
-	private Cliente cliente;
+    public ControladorCarrito(SubpanelCarrito vista, Cliente cliente) {
+        this.vista = vista;
+        this.cliente = cliente;
+        this.tienda = Tienda.getInstancia();
+    }
 
-	/** Instancia de la tienda */
-	private Tienda tienda;
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String cmd = e.getActionCommand();
+        if (cmd.equals("tramitar")) {
+            tramitar();
+        } else if (cmd.startsWith("eliminar:")) {
+            String idProducto = cmd.substring(9);
+            eliminarProductoPorId(idProducto);
+        } else if (cmd.startsWith("ver:")) {
+            String idProducto = cmd.substring(4);
+            vista.verProductoPorId(idProducto);
+        }
+    }
 
-	/**
-	 * Constructor del controlador del carrito.
-	 *
-	 * @param vista   El subpanel carrito
-	 * @param cliente El cliente logueado
-	 */
-	public ControladorCarrito(SubpanelCarrito vista, Cliente cliente) {
-		this.vista = vista;
-		this.cliente = cliente;
-		this.tienda = Tienda.getInstancia();
-	}
+    /**
+     * Tramita el pedido mostrando confirmación en la vista.
+     */
+    private void tramitar() {
+        if (carritoVacio()) {
+            vista.mostrarAviso("Tu carrito está vacío.");
+            return;
+        }
+        vista.mostrarConfirmacionTramitar();
+    }
 
-	/**
-	 * Devuelve las líneas del carrito actual del cliente. Si no hay carrito
-	 * devuelve lista vacía.
-	 *
-	 * @return Lista de líneas del carrito
-	 */
-	public List<LineaCarrito> getLineasCarrito() {
-		Carrito carrito = cliente.getCarritoActual();
-		if (carrito == null)
-			return new ArrayList<>();
-		return carrito.getLineas();
-	}
+    /**
+     * Confirma la reserva del carrito — lo llama la vista tras confirmar.
+     */
+    public void confirmarReserva() {
+        boolean ok = cliente.reservarCarrito();
+        if (ok) {
+            vista.mostrarMensaje(
+                "Pedido reservado correctamente.\nVe a Mis Pedidos para pagarlo.");
+            vista.actualizar(cliente);
+        } else {
+            vista.mostrarError("No se pudo reservar el pedido.");
+        }
+    }
 
-	/**
-	 * Devuelve el subtotal del carrito sin descuentos.
-	 *
-	 * @return Subtotal del carrito
-	 */
-	public double getSubtotal() {
-		Carrito carrito = cliente.getCarritoActual();
-		if (carrito == null)
-			return 0;
-		return carrito.calcularSubtotal();
-	}
+    private void eliminarProductoPorId(String id) {
+        for (LineaCarrito l : getLineasCarrito()) {
+            if (l.getProducto().getId().equals(id)) {
+                vista.mostrarConfirmacionEliminar(l.getProducto());
+                return;
+            }
+        }
+    }
 
-	/**
-	 * Devuelve el total del carrito con descuentos aplicados.
-	 *
-	 * @return Total del carrito
-	 */
-	public double getTotal() {
-		Carrito carrito = cliente.getCarritoActual();
-		if (carrito == null)
-			return 0;
-		return carrito.getTotal();
-	}
+    /**
+     * Elimina un producto del carrito — lo llama la vista tras confirmar.
+     */
+    public boolean eliminarProducto(ProductoVenta producto) {
+        Carrito carrito = cliente.getCarritoActual();
+        if (carrito == null) return false;
+        boolean ok = carrito.eliminarProducto(producto);
+        if (ok) vista.actualizar(cliente);
+        return ok;
+    }
 
-	/**
-	 * Devuelve el nombre del descuento aplicado o null si no hay ninguno.
-	 *
-	 * @return Nombre del descuento o null
-	 */
-	public String getDescuento() {
-		Carrito carrito = cliente.getCarritoActual();
-		if (carrito == null || carrito.getDescuentoAplicado() == null)
-			return null;
-		return carrito.getDescuentoAplicado().getNombre();
-	}
+    /**
+     * Cambia la cantidad de un producto en el carrito.
+     */
+    public boolean cambiarCantidad(ProductoVenta producto, int nuevaCantidad) {
+        Carrito carrito = cliente.getCarritoActual();
+        if (carrito == null) return false;
+        boolean ok = carrito.cambiarCantidadProducto(producto, nuevaCantidad);
+        if (ok) vista.actualizar(cliente);
+        return ok;
+    }
 
-	/**
-	 * Devuelve los minutos restantes antes de que caduque el carrito.
-	 *
-	 * @return Minutos restantes
-	 */
-	public long getMinutosRestantesCarrito() {
-		Carrito carrito = cliente.getCarritoActual();
-		if (carrito == null)
-			return 0;
-		int tiempoMax = tienda.getTiempoMaxCarrito();
-		LocalDateTime caducidad = carrito.getFechaCreacion().plusMinutes(tiempoMax);
-		return Math.max(0, ChronoUnit.MINUTES.between(LocalDateTime.now(), caducidad));
-	}
+    public List<LineaCarrito> getLineasCarrito() {
+        Carrito carrito = cliente.getCarritoActual();
+        if (carrito == null) return new ArrayList<>();
+        return carrito.getLineas();
+    }
 
-	/**
-	 * Indica si el carrito está vacío o no existe.
-	 *
-	 * @return true si está vacío
-	 */
-	public boolean carritoVacio() {
-		Carrito carrito = cliente.getCarritoActual();
-		return carrito == null || carrito.estaVacio();
-	}
+    public double getSubtotal() {
+        Carrito carrito = cliente.getCarritoActual();
+        if (carrito == null) return 0;
+        return carrito.calcularSubtotal();
+    }
 
-	/**
-	 * Elimina un producto del carrito y actualiza la vista completa.
-	 *
-	 * @param producto El producto a eliminar
-	 * @return true si se eliminó correctamente
-	 */
-	public boolean eliminarProducto(ProductoVenta producto) {
-		Carrito carrito = cliente.getCarritoActual();
-		if (carrito == null)
-			return false;
-		boolean ok = carrito.eliminarProducto(producto);
-		if (ok)
-			vista.actualizar(cliente);
-		return ok;
-	}
+    public double getTotal() {
+        Carrito carrito = cliente.getCarritoActual();
+        if (carrito == null) return 0;
+        return carrito.getTotal();
+    }
 
-	/**
-	 * Cambia la cantidad de un producto en el carrito y actualiza el resumen.
-	 *
-	 * @param producto      El producto a modificar
-	 * @param nuevaCantidad La nueva cantidad
-	 * @return true si se cambió correctamente
-	 */
-	public boolean cambiarCantidad(ProductoVenta producto, int nuevaCantidad) {
-	    Carrito carrito = cliente.getCarritoActual();
-	    if (carrito == null) return false;
-	    boolean ok = carrito.cambiarCantidadProducto(producto, nuevaCantidad);
-	    // Actualizamos todo el carrito para que se redibuje el subtotal de la tarjeta
-	    if (ok) vista.actualizar(cliente);
-	    return ok;
-	}
+    public String getDescuento() {
+        Carrito carrito = cliente.getCarritoActual();
+        if (carrito == null || carrito.getDescuentoAplicado() == null) return null;
+        return carrito.getDescuentoAplicado().getNombre();
+    }
 
-	/**
-	 * Reserva el carrito convirtiéndolo en pedido pendiente de pago.
-	 *
-	 * @return true si se reservó correctamente
-	 */
-	public boolean reservarCarrito() {
-		return cliente.reservarCarrito();
-	}
+    public long getMinutosRestantesCarrito() {
+        Carrito carrito = cliente.getCarritoActual();
+        if (carrito == null) return 0;
+        LocalDateTime caducidad = carrito.getFechaCreacion()
+            .plusMinutes(tienda.getTiempoMaxCarrito());
+        return Math.max(0, ChronoUnit.MINUTES.between(
+            LocalDateTime.now(), caducidad));
+    }
+
+    public boolean carritoVacio() {
+        Carrito carrito = cliente.getCarritoActual();
+        return carrito == null || carrito.estaVacio();
+    }
+
+    public int getTiempoMaxPago() {
+        return tienda.getTiempoMaxPago();
+    }
 }

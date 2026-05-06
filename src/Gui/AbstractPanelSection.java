@@ -1,6 +1,8 @@
 package Gui;
 
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Locale;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -372,5 +374,154 @@ public abstract class AbstractPanelSection extends JPanel {
 		} catch (Exception e) {
 			return null;
 		}
+	}
+	/**
+	 * Crea un botón de acción naranja con hover — estilo principal.
+	 */
+	protected JButton crearBotonNaranja(String texto) {
+	    JButton boton = new JButton(texto);
+	    boton.setFont(VentanaPrincipal.FUENTE_BOTON);
+	    boton.setBackground(VentanaPrincipal.COLOR_ACENTO);
+	    boton.setForeground(Color.WHITE);
+	    boton.setOpaque(true);
+	    boton.setBorderPainted(false);
+	    boton.setFocusPainted(false);
+	    boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+	    boton.setBorder(BorderFactory.createEmptyBorder(
+	        VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(15),
+	        VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(15)));
+	    boton.addMouseListener(new MouseAdapter() {
+	        @Override
+	        public void mouseEntered(MouseEvent e) {
+	            boton.setBackground(VentanaPrincipal.COLOR_ACENTO.darker());
+	        }
+	        @Override
+	        public void mouseExited(MouseEvent e) {
+	            boton.setBackground(VentanaPrincipal.COLOR_ACENTO);
+	        }
+	    });
+	    return boton;
+	}
+
+	/**
+	 * Crea un botón secundario con borde naranja — estilo outline.
+	 */
+	protected JButton crearBotonOutline(String texto) {
+	    JButton boton = new JButton(texto);
+	    boton.setFont(VentanaPrincipal.FUENTE_BOTON);
+	    boton.setBackground(VentanaPrincipal.COLOR_PANEL);
+	    boton.setForeground(VentanaPrincipal.COLOR_ACENTO);
+	    boton.setBorderPainted(true);
+	    boton.setFocusPainted(false);
+	    boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+	    boton.setBorder(BorderFactory.createCompoundBorder(
+	        BorderFactory.createLineBorder(VentanaPrincipal.COLOR_ACENTO),
+	        BorderFactory.createEmptyBorder(
+	            VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(12),
+	            VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(12))));
+	    return boton;
+	}
+
+	/**
+	 * Crea un botón de volver con borde naranja y hover.
+	 */
+	protected JButton crearBotonVolver(String texto) {
+	    JButton boton = new JButton(texto);
+	    boton.setFont(VentanaPrincipal.FUENTE_NORMAL);
+	    boton.setForeground(VentanaPrincipal.COLOR_TEXTO);
+	    boton.setBackground(VentanaPrincipal.COLOR_PANEL);
+	    boton.setOpaque(true);
+	    boton.setContentAreaFilled(false);
+	    boton.setBorderPainted(true);
+	    boton.setFocusPainted(false);
+	    boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+	    boton.setBorder(BorderFactory.createCompoundBorder(
+	        BorderFactory.createLineBorder(VentanaPrincipal.COLOR_ACENTO,
+	            VentanaPrincipal.escalar(2)),
+	        BorderFactory.createEmptyBorder(
+	            VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(15),
+	            VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(15))));
+	    boton.addMouseListener(new MouseAdapter() {
+	        @Override
+	        public void mouseEntered(MouseEvent e) {
+	            boton.setForeground(VentanaPrincipal.COLOR_ACENTO);
+	        }
+	        @Override
+	        public void mouseExited(MouseEvent e) {
+	            boton.setForeground(VentanaPrincipal.COLOR_TEXTO);
+	        }
+	    });
+	    return boton;
+	}
+
+	/**
+	 * Crea una barra superior con botón volver — estilo común.
+	 */
+	protected JPanel crearBarraVolver(String texto) {
+	    JPanel barra = new JPanel(new FlowLayout(FlowLayout.LEFT));
+	    barra.setBackground(VentanaPrincipal.COLOR_PANEL);
+	    barra.setBorder(BorderFactory.createMatteBorder(
+	        0, 0, 1, 0, VentanaPrincipal.COLOR_BORDE));
+	    JButton boton = crearBotonVolver(texto);
+	    barra.add(boton);
+	    // Devolvemos la barra — el botón se recupera con getBotonVolver()
+	    barra.putClientProperty("botonVolver", boton);
+	    return barra;
+	}
+
+	/**
+	 * Devuelve el botón volver de una barra creada con crearBarraVolver().
+	 */
+	protected JButton getBotonVolver(JPanel barra) {
+	    return (JButton) barra.getClientProperty("botonVolver");
+	}
+
+	/**
+	 * Carga una imagen desde src/fotos/ en un JLabel con tamaño escalado.
+	 */
+	protected void cargarImagen(JLabel label, String nombre, int ancho, int alto) {
+	    try {
+	        java.net.URL url = getClass().getResource("/fotos/" + nombre);
+	        if (url != null) {
+	            java.awt.image.BufferedImage img =
+	                javax.imageio.ImageIO.read(url);
+	            if (img != null) {
+	                java.awt.Image imgEscalada = img.getScaledInstance(
+	                    ancho, alto, java.awt.Image.SCALE_SMOOTH);
+	                label.setIcon(new ImageIcon(imgEscalada));
+	            } else {
+	                label.setText("Sin imagen");
+	                label.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+	            }
+	        } else {
+	            label.setText("Sin imagen");
+	            label.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+	        }
+	    } catch (java.io.IOException e) {
+	        label.setText("Sin imagen");
+	        label.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+	    }
+	}
+	protected JButton crearBotonRojo(String texto) {
+	    JButton boton = new JButton(texto);
+	    boton.setFont(VentanaPrincipal.FUENTE_BOTON);
+	    boton.setBackground(new Color(180, 50, 50));
+	    boton.setForeground(Color.WHITE);
+	    boton.setOpaque(true);
+	    boton.setBorderPainted(false);
+	    boton.setFocusPainted(false);
+	    boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+	    boton.setBorder(BorderFactory.createEmptyBorder(
+	        VentanaPrincipal.escalar(5), VentanaPrincipal.escalar(10),
+	        VentanaPrincipal.escalar(5), VentanaPrincipal.escalar(10)));
+	    boton.addMouseListener(new MouseAdapter() {
+	        @Override public void mouseEntered(MouseEvent e) {
+	            boton.setBackground(new Color(200, 60, 60));
+	        }
+	        @Override public void mouseExited(MouseEvent e) {
+	            boton.setBackground(new Color(180, 50, 50));
+	        }
+	    });
+	    return boton;
 	}
 }
