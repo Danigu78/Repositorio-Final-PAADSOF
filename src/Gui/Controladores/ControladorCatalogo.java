@@ -43,6 +43,13 @@ public class ControladorCatalogo implements ActionListener {
 					return;
 				}
 			}
+
+		} else if (cmd.equals("ordenarNombre")) {
+			vista.ordenarYMostrar(obtenerOrdenadosPorNombre());
+		} else if (cmd.equals("ordenarPrecioAsc")) {
+			vista.ordenarYMostrar(obtenerOrdenadosPorPrecioAsc());
+		} else if (cmd.equals("ordenarPrecioDesc")) {
+			vista.ordenarYMostrar(obtenerOrdenadosPorPrecioDesc());
 		}
 	}
 
@@ -123,6 +130,24 @@ public class ControladorCatalogo implements ActionListener {
 		} catch (Exception e) {
 			return new ArrayList<>();
 		}
+	}
+
+	public List<ProductoVenta> obtenerOrdenadosPorNombre() {
+		List<ProductoVenta> productos = new ArrayList<>(obtenerTodosLosProductos());
+		productos.sort((a, b) -> a.getNombre().compareToIgnoreCase(b.getNombre()));
+		return productos;
+	}
+
+	public List<ProductoVenta> obtenerOrdenadosPorPrecioAsc() {
+		List<ProductoVenta> productos = new ArrayList<>(obtenerTodosLosProductos());
+		productos.sort((a, b) -> Double.compare(a.getPrecioOficial(), b.getPrecioOficial()));
+		return productos;
+	}
+
+	public List<ProductoVenta> obtenerOrdenadosPorPrecioDesc() {
+		List<ProductoVenta> productos = new ArrayList<>(obtenerTodosLosProductos());
+		productos.sort((a, b) -> Double.compare(b.getPrecioOficial(), a.getPrecioOficial()));
+		return productos;
 	}
 
 	/**
