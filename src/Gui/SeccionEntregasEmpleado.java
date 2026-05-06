@@ -1,17 +1,14 @@
 package Gui;
 
 import java.awt.*;
-import java.util.Locale;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
-import productos.ProductoVenta;
-import tienda.Tienda;
+import Gui.Controladores.ControladorEntregasEmpleado;
+import Gui.Controladores.ResultadoOperacion;
 import usuarios.Empleado;
 import ventas.EstadoPedido;
-import ventas.LineaPedido;
 import ventas.Pedido;
 
 /**
@@ -28,9 +25,11 @@ public class SeccionEntregasEmpleado extends AbstractPanelEmpleadoSection {
 	private DefaultTableModel modeloPedidosListos;
 
 	private JTextField campoCodigoRecogida;
+	private ControladorEntregasEmpleado controlador;
 
 	public SeccionEntregasEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
+		this.controlador = new ControladorEntregasEmpleado(empleado);
 		construirUI();
 	}
 
@@ -173,14 +172,10 @@ public class SeccionEntregasEmpleado extends AbstractPanelEmpleadoSection {
 	private void cargarTablaEntregas() {
 		modeloPedidosListos.setRowCount(0);
 
-		for (Pedido pedido : Tienda.getInstancia().getHistorialVentas()) {
-			if (pedido.getEstado() != EstadoPedido.LISTO_PARA_RECOGER) {
-				continue;
-			}
-
+		for (Pedido pedido : controlador.getPedidosListosParaRecoger()) {
 			modeloPedidosListos.addRow(new Object[] { pedido.getIdPedido(), pedido.getCliente().getNickname(),
-					obtenerCodigoRecogida(pedido), pedido.isRecogida_solicitada() ? "Sí" : "No",
-					formatearPrecio(pedido.getTotal()), pedido.getLineas().size() });
+					controlador.obtenerCodigoRecogida(pedido), pedido.isRecogida_solicitada() ? "Sí" : "No",
+					controlador.formatearPrecio(pedido.getTotal()), pedido.getLineas().size() });
 		}
 	}
 
@@ -203,53 +198,19 @@ public class SeccionEntregasEmpleado extends AbstractPanelEmpleadoSection {
 	}
 
 	private void entregarPedido() {
-		String codigo = campoCodigoRecogida.getText().trim();
+		ResultadoOperacion resultado = controlador.entregarPedido(campoCodigoRecogida.getText());
 
-		if (codigo.isBlank()) {
-			mostrarError("Escribe el código de recogida.");
-			return;
-		}
-
-		Pedido pedido = buscarPedidoPorCodigo(codigo);
-
-		if (pedido == null) {
-			mostrarError("No existe ningún pedido con ese código.");
-			return;
-		}
-
-		if (pedido.getEstado() != EstadoPedido.LISTO_PARA_RECOGER) {
-			mostrarError("Este pedido no está listo para recoger.");
-			return;
-		}
-
-		if (!pedido.isRecogida_solicitada()) {
-			mostrarError("El cliente todavía no ha solicitado la recogida.");
-			return;
-		}
-
-		boolean entregado = empleado.entregarPedido(codigo);
-
-		if (entregado) {
+		if (resultado.isExito()) {
 			cargarTablaEntregas();
 			campoCodigoRecogida.setText("");
-			mostrarMensaje("Pedido entregado correctamente.");
+			mostrarMensaje(resultado.getMensaje());
 		} else {
-			mostrarError("No se pudo entregar el pedido.");
+			mostrarError(resultado.getMensaje());
 		}
 	}
 
 	private Pedido buscarPedidoPorCodigo(String codigo) {
-		if (codigo == null || codigo.isBlank()) {
-			return null;
-		}
-
-		for (Pedido pedido : Tienda.getInstancia().getHistorialVentas()) {
-			if (pedido.getCodigoRecogida() != null && pedido.getCodigoRecogida().equalsIgnoreCase(codigo.trim())) {
-				return pedido;
-			}
-		}
-
-		return null;
+		return controlador.buscarPedidoPorCodigo(codigo);
 	}
 
 	private void mostrarPedidoEnVentana(Pedido pedido) {
@@ -265,62 +226,7 @@ public class SeccionEntregasEmpleado extends AbstractPanelEmpleadoSection {
 	}
 
 	private String crearTextoPedido(Pedido pedido) {
-		StringBuilder texto = new StringBuilder();
-
-		texto.append("Pedido: ").append(pedido.getIdPedido()).append("\n");
-		texto.append("Cliente: ").append(pedido.getCliente().getNickname()).append("\n");
-		texto.append("Estado: ").append(pedido.getEstado()).append("\n");
-		texto.append("Total: ").append(formatearPrecio(pedido.getTotal())).append("\n");
-		texto.append("Código recogida: ").append(obtenerCodigoRecogida(pedido)).append("\n");
-		texto.append("Recogida solicitada: ").append(pedido.isRecogida_solicitada() ? "Sí" : "No").append("\n");
-
-		if (pedido.getFechaPreparado() != null) {
-			texto.append("Fecha preparado: ").append(pedido.getFechaPreparado()).append("\n");
-		}
-
-		if (pedido.getFechaEntregado() != null) {
-			texto.append("Fecha entregado: ").append(pedido.getFechaEntregado()).append("\n");
-		}
-
-		texto.append("\nProductos del pedido:\n");
-		texto.append(crearTextoProductosPedido(pedido));
-
-		return texto.toString();
-	}
-
-	private String crearTextoProductosPedido(Pedido pedido) {
-		StringBuilder texto = new StringBuilder();
-
-		if (pedido.getLineas().isEmpty()) {
-			texto.append("Sin productos.");
-			return texto.toString();
-		}
-
-		for (LineaPedido linea : pedido.getLineas()) {
-			ProductoVenta producto = linea.getProducto();
-
-			texto.append("- ");
-			texto.append(producto.getId()).append(" | ");
-			texto.append(producto.getNombre()).append(" | ");
-			texto.append("cantidad: ").append(linea.getCantidad()).append(" | ");
-			texto.append("precio unidad: ").append(formatearPrecio(linea.getPrecioVenta())).append(" | ");
-			texto.append("subtotal: ").append(formatearPrecio(linea.getSubtotal()));
-			texto.append("\n");
-		}
-
-		return texto.toString();
-	}
-
-	private String obtenerCodigoRecogida(Pedido pedido) {
-		if (pedido.getCodigoRecogida() == null || pedido.getCodigoRecogida().isBlank()) {
-			return "-";
-		}
-
-		return pedido.getCodigoRecogida();
-	}
-
-	private String formatearPrecio(double precio) {
-		return String.format(Locale.US, "%.2f €", precio).replace('.', ',');
+		return controlador.crearTextoPedido(pedido);
 	}
 
 	private void estilizarTablaEntregas(JTable tabla) {

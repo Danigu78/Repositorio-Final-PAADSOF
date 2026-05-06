@@ -4,8 +4,9 @@ import java.awt.*;
 
 import javax.swing.*;
 
+import Gui.Controladores.ControladorModificarEmpleado;
+import Gui.Controladores.ResultadoOperacion;
 import productos.ProductoVenta;
-import tienda.Tienda;
 import usuarios.Empleado;
 
 /**
@@ -23,9 +24,11 @@ public class SeccionModificarEmpleado extends AbstractPanelEmpleadoVentaSection 
 	private JTextField campoIdProducto;
 	private JTextArea areaDescripcion;
 	private JTextField campoImagen;
+	private ControladorModificarEmpleado controlador;
 
 	public SeccionModificarEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
+		this.controlador = new ControladorModificarEmpleado(empleado);
 		construirUI();
 	}
 
@@ -176,7 +179,7 @@ public class SeccionModificarEmpleado extends AbstractPanelEmpleadoVentaSection 
 			return null;
 		}
 
-		ProductoVenta producto = Tienda.getInstancia().buscarProductoVentaPorId(idProducto);
+		ProductoVenta producto = controlador.buscarProducto(idProducto);
 
 		if (producto == null) {
 			mostrarError("No existe ningún producto con ese ID.");
@@ -210,13 +213,13 @@ public class SeccionModificarEmpleado extends AbstractPanelEmpleadoVentaSection 
 			return;
 		}
 
-		boolean modificado = empleado.modificarDescripcionProducto(idProducto, descripcion);
+		ResultadoOperacion resultado = controlador.guardarDescripcion(idProducto, descripcion);
 
-		if (modificado) {
+		if (resultado.isExito()) {
 			recargarTablaProductos(selectorProductos.tabla);
-			mostrarMensaje("Descripción guardada correctamente.");
+			mostrarMensaje(resultado.getMensaje());
 		} else {
-			mostrarError("No se pudo guardar la descripción.");
+			mostrarError(resultado.getMensaje());
 		}
 	}
 
@@ -234,13 +237,13 @@ public class SeccionModificarEmpleado extends AbstractPanelEmpleadoVentaSection 
 			return;
 		}
 
-		boolean modificada = empleado.modificarImagenProducto(idProducto, imagen);
+		ResultadoOperacion resultado = controlador.guardarImagen(idProducto, imagen);
 
-		if (modificada) {
+		if (resultado.isExito()) {
 			recargarTablaProductos(selectorProductos.tabla);
-			mostrarMensaje("Imagen guardada correctamente.");
+			mostrarMensaje(resultado.getMensaje());
 		} else {
-			mostrarError("No se pudo guardar la imagen.");
+			mostrarError(resultado.getMensaje());
 		}
 	}
 }

@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.plaf.basic.BasicButtonUI;
 
+import Gui.Controladores.ControladorPanelEmpleado;
 import usuarios.Empleado;
 import usuarios.TipoPermisos;
 
@@ -43,6 +44,7 @@ public class PanelEmpleado extends JPanel {
 	private final VentanaPrincipal ventana;
 
 	private Empleado empleado;
+	private ControladorPanelEmpleado controlador;
 	private CardLayout cardSecciones;
 	private JPanel panelSecciones;
 	private JLabel labelEmpleado;
@@ -61,6 +63,7 @@ public class PanelEmpleado extends JPanel {
 	 */
 	public void actualizarEmpleado(Empleado empleado) {
 		this.empleado = empleado;
+		this.controlador = new ControladorPanelEmpleado(empleado);
 
 		removeAll();
 
@@ -83,7 +86,7 @@ public class PanelEmpleado extends JPanel {
 	 * @return true si hay empleado, no está despedido y tiene sesión iniciada
 	 */
 	private boolean empleadoPuedeVerPanel() {
-		return empleado != null && !empleado.isDespedido() && empleado.isSesionIniciada();
+		return controlador != null && controlador.empleadoPuedeVerPanel();
 	}
 
 	/**
@@ -113,42 +116,42 @@ public class PanelEmpleado extends JPanel {
 	private String cargarSeccionesPermitidas() {
 		String primeraSeccion = null;
 
-		if (empleado.tienePermiso(TipoPermisos.GESTION_STOCK)) {
+		if (controlador.tienePermiso(TipoPermisos.GESTION_STOCK)) {
 			panelSecciones.add(new SeccionStockEmpleado(ventana, empleado), SEC_STOCK);
 			primeraSeccion = primeraSeccion == null ? SEC_STOCK : primeraSeccion;
 		}
 
-		if (empleado.tienePermiso(TipoPermisos.GESTION_CATEGORIAS)) {
+		if (controlador.tienePermiso(TipoPermisos.GESTION_CATEGORIAS)) {
 			panelSecciones.add(new SeccionCategoriasEmpleado(ventana, empleado), SEC_CATEGORIAS);
 			primeraSeccion = primeraSeccion == null ? SEC_CATEGORIAS : primeraSeccion;
 		}
 
-		if (empleado.tienePermiso(TipoPermisos.GESTION_PACKS)) {
+		if (controlador.tienePermiso(TipoPermisos.GESTION_PACKS)) {
 			panelSecciones.add(new SeccionPacksEmpleado(ventana, empleado), SEC_PACKS);
 			primeraSeccion = primeraSeccion == null ? SEC_PACKS : primeraSeccion;
 		}
 
-		if (empleado.tienePermiso(TipoPermisos.MODIFICAR_PRODUCTO)) {
+		if (controlador.tienePermiso(TipoPermisos.MODIFICAR_PRODUCTO)) {
 			panelSecciones.add(new SeccionModificarEmpleado(ventana, empleado), SEC_MODIFICAR);
 			primeraSeccion = primeraSeccion == null ? SEC_MODIFICAR : primeraSeccion;
 		}
 
-		if (empleado.tienePermiso(TipoPermisos.GESTION_PEDIDOS)) {
+		if (controlador.tienePermiso(TipoPermisos.GESTION_PEDIDOS)) {
 			panelSecciones.add(new SeccionPedidosEmpleado(ventana, empleado), SEC_PEDIDOS);
 			primeraSeccion = primeraSeccion == null ? SEC_PEDIDOS : primeraSeccion;
 		}
 
-		if (empleado.tienePermiso(TipoPermisos.ENTREGA_PEDIDOS)) {
+		if (controlador.tienePermiso(TipoPermisos.ENTREGA_PEDIDOS)) {
 			panelSecciones.add(new SeccionEntregasEmpleado(ventana, empleado), SEC_ENTREGA);
 			primeraSeccion = primeraSeccion == null ? SEC_ENTREGA : primeraSeccion;
 		}
 
-		if (empleado.tienePermiso(TipoPermisos.VALORACION_PRODUCTOS)) {
+		if (controlador.tienePermiso(TipoPermisos.VALORACION_PRODUCTOS)) {
 			panelSecciones.add(new SeccionTasacionEmpleado(ventana, empleado), SEC_TASACION);
 			primeraSeccion = primeraSeccion == null ? SEC_TASACION : primeraSeccion;
 		}
 
-		if (empleado.tienePermiso(TipoPermisos.CONFIRMACION_INTERCAMBIO)) {
+		if (controlador.tienePermiso(TipoPermisos.CONFIRMACION_INTERCAMBIO)) {
 			panelSecciones.add(new SeccionIntercambiosEmpleado(ventana, empleado), SEC_INTERCAMBIOS);
 			primeraSeccion = primeraSeccion == null ? SEC_INTERCAMBIOS : primeraSeccion;
 		}
@@ -184,35 +187,35 @@ public class PanelEmpleado extends JPanel {
 
 		botonActivo = null;
 
-		if (empleado.tienePermiso(TipoPermisos.GESTION_STOCK)) {
+		if (controlador.tienePermiso(TipoPermisos.GESTION_STOCK)) {
 			agregarPestana(panelPestanas, "Stock", SEC_STOCK);
 		}
 
-		if (empleado.tienePermiso(TipoPermisos.GESTION_CATEGORIAS)) {
+		if (controlador.tienePermiso(TipoPermisos.GESTION_CATEGORIAS)) {
 			agregarPestana(panelPestanas, "Categorías", SEC_CATEGORIAS);
 		}
 
-		if (empleado.tienePermiso(TipoPermisos.GESTION_PACKS)) {
+		if (controlador.tienePermiso(TipoPermisos.GESTION_PACKS)) {
 			agregarPestana(panelPestanas, "Packs", SEC_PACKS);
 		}
 
-		if (empleado.tienePermiso(TipoPermisos.MODIFICAR_PRODUCTO)) {
+		if (controlador.tienePermiso(TipoPermisos.MODIFICAR_PRODUCTO)) {
 			agregarPestana(panelPestanas, "Modificar", SEC_MODIFICAR);
 		}
 
-		if (empleado.tienePermiso(TipoPermisos.GESTION_PEDIDOS)) {
+		if (controlador.tienePermiso(TipoPermisos.GESTION_PEDIDOS)) {
 			agregarPestana(panelPestanas, "Pedidos", SEC_PEDIDOS);
 		}
 
-		if (empleado.tienePermiso(TipoPermisos.ENTREGA_PEDIDOS)) {
+		if (controlador.tienePermiso(TipoPermisos.ENTREGA_PEDIDOS)) {
 			agregarPestana(panelPestanas, "Entregas", SEC_ENTREGA);
 		}
 
-		if (empleado.tienePermiso(TipoPermisos.VALORACION_PRODUCTOS)) {
+		if (controlador.tienePermiso(TipoPermisos.VALORACION_PRODUCTOS)) {
 			agregarPestana(panelPestanas, "Tasaciones", SEC_TASACION);
 		}
 
-		if (empleado.tienePermiso(TipoPermisos.CONFIRMACION_INTERCAMBIO)) {
+		if (controlador.tienePermiso(TipoPermisos.CONFIRMACION_INTERCAMBIO)) {
 			agregarPestana(panelPestanas, "Intercambios", SEC_INTERCAMBIOS);
 		}
 
@@ -224,7 +227,7 @@ public class PanelEmpleado extends JPanel {
 		panelDerecha.setBackground(VentanaPrincipal.COLOR_BARRA);
 		panelDerecha.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(12), 0, 0, 0));
 
-		labelEmpleado = new JLabel("👤 " + empleado.getNickname());
+		labelEmpleado = new JLabel("👤 " + controlador.getNicknameEmpleado());
 		labelEmpleado.setFont(VentanaPrincipal.FUENTE_NORMAL);
 		labelEmpleado.setForeground(VentanaPrincipal.COLOR_TEXTO_BARRA);
 		panelDerecha.add(labelEmpleado);

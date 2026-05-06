@@ -4,8 +4,8 @@ import java.awt.*;
 
 import javax.swing.*;
 
-import productos.Categoria;
-import tienda.Tienda;
+import Gui.Controladores.ControladorCategoriasEmpleado;
+import Gui.Controladores.ResultadoOperacion;
 import usuarios.Empleado;
 
 /**
@@ -20,12 +20,14 @@ public class SeccionCategoriasEmpleado extends AbstractPanelEmpleadoVentaSection
 
 	private JTextField campoIdProducto;
 	private JComboBox<String> comboCategoria;
+	private ControladorCategoriasEmpleado controlador;
 
 	/* La usamos como tabla de consulta, igual que en stock */
 	private SelectorVenta tablaProductos;
 
 	public SeccionCategoriasEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
+		this.controlador = new ControladorCategoriasEmpleado(empleado);
 		construirUI();
 	}
 
@@ -112,38 +114,24 @@ public class SeccionCategoriasEmpleado extends AbstractPanelEmpleadoVentaSection
 	}
 
 	private void anadirCategoria() {
-		String idProducto = campoIdProducto.getText().trim();
-		String categoria = obtenerCategoriaSeleccionada();
+		ResultadoOperacion resultado = controlador.anadirCategoria(campoIdProducto.getText(), obtenerCategoriaSeleccionada());
 
-		if (!datosValidos(idProducto, categoria)) {
-			return;
-		}
-
-		boolean cambiado = empleado.añadirProductoACategoria(idProducto, categoria);
-
-		if (cambiado) {
+		if (resultado.isExito()) {
 			recargarTablaProductos(tablaProductos.tabla);
-			mostrarMensaje("Categoría añadida correctamente");
+			mostrarMensaje(resultado.getMensaje());
 		} else {
-			mostrarError("No se pudo añadir la categoría");
+			mostrarError(resultado.getMensaje());
 		}
 	}
 
 	private void quitarCategoria() {
-		String idProducto = campoIdProducto.getText().trim();
-		String categoria = obtenerCategoriaSeleccionada();
+		ResultadoOperacion resultado = controlador.quitarCategoria(campoIdProducto.getText(), obtenerCategoriaSeleccionada());
 
-		if (!datosValidos(idProducto, categoria)) {
-			return;
-		}
-
-		boolean cambiado = empleado.eliminarProductoDeCategoria(idProducto, categoria);
-
-		if (cambiado) {
+		if (resultado.isExito()) {
 			recargarTablaProductos(tablaProductos.tabla);
-			mostrarMensaje("Categoría quitada correctamente");
+			mostrarMensaje(resultado.getMensaje());
 		} else {
-			mostrarError("No se pudo quitar la categoría");
+			mostrarError(resultado.getMensaje());
 		}
 	}
 
@@ -181,10 +169,8 @@ public class SeccionCategoriasEmpleado extends AbstractPanelEmpleadoVentaSection
 		comboCategoria.removeAllItems();
 		comboCategoria.addItem("Selecciona una categoría");
 
-		for (Categoria categoria : Tienda.getInstancia().getCategorias()) {
-			if (categoria != null && categoria.getNombre() != null && !categoria.getNombre().isBlank()) {
-				comboCategoria.addItem(categoria.getNombre());
-			}
+		for (String nombreCategoria : controlador.getNombresCategorias()) {
+			comboCategoria.addItem(nombreCategoria);
 		}
 	}
 }

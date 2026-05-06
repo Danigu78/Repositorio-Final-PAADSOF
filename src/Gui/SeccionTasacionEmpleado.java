@@ -1,15 +1,14 @@
 package Gui;
 
 import java.awt.*;
-import java.util.Locale;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
 import productos.EstadoProducto;
 import productos.Producto2Mano;
-import tienda.Tienda;
+import Gui.Controladores.ControladorTasacionEmpleado;
+import Gui.Controladores.ResultadoOperacion;
 import usuarios.Empleado;
 
 /**
@@ -29,9 +28,11 @@ public class SeccionTasacionEmpleado extends AbstractPanelEmpleadoSection {
 	private JTextField campoIdProducto;
 	private JTextField campoPrecioTasado;
 	private JComboBox<EstadoProducto> comboEstadoProducto;
+	private ControladorTasacionEmpleado controlador;
 
 	public SeccionTasacionEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
+		this.controlador = new ControladorTasacionEmpleado(empleado);
 		construirUI();
 	}
 
@@ -185,9 +186,9 @@ public class SeccionTasacionEmpleado extends AbstractPanelEmpleadoSection {
 	private void cargarTablaPendientes() {
 		modeloPendientes.setRowCount(0);
 
-		for (Producto2Mano producto : Tienda.getInstancia().getPendientesTasacion()) {
-			modeloPendientes.addRow(new Object[] { producto.getId(), obtenerNombrePropietario(producto),
-					producto.getNombre(), obtenerRutaImagen(producto) });
+		for (Producto2Mano producto : controlador.getPendientesTasacion()) {
+			modeloPendientes.addRow(new Object[] { producto.getId(), controlador.obtenerNombrePropietario(producto),
+					producto.getNombre(), controlador.obtenerRutaImagen(producto) });
 		}
 	}
 
@@ -228,60 +229,20 @@ public class SeccionTasacionEmpleado extends AbstractPanelEmpleadoSection {
 	}
 
 	private void tasarProducto() {
-		String idProducto = campoIdProducto.getText().trim();
-		Double precio = leerDoubleSeguro(campoPrecioTasado.getText());
 		EstadoProducto estado = (EstadoProducto) comboEstadoProducto.getSelectedItem();
+		ResultadoOperacion resultado = controlador.tasarProducto(campoIdProducto.getText(), campoPrecioTasado.getText(), estado);
 
-		if (idProducto.isBlank()) {
-			mostrarError("Escribe el ID del producto.");
-			return;
-		}
-
-		if (precio == null || precio < 0) {
-			mostrarError("Escribe un precio válido.");
-			return;
-		}
-
-		if (estado == null) {
-			mostrarError("Selecciona un estado.");
-			return;
-		}
-
-		Producto2Mano producto = buscarProductoPendientePorId(idProducto);
-
-		if (producto == null) {
-			mostrarError("No existe ningún producto pendiente con ese ID.");
-			return;
-		}
-
-		empleado.tasarProducto(idProducto, precio, estado);
-
-		if (buscarProductoPendientePorId(idProducto) == null) {
+		if (resultado.isExito()) {
 			cargarTablaPendientes();
 			limpiarCamposTasacion();
-
-			if (estado == EstadoProducto.NO_ACEPTADO) {
-				mostrarMensaje("Producto rechazado correctamente.");
-			} else {
-				mostrarMensaje("Producto tasado y publicado para intercambio.");
-			}
+			mostrarMensaje(resultado.getMensaje());
 		} else {
-			mostrarError("No se pudo tasar el producto.");
+			mostrarError(resultado.getMensaje());
 		}
 	}
 
 	private Producto2Mano buscarProductoPendientePorId(String idProducto) {
-		if (idProducto == null || idProducto.isBlank()) {
-			return null;
-		}
-
-		for (Producto2Mano producto : Tienda.getInstancia().getPendientesTasacion()) {
-			if (producto.getId().equalsIgnoreCase(idProducto.trim())) {
-				return producto;
-			}
-		}
-
-		return null;
+		return controlador.buscarProductoPendientePorId(idProducto);
 	}
 
 	private void mostrarProductoEnVentana(Producto2Mano producto) {
@@ -297,24 +258,7 @@ public class SeccionTasacionEmpleado extends AbstractPanelEmpleadoSection {
 	}
 
 	private String crearTextoProducto(Producto2Mano producto) {
-		StringBuilder texto = new StringBuilder();
-
-		texto.append("Producto: ").append(producto.getId()).append(" - ").append(producto.getNombre()).append("\n");
-		texto.append("Propietario: ").append(obtenerNombrePropietario(producto)).append("\n");
-		texto.append("Descripción: ").append(producto.getDescripcion()).append("\n");
-		texto.append("Imagen: ").append(obtenerRutaImagen(producto)).append("\n");
-		texto.append("Visible: ").append(producto.isVisible() ? "Sí" : "No").append("\n");
-		texto.append("Bloqueado: ").append(producto.isBloqueado() ? "Sí" : "No").append("\n");
-		texto.append("Valoración actual: ");
-
-		if (producto.getValoracion() == null) {
-			texto.append("Sin valorar");
-		} else {
-			texto.append(formatearPrecio(producto.getValoracion().getPrecioTasacion())).append(" - ")
-					.append(producto.getValoracion().getEstadoProducto());
-		}
-
-		return texto.toString();
+		return controlador.crearTextoProducto(producto);
 	}
 
 	private void abrirImagenProducto(Producto2Mano producto) {
@@ -344,20 +288,8 @@ public class SeccionTasacionEmpleado extends AbstractPanelEmpleadoSection {
 		JOptionPane.showMessageDialog(this, scrollImagen, "Imagen del producto", JOptionPane.PLAIN_MESSAGE);
 	}
 
-	private String obtenerNombrePropietario(Producto2Mano producto) {
-		if (producto.getPropietario() == null) {
-			return "Sin propietario";
-		}
-
-		return producto.getPropietario().getNickname();
-	}
-
 	private String obtenerRutaImagen(Producto2Mano producto) {
-		if (producto.getImagenRuta() == null || producto.getImagenRuta().isBlank()) {
-			return "-";
-		}
-
-		return producto.getImagenRuta();
+		return controlador.obtenerRutaImagen(producto);
 	}
 
 	private void limpiarCamposTasacion() {
@@ -369,9 +301,6 @@ public class SeccionTasacionEmpleado extends AbstractPanelEmpleadoSection {
 		}
 	}
 
-	private String formatearPrecio(double precio) {
-		return String.format(Locale.US, "%.2f €", precio).replace('.', ',');
-	}
 
 	private void estilizarTablaTasaciones(JTable tabla) {
 		tabla.setFont(new Font("Segoe UI", Font.PLAIN, 13));
