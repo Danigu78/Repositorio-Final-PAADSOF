@@ -14,515 +14,592 @@ import productos.ProductoVenta;
 import usuarios.Cliente;
 
 /**
- * Subpanel del catálogo de productos de CheckPoint. Muestra los productos en
- * tarjetas con imagen, nombre, descripción, precio y botón de ver información.
- * Al pulsar ver información navega a SubpanelProducto. Las tarjetas tienen
- * tamaño fijo escalado según el DPI y se organizan en filas automáticamente con
- * FlowLayout.
+ * Subpanel del catálogo de productos de CheckPoint.
+ * Muestra recomendados arriba y el catálogo completo debajo.
+ * Sigue el patrón MVC de los apuntes.
  *
  * @author Daniel
  * @version 1.0
  */
 public class SubpanelCatalogo extends JPanel {
 
-	/** Controlador que gestiona la lógica del catálogo */
-	private ControladorCatalogo controlador;
-
-	/** Referencia a la ventana principal */
-	private VentanaPrincipal ventana;
-
-	/** Cliente actualmente logueado */
-	private Cliente cliente;
-
-	/** Panel donde se muestran las tarjetas de productos */
-	private JPanel panelProductos;
-
-	/** Campo de texto para buscar por nombre */
-	private JTextField campoBusqueda;
-
-	/** Combo para filtrar por categoría */
-	private JComboBox<String> comboCategoria;
-
-	/** Spinner para el precio mínimo */
-	private JSpinner spinnerPrecioMin;
-
-	/** Spinner para el precio máximo */
-	private JSpinner spinnerPrecioMax;
-
-	/** Etiqueta que muestra cuántos productos hay */
-	private JLabel labelContador;
-
-	/** Subpanel que muestra el detalle de un producto */
-	private SubpanelProducto subpanelProducto;
-
-	/** CardLayout para alternar entre catálogo y detalle */
-	private CardLayout cardLayout;
-
-	/** Panel que contiene catálogo y detalle */
-	private JPanel panelContenido;
-
-	/**
-	 * Constructor del subpanel catálogo.
-	 *
-	 * @param ventana La ventana principal
-	 */
-	public SubpanelCatalogo(VentanaPrincipal ventana) {
-		this.ventana = ventana;
-		setLayout(new BorderLayout());
-		setBackground(VentanaPrincipal.COLOR_FONDO);
-
-		// CardLayout para alternar entre catálogo y detalle producto
-		cardLayout = new CardLayout();
-		panelContenido = new JPanel(cardLayout);
-		panelContenido.setBackground(VentanaPrincipal.COLOR_FONDO);
-
-		// Panel del catálogo
-		JPanel panelCatalogo = crearPanelCatalogo();
-		panelContenido.add(panelCatalogo, "CATALOGO");
-
-		// Panel del detalle del producto
-		subpanelProducto = new SubpanelProducto(ventana, this);
-		panelContenido.add(subpanelProducto, "PRODUCTO");
-
-		add(panelContenido, BorderLayout.CENTER);
-
-		// Mostrar catálogo por defecto
-		cardLayout.show(panelContenido, "CATALOGO");
-	}
-
-	/**
-	 * Crea el panel principal del catálogo con barra de búsqueda y panel de
-	 * productos con scroll.
-	 *
-	 * @return El panel del catálogo
-	 */
-	private JPanel crearPanelCatalogo() {
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.setBackground(VentanaPrincipal.COLOR_FONDO);
-
-		panel.add(crearPanelBusqueda(), BorderLayout.NORTH);
-
-		// Panel de productos con FlowLayout
-		panelProductos = new JPanel(
-				new FlowLayout(FlowLayout.LEFT, VentanaPrincipal.escalar(25), VentanaPrincipal.escalar(25))) { // separeacion
-																												// horizontal
-																												// y
-																												// separacion
-																												// vertical
-
-			@Override
-			public Dimension getPreferredSize() {
-				int ancho = getParent() != null ? getParent().getWidth() : 800;
-				// Calculamos cuántas tarjetas caben por fila
-				int anchTarjeta = VentanaPrincipal.escalar(300) + VentanaPrincipal.escalar(10);
-				int porFila = Math.max(1, ancho / anchTarjeta);
-				// Calculamos cuántas filas necesitamos
-				int numTarjetas = getComponentCount();
-				int filas = (int) Math.ceil((double) numTarjetas / porFila);
-				// Calculamos el alto total con un pequeño margen al final
-				int altTarjeta = VentanaPrincipal.escalar(350) + VentanaPrincipal.escalar(10);
-				int altoTotal = filas * altTarjeta + VentanaPrincipal.escalar(30);
-				return new Dimension(ancho, altoTotal);
-			}
-		};
-		panelProductos.setBackground(VentanaPrincipal.COLOR_FONDO);
-		panelProductos.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(10),
-				VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(10))); // padding
-
-		JScrollPane scroll = new JScrollPane(panelProductos);
-		scroll.setBorder(null);
-		scroll.getVerticalScrollBar().setUnitIncrement(VentanaPrincipal.escalar(16));// cuando baja al mover la rueda
-		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);// no hay barra horizontal
-		scroll.getViewport().setBackground(VentanaPrincipal.COLOR_FONDO);
-		panel.add(scroll, BorderLayout.CENTER);
-
-		return panel;
-	}
-
-	/**
-	 * Crea el panel de búsqueda y filtros. Contiene campo de texto, combo de
-	 * categorías, rango de precios y botones de buscar y resetear.
-	 *
-	 * @return El panel de búsqueda configurado
-	 */
-	private JPanel crearPanelBusqueda() {
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.setBackground(VentanaPrincipal.COLOR_PANEL);
-		panel.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createMatteBorder(0, 0, VentanaPrincipal.escalar(3), 0, VentanaPrincipal.COLOR_ACENTO), // linea
-																														// separatoria
-																														// en
-																														// la
-																														// parte
-																														// de
-																														// abajo
-				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15), // padding
-																											// interno
-						VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15))));
-
-		JPanel panelFiltros = new JPanel(new FlowLayout(FlowLayout.CENTER, VentanaPrincipal.escalar(25), 0));
-		panelFiltros.setBackground(VentanaPrincipal.COLOR_PANEL);
-
-		// Icono lupa
-		panelFiltros.add(crearIcono("/fotos/lupa.jpg", VentanaPrincipal.escalar(30)));
-
-		// Campo de búsqueda por nombre
-		campoBusqueda = new JTextField(15);
-		campoBusqueda.setFont(VentanaPrincipal.FUENTE_NORMAL);
-		campoBusqueda.setForeground(Color.BLACK);// color letra
-		campoBusqueda.setBackground(Color.WHITE);
-		campoBusqueda.setCaretColor(Color.BLACK);// palito que parpadea
-		campoBusqueda.setBorder(
-				BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
-						BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(8),
-								VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(8))));
-		// Al pulsar Enter busca directamente
-		campoBusqueda.addActionListener(e -> buscar());
-		panelFiltros.add(campoBusqueda);
-
-		// Combo de categorías
-		JLabel labelCat = new JLabel("Categoría:");
-		labelCat.setFont(VentanaPrincipal.FUENTE_NORMAL);
-		labelCat.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-		panelFiltros.add(labelCat);
-
-		// Se rellena en actualizar() cuando el cliente hace login
-		comboCategoria = new JComboBox<>();
-		comboCategoria.setFont(VentanaPrincipal.FUENTE_NORMAL);
-		comboCategoria.setBackground(Color.WHITE);
-		comboCategoria.setForeground(Color.BLACK);
-		panelFiltros.add(comboCategoria);
-
-		// Precio mínimo y máximo
-		JLabel labelPrecio = new JLabel("Precio:");
-		labelPrecio.setFont(VentanaPrincipal.FUENTE_NORMAL);
-		labelPrecio.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-		panelFiltros.add(labelPrecio);
-
-		// SpinnerNumberModel(valor inicial, mínimo, máximo, paso)
-		spinnerPrecioMin = new JSpinner(new SpinnerNumberModel(0.0, 0.0, 9999.0, 1.0));// cada vez que pulsas una flecha
-																						// sube o baja 1
-		spinnerPrecioMin.setFont(VentanaPrincipal.FUENTE_NORMAL);
-		spinnerPrecioMin.setPreferredSize(new Dimension(VentanaPrincipal.escalar(70), VentanaPrincipal.escalar(30)));
-		panelFiltros.add(spinnerPrecioMin);
-
-		JLabel labelHasta = new JLabel("—");
-		labelHasta.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-		panelFiltros.add(labelHasta);
-
-		spinnerPrecioMax = new JSpinner(new SpinnerNumberModel(9999.0, 0.0, 9999.0, 1.0));
-		spinnerPrecioMax.setFont(VentanaPrincipal.FUENTE_NORMAL);
-		spinnerPrecioMax.setPreferredSize(new Dimension(VentanaPrincipal.escalar(70), VentanaPrincipal.escalar(30)));
-		panelFiltros.add(spinnerPrecioMax);
-
-		JButton botonBuscar = crearBoton("Buscar", true);
-		botonBuscar.addActionListener(e -> buscar());
-		panelFiltros.add(botonBuscar);
-
-		// Botón ver todos
-		JButton botonReset = crearBoton("Ver todos", false);
-		botonReset.addActionListener(e -> resetearFiltros());
-		panelFiltros.add(botonReset);
-
-		panel.add(panelFiltros, BorderLayout.CENTER);
-
-		// Contador de productos debajo de los filtros
-		labelContador = new JLabel("Cargando productos...");
-		labelContador.setFont(VentanaPrincipal.FUENTE_PEQUENA);
-		labelContador.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-		labelContador.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(5), 0, 0, 0));
-		panel.add(labelContador, BorderLayout.SOUTH);
-
-		return panel;
-	}
-
-	/**
-	 * Realiza la búsqueda con los filtros actuales. Recoge los valores de los
-	 * campos y llama al controlador.
-	 */
-	private void buscar() {
-		if (controlador == null)
-			return;
-
-		String texto = campoBusqueda.getText().trim();
-		String categoria = (String) comboCategoria.getSelectedItem();
-		// Obtenemos los precios como double
-		double precioMin = ((Number) spinnerPrecioMin.getValue()).doubleValue();
-		double precioMax = ((Number) spinnerPrecioMax.getValue()).doubleValue();
-
-		// Pedimos los productos filtrados al controlador
-		List<ProductoVenta> productos = controlador.filtrarProductos(texto, categoria, precioMin, precioMax);
-		mostrarProductos(productos);
-	}
-
-	/**
-	 * Resetea todos los filtros y muestra todos los productos.
-	 */
-	private void resetearFiltros() {
-		campoBusqueda.setText("");
-		comboCategoria.setSelectedIndex(0);
-		spinnerPrecioMin.setValue(0.0);
-		spinnerPrecioMax.setValue(9999.0);
-		mostrarProductos(controlador.obtenerTodosLosProductos());
-	}
-
-	/**
-	 * Muestra los productos en el panel como tarjetas. Limpia el panel y añade una
-	 * tarjeta por producto. Con FlowLayout las tarjetas bajan de fila
-	 * automáticamente.
-	 *
-	 * @param productos Lista de productos a mostrar
-	 */
-	private void mostrarProductos(List<ProductoVenta> productos) {
-		// Limpiamos el panel antes de añadir las nuevas tarjetas
-		panelProductos.removeAll();
-
-		if (productos == null || productos.isEmpty()) {
-			JLabel labelVacio = new JLabel("No se encontraron productos");
-			labelVacio.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
-			labelVacio.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-			panelProductos.add(labelVacio);
-			labelContador.setText("0 productos encontrados");
-		} else {
-			for (ProductoVenta p : productos) {
-				panelProductos.add(crearTarjeta(p));
-			}
-			labelContador.setText(productos.size() + " productos encontrados");
-		}
-
-		// Forzamos que el panel se redibuje
-		panelProductos.revalidate();
-		panelProductos.repaint();
-	}
-
-	/**
-	 * Crea una tarjeta de producto con tamaño fijo escalado. Contiene imagen,
-	 * nombre, descripción, precio y botón ver información. El tamaño fijo escalado
-	 * garantiza que se vea bien en todas las pantallas.
-	 *
-	 * @param producto El producto para crear la tarjeta
-	 * @return El panel con la tarjeta
-	 */
-	private JPanel crearTarjeta(ProductoVenta producto) {
-		JPanel tarjeta = new JPanel(new BorderLayout(0, VentanaPrincipal.escalar(10)));
-		tarjeta.setBackground(VentanaPrincipal.COLOR_TARJETA);
-		// Tamaño fijo escalado
-		tarjeta.setPreferredSize(new Dimension(VentanaPrincipal.escalar(300), // largo
-				VentanaPrincipal.escalar(350)));
-		tarjeta.setBorder(
-				BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
-						BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(35), VentanaPrincipal.escalar(8),
-								VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(8))));
-
-		// Borde naranja al pasar el ratón por encima
-		tarjeta.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				tarjeta.setBorder(BorderFactory
-						.createCompoundBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_ACENTO),
-								BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(45),
-										VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(8),
-										VentanaPrincipal.escalar(8))));
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				tarjeta.setBorder(
-						BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
-								BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(35),
-										VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(8),
-										VentanaPrincipal.escalar(8))));
-			}
-		});
-
-		// Imagen del producto
-		JLabel labelImagen = new JLabel();
-		labelImagen.setHorizontalAlignment(SwingConstants.CENTER);
-		labelImagen.setPreferredSize(new Dimension(VentanaPrincipal.escalar(160), VentanaPrincipal.escalar(130)));
-		cargarImagen(labelImagen, producto.getImagenRuta());
-		tarjeta.add(labelImagen, BorderLayout.NORTH);
-
-		// Panel de información
-		JPanel panelInfo = new JPanel();
-		panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.Y_AXIS));
-		panelInfo.setBackground(VentanaPrincipal.COLOR_TARJETA);
-
-		String nombre = producto.getNombre();
-		if (nombre.length() > 18)
-			nombre = nombre.substring(0, 16) + "...";
-		JLabel labelNombre = new JLabel(nombre);
-		labelNombre.setFont(VentanaPrincipal.FUENTE_BOTON);
-		labelNombre.setForeground(VentanaPrincipal.COLOR_TEXTO);
-		labelNombre.setAlignmentX(Component.CENTER_ALIGNMENT);
-		labelNombre.setBorder(
-				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(5), 0, VentanaPrincipal.escalar(5), 0));
-		panelInfo.add(labelNombre);
-
-		// Descripción — cortada si es muy larga
-		String desc = producto.getDescripcion();
-		if (desc.length() > 30)
-			desc = desc.substring(0, 28) + "...";
-		JLabel labelDesc = new JLabel(desc);
-		labelDesc.setFont(VentanaPrincipal.FUENTE_PEQUENA);
-		labelDesc.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-		labelDesc.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-		labelDesc.setBorder(
-				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(5), 0, VentanaPrincipal.escalar(8), 0));
-		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(3)));
-		panelInfo.add(labelDesc);
-
-		JLabel labelPrecio = new JLabel(String.format("%.2f€", producto.getPrecioOficial()));
-		labelPrecio.setFont(VentanaPrincipal.FUENTE_PRECIO);
-		labelPrecio.setForeground(VentanaPrincipal.COLOR_ACENTO);
-		labelPrecio.setAlignmentX(Component.CENTER_ALIGNMENT);
-		labelPrecio.setBorder(BorderFactory.createEmptyBorder(0, 0, VentanaPrincipal.escalar(8), 0));
-		panelInfo.add(labelPrecio);
-
-		// Botón ver información — abre SubpanelProducto
-		JButton botonVer = crearBoton("Ver información", true);
-		botonVer.setAlignmentX(Component.CENTER_ALIGNMENT);
-		botonVer.addActionListener(e -> controlador.verProducto(producto));
-		panelInfo.add(botonVer);
-
-		tarjeta.add(panelInfo, BorderLayout.CENTER);
-		return tarjeta;
-	}
-
-	/**
-	 * Navega a la pantalla de detalle del producto.
-	 *
-	 * @param producto El producto a mostrar en detalle
-	 */
-	public void verProducto(ProductoVenta producto) {
-		subpanelProducto.mostrarProducto(producto, cliente, controlador);
-		cardLayout.show(panelContenido, "PRODUCTO");
-	}
-
-	/**
-	 * Vuelve al catálogo desde la pantalla de detalle. Lo llama SubpanelProducto
-	 * cuando el usuario pulsa volver.
-	 */
-	public void volverDelProducto() {
-		cardLayout.show(panelContenido, "CATALOGO");
-	}
-
-	/**
-	 * Carga una imagen desde src/fotos/. Si no la encuentra muestra "Sin imagen".
-	 *
-	 * @param label        JLabel donde cargar la imagen
-	 * @param nombreImagen Nombre del archivo
-	 */
-	private void cargarImagen(JLabel label, String nombreImagen) {
-		try {
-			URL url = getClass().getResource("/fotos/" + nombreImagen);
-			if (url != null) {
-				BufferedImage img = ImageIO.read(url);
-				if (img != null) {
-					Image imgEscalada = img.getScaledInstance(VentanaPrincipal.escalar(150),
-							VentanaPrincipal.escalar(130), Image.SCALE_SMOOTH);
-					label.setIcon(new ImageIcon(imgEscalada));
-				} else {
-					label.setText("Sin imagen");
-					label.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-				}
-			} else {
-				label.setText("Sin imagen");
-				label.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-			}
-		} catch (IOException e) {
-			label.setText("Sin imagen");
-			label.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-		}
-	}
-
-	/**
-	 * Carga un icono desde la ruta indicada y lo escala.
-	 *
-	 * @param ruta   Ruta del icono
-	 * @param tamano Tamaño en píxeles escalado
-	 * @return JLabel con el icono
-	 */
-	private JLabel crearIcono(String ruta, int tamano) {
-		JLabel label = new JLabel();
-		try {
-			URL url = getClass().getResource(ruta);
-			if (url != null) {
-				BufferedImage img = ImageIO.read(url);
-				if (img != null) {
-					Image imgEscalada = img.getScaledInstance(tamano, tamano, Image.SCALE_SMOOTH);
-					label.setIcon(new ImageIcon(imgEscalada));
-				}
-			}
-		} catch (IOException e) {
-			// Dejamos la etiqueta vacía si no carga
-		}
-		return label;
-	}
-
-	/**
-	 * Crea un botón naranja (principal) o secundario.
-	 *
-	 * @param texto     Texto del botón
-	 * @param principal true para naranja, false para secundario
-	 * @return El botón estilizado
-	 */
-	private JButton crearBoton(String texto, boolean principal) {
-		JButton boton = new JButton(texto);
-		boton.setFont(VentanaPrincipal.FUENTE_BOTON);
-		boton.setFocusPainted(false);
-		boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-		if (principal) {
-			Color colorNormal = VentanaPrincipal.COLOR_ACENTO;
-			Color colorHover = VentanaPrincipal.COLOR_ACENTO.darker();
-			boton.setBackground(colorNormal);
-			boton.setForeground(Color.WHITE);
-			boton.setContentAreaFilled(false);
-			boton.setOpaque(true);
-			boton.setBorderPainted(false);
-			boton.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(10),
-					VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(10)));
-			boton.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mouseEntered(MouseEvent e) {
-					boton.setBackground(colorHover);
-				}
-
-				@Override
-				public void mouseExited(MouseEvent e) {
-					boton.setBackground(colorNormal);
-				}
-			});
-
-		} else {
-			boton.setBackground(VentanaPrincipal.COLOR_PANEL);
-			boton.setForeground(VentanaPrincipal.COLOR_ACENTO);
-			boton.setBorderPainted(false);
-			boton.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(10),
-					VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(10)));
-		}
-		return boton;
-	}
-
-	/**
-	 * Actualiza el catálogo con el cliente logueado. Crea el controlador, rellena
-	 * categorías y carga productos.
-	 *
-	 * @param cliente El cliente logueado
-	 */
-	public void actualizar(Cliente cliente) {
-		this.cliente = cliente;
-		this.controlador = new ControladorCatalogo(cliente, this);
-
-		// Rellenamos el combo con las categorías de la tienda
-		comboCategoria.removeAllItems();
-		controlador.obtenerNombresCategorias().forEach(comboCategoria::addItem);
-
-		// Cargamos todos los productos al entrar
-		mostrarProductos(controlador.obtenerTodosLosProductos());
-
-		// Volvemos al catálogo por si estábamos en el detalle
-		cardLayout.show(panelContenido, "CATALOGO");
-	}
+    private ControladorCatalogo controlador;
+    private VentanaPrincipal ventana;
+    private Cliente cliente;
+    private JPanel panelProductos;
+    private JPanel panelRecomendados;
+    private JTextField campoBusqueda;
+    private JComboBox<String> comboCategoria;
+    private JSpinner spinnerPrecioMin;
+    private JSpinner spinnerPrecioMax;
+    private JLabel labelContador;
+    private SubpanelProducto subpanelProducto;
+    private CardLayout cardLayout;
+    private JPanel panelContenido;
+
+    // Botones — atributos para registrar el controlador
+    private JButton botonBuscar;
+    private JButton botonReset;
+
+    public SubpanelCatalogo(VentanaPrincipal ventana) {
+        this.ventana = ventana;
+        setLayout(new BorderLayout());
+        setBackground(VentanaPrincipal.COLOR_FONDO);
+
+        cardLayout = new CardLayout();
+        panelContenido = new JPanel(cardLayout);
+        panelContenido.setBackground(VentanaPrincipal.COLOR_FONDO);
+
+        panelContenido.add(crearPanelCatalogo(), "CATALOGO");
+
+        subpanelProducto = new SubpanelProducto(ventana, this);
+        panelContenido.add(subpanelProducto, "PRODUCTO");
+
+        add(panelContenido, BorderLayout.CENTER);
+        cardLayout.show(panelContenido, "CATALOGO");
+    }
+
+    /**
+     * Actualiza el catálogo con el cliente logueado.
+     * Crea el controlador y lo registra en los botones.
+     */
+    public void actualizar(Cliente cliente) {
+        this.cliente = cliente;
+        this.controlador = new ControladorCatalogo(cliente, this);
+        setControlador(controlador);
+
+        comboCategoria.removeAllItems();
+        controlador.obtenerNombresCategorias().forEach(comboCategoria::addItem);
+
+        mostrarProductos(controlador.obtenerTodosLosProductos());
+        mostrarRecomendados();
+        cardLayout.show(panelContenido, "CATALOGO");
+    }
+
+    /**
+     * Registra el controlador en los botones — patrón de los apuntes.
+     */
+    public void setControlador(ActionListener c) {
+        if (botonBuscar != null) {
+            for (ActionListener al : botonBuscar.getActionListeners())
+                botonBuscar.removeActionListener(al);
+            botonBuscar.addActionListener(c);
+        }
+        if (botonReset != null) {
+            for (ActionListener al : botonReset.getActionListeners())
+                botonReset.removeActionListener(al);
+            botonReset.addActionListener(c);
+        }
+    }
+
+    private JPanel crearPanelCatalogo() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(VentanaPrincipal.COLOR_FONDO);
+
+        panel.add(crearPanelBusqueda(), BorderLayout.NORTH);
+
+        // Panel central con recomendados + productos
+        JPanel panelCentral = new JPanel(new BorderLayout());
+        panelCentral.setBackground(VentanaPrincipal.COLOR_FONDO);
+
+        // Panel de recomendados — se rellena en actualizar()
+        panelRecomendados = new JPanel(new BorderLayout());
+        panelRecomendados.setBackground(VentanaPrincipal.COLOR_FONDO);
+        panelCentral.add(panelRecomendados, BorderLayout.NORTH);
+
+        // Panel de productos con FlowLayout
+        panelProductos = new JPanel(
+            new FlowLayout(FlowLayout.LEFT,
+                VentanaPrincipal.escalar(25), VentanaPrincipal.escalar(25))) {
+            @Override
+            public Dimension getPreferredSize() {
+                int ancho = getParent() != null ? getParent().getWidth() : 800;
+                int anchTarjeta = VentanaPrincipal.escalar(300) + VentanaPrincipal.escalar(10);
+                int porFila = Math.max(1, ancho / anchTarjeta);
+                int numTarjetas = getComponentCount();
+                int filas = (int) Math.ceil((double) numTarjetas / porFila);
+                int altTarjeta = VentanaPrincipal.escalar(350) + VentanaPrincipal.escalar(10);
+                int altoTotal = filas * altTarjeta + VentanaPrincipal.escalar(30);
+                return new Dimension(ancho, altoTotal);
+            }
+        };
+        panelProductos.setBackground(VentanaPrincipal.COLOR_FONDO);
+        panelProductos.setBorder(BorderFactory.createEmptyBorder(
+            VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(10),
+            VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(10)));
+
+        JScrollPane scroll = new JScrollPane(panelProductos);
+        scroll.setBorder(null);
+        scroll.getVerticalScrollBar().setUnitIncrement(VentanaPrincipal.escalar(16));
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scroll.getViewport().setBackground(VentanaPrincipal.COLOR_FONDO);
+        panelCentral.add(scroll, BorderLayout.CENTER);
+
+        panel.add(panelCentral, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private JPanel crearPanelBusqueda() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(VentanaPrincipal.COLOR_PANEL);
+        panel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createMatteBorder(0, 0, VentanaPrincipal.escalar(3), 0,
+                VentanaPrincipal.COLOR_ACENTO),
+            BorderFactory.createEmptyBorder(
+                VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15),
+                VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15))));
+
+        JPanel panelFiltros = new JPanel(
+            new FlowLayout(FlowLayout.CENTER, VentanaPrincipal.escalar(25), 0));
+        panelFiltros.setBackground(VentanaPrincipal.COLOR_PANEL);
+
+        panelFiltros.add(crearIcono("/fotos/lupa.jpg", VentanaPrincipal.escalar(30)));
+
+        campoBusqueda = new JTextField(15);
+        campoBusqueda.setFont(VentanaPrincipal.FUENTE_NORMAL);
+        campoBusqueda.setForeground(Color.BLACK);
+        campoBusqueda.setBackground(Color.WHITE);
+        campoBusqueda.setCaretColor(Color.BLACK);
+        campoBusqueda.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
+            BorderFactory.createEmptyBorder(
+                VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(8),
+                VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(8))));
+        campoBusqueda.addActionListener(e -> buscar());
+        panelFiltros.add(campoBusqueda);
+
+        JLabel labelCat = new JLabel("Categoría:");
+        labelCat.setFont(VentanaPrincipal.FUENTE_NORMAL);
+        labelCat.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+        panelFiltros.add(labelCat);
+
+        comboCategoria = new JComboBox<>();
+        comboCategoria.setFont(VentanaPrincipal.FUENTE_NORMAL);
+        comboCategoria.setBackground(Color.WHITE);
+        comboCategoria.setForeground(Color.BLACK);
+        panelFiltros.add(comboCategoria);
+
+        JLabel labelPrecio = new JLabel("Precio:");
+        labelPrecio.setFont(VentanaPrincipal.FUENTE_NORMAL);
+        labelPrecio.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+        panelFiltros.add(labelPrecio);
+
+        spinnerPrecioMin = new JSpinner(new SpinnerNumberModel(0.0, 0.0, 9999.0, 1.0));
+        spinnerPrecioMin.setFont(VentanaPrincipal.FUENTE_NORMAL);
+        spinnerPrecioMin.setPreferredSize(new Dimension(
+            VentanaPrincipal.escalar(70), VentanaPrincipal.escalar(30)));
+        panelFiltros.add(spinnerPrecioMin);
+
+        JLabel labelHasta = new JLabel("—");
+        labelHasta.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+        panelFiltros.add(labelHasta);
+
+        spinnerPrecioMax = new JSpinner(new SpinnerNumberModel(9999.0, 0.0, 9999.0, 1.0));
+        spinnerPrecioMax.setFont(VentanaPrincipal.FUENTE_NORMAL);
+        spinnerPrecioMax.setPreferredSize(new Dimension(
+            VentanaPrincipal.escalar(70), VentanaPrincipal.escalar(30)));
+        panelFiltros.add(spinnerPrecioMax);
+
+        botonBuscar = crearBoton("Buscar", true);
+        botonBuscar.setActionCommand("buscar");
+        panelFiltros.add(botonBuscar);
+
+        botonReset = crearBoton("Ver todos", false);
+        botonReset.setActionCommand("reset");
+        panelFiltros.add(botonReset);
+
+        panel.add(panelFiltros, BorderLayout.CENTER);
+
+        labelContador = new JLabel("Cargando productos...");
+        labelContador.setFont(VentanaPrincipal.FUENTE_PEQUENA);
+        labelContador.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+        labelContador.setBorder(BorderFactory.createEmptyBorder(
+            VentanaPrincipal.escalar(5), 0, 0, 0));
+        panel.add(labelContador, BorderLayout.SOUTH);
+
+        return panel;
+    }
+
+    /**
+     * Realiza la búsqueda con los filtros actuales.
+     * Lo llama el controlador y también el Enter del campo.
+     */
+    public void buscar() {
+        if (controlador == null) return;
+        String texto = campoBusqueda.getText().trim();
+        String categoria = (String) comboCategoria.getSelectedItem();
+        double precioMin = ((Number) spinnerPrecioMin.getValue()).doubleValue();
+        double precioMax = ((Number) spinnerPrecioMax.getValue()).doubleValue();
+        mostrarProductos(controlador.filtrarProductos(
+            texto, categoria, precioMin, precioMax));
+    }
+
+    /**
+     * Resetea todos los filtros y muestra todos los productos.
+     * Lo llama el controlador.
+     */
+    public void resetearFiltros() {
+        campoBusqueda.setText("");
+        comboCategoria.setSelectedIndex(0);
+        spinnerPrecioMin.setValue(0.0);
+        spinnerPrecioMax.setValue(9999.0);
+        mostrarProductos(controlador.obtenerTodosLosProductos());
+        mostrarRecomendados();
+    }
+
+    /**
+     * Rellena el panel de recomendados.
+     * Para clientes usa el recomendador personalizado.
+     * Para invitados muestra los mejor valorados.
+     */
+    private void mostrarRecomendados() {
+        panelRecomendados.removeAll();
+        if (controlador == null) {
+            panelRecomendados.revalidate();
+            panelRecomendados.repaint();
+            return;
+        }
+
+        List<ProductoVenta> recomendados = controlador.getRecomendados();
+        if (recomendados.isEmpty()) {
+            panelRecomendados.revalidate();
+            panelRecomendados.repaint();
+            return;
+        }
+
+        JPanel contenedor = new JPanel(new BorderLayout());
+        contenedor.setBackground(VentanaPrincipal.COLOR_FONDO);
+        contenedor.setBorder(BorderFactory.createEmptyBorder(
+            VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(10),
+            0, VentanaPrincipal.escalar(10)));
+
+        // Título
+        JLabel titulo = new JLabel("⭐ Recomendados para ti");
+        titulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
+        titulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
+        titulo.setBorder(BorderFactory.createEmptyBorder(
+            0, 0, VentanaPrincipal.escalar(10), 0));
+        contenedor.add(titulo, BorderLayout.NORTH);
+
+        // Tarjetas pequeñas en horizontal
+        JPanel panelTarjetas = new JPanel(
+            new FlowLayout(FlowLayout.LEFT,
+                VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(10)));
+        panelTarjetas.setBackground(VentanaPrincipal.COLOR_FONDO);
+        for (ProductoVenta p : recomendados) {
+            panelTarjetas.add(crearTarjetaPequeña(p));
+        }
+        contenedor.add(panelTarjetas, BorderLayout.CENTER);
+
+        // Separador
+        JSeparator sep = new JSeparator();
+        sep.setForeground(VentanaPrincipal.COLOR_BORDE);
+        contenedor.add(sep, BorderLayout.SOUTH);
+
+        panelRecomendados.add(contenedor, BorderLayout.CENTER);
+        panelRecomendados.revalidate();
+        panelRecomendados.repaint();
+    }
+
+    /**
+     * Muestra los productos en el panel como tarjetas.
+     */
+    private void mostrarProductos(List<ProductoVenta> productos) {
+        panelProductos.removeAll();
+
+        if (productos == null || productos.isEmpty()) {
+            JLabel labelVacio = new JLabel("No se encontraron productos");
+            labelVacio.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
+            labelVacio.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+            panelProductos.add(labelVacio);
+            labelContador.setText("0 productos encontrados");
+        } else {
+            for (ProductoVenta p : productos) {
+                panelProductos.add(crearTarjeta(p));
+            }
+            labelContador.setText(productos.size() + " productos encontrados");
+        }
+
+        panelProductos.revalidate();
+        panelProductos.repaint();
+    }
+
+    /**
+     * Crea una tarjeta grande para el catálogo principal.
+     * Incluye nota media si tiene reseñas.
+     */
+    private JPanel crearTarjeta(ProductoVenta producto) {
+        JPanel tarjeta = new JPanel(new BorderLayout(0, VentanaPrincipal.escalar(10)));
+        tarjeta.setBackground(VentanaPrincipal.COLOR_TARJETA);
+        tarjeta.setPreferredSize(new Dimension(
+            VentanaPrincipal.escalar(300), VentanaPrincipal.escalar(350)));
+        tarjeta.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
+            BorderFactory.createEmptyBorder(
+                VentanaPrincipal.escalar(35), VentanaPrincipal.escalar(8),
+                VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(8))));
+
+        tarjeta.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                tarjeta.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(VentanaPrincipal.COLOR_ACENTO),
+                    BorderFactory.createEmptyBorder(
+                        VentanaPrincipal.escalar(45), VentanaPrincipal.escalar(8),
+                        VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(8))));
+            }
+            @Override
+            public void mouseExited(MouseEvent e) {
+                tarjeta.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
+                    BorderFactory.createEmptyBorder(
+                        VentanaPrincipal.escalar(35), VentanaPrincipal.escalar(8),
+                        VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(8))));
+            }
+        });
+
+        // Imagen
+        JLabel labelImagen = new JLabel();
+        labelImagen.setHorizontalAlignment(SwingConstants.CENTER);
+        labelImagen.setPreferredSize(new Dimension(
+            VentanaPrincipal.escalar(160), VentanaPrincipal.escalar(130)));
+        cargarImagen(labelImagen, producto.getImagenRuta(),
+            VentanaPrincipal.escalar(150), VentanaPrincipal.escalar(130));
+        tarjeta.add(labelImagen, BorderLayout.NORTH);
+
+        // Info
+        JPanel panelInfo = new JPanel();
+        panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.Y_AXIS));
+        panelInfo.setBackground(VentanaPrincipal.COLOR_TARJETA);
+
+        // Nombre
+        String nombre = producto.getNombre();
+        if (nombre.length() > 18) nombre = nombre.substring(0, 16) + "...";
+        JLabel labelNombre = new JLabel(nombre);
+        labelNombre.setFont(VentanaPrincipal.FUENTE_BOTON);
+        labelNombre.setForeground(VentanaPrincipal.COLOR_TEXTO);
+        labelNombre.setAlignmentX(Component.CENTER_ALIGNMENT);
+        labelNombre.setBorder(BorderFactory.createEmptyBorder(
+            VentanaPrincipal.escalar(5), 0, VentanaPrincipal.escalar(5), 0));
+        panelInfo.add(labelNombre);
+
+        // Descripción
+        String desc = producto.getDescripcion();
+        if (desc.length() > 30) desc = desc.substring(0, 28) + "...";
+        JLabel labelDesc = new JLabel(desc);
+        labelDesc.setFont(VentanaPrincipal.FUENTE_PEQUENA);
+        labelDesc.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+        labelDesc.setAlignmentX(Component.CENTER_ALIGNMENT);
+        labelDesc.setBorder(BorderFactory.createEmptyBorder(
+            VentanaPrincipal.escalar(5), 0, VentanaPrincipal.escalar(8), 0));
+        panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(3)));
+        panelInfo.add(labelDesc);
+
+        // Precio
+        JLabel labelPrecio = new JLabel(
+            String.format("%.2f€", producto.getPrecioOficial()));
+        labelPrecio.setFont(VentanaPrincipal.FUENTE_PRECIO);
+        labelPrecio.setForeground(VentanaPrincipal.COLOR_ACENTO);
+        labelPrecio.setAlignmentX(Component.CENTER_ALIGNMENT);
+        labelPrecio.setBorder(BorderFactory.createEmptyBorder(
+            0, 0, VentanaPrincipal.escalar(4), 0));
+        panelInfo.add(labelPrecio);
+
+        // Valoración
+        JLabel labelNota = producto.getReseñas().isEmpty()
+            ? new JLabel("Sin reseñas")
+            : new JLabel(String.format("%.1f/10", producto.getMediaPuntuacion()));
+        labelNota.setFont(VentanaPrincipal.FUENTE_PEQUENA);
+        labelNota.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+        labelNota.setAlignmentX(Component.CENTER_ALIGNMENT);
+        labelNota.setBorder(BorderFactory.createEmptyBorder(
+            0, 0, VentanaPrincipal.escalar(6), 0));
+        panelInfo.add(labelNota);
+
+        // Botón ver información
+        JButton botonVer = crearBoton("Ver información", true);
+        botonVer.setAlignmentX(Component.CENTER_ALIGNMENT);
+        botonVer.setActionCommand("ver:" + producto.getId());
+        botonVer.addActionListener(controlador);
+        panelInfo.add(botonVer);
+
+        tarjeta.add(panelInfo, BorderLayout.CENTER);
+        return tarjeta;
+    }
+
+    /**
+     * Crea una tarjeta pequeña para la sección de recomendados.
+     */
+    private JPanel crearTarjetaPequeña(ProductoVenta producto) {
+        JPanel tarjeta = new JPanel(new BorderLayout(0, VentanaPrincipal.escalar(5)));
+        tarjeta.setBackground(VentanaPrincipal.COLOR_TARJETA);
+        tarjeta.setPreferredSize(new Dimension(
+            VentanaPrincipal.escalar(160), VentanaPrincipal.escalar(210)));
+        tarjeta.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
+            BorderFactory.createEmptyBorder(
+                VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(6),
+                VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(6))));
+
+        tarjeta.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                tarjeta.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(VentanaPrincipal.COLOR_ACENTO),
+                    BorderFactory.createEmptyBorder(
+                        VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(6),
+                        VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(6))));
+            }
+            @Override
+            public void mouseExited(MouseEvent e) {
+                tarjeta.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
+                    BorderFactory.createEmptyBorder(
+                        VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(6),
+                        VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(6))));
+            }
+        });
+
+        // Imagen pequeña
+        JLabel labelImagen = new JLabel();
+        labelImagen.setHorizontalAlignment(SwingConstants.CENTER);
+        labelImagen.setPreferredSize(new Dimension(
+            VentanaPrincipal.escalar(90), VentanaPrincipal.escalar(80)));
+        cargarImagen(labelImagen, producto.getImagenRuta(),
+            VentanaPrincipal.escalar(80), VentanaPrincipal.escalar(70));
+        tarjeta.add(labelImagen, BorderLayout.NORTH);
+
+        JPanel panelInfo = new JPanel();
+        panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.Y_AXIS));
+        panelInfo.setBackground(VentanaPrincipal.COLOR_TARJETA);
+
+        // Nombre
+        String nombre = producto.getNombre();
+        if (nombre.length() > 14) nombre = nombre.substring(0, 12) + "...";
+        JLabel labelNombre = new JLabel(nombre);
+        labelNombre.setFont(VentanaPrincipal.FUENTE_PEQUENA);
+        labelNombre.setForeground(VentanaPrincipal.COLOR_TEXTO);
+        labelNombre.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panelInfo.add(labelNombre);
+
+        // Precio
+        JLabel labelPrecio = new JLabel(
+            String.format("%.2f€", producto.getPrecioOficial()));
+        labelPrecio.setFont(VentanaPrincipal.FUENTE_PEQUENA);
+        labelPrecio.setForeground(VentanaPrincipal.COLOR_ACENTO);
+        labelPrecio.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panelInfo.add(labelPrecio);
+
+        // Valoración
+        JLabel labelNota = producto.getReseñas().isEmpty()
+            ? new JLabel("Sin reseñas")
+            : new JLabel(String.format("⭐ %.1f/10", producto.getMediaPuntuacion()));
+        labelNota.setFont(VentanaPrincipal.FUENTE_PEQUENA);
+        labelNota.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+        labelNota.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panelInfo.add(labelNota);
+
+        // Botón ver
+        JButton botonVer = crearBoton("Ver", true);
+        botonVer.setAlignmentX(Component.CENTER_ALIGNMENT);
+        botonVer.setActionCommand("ver:" + producto.getId());
+        botonVer.addActionListener(controlador);
+        panelInfo.add(botonVer);
+
+        tarjeta.add(panelInfo, BorderLayout.CENTER);
+        return tarjeta;
+    }
+
+    /**
+     * Navega a la pantalla de detalle del producto.
+     */
+    public void verProducto(ProductoVenta producto) {
+        subpanelProducto.mostrarProducto(producto, cliente, controlador);
+        cardLayout.show(panelContenido, "PRODUCTO");
+    }
+
+    /**
+     * Vuelve al catálogo desde la pantalla de detalle.
+     */
+    public void volverDelProducto() {
+        cardLayout.show(panelContenido, "CATALOGO");
+    }
+
+    private void cargarImagen(JLabel label, String nombreImagen, int ancho, int alto) {
+        try {
+            URL url = getClass().getResource("/fotos/" + nombreImagen);
+            if (url != null) {
+                BufferedImage img = ImageIO.read(url);
+                if (img != null) {
+                    Image imgEscalada = img.getScaledInstance(
+                        ancho, alto, Image.SCALE_SMOOTH);
+                    label.setIcon(new ImageIcon(imgEscalada));
+                } else {
+                    label.setText("Sin imagen");
+                    label.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+                }
+            } else {
+                label.setText("Sin imagen");
+                label.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+            }
+        } catch (IOException e) {
+            label.setText("Sin imagen");
+            label.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+        }
+    }
+
+    private JLabel crearIcono(String ruta, int tamano) {
+        JLabel label = new JLabel();
+        try {
+            URL url = getClass().getResource(ruta);
+            if (url != null) {
+                BufferedImage img = ImageIO.read(url);
+                if (img != null) {
+                    Image imgEscalada = img.getScaledInstance(
+                        tamano, tamano, Image.SCALE_SMOOTH);
+                    label.setIcon(new ImageIcon(imgEscalada));
+                }
+            }
+        } catch (IOException e) {
+            // vacío
+        }
+        return label;
+    }
+
+    private JButton crearBoton(String texto, boolean principal) {
+        JButton boton = new JButton(texto);
+        boton.setFont(VentanaPrincipal.FUENTE_BOTON);
+        boton.setFocusPainted(false);
+        boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        if (principal) {
+            Color colorNormal = VentanaPrincipal.COLOR_ACENTO;
+            Color colorHover = VentanaPrincipal.COLOR_ACENTO.darker();
+            boton.setBackground(colorNormal);
+            boton.setForeground(Color.WHITE);
+            boton.setContentAreaFilled(false);
+            boton.setOpaque(true);
+            boton.setBorderPainted(false);
+            boton.setBorder(BorderFactory.createEmptyBorder(
+                VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(10),
+                VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(10)));
+            boton.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    boton.setBackground(colorHover);
+                }
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    boton.setBackground(colorNormal);
+                }
+            });
+        } else {
+            boton.setBackground(VentanaPrincipal.COLOR_PANEL);
+            boton.setForeground(VentanaPrincipal.COLOR_ACENTO);
+            boton.setBorderPainted(false);
+            boton.setBorder(BorderFactory.createEmptyBorder(
+                VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(10),
+                VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(10)));
+        }
+        return boton;
+    }
 }

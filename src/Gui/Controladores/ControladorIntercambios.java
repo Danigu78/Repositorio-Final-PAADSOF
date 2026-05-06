@@ -13,7 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
-
+ * 
  * @author Daniel
  * @version 1.0
  */
@@ -41,7 +41,7 @@ public class ControladorIntercambios implements ActionListener {
 		} else if (cmd.startsWith("aceptar:")) {
 			aceptarOferta(cmd.substring(8));
 		} else if (cmd.equals("rechazadas")) {
-		    vista.mostrarSeccion("RECHAZADAS");
+			vista.mostrarSeccion("RECHAZADAS");
 		}
 	}
 

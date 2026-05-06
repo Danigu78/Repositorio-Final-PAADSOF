@@ -6,154 +6,133 @@ import productos.ProductoVenta;
 import tienda.Tienda;
 import usuarios.Cliente;
 import Gui.SubpanelCatalogo;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
- * Controlador del catálogo de productos.
- * Usa los métodos ya existentes en Tienda y Cliente
- * en vez de reimplementar la lógica.
+ * Controlador del catálogo de productos. Implementa ActionListener según el
+ * patrón MVC de los apuntes.
  *
  * @author Daniel
  * @version 1.0
  */
-public class ControladorCatalogo {
+public class ControladorCatalogo implements ActionListener {
 
-    /** Instancia de la tienda */
-    private Tienda tienda;
+	private Tienda tienda;
+	private Cliente cliente;
+	private SubpanelCatalogo vista;
 
-    /** Cliente actualmente logueado */
-    private Cliente cliente;
+	public ControladorCatalogo(Cliente cliente, SubpanelCatalogo vista) {
+		this.tienda = Tienda.getInstancia();
+		this.cliente = cliente;
+		this.vista = vista;
+	}
 
-    /** Referencia a la vista del catálogo */
-    private SubpanelCatalogo vista;
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		String cmd = e.getActionCommand();
+		if (cmd.equals("buscar")) {
+			vista.buscar();
+		} else if (cmd.equals("reset")) {
+			vista.resetearFiltros();
+		} else if (cmd.startsWith("ver:")) {
+			String idProducto = cmd.substring(4);
+			for (ProductoVenta p : tienda.getStockVentas()) {
+				if (p.getId().equals(idProducto)) {
+					vista.verProducto(p);
+					return;
+				}
+			}
+		}
+	}
 
-    /**
-     * Constructor del controlador.
-     *
-     * @param cliente El cliente logueado
-     * @param vista   El subpanel del catálogo
-     */
-    public ControladorCatalogo(Cliente cliente, SubpanelCatalogo vista) {
-        this.tienda = Tienda.getInstancia();
-        this.cliente = cliente;
-        this.vista = vista;
-    }
+	/**
+	 * Devuelve todos los productos con stock disponible.
+	 */
+	public List<ProductoVenta> obtenerTodosLosProductos() {
+		return tienda.buscarProductoVenta();
+	}
 
-    /**
-     * Navega a la pantalla de detalle del producto.
-     * Delega en la vista para mostrar el producto.
-     *
-     * @param producto El producto a mostrar
-     */
-    public void verProducto(ProductoVenta producto) {
-        vista.verProducto(producto);
-    }
+	/**
+	 * Aplica filtros combinados de nombre, categoría y precio.
+	 */
+	public List<ProductoVenta> filtrarProductos(String texto, String nombreCategoria, double precioMin,
+			double precioMax) {
+		List<ProductoVenta> resultado = new ArrayList<>();
+		for (ProductoVenta p : tienda.getStockVentas()) {
+			if (p.getStockDisponible() <= 0)
+				continue;
+			if (texto != null && !texto.isBlank()) {
+				if (!p.getNombre().toLowerCase().contains(texto.toLowerCase()))
+					continue;
+			}
+			if (nombreCategoria != null && !nombreCategoria.equals("Todas")) {
+				boolean tieneCategoria = false;
+				for (productos.Categoria c : p.getCategorias()) {
+					if (c.getNombre().equals(nombreCategoria)) {
+						tieneCategoria = true;
+						break;
+					}
+				}
+				if (!tieneCategoria)
+					continue;
+			}
+			if (p.getPrecioOficial() < precioMin || p.getPrecioOficial() > precioMax)
+				continue;
+			resultado.add(p);
+		}
+		return resultado;
+	}
 
-    /**
-     * Devuelve todos los productos con stock disponible.
-     *
-     * @return Lista de productos disponibles
-     */
-    public List<ProductoVenta> obtenerTodosLosProductos() {
-        return tienda.buscarProductoVenta();
-    }
+	/**
+	 * Devuelve los nombres de todas las categorías con "Todas" al principio.
+	 */
+	public List<String> obtenerNombresCategorias() {
+		List<String> nombres = new ArrayList<>();
+		nombres.add("Todas");
+		tienda.getCategorias().forEach(c -> nombres.add(c.getNombre()));
+		return nombres;
+	}
 
-    /**
-     * Busca productos por nombre.
-     *
-     * @param texto Texto a buscar
-     * @return Lista de productos que contienen el texto
-     */
-    public List<ProductoVenta> buscarPorNombre(String texto) {
-        if (texto == null || texto.isBlank()) {
-            return obtenerTodosLosProductos();
-        }
-        List<ProductoVenta> resultado = tienda.buscarproductoPorNombre(texto);
-        return resultado != null ? resultado : new ArrayList<>();
-    }
+	/**
+	 * Añade un producto al carrito del cliente.
+	 */
+	public boolean añadirAlCarrito(ProductoVenta producto, int cantidad) {
+		if (cliente == null)
+			return false;
+		return cliente.añadirProductoCarrito(producto, cantidad);
+	}
 
-    /**
-     * Filtra productos por categoría.
-     *
-     * @param nombreCategoria Nombre de la categoría
-     * @return Lista de productos de esa categoría
-     */
-    public List<ProductoVenta> filtrarPorCategoria(String nombreCategoria) {
-        if (nombreCategoria == null || nombreCategoria.equals("Todas")) {
-            return obtenerTodosLosProductos();
-        }
-        return tienda.buscarProductoPorCategoria(nombreCategoria);
-    }
+	/**
+	 * Devuelve los productos recomendados. Para clientes usa el recomendador
+	 * personalizado. Para invitados devuelve los mejor valorados.
+	 */
+	public List<ProductoVenta> getRecomendados() {
+		if (cliente == null) {
+			// Invitado — el recomendador no acepta null
+			// mostramos los mejor valorados directamente
+			List<ProductoVenta> todos = new ArrayList<>(tienda.getStockVentas());
+			todos.removeIf(p -> p.getStockDisponible() <= 0);
+			todos.sort((a, b) -> Double.compare(b.getMediaPuntuacion(), a.getMediaPuntuacion()));
+			return todos.subList(0, Math.min(5, todos.size()));
+		}
+		// Cliente registrado — recomendador personalizado
+		// si no tiene compras ya devuelve los mejor valorados internamente
+		try {
+			return tienda.getRecomendador().generarSugerencias(cliente);
+		} catch (Exception e) {
+			return new ArrayList<>();
+		}
+	}
 
-    /**
-     * Aplica filtros combinados de nombre, categoría y precio.
-     *
-     * @param texto           Texto a buscar
-     * @param nombreCategoria Categoría a filtrar
-     * @param precioMin       Precio mínimo
-     * @param precioMax       Precio máximo
-     * @return Lista de productos filtrados
-     */
-    public List<ProductoVenta> filtrarProductos(String texto, String nombreCategoria,
-                                                 double precioMin, double precioMax) {
-        List<ProductoVenta> resultado = new ArrayList<>();
+	/**
+	 * Indica si hay cliente logueado.
+	 */
+	public boolean hayCliente() {
+		return cliente != null;
+	}
 
-        for (ProductoVenta p : tienda.getStockVentas()) {
-            if (p.getStockDisponible() <= 0) continue;
-
-            if (texto != null && !texto.isBlank()) {
-                if (!p.getNombre().toLowerCase().contains(texto.toLowerCase())) continue;
-            }
-
-            if (nombreCategoria != null && !nombreCategoria.equals("Todas")) {
-                boolean tieneCategoria = false;
-                for (productos.Categoria c : p.getCategorias()) {
-                    if (c.getNombre().equals(nombreCategoria)) {
-                        tieneCategoria = true;
-                        break;
-                    }
-                }
-                if (!tieneCategoria) continue;
-            }
-
-            if (p.getPrecioOficial() < precioMin || p.getPrecioOficial() > precioMax) continue;
-
-            resultado.add(p);
-        }
-
-        return resultado;
-    }
-
-    /**
-     * Devuelve los nombres de todas las categorías con "Todas" al principio.
-     *
-     * @return Lista de nombres de categorías
-     */
-    public List<String> obtenerNombresCategorias() {
-        List<String> nombres = new ArrayList<>();
-        nombres.add("Todas");
-        tienda.getCategorias().forEach(c -> nombres.add(c.getNombre()));
-        return nombres;
-    }
-
-    /**
-     * Añade un producto al carrito del cliente.
-     * Si no hay cliente devuelve false.
-     *
-     * @param producto El producto a añadir
-     * @param cantidad La cantidad
-     * @return true si se añadió correctamente
-     */
-    public boolean añadirAlCarrito(ProductoVenta producto, int cantidad) {
-        if (cliente == null) return false;
-        return cliente.añadirProductoCarrito(producto, cantidad);
-    }
-
-    /**
-     * Actualiza el cliente del controlador.
-     *
-     * @param cliente El nuevo cliente logueado
-     */
-    public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
-    }
+	public void setCliente(Cliente cliente) {
+		this.cliente = cliente;
+	}
 }
