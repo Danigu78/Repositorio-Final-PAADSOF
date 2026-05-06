@@ -230,7 +230,8 @@ public class SeccionTasacionEmpleado extends AbstractPanelEmpleadoSection {
 
 	private void tasarProducto() {
 		EstadoProducto estado = (EstadoProducto) comboEstadoProducto.getSelectedItem();
-		ResultadoOperacion resultado = controlador.tasarProducto(campoIdProducto.getText(), campoPrecioTasado.getText(), estado);
+		ResultadoOperacion resultado = controlador.tasarProducto(campoIdProducto.getText(), campoPrecioTasado.getText(),
+				estado);
 
 		if (resultado.isExito()) {
 			cargarTablaPendientes();
@@ -262,6 +263,11 @@ public class SeccionTasacionEmpleado extends AbstractPanelEmpleadoSection {
 	}
 
 	private void abrirImagenProducto(Producto2Mano producto) {
+		if (producto == null) {
+			mostrarError("El producto no puede ser null.");
+			return;
+		}
+
 		String rutaImagen = producto.getImagenRuta();
 
 		if (rutaImagen == null || rutaImagen.isBlank()) {
@@ -269,23 +275,85 @@ public class SeccionTasacionEmpleado extends AbstractPanelEmpleadoSection {
 			return;
 		}
 
-		ImageIcon imagen = new ImageIcon(rutaImagen);
+		System.out.println("========== DEBUG IMAGEN ==========");
+		System.out.println("Ruta guardada en producto: " + rutaImagen);
 
-		if (imagen.getIconWidth() <= 0 || imagen.getIconHeight() <= 0) {
-			mostrarError("No se pudo abrir la imagen:\n" + rutaImagen);
-			return;
+		java.io.File archivo = new java.io.File(rutaImagen);
+
+		System.out.println("Ruta absoluta probada: " + archivo.getAbsolutePath());
+		System.out.println("Existe: " + archivo.exists());
+		System.out.println("Es archivo: " + archivo.isFile());
+		System.out.println("Se puede leer: " + archivo.canRead());
+		System.out.println("Longitud bytes: " + archivo.length());
+
+		try {
+			java.awt.image.BufferedImage imagenOriginal = null;
+
+			// 1. Intentar cargar como archivo del sistema
+			if (archivo.exists() && archivo.isFile() && archivo.canRead()) {
+				imagenOriginal = javax.imageio.ImageIO.read(archivo);
+
+				if (imagenOriginal == null) {
+					System.out.println(
+							"ImageIO.read devolvió null. El archivo existe, pero no parece una imagen válida.");
+				} else {
+					System.out.println("Imagen cargada como archivo correctamente.");
+				}
+			} else {
+				System.out.println("No se pudo cargar como archivo normal.");
+			}
+
+			// 2. Intentar cargar como recurso del proyecto
+			if (imagenOriginal == null) {
+				String rutaRecurso = rutaImagen.startsWith("/") ? rutaImagen : "/" + rutaImagen;
+				System.out.println("Intentando cargar como recurso: " + rutaRecurso);
+
+				java.net.URL url = getClass().getResource(rutaRecurso);
+
+				System.out.println("URL recurso encontrada: " + url);
+
+				if (url != null) {
+					imagenOriginal = javax.imageio.ImageIO.read(url);
+
+					if (imagenOriginal == null) {
+						System.out.println(
+								"ImageIO.read(url) devolvió null. El recurso existe, pero no parece imagen válida.");
+					} else {
+						System.out.println("Imagen cargada como recurso correctamente.");
+					}
+				}
+			}
+
+			System.out.println("==================================");
+
+			if (imagenOriginal == null) {
+				mostrarError("No se pudo abrir la imagen.\n\n" + "Ruta guardada:\n" + rutaImagen + "\n\n"
+						+ "Ruta absoluta probada:\n" + archivo.getAbsolutePath() + "\n\n"
+						+ "Mira la consola para ver el diagnóstico completo.");
+				return;
+			}
+
+			System.out.println("Ancho imagen: " + imagenOriginal.getWidth());
+			System.out.println("Alto imagen: " + imagenOriginal.getHeight());
+
+			Image imagenEscalada = imagenOriginal.getScaledInstance(VentanaPrincipal.escalar(420),
+					VentanaPrincipal.escalar(320), Image.SCALE_SMOOTH);
+
+			JLabel labelImagen = new JLabel(new ImageIcon(imagenEscalada));
+			labelImagen.setHorizontalAlignment(JLabel.CENTER);
+
+			JScrollPane scrollImagen = new JScrollPane(labelImagen);
+			scrollImagen.setPreferredSize(new Dimension(VentanaPrincipal.escalar(470), VentanaPrincipal.escalar(370)));
+
+			JOptionPane.showMessageDialog(this, scrollImagen, "Imagen del producto", JOptionPane.PLAIN_MESSAGE);
+
+		} catch (Exception e) {
+			System.out.println("ERROR REAL AL CARGAR IMAGEN:");
+			e.printStackTrace();
+
+			mostrarError("Error al abrir la imagen:\n" + rutaImagen + "\n\nTipo de error:\n"
+					+ e.getClass().getSimpleName() + "\n\nMensaje:\n" + e.getMessage());
 		}
-
-		Image imagenEscalada = imagen.getImage().getScaledInstance(VentanaPrincipal.escalar(420),
-				VentanaPrincipal.escalar(320), Image.SCALE_SMOOTH);
-
-		JLabel labelImagen = new JLabel(new ImageIcon(imagenEscalada));
-		labelImagen.setHorizontalAlignment(JLabel.CENTER);
-
-		JScrollPane scrollImagen = new JScrollPane(labelImagen);
-		scrollImagen.setPreferredSize(new Dimension(VentanaPrincipal.escalar(470), VentanaPrincipal.escalar(370)));
-
-		JOptionPane.showMessageDialog(this, scrollImagen, "Imagen del producto", JOptionPane.PLAIN_MESSAGE);
 	}
 
 	private String obtenerRutaImagen(Producto2Mano producto) {
@@ -300,7 +368,6 @@ public class SeccionTasacionEmpleado extends AbstractPanelEmpleadoSection {
 			comboEstadoProducto.setSelectedIndex(0);
 		}
 	}
-
 
 	private void estilizarTablaTasaciones(JTable tabla) {
 		tabla.setFont(new Font("Segoe UI", Font.PLAIN, 13));
