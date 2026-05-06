@@ -7,8 +7,6 @@ package tienda;
  * @version 1.0
  */
 public enum TipoNotificacion {
-	
-	/*  NOTIFICACIONES OBLIGATORIAS (SISTEMA) */
 
 	/** Código necesario para retirar un pedido en tienda física. */
 	CODIGO_RECOGIDA, 
