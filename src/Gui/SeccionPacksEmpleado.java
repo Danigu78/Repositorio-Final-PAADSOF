@@ -349,7 +349,14 @@ public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 				return;
 			}
 
+			Pack packTemporal = new Pack("Pack temporal", "Temporal", "sin_imagen.png", 1, 1);
+			packTemporal.setLineas(lineas);
+
+			double precioTotal = packTemporal.calcularSumaProductos();
+
 			String texto = crearTextoLineas(lineas);
+			texto += "\n\nPrecio total de los productos: " + formatearPrecio(precioTotal);
+
 			mostrarTextoLargo("Contenido escrito", texto);
 
 		} catch (Exception e) {
@@ -408,7 +415,8 @@ public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 	}
 
 	private void quitarProductoDelPack() {
-		ResultadoOperacion resultado = controlador.quitarProductoDelPack(campoIdPack.getText(), campoIdProducto.getText());
+		ResultadoOperacion resultado = controlador.quitarProductoDelPack(campoIdPack.getText(),
+				campoIdProducto.getText());
 
 		if (resultado.isExito()) {
 			dejarSoloPacks();

@@ -8,12 +8,12 @@ import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.TreeSet;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -24,22 +24,16 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
 import Gui.Controladores.ControladorProductosEmpleado;
-import productos.Categoria;
-import productos.Comic;
-import productos.Figura;
-import productos.JuegoMesa;
 import productos.LineaPack;
-import productos.Pack;
 import productos.ProductoVenta;
-import tienda.Tienda;
 import usuarios.Empleado;
 
 /**
  * Clase base para las secciones del empleado que trabajan con productos de
  * venta.
  * 
- * Tiene una tabla común de productos, filtros sencillos y métodos auxiliares
- * para trabajar con packs.
+ * Tiene una tabla común de productos, filtros sencillos, ordenación y métodos
+ * auxiliares para trabajar con packs.
  */
 public abstract class AbstractPanelEmpleadoVentaSection extends AbstractPanelEmpleadoSection {
 
@@ -183,6 +177,14 @@ public abstract class AbstractPanelEmpleadoVentaSection extends AbstractPanelEmp
 		panelFiltros.setLayout(new BoxLayout(panelFiltros, BoxLayout.Y_AXIS));
 
 		JTextField campoBuscar = crearCampoCompacto();
+		campoBuscar.setPreferredSize(new Dimension(VentanaPrincipal.escalar(650), VentanaPrincipal.escalar(34)));
+		campoBuscar.setMaximumSize(new Dimension(VentanaPrincipal.escalar(650), VentanaPrincipal.escalar(34)));
+
+		JComboBox<String> comboOrden = crearCombo(new String[] { "Sin ordenar", "Nombre A-Z", "Nombre Z-A",
+				"Precio: menor a mayor", "Precio: mayor a menor", "Stock: menor a mayor", "Puntuación: menor a mayor",
+				"Puntuación: mayor a menor" });
+		comboOrden.setPreferredSize(new Dimension(VentanaPrincipal.escalar(230), VentanaPrincipal.escalar(34)));
+		comboOrden.setMaximumSize(new Dimension(VentanaPrincipal.escalar(230), VentanaPrincipal.escalar(34)));
 
 		JCheckBox checkComic = crearCheckFiltro("Comic");
 		JCheckBox checkJuego = crearCheckFiltro("Juego");
@@ -200,26 +202,35 @@ public abstract class AbstractPanelEmpleadoVentaSection extends AbstractPanelEmp
 
 		JButton botonLimpiar = crearBotonSecundario("Limpiar");
 		botonLimpiar.setPreferredSize(new Dimension(VentanaPrincipal.escalar(140), VentanaPrincipal.escalar(34)));
-
-		JPanel filaBuscar = new JPanel(new BorderLayout(VentanaPrincipal.escalar(12), 0));
-		filaBuscar.setOpaque(false);
+		botonLimpiar.setMaximumSize(new Dimension(VentanaPrincipal.escalar(140), VentanaPrincipal.escalar(34)));
 
 		JPanel zonaBuscar = new JPanel(new BorderLayout(0, VentanaPrincipal.escalar(4)));
 		zonaBuscar.setOpaque(false);
+		zonaBuscar.setPreferredSize(new Dimension(VentanaPrincipal.escalar(650), VentanaPrincipal.escalar(58)));
+		zonaBuscar.setMaximumSize(new Dimension(VentanaPrincipal.escalar(650), VentanaPrincipal.escalar(58)));
 		zonaBuscar.add(crearLabel("Buscar"), BorderLayout.NORTH);
 		zonaBuscar.add(campoBuscar, BorderLayout.CENTER);
+
+		JPanel zonaOrden = new JPanel(new BorderLayout(0, VentanaPrincipal.escalar(4)));
+		zonaOrden.setOpaque(false);
+		zonaOrden.setPreferredSize(new Dimension(VentanaPrincipal.escalar(230), VentanaPrincipal.escalar(58)));
+		zonaOrden.setMaximumSize(new Dimension(VentanaPrincipal.escalar(230), VentanaPrincipal.escalar(58)));
+		zonaOrden.add(crearLabel("Ordenar por"), BorderLayout.NORTH);
+		zonaOrden.add(comboOrden, BorderLayout.CENTER);
 
 		JPanel zonaBotonLimpiar = new JPanel();
 		zonaBotonLimpiar.setOpaque(false);
 		zonaBotonLimpiar.setLayout(new BoxLayout(zonaBotonLimpiar, BoxLayout.Y_AXIS));
-
 		zonaBotonLimpiar.add(Box.createVerticalStrut(VentanaPrincipal.escalar(22)));
 		zonaBotonLimpiar.add(botonLimpiar);
 
-		filaBuscar.add(zonaBuscar, BorderLayout.CENTER);
-		filaBuscar.add(zonaBotonLimpiar, BorderLayout.EAST);
+		JPanel filaSuperior = new JPanel(new FlowLayout(FlowLayout.LEFT, VentanaPrincipal.escalar(18), 0));
+		filaSuperior.setOpaque(false);
+		filaSuperior.add(zonaBuscar);
+		filaSuperior.add(zonaOrden);
+		filaSuperior.add(zonaBotonLimpiar);
 
-		panelFiltros.add(filaBuscar);
+		panelFiltros.add(filaSuperior);
 		panelFiltros.add(Box.createVerticalStrut(VentanaPrincipal.escalar(12)));
 
 		panelFiltros.add(crearFilaFiltro("Tipo", checksTipo));
@@ -230,11 +241,14 @@ public abstract class AbstractPanelEmpleadoVentaSection extends AbstractPanelEmp
 		Runnable aplicarFiltros = () -> {
 			List<String> tiposMarcados = obtenerChecksMarcados(checksTipo);
 			List<String> categoriasMarcadas = obtenerChecksMarcados(checksCategoria);
+			String orden = String.valueOf(comboOrden.getSelectedItem());
 
-			cargarModeloProductosVenta(modeloTabla, campoBuscar.getText(), tiposMarcados, categoriasMarcadas);
+			cargarModeloProductosVenta(modeloTabla, campoBuscar.getText(), tiposMarcados, categoriasMarcadas, orden);
 		};
 
 		escucharCambios(campoBuscar, aplicarFiltros);
+
+		comboOrden.addActionListener(e -> aplicarFiltros.run());
 
 		for (JCheckBox check : checksTipo) {
 			check.addActionListener(e -> aplicarFiltros.run());
@@ -246,6 +260,7 @@ public abstract class AbstractPanelEmpleadoVentaSection extends AbstractPanelEmp
 
 		botonLimpiar.addActionListener(e -> {
 			campoBuscar.setText("");
+			comboOrden.setSelectedIndex(0);
 
 			for (JCheckBox check : checksTipo) {
 				check.setSelected(false);
@@ -292,17 +307,6 @@ public abstract class AbstractPanelEmpleadoVentaSection extends AbstractPanelEmp
 		return check;
 	}
 
-	private JPanel crearFilaChecks(JCheckBox[] checks) {
-		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
-		panel.setOpaque(false);
-
-		for (JCheckBox check : checks) {
-			panel.add(check);
-		}
-
-		return panel;
-	}
-
 	private List<String> obtenerChecksMarcados(JCheckBox[] checks) {
 		List<String> marcados = new ArrayList<>();
 
@@ -322,9 +326,16 @@ public abstract class AbstractPanelEmpleadoVentaSection extends AbstractPanelEmp
 	protected void cargarModeloProductosVenta(DefaultTableModel modeloTabla, String textoBuscado,
 			List<String> tiposBuscados, List<String> categoriasBuscadas) {
 
+		cargarModeloProductosVenta(modeloTabla, textoBuscado, tiposBuscados, categoriasBuscadas, "Sin ordenar");
+	}
+
+	protected void cargarModeloProductosVenta(DefaultTableModel modeloTabla, String textoBuscado,
+			List<String> tiposBuscados, List<String> categoriasBuscadas, String orden) {
+
 		modeloTabla.setRowCount(0);
 
 		String texto = normalizarTexto(textoBuscado);
+		List<ProductoVenta> productos = new ArrayList<>();
 
 		for (ProductoVenta producto : obtenerProductosOrdenadosPorStock()) {
 			String id = producto.getId();
@@ -332,14 +343,86 @@ public abstract class AbstractPanelEmpleadoVentaSection extends AbstractPanelEmp
 			String tipo = obtenerTipoProductoVenta(producto);
 			String categorias = obtenerTextoCategorias(producto);
 
-			if (!pasaFiltro(id, nombre, tipo, categorias, texto, tiposBuscados, categoriasBuscadas)) {
-				continue;
+			if (pasaFiltro(id, nombre, tipo, categorias, texto, tiposBuscados, categoriasBuscadas)) {
+				productos.add(producto);
 			}
+		}
+
+		ordenarProductos(productos, orden);
+
+		for (ProductoVenta producto : productos) {
+			String id = producto.getId();
+			String nombre = producto.getNombre();
+			String tipo = obtenerTipoProductoVenta(producto);
+			String categorias = obtenerTextoCategorias(producto);
 
 			modeloTabla
 					.addRow(new Object[] { id, nombre, tipo, categorias, formatearPrecio(producto.getPrecioOficial()),
 							producto.getStockDisponible(), formatearPuntuacion(producto.getMediaPuntuacion()) });
 		}
+	}
+
+	private void ordenarProductos(List<ProductoVenta> productos, String orden) {
+		final String ordenFinal;
+
+		if (orden == null) {
+			ordenFinal = "Sin ordenar";
+		} else {
+			ordenFinal = orden;
+		}
+
+		productos.sort(new Comparator<ProductoVenta>() {
+			@Override
+			public int compare(ProductoVenta p1, ProductoVenta p2) {
+				String nombre1 = p1.getNombre();
+				String nombre2 = p2.getNombre();
+
+				if (nombre1 == null) {
+					nombre1 = "";
+				}
+
+				if (nombre2 == null) {
+					nombre2 = "";
+				}
+
+				switch (ordenFinal) {
+				case "Sin ordenar":
+					return Integer.compare(numeroIdProducto(p1.getId()), numeroIdProducto(p2.getId()));
+
+				case "Nombre A-Z":
+					return nombre1.compareToIgnoreCase(nombre2);
+
+				case "Nombre Z-A":
+					return nombre2.compareToIgnoreCase(nombre1);
+
+				case "Precio: menor a mayor":
+					return Double.compare(p1.getPrecioOficial(), p2.getPrecioOficial());
+
+				case "Precio: mayor a menor":
+					return Double.compare(p2.getPrecioOficial(), p1.getPrecioOficial());
+
+				case "Stock: menor a mayor":
+					return Integer.compare(p1.getStockDisponible(), p2.getStockDisponible());
+
+				case "Puntuación: menor a mayor":
+					return Double.compare(p1.getMediaPuntuacion(), p2.getMediaPuntuacion());
+
+				case "Puntuación: mayor a menor":
+					return Double.compare(p2.getMediaPuntuacion(), p1.getMediaPuntuacion());
+
+				default:
+					return Integer.compare(numeroIdProducto(p1.getId()), numeroIdProducto(p2.getId()));
+				}
+			}
+		});
+	}
+
+	private int numeroIdProducto(String id) {
+		if (id == null || !id.startsWith("PV-")) {
+			return 0;
+		}
+
+		return Integer.parseInt(id.substring(3));
 	}
 
 	protected void cargarModeloProductosVenta(DefaultTableModel modeloTabla, String textoBuscado, String tipoBuscado,
@@ -436,5 +519,4 @@ public abstract class AbstractPanelEmpleadoVentaSection extends AbstractPanelEmp
 	private String formatearPuntuacion(double puntuacion) {
 		return controladorProductos.formatearPuntuacion(puntuacion);
 	}
-
 }

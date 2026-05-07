@@ -514,8 +514,8 @@ public class Empleado extends UsuarioRegistrado implements Serializable {
 	/**
 	 * Reposición de stock para un producto existente.
 	 * 
-	 * @param id       ID del producto
-	 * @param cantidad Cantidad a añadir
+	 * @param idProducto ID del producto
+	 * @param cantidad   Cantidad a añadir
 	 * @return true si se repuso correctamente
 	 */
 	public boolean reponerStockProducto(String idProducto, int cantidad) {
@@ -541,8 +541,68 @@ public class Empleado extends UsuarioRegistrado implements Serializable {
 			return false;
 		}
 
+		if (producto instanceof Pack) {
+			boolean ok = ((Pack) producto).aumentarStockPack(cantidad);
+
+			if (ok) {
+				System.out.println("Stock del pack repuesto correctamente para " + producto.getId());
+			}
+
+			return ok;
+		}
+
 		producto.setStockDisponible(producto.getStockDisponible() + cantidad);
 		System.out.println("Stock repuesto correctamente para " + producto.getId());
+		return true;
+	}
+
+	/**
+	 * Retira stock de un producto existente.
+	 * 
+	 * @param idProducto ID del producto
+	 * @param cantidad   Cantidad a retirar
+	 * @return true si se retiró correctamente
+	 */
+	public boolean retirarStockProducto(String idProducto, int cantidad) {
+		if (idProducto == null || idProducto.isBlank()) {
+			System.out.println("El id del producto no puede estar vacío.");
+			return false;
+		}
+
+		if (!puedeRealizarTarea(TipoPermisos.GESTION_STOCK)) {
+			return false;
+		}
+
+		if (cantidad <= 0) {
+			System.out.println("La cantidad debe ser mayor que 0.");
+			return false;
+		}
+
+		Tienda tienda = Tienda.getInstancia();
+		ProductoVenta producto = tienda.buscarProductoVentaPorId(idProducto.trim());
+
+		if (producto == null) {
+			System.out.println("No existe ningún producto con id: " + idProducto);
+			return false;
+		}
+
+		if (producto instanceof Pack) {
+			boolean ok = ((Pack) producto).retirarStockPack(cantidad);
+
+			if (ok) {
+				System.out.println("Stock del pack retirado correctamente para " + producto.getId());
+			}
+
+			return ok;
+		}
+
+		if (producto.getStockDisponible() < cantidad) {
+			System.out.println("No se puede retirar más stock del disponible.");
+			return false;
+		}
+
+		producto.setStockDisponible(producto.getStockDisponible() - cantidad);
+		System.out.println("Stock retirado correctamente para " + producto.getId());
 		return true;
 	}
 
@@ -751,34 +811,48 @@ public class Empleado extends UsuarioRegistrado implements Serializable {
 			System.out.println("El id del producto o el nombre de la categoría no pueden ser null.");
 			return false;
 		}
+
 		if (!puedeRealizarTarea(TipoPermisos.GESTION_CATEGORIAS)) {
 			System.out.println("El empleado " + this.getNickname() + " no tiene el permiso de gestion de categorias.");
 			return false;
 		}
+
 		Tienda tienda = Tienda.getInstancia();
 
-		ProductoVenta p = tienda.buscarProductoVentaPorId(idProducto);
+		ProductoVenta p = tienda.buscarProductoVentaPorId(idProducto.trim());
+
 		if (p == null) {
 			System.out.println("No existe ningún producto con id: " + idProducto);
 			return false;
 		}
-		Categoria c = tienda.buscarCategoriaPorNombre(nombreCat);
+
+		Categoria c = tienda.buscarCategoriaPorNombre(nombreCat.trim());
+
 		if (c == null) {
 			System.out.println("No existe ninguna categoría con nombre: " + nombreCat);
 			return false;
 		}
 
+		// Comprobación importante:
+		// si el producto no tiene esa categoría, no dejamos quitarla.
+		if (!p.getCategorias().contains(c)) {
+			System.out.println("El producto " + p.getId() + " no pertenece a la categoría " + c.getNombre() + ".");
+			return false;
+		}
+
 		boolean eliminado = c.deleteProducto(p);
+
 		if (eliminado) {
 			System.out.println(
 					"Se ha eliminado el producto con id " + idProducto + " de la categoria " + nombreCat + ".");
-			for (Cliente cliente : Tienda.getInstancia().obtenerClientesTienda()) {
 
+			for (Cliente cliente : Tienda.getInstancia().obtenerClientesTienda()) {
 				cliente.notificarProductoNuevoCategoria(
 						"Se ha eliminado el producto " + p.getNombre() + " de la categoria " + nombreCat + ".",
 						nombreCat);
 			}
 		}
+
 		return eliminado;
 	}
 

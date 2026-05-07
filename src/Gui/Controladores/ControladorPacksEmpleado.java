@@ -5,200 +5,305 @@ import java.util.ArrayList;
 import productos.LineaPack;
 import productos.Pack;
 import productos.ProductoVenta;
-import tienda.Tienda;
 import usuarios.Empleado;
 
-/** Controlador de gestión de packs. */
+/**
+ * Controlador de gestión de packs.
+ */
 public class ControladorPacksEmpleado {
 
-    private final Empleado empleado;
-    private final ControladorProductosEmpleado productos = new ControladorProductosEmpleado();
+	private final Empleado empleado;
+	private final ControladorProductosEmpleado productos = new ControladorProductosEmpleado();
 
-    public ControladorPacksEmpleado(Empleado empleado) {
-        this.empleado = empleado;
-    }
+	public ControladorPacksEmpleado(Empleado empleado) {
+		this.empleado = empleado;
+	}
 
-    public ArrayList<LineaPack> construirLineasPack(String texto) throws Exception {
-        return productos.construirLineasPack(texto);
-    }
+	public ArrayList<LineaPack> construirLineasPack(String texto) throws Exception {
+		return productos.construirLineasPack(texto);
+	}
 
-    public Pack buscarPack(String idPack) {
-        ProductoVenta producto = productos.buscarProductoVentaPorId(idPack);
-        if (producto instanceof Pack) {
-            return (Pack) producto;
-        }
-        return null;
-    }
+	public Pack buscarPack(String idPack) {
+		if (idPack == null || idPack.trim().isBlank()) {
+			return null;
+		}
 
-    public ResultadoOperacion crearPack(String nombre, String descripcion, String imagen, String precioTexto,
-            String stockTexto, String textoLineas) {
-        if (empleado == null) {
-            return ResultadoOperacion.error("No hay empleado activo.");
-        }
-        if (nombre == null || nombre.trim().isBlank()) {
-            return ResultadoOperacion.error("Escribe el nombre del pack.");
-        }
-        if (descripcion == null || descripcion.trim().isBlank()) {
-            return ResultadoOperacion.error("Escribe una descripción.");
-        }
-        if (imagen == null || imagen.trim().isBlank()) {
-            return ResultadoOperacion.error("Escribe la ruta de la imagen.");
-        }
+		ProductoVenta producto = productos.buscarProductoVentaPorId(idPack.trim());
 
-        Double precio = leerDouble(precioTexto);
-        if (precio == null || precio <= 0) {
-            return ResultadoOperacion.error("Escribe un precio válido.");
-        }
+		if (producto instanceof Pack) {
+			return (Pack) producto;
+		}
 
-        Integer stock = leerEntero(stockTexto);
-        if (stock == null || stock <= 0) {
-            return ResultadoOperacion.error("Escribe un stock válido.");
-        }
+		return null;
+	}
 
-        try {
-            ArrayList<LineaPack> lineas = construirLineasPack(textoLineas);
-            if (lineas.size() < 2) {
-                return ResultadoOperacion.error("Un pack debe tener al menos dos productos.");
-            }
-            boolean ok = empleado.crearPack(nombre.trim(), descripcion.trim(), imagen.trim(), precio, stock, lineas);
-            return ok ? ResultadoOperacion.ok("Pack creado correctamente.")
-                    : ResultadoOperacion.error("No se pudo crear el pack.");
-        } catch (Exception e) {
-            return ResultadoOperacion.error("No se pudo crear el pack: " + e.getMessage());
-        }
-    }
+	public ResultadoOperacion crearPack(String nombre, String descripcion, String imagen, String precioTexto,
+			String stockTexto, String textoLineas) {
 
-    public ResultadoOperacion anadirProductoAPack(String idProducto, String idPack, String unidadesTexto) {
-        Integer unidades = leerEntero(unidadesTexto);
-        ResultadoOperacion validacion = validarProductoPack(idProducto, idPack, unidades);
-        if (!validacion.isExito()) {
-            return validacion;
-        }
-        try {
-            boolean ok = empleado.añadirProductoaPack(idProducto.trim(), idPack.trim(), unidades);
-            return ok ? ResultadoOperacion.ok("Producto añadido al pack.")
-                    : ResultadoOperacion.error("No se pudo añadir el producto.");
-        } catch (Exception e) {
-            return ResultadoOperacion.error("No se pudo añadir el producto: " + e.getMessage());
-        }
-    }
+		if (empleado == null) {
+			return ResultadoOperacion.error("No hay empleado activo.");
+		}
 
-    public ResultadoOperacion cambiarUnidadesPack(String idProducto, String idPack, String unidadesTexto) {
-        Integer unidades = leerEntero(unidadesTexto);
-        ResultadoOperacion validacion = validarProductoPack(idProducto, idPack, unidades);
-        if (!validacion.isExito()) {
-            return validacion;
-        }
-        try {
-            boolean ok = empleado.modificarUnidadesProductoEnPack(idProducto.trim(), idPack.trim(), unidades);
-            return ok ? ResultadoOperacion.ok("Unidades modificadas correctamente.")
-                    : ResultadoOperacion.error("No se pudieron modificar las unidades.");
-        } catch (Exception e) {
-            return ResultadoOperacion.error("No se pudieron modificar las unidades: " + e.getMessage());
-        }
-    }
+		if (nombre == null || nombre.trim().isBlank()) {
+			return ResultadoOperacion.error("Escribe el nombre del pack.");
+		}
 
-    public ResultadoOperacion quitarProductoDelPack(String idPack, String idProducto) {
-        if (idPack == null || idPack.trim().isBlank() || idProducto == null || idProducto.trim().isBlank()) {
-            return ResultadoOperacion.error("Escribe el ID del pack y el ID del producto.");
-        }
-        boolean ok = empleado.eliminarProductoDePack(idPack.trim(), idProducto.trim());
-        return ok ? ResultadoOperacion.ok("Producto quitado del pack.")
-                : ResultadoOperacion.error("No se pudo quitar el producto.");
-    }
+		if (descripcion == null || descripcion.trim().isBlank()) {
+			return ResultadoOperacion.error("Escribe una descripción.");
+		}
 
-    public ResultadoOperacion cambiarPrecioPack(String idPack, String precioTexto) {
-        if (idPack == null || idPack.trim().isBlank()) {
-            return ResultadoOperacion.error("Escribe el ID del pack.");
-        }
-        Double precio = leerDouble(precioTexto);
-        if (precio == null || precio <= 0) {
-            return ResultadoOperacion.error("Escribe un precio válido.");
-        }
-        boolean ok = empleado.modificarPrecioPack(idPack.trim(), precio);
-        return ok ? ResultadoOperacion.ok("Precio modificado correctamente.")
-                : ResultadoOperacion.error("No se pudo modificar el precio.");
-    }
+		if (imagen == null || imagen.trim().isBlank()) {
+			return ResultadoOperacion.error("Escribe la ruta de la imagen.");
+		}
 
-    public ResultadoOperacion eliminarPack(String idPack) {
-        if (idPack == null || idPack.trim().isBlank()) {
-            return ResultadoOperacion.error("Escribe el ID del pack.");
-        }
-        boolean ok = empleado.eliminarPack(idPack.trim());
-        return ok ? ResultadoOperacion.ok("Pack eliminado correctamente.")
-                : ResultadoOperacion.error("No se pudo eliminar el pack.");
-    }
+		Double precio = leerDouble(precioTexto);
 
-    public String crearTextoPack(Pack pack) {
-        if (pack == null) {
-            return "No existe ningún pack con ese ID.";
-        }
-        StringBuilder texto = new StringBuilder();
-        texto.append("Pack: ").append(pack.getId()).append(" - ").append(pack.getNombre()).append("\n");
-        texto.append("Precio: ").append(productos.formatearPrecio(pack.getPrecioOficial())).append("\n");
-        texto.append("Stock: ").append(pack.getStockDisponible()).append("\n");
-        texto.append("Productos por separado: ").append(productos.formatearPrecio(pack.calcularSumaProductos()))
-                .append("\n\n");
-        texto.append("Productos incluidos:\n");
-        if (pack.getLineas().isEmpty()) {
-            texto.append("Sin productos.");
-        } else {
-            texto.append(crearTextoLineas(new ArrayList<>(pack.getLineas())));
-        }
-        return texto.toString();
-    }
+		if (precio == null || precio <= 0) {
+			return ResultadoOperacion.error("Escribe un precio válido.");
+		}
 
-    public String crearTextoLineas(ArrayList<LineaPack> lineas) {
-        StringBuilder texto = new StringBuilder();
-        for (LineaPack linea : lineas) {
-            ProductoVenta producto = linea.getProducto();
-            texto.append("- ").append(producto.getId()).append(" | ");
-            texto.append(producto.getNombre()).append(" | ");
-            texto.append("unidades: ").append(linea.getUnidades()).append(" | ");
-            texto.append("subtotal: ").append(productos.formatearPrecio(linea.getSubtotal())).append("\n");
-        }
-        return texto.toString();
-    }
+		Integer stock = leerEntero(stockTexto);
 
-    public String formatearPrecio(double precio) {
-        return productos.formatearPrecio(precio);
-    }
+		if (stock == null || stock <= 0) {
+			return ResultadoOperacion.error("Escribe un stock válido.");
+		}
 
-    private ResultadoOperacion validarProductoPack(String idProducto, String idPack, Integer unidades) {
-        if (empleado == null) {
-            return ResultadoOperacion.error("No hay empleado activo.");
-        }
-        if (idPack == null || idPack.trim().isBlank()) {
-            return ResultadoOperacion.error("Escribe el ID del pack.");
-        }
-        if (idProducto == null || idProducto.trim().isBlank()) {
-            return ResultadoOperacion.error("Escribe el ID del producto.");
-        }
-        if (unidades == null || unidades <= 0) {
-            return ResultadoOperacion.error("Escribe unidades válidas.");
-        }
-        return ResultadoOperacion.ok("Datos válidos");
-    }
+		try {
+			ArrayList<LineaPack> lineas = construirLineasPack(textoLineas);
 
-    private Integer leerEntero(String texto) {
-        if (texto == null || texto.trim().isBlank()) {
-            return null;
-        }
-        try {
-            return Integer.parseInt(texto.trim());
-        } catch (NumberFormatException e) {
-            return null;
-        }
-    }
+			if (lineas.size() < 2) {
+				return ResultadoOperacion.error("Un pack debe tener al menos dos productos.");
+			}
 
-    private Double leerDouble(String texto) {
-        if (texto == null || texto.trim().isBlank()) {
-            return null;
-        }
-        try {
-            return Double.parseDouble(texto.trim().replace(",", "."));
-        } catch (NumberFormatException e) {
-            return null;
-        }
-    }
+			boolean ok = empleado.crearPack(nombre.trim(), descripcion.trim(), imagen.trim(), precio, stock, lineas);
+
+			if (ok) {
+				return ResultadoOperacion.ok("Pack creado correctamente.");
+			}
+
+			return ResultadoOperacion.error("No se pudo crear el pack.");
+
+		} catch (Exception e) {
+			return ResultadoOperacion.error("No se pudo crear el pack: " + e.getMessage());
+		}
+	}
+
+	public ResultadoOperacion anadirProductoAPack(String idProducto, String idPack, String unidadesTexto) {
+		Integer unidades = leerEntero(unidadesTexto);
+
+		ResultadoOperacion validacion = validarProductoPack(idProducto, idPack, unidades);
+
+		if (!validacion.isExito()) {
+			return validacion;
+		}
+
+		try {
+			boolean ok = empleado.añadirProductoaPack(idProducto.trim(), idPack.trim(), unidades);
+
+			if (ok) {
+				return ResultadoOperacion.ok("Producto añadido al pack.");
+			}
+
+			return ResultadoOperacion.error("No se pudo añadir el producto.");
+
+		} catch (Exception e) {
+			return ResultadoOperacion.error("No se pudo añadir el producto: " + e.getMessage());
+		}
+	}
+
+	public ResultadoOperacion cambiarUnidadesPack(String idProducto, String idPack, String unidadesTexto) {
+		Integer unidades = leerEntero(unidadesTexto);
+
+		ResultadoOperacion validacion = validarProductoPack(idProducto, idPack, unidades);
+
+		if (!validacion.isExito()) {
+			return validacion;
+		}
+
+		try {
+			boolean ok = empleado.modificarUnidadesProductoEnPack(idProducto.trim(), idPack.trim(), unidades);
+
+			if (ok) {
+				return ResultadoOperacion.ok("Unidades modificadas correctamente.");
+			}
+
+			return ResultadoOperacion.error("No se pudieron modificar las unidades.");
+
+		} catch (Exception e) {
+			return ResultadoOperacion.error("No se pudieron modificar las unidades: " + e.getMessage());
+		}
+	}
+
+	public ResultadoOperacion quitarProductoDelPack(String idPack, String idProducto) {
+		if (empleado == null) {
+			return ResultadoOperacion.error("No hay empleado activo.");
+		}
+
+		if (idPack == null || idPack.trim().isBlank()) {
+			return ResultadoOperacion.error("Escribe el ID del pack.");
+		}
+
+		if (idProducto == null || idProducto.trim().isBlank()) {
+			return ResultadoOperacion.error("Escribe el ID del producto.");
+		}
+
+		try {
+			boolean ok = empleado.eliminarProductoDePack(idPack.trim(), idProducto.trim());
+
+			if (ok) {
+				return ResultadoOperacion.ok("Producto quitado del pack.");
+			}
+
+			return ResultadoOperacion.error("No se pudo quitar el producto.");
+
+		} catch (Exception e) {
+			return ResultadoOperacion.error("No se pudo quitar el producto: " + e.getMessage());
+		}
+	}
+
+	public ResultadoOperacion cambiarPrecioPack(String idPack, String precioTexto) {
+		if (empleado == null) {
+			return ResultadoOperacion.error("No hay empleado activo.");
+		}
+
+		if (idPack == null || idPack.trim().isBlank()) {
+			return ResultadoOperacion.error("Escribe el ID del pack.");
+		}
+
+		Double precio = leerDouble(precioTexto);
+
+		if (precio == null || precio <= 0) {
+			return ResultadoOperacion.error("Escribe un precio válido.");
+		}
+
+		try {
+			boolean ok = empleado.modificarPrecioPack(idPack.trim(), precio);
+
+			if (ok) {
+				return ResultadoOperacion.ok("Precio modificado correctamente.");
+			}
+
+			return ResultadoOperacion.error("No se pudo modificar el precio.");
+
+		} catch (Exception e) {
+			return ResultadoOperacion.error("No se pudo modificar el precio: " + e.getMessage());
+		}
+	}
+
+	public ResultadoOperacion eliminarPack(String idPack) {
+		if (empleado == null) {
+			return ResultadoOperacion.error("No hay empleado activo.");
+		}
+
+		if (idPack == null || idPack.trim().isBlank()) {
+			return ResultadoOperacion.error("Escribe el ID del pack.");
+		}
+
+		try {
+			boolean ok = empleado.eliminarPack(idPack.trim());
+
+			if (ok) {
+				return ResultadoOperacion.ok("Pack eliminado correctamente.");
+			}
+
+			return ResultadoOperacion.error("No se pudo eliminar el pack.");
+
+		} catch (Exception e) {
+			return ResultadoOperacion.error("No se pudo eliminar el pack: " + e.getMessage());
+		}
+	}
+
+	public String crearTextoPack(Pack pack) {
+		if (pack == null) {
+			return "No existe ningún pack con ese ID.";
+		}
+
+		StringBuilder texto = new StringBuilder();
+
+		texto.append("Pack: ").append(pack.getId()).append(" - ").append(pack.getNombre()).append("\n");
+		texto.append("Precio: ").append(productos.formatearPrecio(pack.getPrecioOficial())).append("\n");
+		texto.append("Stock: ").append(pack.getStockDisponible()).append("\n");
+		texto.append("Productos por separado: ")
+				.append(productos.formatearPrecio(pack.calcularSumaProductos())).append("\n");
+
+		double ahorro = pack.calcularSumaProductos() - pack.getPrecioOficial();
+		texto.append("Ahorro: ").append(productos.formatearPrecio(ahorro)).append("\n\n");
+
+		texto.append("Productos incluidos:\n");
+
+		if (pack.getLineas().isEmpty()) {
+			texto.append("Sin productos.");
+		} else {
+			texto.append(crearTextoLineas(new ArrayList<>(pack.getLineas())));
+		}
+
+		return texto.toString();
+	}
+
+	public String crearTextoLineas(ArrayList<LineaPack> lineas) {
+		StringBuilder texto = new StringBuilder();
+
+		if (lineas == null || lineas.isEmpty()) {
+			return "Sin productos.";
+		}
+
+		for (LineaPack linea : lineas) {
+			ProductoVenta producto = linea.getProducto();
+
+			texto.append("- ").append(producto.getId()).append(" | ");
+			texto.append(producto.getNombre()).append(" | ");
+			texto.append("unidades: ").append(linea.getUnidades()).append(" | ");
+			texto.append("subtotal: ").append(productos.formatearPrecio(linea.getSubtotal())).append("\n");
+		}
+
+		return texto.toString();
+	}
+
+	public String formatearPrecio(double precio) {
+		return productos.formatearPrecio(precio);
+	}
+
+	private ResultadoOperacion validarProductoPack(String idProducto, String idPack, Integer unidades) {
+		if (empleado == null) {
+			return ResultadoOperacion.error("No hay empleado activo.");
+		}
+
+		if (idPack == null || idPack.trim().isBlank()) {
+			return ResultadoOperacion.error("Escribe el ID del pack.");
+		}
+
+		if (idProducto == null || idProducto.trim().isBlank()) {
+			return ResultadoOperacion.error("Escribe el ID del producto.");
+		}
+
+		if (unidades == null || unidades <= 0) {
+			return ResultadoOperacion.error("Escribe unidades válidas.");
+		}
+
+		return ResultadoOperacion.ok("Datos válidos");
+	}
+
+	private Integer leerEntero(String texto) {
+		if (texto == null || texto.trim().isBlank()) {
+			return null;
+		}
+
+		try {
+			return Integer.parseInt(texto.trim());
+		} catch (NumberFormatException e) {
+			return null;
+		}
+	}
+
+	private Double leerDouble(String texto) {
+		if (texto == null || texto.trim().isBlank()) {
+			return null;
+		}
+
+		try {
+			return Double.parseDouble(texto.trim().replace(",", "."));
+		} catch (NumberFormatException e) {
+			return null;
+		}
+	}
 }

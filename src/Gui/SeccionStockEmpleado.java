@@ -60,7 +60,7 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 	private JPanel crearBloqueAccionesStock() {
 		JPanel bloque = crearBloque("Acciones de stock");
 
-		JPanel panelAcciones = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(25), 0));
+		JPanel panelAcciones = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(40), 0));
 		panelAcciones.setOpaque(false);
 
 		panelAcciones.add(crearPanelReponerStock());
@@ -73,57 +73,96 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 
 	// Panel de la izquierda: sirve para sumar unidades a un producto
 	private JPanel crearPanelReponerStock() {
-		JPanel panel = new JPanel();
+		JPanel panel = new JPanel(new GridBagLayout());
 		panel.setOpaque(false);
-		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-		JLabel titulo = crearLabel("Reponer unidades");
-		panel.add(titulo);
-		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(8)));
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.weightx = 1.0;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.anchor = GridBagConstraints.NORTHWEST;
+		gbc.insets = new Insets(0, 0, VentanaPrincipal.escalar(10), 0);
 
-		panel.add(crearCampoFormulario("ID producto", campoIdProducto));
-		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		JLabel titulo = crearLabel("Ajustar unidades");
+		gbc.gridy = 0;
+		panel.add(titulo, gbc);
 
-		panel.add(crearCampoFormulario("Cantidad a añadir", campoUnidades));
-		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(12)));
+		JPanel campoId = crearCampoFormulario("ID producto", campoIdProducto);
+		ajustarAnchoFormulario(campoId);
+		gbc.gridy = 1;
+		panel.add(campoId, gbc);
 
-		JButton botonReponer = crearBotonAccion("Reponer stock");
+		JPanel campoCantidad = crearCampoFormulario("Cantidad", campoUnidades);
+		ajustarAnchoFormulario(campoCantidad);
+		gbc.gridy = 2;
+		panel.add(campoCantidad, gbc);
 
-		JPanel filaBoton = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		filaBoton.setOpaque(false);
-		filaBoton.add(botonReponer);
+		JButton botonSumar = crearBotonAccion("Sumar stock");
+		JButton botonRestar = crearBotonSecundario("Restar stock");
 
-		panel.add(filaBoton);
+		ajustarBotonStock(botonSumar);
+		ajustarBotonStock(botonRestar);
 
-		botonReponer.addActionListener(e -> reponerStock());
+		JPanel filaBotones = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		filaBotones.setOpaque(false);
+		filaBotones.add(botonSumar);
+		filaBotones.add(Box.createHorizontalStrut(VentanaPrincipal.escalar(10)));
+		filaBotones.add(botonRestar);
+
+		gbc.gridy = 3;
+		gbc.insets = new Insets(VentanaPrincipal.escalar(2), 0, 0, 0);
+		panel.add(filaBotones, gbc);
+
+		gbc.gridy = 4;
+		gbc.weighty = 1.0;
+		panel.add(Box.createVerticalGlue(), gbc);
+
+		botonSumar.addActionListener(e -> reponerStock());
+		botonRestar.addActionListener(e -> retirarStock());
 
 		return panel;
 	}
 
 	// Panel de la derecha: cargar productos desde un txt
 	private JPanel crearPanelCargarFichero() {
-		JPanel panel = new JPanel();
+		JPanel panel = new JPanel(new GridBagLayout());
 		panel.setOpaque(false);
-		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.weightx = 1.0;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.anchor = GridBagConstraints.NORTHWEST;
+		gbc.insets = new Insets(0, 0, VentanaPrincipal.escalar(10), 0);
 
 		JLabel titulo = crearLabel("Cargar productos desde fichero");
-		panel.add(titulo);
-		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(8)));
+		gbc.gridy = 0;
+		panel.add(titulo, gbc);
 
-		panel.add(crearCampoFormulario("Ruta del fichero", campoFichero));
-		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(12)));
+		JPanel campoRuta = crearCampoFormulario("Ruta del fichero", campoFichero);
+		ajustarAnchoFormulario(campoRuta);
+		gbc.gridy = 1;
+		panel.add(campoRuta, gbc);
 
 		JButton botonExaminar = crearBotonSecundario("Abrir...");
 		JButton botonCargar = crearBotonAccion("Cargar fichero");
 
+		ajustarBotonStock(botonExaminar);
+		ajustarBotonStock(botonCargar);
+
 		JPanel filaBotones = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		filaBotones.setOpaque(false);
-
 		filaBotones.add(botonExaminar);
 		filaBotones.add(Box.createHorizontalStrut(VentanaPrincipal.escalar(10)));
 		filaBotones.add(botonCargar);
 
-		panel.add(filaBotones);
+		gbc.gridy = 2;
+		gbc.insets = new Insets(VentanaPrincipal.escalar(2), 0, 0, 0);
+		panel.add(filaBotones, gbc);
+
+		gbc.gridy = 3;
+		gbc.weighty = 1.0;
+		panel.add(Box.createVerticalGlue(), gbc);
 
 		botonExaminar.addActionListener(e -> seleccionarFichero());
 		botonCargar.addActionListener(e -> cargarFichero());
@@ -131,8 +170,34 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 		return panel;
 	}
 
+	private void ajustarAnchoFormulario(JPanel panelFormulario) {
+		Dimension tamano = new Dimension(VentanaPrincipal.escalar(520), VentanaPrincipal.escalar(68));
+		panelFormulario.setPreferredSize(tamano);
+		panelFormulario.setMaximumSize(tamano);
+		panelFormulario.setMinimumSize(tamano);
+	}
+
+	private void ajustarBotonStock(JButton boton) {
+		Dimension tamano = new Dimension(VentanaPrincipal.escalar(210), VentanaPrincipal.escalar(42));
+		boton.setPreferredSize(tamano);
+		boton.setMaximumSize(tamano);
+		boton.setMinimumSize(tamano);
+	}
+
 	private void reponerStock() {
 		ResultadoOperacion resultado = controlador.reponerStock(campoIdProducto.getText(), campoUnidades.getText());
+
+		if (resultado.isExito()) {
+			recargarTablaProductos(tablaProductos.tabla);
+			campoUnidades.setText("");
+			mostrarMensaje(resultado.getMensaje());
+		} else {
+			mostrarError(resultado.getMensaje());
+		}
+	}
+
+	private void retirarStock() {
+		ResultadoOperacion resultado = controlador.retirarStock(campoIdProducto.getText(), campoUnidades.getText());
 
 		if (resultado.isExito()) {
 			recargarTablaProductos(tablaProductos.tabla);
