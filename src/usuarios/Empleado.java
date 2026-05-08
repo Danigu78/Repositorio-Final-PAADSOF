@@ -865,30 +865,58 @@ public class Empleado extends UsuarioRegistrado implements Serializable {
 	 * @param precioOficial Precio del pack
 	 * @param stock         Stock del pack
 	 * @param lineas        Lista de líneas de productos del pack
+	 * @param categorias    Categorías asociadas al pack
 	 * @return true si el pack se creó correctamente
 	 */
 	public boolean crearPack(String nombre, String descripcion, String imagen, double precioOficial, int stock,
-			ArrayList<LineaPack> lineas) {
+			ArrayList<LineaPack> lineas, ArrayList<Categoria> categorias) {
+
 		if (!puedeRealizarTarea(TipoPermisos.GESTION_PACKS)) {
 			System.out.println("El empleado " + this.getNickname() + " no tiene permiso para trabajar con packs.");
 			return false;
 		}
+
 		if (nombre == null || nombre.isBlank() || descripcion == null || descripcion.isBlank() || imagen == null) {
 			System.out.println("El nombre, descripcion o imagen no pueden estar vacios");
 			return false;
 		}
+
 		if (stock <= 0) {
 			System.out.println("El stock debe ser mayor que 0");
 			return false;
 		}
+
 		if (lineas == null || lineas.size() <= 1) {
 			System.out.println("Para crear un pack minimo tiene que haber dos productos distintos");
 			return false;
 		}
+
+		if (categorias == null) {
+			categorias = new ArrayList<>();
+		}
+
+		for (Categoria c : categorias) {
+			if (c == null || !Tienda.getInstancia().getCategorias().contains(c)) {
+				System.out.println("Todas las categorias del pack deben existir en la tienda.");
+				return false;
+			}
+		}
+
 		Pack p = new Pack(nombre, descripcion, imagen, precioOficial, stock, lineas);
+
+		for (Categoria c : categorias) {
+			try {
+				c.addProducto(p);
+			} catch (ProductoYaEnCategoriaException e) {
+				System.out.println("Aviso: " + e.getMessage());
+			}
+		}
+
 		Tienda.getInstancia().añadirProducto(p);
+
 		System.out.println("El empleado " + id + " ha creado correctamente el pack con id " + p.getId() + ".");
 		this.recibirNotificacion("Has creado el pack " + nombre + " correctamente.");
+
 		return true;
 	}
 

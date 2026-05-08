@@ -2,9 +2,11 @@ package Gui.Controladores;
 
 import java.util.ArrayList;
 
+import productos.Categoria;
 import productos.LineaPack;
 import productos.Pack;
 import productos.ProductoVenta;
+import tienda.Tienda;
 import usuarios.Empleado;
 
 /**
@@ -17,6 +19,10 @@ public class ControladorPacksEmpleado {
 
 	public ControladorPacksEmpleado(Empleado empleado) {
 		this.empleado = empleado;
+	}
+
+	public ArrayList<String> getNombresCategorias() {
+		return new ArrayList<>(productos.obtenerNombresCategoriasVenta());
 	}
 
 	public ArrayList<LineaPack> construirLineasPack(String texto) throws Exception {
@@ -38,7 +44,7 @@ public class ControladorPacksEmpleado {
 	}
 
 	public ResultadoOperacion crearPack(String nombre, String descripcion, String imagen, String precioTexto,
-			String stockTexto, String textoLineas) {
+			String stockTexto, String textoLineas, String categoriasTexto) {
 
 		if (empleado == null) {
 			return ResultadoOperacion.error("No hay empleado activo.");
@@ -75,7 +81,10 @@ public class ControladorPacksEmpleado {
 				return ResultadoOperacion.error("Un pack debe tener al menos dos productos.");
 			}
 
-			boolean ok = empleado.crearPack(nombre.trim(), descripcion.trim(), imagen.trim(), precio, stock, lineas);
+			ArrayList<Categoria> categorias = leerCategorias(categoriasTexto);
+
+			boolean ok = empleado.crearPack(nombre.trim(), descripcion.trim(), imagen.trim(), precio, stock, lineas,
+					categorias);
 
 			if (ok) {
 				return ResultadoOperacion.ok("Pack creado correctamente.");
@@ -221,8 +230,9 @@ public class ControladorPacksEmpleado {
 		StringBuilder texto = new StringBuilder();
 
 		texto.append("Pack: ").append(pack.getId()).append(" - ").append(pack.getNombre()).append("\n");
-		texto.append("Precio: ").append(productos.formatearPrecio(pack.getPrecioOficial())).append("\n");
-		texto.append("Stock: ").append(pack.getStockDisponible()).append("\n");
+		texto.append("Categorías: ").append(crearTextoCategorias(pack)).append("\n");
+		texto.append("Precio pack: ").append(productos.formatearPrecio(pack.getPrecioOficial())).append("\n");
+		texto.append("Stock pack: ").append(pack.getStockDisponible()).append("\n");
 		texto.append("Productos por separado: ")
 				.append(productos.formatearPrecio(pack.calcularSumaProductos())).append("\n");
 
@@ -281,6 +291,54 @@ public class ControladorPacksEmpleado {
 		}
 
 		return ResultadoOperacion.ok("Datos válidos");
+	}
+
+	private ArrayList<Categoria> leerCategorias(String texto) throws Exception {
+		ArrayList<Categoria> categorias = new ArrayList<>();
+
+		if (texto == null || texto.trim().isBlank()) {
+			return categorias;
+		}
+
+		String[] partes = texto.split(",");
+
+		for (String parte : partes) {
+			String nombre = parte.trim();
+
+			if (nombre.isBlank()) {
+				continue;
+			}
+
+			Categoria categoria = Tienda.getInstancia().buscarCategoriaPorNombre(nombre);
+
+			if (categoria == null) {
+				throw new Exception("No existe la categoría: " + nombre);
+			}
+
+			if (!categorias.contains(categoria)) {
+				categorias.add(categoria);
+			}
+		}
+
+		return categorias;
+	}
+
+	private String crearTextoCategorias(ProductoVenta producto) {
+		if (producto == null || producto.getCategorias() == null || producto.getCategorias().isEmpty()) {
+			return "Sin categorías";
+		}
+
+		String texto = "";
+
+		for (Categoria categoria : producto.getCategorias()) {
+			if (!texto.isEmpty()) {
+				texto += ", ";
+			}
+
+			texto += categoria.getNombre();
+		}
+
+		return texto;
 	}
 
 	private Integer leerEntero(String texto) {

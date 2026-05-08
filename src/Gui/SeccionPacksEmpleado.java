@@ -10,8 +10,6 @@ import Gui.Controladores.ControladorPacksEmpleado;
 import Gui.Controladores.ResultadoOperacion;
 import productos.LineaPack;
 import productos.Pack;
-import productos.ProductoVenta;
-import tienda.Tienda;
 import usuarios.Empleado;
 
 /**
@@ -27,10 +25,13 @@ public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 
 	private JTextArea areaLineasPack;
 
+	private ArrayList<JCheckBox> checksCategoriasPack;
+
 	private JTextField campoIdPack;
 	private JTextField campoIdProducto;
 	private JTextField campoUnidades;
 	private JTextField campoNuevoPrecio;
+
 	private ControladorPacksEmpleado controlador;
 
 	public SeccionPacksEmpleado(VentanaPrincipal ventana, Empleado empleado) {
@@ -58,10 +59,6 @@ public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 		selectorProductos = crearSelectorProductosVenta("Packs existentes",
 				"Busca productos igual que en el resto de secciones. Por defecto se muestran los packs.", false);
 
-		/*
-		 * Esta tabla es solo de consulta. No queremos que al pulsar una fila copie
-		 * nada.
-		 */
 		selectorProductos.tabla.setRowSelectionAllowed(false);
 		selectorProductos.tabla.setCellSelectionEnabled(false);
 
@@ -161,6 +158,7 @@ public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 		JTextField campoPrecio = crearCampo();
 		JTextField campoStock = crearCampo();
 
+		checksCategoriasPack = new ArrayList<>();
 		areaLineasPack = crearArea();
 
 		JPanel panelCrear = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(25), 0));
@@ -185,10 +183,12 @@ public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 		bloque.add(filaBotones, gbcBoton(2));
 
 		botonVerLineas.addActionListener(e -> verContenidoEscrito());
+
 		botonLimpiar.addActionListener(
 				e -> limpiarFormularioCrear(campoNombre, areaDescripcion, campoImagen, campoPrecio, campoStock));
-		botonCrear
-				.addActionListener(e -> crearPack(campoNombre, areaDescripcion, campoImagen, campoPrecio, campoStock));
+
+		botonCrear.addActionListener(
+				e -> crearPack(campoNombre, areaDescripcion, campoImagen, campoPrecio, campoStock));
 
 		return bloque;
 	}
@@ -216,8 +216,44 @@ public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
 		panel.add(crearCampoFormulario("Stock", campoStock));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+
+		panel.add(crearLabel("Categorías"));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(5)));
+		panel.add(crearPanelCategoriasPack());
 
 		return panel;
+	}
+
+	private JPanel crearPanelCategoriasPack() {
+		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
+		panel.setOpaque(false);
+
+		checksCategoriasPack.clear();
+
+		for (String nombreCategoria : controlador.getNombresCategorias()) {
+			JCheckBox check = new JCheckBox(nombreCategoria);
+
+			check.setOpaque(false);
+			check.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+			check.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+			check.setFocusPainted(false);
+
+			checksCategoriasPack.add(check);
+			panel.add(check);
+		}
+
+		JScrollPane scroll = new JScrollPane(panel);
+		scroll.setOpaque(false);
+		scroll.getViewport().setOpaque(false);
+		scroll.setBorder(null);
+		scroll.setPreferredSize(new Dimension(VentanaPrincipal.escalar(390), VentanaPrincipal.escalar(80)));
+
+		JPanel contenedor = new JPanel(new BorderLayout());
+		contenedor.setOpaque(false);
+		contenedor.add(scroll, BorderLayout.CENTER);
+
+		return contenedor;
 	}
 
 	private JPanel crearPanelProductosPack() {
@@ -368,7 +404,8 @@ public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 			JTextField campoPrecio, JTextField campoStock) {
 
 		ResultadoOperacion resultado = controlador.crearPack(campoNombre.getText(), areaDescripcion.getText(),
-				campoImagen.getText(), campoPrecio.getText(), campoStock.getText(), areaLineasPack.getText());
+				campoImagen.getText(), campoPrecio.getText(), campoStock.getText(), areaLineasPack.getText(),
+				obtenerCategoriasSeleccionadas());
 
 		if (resultado.isExito()) {
 			dejarSoloPacks();
@@ -377,6 +414,26 @@ public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 		} else {
 			mostrarError(resultado.getMensaje());
 		}
+	}
+
+	private String obtenerCategoriasSeleccionadas() {
+		String texto = "";
+
+		if (checksCategoriasPack == null) {
+			return texto;
+		}
+
+		for (JCheckBox check : checksCategoriasPack) {
+			if (check.isSelected()) {
+				if (!texto.isEmpty()) {
+					texto += ",";
+				}
+
+				texto += check.getText();
+			}
+		}
+
+		return texto;
 	}
 
 	private void limpiarFormularioCrear(JTextField campoNombre, JTextArea areaDescripcion, JTextField campoImagen,
@@ -388,6 +445,12 @@ public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 		campoPrecio.setText("");
 		campoStock.setText("");
 		areaLineasPack.setText("");
+
+		if (checksCategoriasPack != null) {
+			for (JCheckBox check : checksCategoriasPack) {
+				check.setSelected(false);
+			}
+		}
 	}
 
 	private void anadirProductoAPack() {
@@ -449,25 +512,6 @@ public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 		}
 	}
 
-	private boolean datosProductoPackValidos(Integer unidades) {
-		if (campoIdPack.getText().trim().isBlank()) {
-			mostrarError("Escribe el ID del pack.");
-			return false;
-		}
-
-		if (campoIdProducto.getText().trim().isBlank()) {
-			mostrarError("Escribe el ID del producto.");
-			return false;
-		}
-
-		if (unidades == null || unidades <= 0) {
-			mostrarError("Escribe unidades válidas.");
-			return false;
-		}
-
-		return true;
-	}
-
 	private void mostrarPackEnVentana(String idPack) {
 		Pack pack = controlador.buscarPack(idPack);
 
@@ -477,10 +521,6 @@ public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 		}
 
 		mostrarTextoLargo("Información del pack", controlador.crearTextoPack(pack));
-	}
-
-	private String crearTextoPack(Pack pack) {
-		return controlador.crearTextoPack(pack);
 	}
 
 	private String crearTextoLineas(ArrayList<LineaPack> lineas) {
@@ -502,5 +542,4 @@ public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 	private String formatearPrecio(double precio) {
 		return controlador.formatearPrecio(precio);
 	}
-
 }
