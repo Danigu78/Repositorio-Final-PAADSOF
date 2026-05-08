@@ -232,7 +232,7 @@ public class MotorEstadistico implements Serializable {
 	 * @param fin    la fecha final
 	 * @return el total cobrado por tasaciones en ese periodo
 	 */
-	private double calcularTasacionesEnRango(LocalDate inicio, LocalDate fin) {
+	public double calcularTasacionesEnRango(LocalDate inicio, LocalDate fin) {
 		double total = 0.0;
 
 		List<Producto2Mano> historial = new ArrayList<>(Tienda.getInstancia().getHistorialProductos2Mano());

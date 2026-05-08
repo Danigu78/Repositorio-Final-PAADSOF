@@ -37,7 +37,7 @@ import usuarios.Empleado;
  * Tiene una tabla común de productos, filtros sencillos, ordenación y métodos
  * auxiliares para trabajar con packs.
  */
-public abstract class AbstractPanelEmpleadoVentaSection extends AbstractPanelEmpleadoSection {
+public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoBase {
 
 	private static final long serialVersionUID = 1L;
 
@@ -61,7 +61,7 @@ public abstract class AbstractPanelEmpleadoVentaSection extends AbstractPanelEmp
 		}
 	}
 
-	protected AbstractPanelEmpleadoVentaSection(VentanaPrincipal ventana, Empleado empleado) {
+	protected SeccionProductosVentaEmpleadoBase(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
 	}
 

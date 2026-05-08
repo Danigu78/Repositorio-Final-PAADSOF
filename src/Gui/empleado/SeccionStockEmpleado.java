@@ -17,7 +17,7 @@ import usuarios.Empleado;
  * Desde aquí se pueden consultar productos, reponer stock y cargar productos
  * desde un fichero.
  */
-public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
+public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 
 	private static final long serialVersionUID = 1L;
 

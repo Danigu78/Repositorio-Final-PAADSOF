@@ -11,13 +11,13 @@ import usuarios.Empleado;
  * Hereda todos los métodos visuales comunes de AbstractPanelSection y añade
  * únicamente la referencia al empleado que está usando la interfaz.
  */
-public abstract class AbstractPanelEmpleadoSection extends AbstractPanelSection {
+public abstract class SeccionEmpleadoBase extends AbstractPanelSection {
 
 	private static final long serialVersionUID = 1L;
 
 	protected final Empleado empleado;
 
-	protected AbstractPanelEmpleadoSection(VentanaPrincipal ventana, Empleado empleado) {
+	protected SeccionEmpleadoBase(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana);
 		this.empleado = empleado;
 	}

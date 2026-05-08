@@ -28,12 +28,10 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
     private JPanel panelParametros;
     private CardLayout cardParametros;
 
-    // Campos del formulario de descuento
     private JTextField campoNombreDescuento;
     private JSpinner spinnerDias;
     private JComboBox<String> comboTipoDescuento;
 
-    // Campos dinámicos por tipo
     private JSpinner spinnerGastoMin;
     private JSpinner spinnerPorcentajeVol;
     private JPanel panelComboCat;
@@ -44,8 +42,8 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
     private JPanel panelComboProdRegalo;
     private JSpinner spinnerGastoRegalo;
 
-    // Buscador y spinners de precio por producto
     private JTextField campoBusquedaProductos;
+    private JTextField campoBusquedaDescuentos;
     private Map<String, JSpinner> spinnersPrecio = new HashMap<>();
 
     private JButton botonCrearDescuento;
@@ -70,7 +68,6 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(VentanaPrincipal.COLOR_FONDO);
 
-        // Título + buscador
         JPanel panelNorth = new JPanel(new BorderLayout());
         panelNorth.setBackground(VentanaPrincipal.COLOR_FONDO);
 
@@ -82,25 +79,27 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
             VentanaPrincipal.escalar(5), VentanaPrincipal.escalar(15)));
         panelNorth.add(titulo, BorderLayout.NORTH);
 
-        // Barra búsqueda productos
         JPanel barraBusqueda = new JPanel(new FlowLayout(
             FlowLayout.LEFT, VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(5)));
         barraBusqueda.setBackground(VentanaPrincipal.COLOR_FONDO);
-        barraBusqueda.add(crearLabel("Buscar:"));
+        barraBusqueda.add(crearLabel("Buscar producto:"));
         campoBusquedaProductos = crearCampoCompacto();
         campoBusquedaProductos.setPreferredSize(new Dimension(
             VentanaPrincipal.escalar(180), VentanaPrincipal.escalar(28)));
         escucharCambios(campoBusquedaProductos, this::filtrarProductos);
         barraBusqueda.add(campoBusquedaProductos);
         panelNorth.add(barraBusqueda, BorderLayout.CENTER);
-
         panel.add(panelNorth, BorderLayout.NORTH);
 
         panelProductos = new JPanel();
         panelProductos.setLayout(new BoxLayout(panelProductos, BoxLayout.Y_AXIS));
         panelProductos.setBackground(VentanaPrincipal.COLOR_FONDO);
 
-        JScrollPane scroll = new JScrollPane(panelProductos);
+        JPanel wrapper = new JPanel(new BorderLayout());
+        wrapper.setBackground(VentanaPrincipal.COLOR_FONDO);
+        wrapper.add(panelProductos, BorderLayout.NORTH);
+
+        JScrollPane scroll = new JScrollPane(wrapper);
         scroll.setBorder(null);
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scroll.getViewport().setBackground(VentanaPrincipal.COLOR_FONDO);
@@ -115,9 +114,8 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
         panelProductos.removeAll();
         spinnersPrecio.clear();
         for (ProductoVenta p : controlador.getProductos()) {
-            if (texto.isEmpty() || contieneTexto(p.getNombre(), texto)) {
+            if (texto.isEmpty() || contieneTexto(p.getNombre(), texto))
                 panelProductos.add(crearFilaProducto(p));
-            }
         }
         panelProductos.revalidate();
         panelProductos.repaint();
@@ -134,22 +132,66 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
             VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15),
             VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(15)));
         panel.add(titulo, BorderLayout.NORTH);
-        panel.add(crearFormularioDescuento(), BorderLayout.CENTER);
+
+        // Split vertical: formulario arriba (65%), lista abajo (35%)
+        JSplitPane splitVertical = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        splitVertical.setResizeWeight(0.2);
+        splitVertical.setDividerSize(VentanaPrincipal.escalar(5));
+        splitVertical.setBorder(null);
+
+        JScrollPane scrollFormulario = new JScrollPane(crearFormularioDescuento());
+        scrollFormulario.setBorder(null);
+        scrollFormulario.getViewport().setBackground(VentanaPrincipal.COLOR_PANEL);
+        splitVertical.setTopComponent(scrollFormulario);
+
+        // Panel lista con buscador
+        JPanel panelListaDescuentos = new JPanel(new BorderLayout());
+        panelListaDescuentos.setBackground(VentanaPrincipal.COLOR_FONDO);
+
+        JPanel barraBusquedaDesc = new JPanel(new FlowLayout(
+            FlowLayout.LEFT, VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(5)));
+        barraBusquedaDesc.setBackground(VentanaPrincipal.COLOR_FONDO);
+        barraBusquedaDesc.setBorder(javax.swing.BorderFactory.createMatteBorder(
+            1, 0, 0, 0, VentanaPrincipal.COLOR_BORDE));
+        barraBusquedaDesc.add(crearLabel("Buscar descuento:"));
+        campoBusquedaDescuentos = crearCampoCompacto();
+        campoBusquedaDescuentos.setPreferredSize(new Dimension(
+            VentanaPrincipal.escalar(180), VentanaPrincipal.escalar(28)));
+        escucharCambios(campoBusquedaDescuentos, this::filtrarDescuentos);
+        barraBusquedaDesc.add(campoBusquedaDescuentos);
+        panelListaDescuentos.add(barraBusquedaDesc, BorderLayout.NORTH);
 
         panelDescuentos = new JPanel();
         panelDescuentos.setLayout(new BoxLayout(panelDescuentos, BoxLayout.Y_AXIS));
         panelDescuentos.setBackground(VentanaPrincipal.COLOR_FONDO);
 
-        JScrollPane scroll = new JScrollPane(panelDescuentos);
-        scroll.setBorder(javax.swing.BorderFactory.createMatteBorder(
-            1, 0, 0, 0, VentanaPrincipal.COLOR_BORDE));
-        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scroll.getViewport().setBackground(VentanaPrincipal.COLOR_FONDO);
-        scroll.setPreferredSize(new Dimension(0, VentanaPrincipal.escalar(200)));
-        panel.add(scroll, BorderLayout.SOUTH);
+        JPanel wrapperDesc = new JPanel(new BorderLayout());
+        wrapperDesc.setBackground(VentanaPrincipal.COLOR_FONDO);
+        wrapperDesc.add(panelDescuentos, BorderLayout.NORTH);
+
+        JScrollPane scrollDesc = new JScrollPane(wrapperDesc);
+        scrollDesc.setBorder(null);
+        scrollDesc.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollDesc.getViewport().setBackground(VentanaPrincipal.COLOR_FONDO);
+        panelListaDescuentos.add(scrollDesc, BorderLayout.CENTER);
+
+        splitVertical.setBottomComponent(panelListaDescuentos);
+        panel.add(splitVertical, BorderLayout.CENTER);
 
         actualizarDescuentos();
         return panel;
+    }
+
+    private void filtrarDescuentos() {
+        String texto = normalizarTexto(campoBusquedaDescuentos.getText());
+        panelDescuentos.removeAll();
+        for (Descuento d : controlador.getDescuentosActivos()) {
+            if (texto.isEmpty() || contieneTexto(d.getNombre(), texto)
+                    || contieneTexto(d.getId(), texto))
+                panelDescuentos.add(crearFilaDescuento(d));
+        }
+        panelDescuentos.revalidate();
+        panelDescuentos.repaint();
     }
 
     private JPanel crearFormularioDescuento() {
@@ -193,7 +235,6 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
         panelParametros.add(crearPanelCantidad(),  "Cantidad");
         panelParametros.add(crearPanelRegalo(),    "Regalo");
 
-        // ActionListener sin lambda — clase anónima
         comboTipoDescuento.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -240,9 +281,7 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
         List<Categoria> cats = controlador.getCategorias();
         String[] nombresCats = new String[cats.size()];
         for (int i = 0; i < cats.size(); i++) nombresCats[i] = cats.get(i).getNombre();
-        // Combo con buscador para categorías
-        panelComboCat = crearComboConBuscador(
-            nombresCats, VentanaPrincipal.escalar(200));
+        panelComboCat = crearComboConBuscador(nombresCats, VentanaPrincipal.escalar(200));
         g.gridy = 1; panel.add(panelComboCat, g);
         g.gridy = 2; panel.add(crearLabel("Porcentaje (%):"), g);
         spinnerPorcentajeCat = new JSpinner(
@@ -262,7 +301,6 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
         spinnerCantidadMin.setFont(VentanaPrincipal.FUENTE_NORMAL);
         g.gridy = 1; panel.add(spinnerCantidadMin, g);
         g.gridy = 2; panel.add(crearLabel("Producto al que aplica:"), g);
-        // Combo con buscador para productos
         panelComboProdCant = crearComboConBuscador(
             getNombresProductos(), VentanaPrincipal.escalar(200));
         g.gridy = 3; panel.add(panelComboProdCant, g);
@@ -279,7 +317,6 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
         panel.setBackground(VentanaPrincipal.COLOR_PANEL);
         GridBagConstraints g = crearGbcParam();
         g.gridy = 0; panel.add(crearLabel("Producto regalado:"), g);
-        // Combo con buscador para productos
         panelComboProdRegalo = crearComboConBuscador(
             getNombresProductos(), VentanaPrincipal.escalar(200));
         g.gridy = 1; panel.add(panelComboProdRegalo, g);
@@ -303,19 +340,17 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
     private String[] getNombresProductos() {
         List<ProductoVenta> productos = controlador.getProductos();
         String[] nombres = new String[productos.size()];
-        for (int i = 0; i < productos.size(); i++) {
+        for (int i = 0; i < productos.size(); i++)
             nombres[i] = productos.get(i).getNombre()
                 + " (" + productos.get(i).getId() + ")";
-        }
         return nombres;
     }
 
     private void actualizarProductos() {
         panelProductos.removeAll();
         spinnersPrecio.clear();
-        for (ProductoVenta p : controlador.getProductos()) {
+        for (ProductoVenta p : controlador.getProductos())
             panelProductos.add(crearFilaProducto(p));
-        }
         panelProductos.revalidate();
         panelProductos.repaint();
     }
@@ -389,39 +424,40 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
             labelVacio.setAlignmentX(Component.LEFT_ALIGNMENT);
             panelDescuentos.add(labelVacio);
         } else {
-            for (Descuento d : descuentos) {
-                JPanel fila = new JPanel(new BorderLayout());
-                fila.setBackground(VentanaPrincipal.COLOR_TARJETA);
-                fila.setMaximumSize(new Dimension(Integer.MAX_VALUE,
-                    VentanaPrincipal.escalar(45)));
-                fila.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-                    javax.swing.BorderFactory.createMatteBorder(
-                        0, 0, 1, 0, VentanaPrincipal.COLOR_BORDE),
-                    javax.swing.BorderFactory.createEmptyBorder(
-                        VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(15),
-                        VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(15))));
-
-                JLabel labelDesc = new JLabel(d.getNombre() + " — " + d.getId()
-                    + " | hasta: " + d.getFechaFin().toLocalDate());
-                labelDesc.setFont(VentanaPrincipal.FUENTE_NORMAL);
-                labelDesc.setForeground(VentanaPrincipal.COLOR_TEXTO);
-                fila.add(labelDesc, BorderLayout.CENTER);
-
-                JButton botonEliminar = crearBotonRojo("Eliminar");
-                botonEliminar.setActionCommand("eliminarDescuento:" + d.getId());
-                botonEliminar.addActionListener(controlador);
-                fila.add(botonEliminar, BorderLayout.EAST);
-
-                fila.setAlignmentX(Component.LEFT_ALIGNMENT);
-                panelDescuentos.add(fila);
-            }
+            for (Descuento d : descuentos)
+                panelDescuentos.add(crearFilaDescuento(d));
         }
 
         panelDescuentos.revalidate();
         panelDescuentos.repaint();
     }
 
-    // ── Métodos que llama el controlador ──────────────────────────────────
+    private JPanel crearFilaDescuento(Descuento d) {
+        JPanel fila = new JPanel(new BorderLayout());
+        fila.setBackground(VentanaPrincipal.COLOR_TARJETA);
+        fila.setMaximumSize(new Dimension(Integer.MAX_VALUE,
+            VentanaPrincipal.escalar(45)));
+        fila.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+            javax.swing.BorderFactory.createMatteBorder(
+                0, 0, 1, 0, VentanaPrincipal.COLOR_BORDE),
+            javax.swing.BorderFactory.createEmptyBorder(
+                VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(15),
+                VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(15))));
+
+        JLabel labelDesc = new JLabel(d.getNombre() + " — " + d.getId()
+            + " | hasta: " + d.getFechaFin().toLocalDate());
+        labelDesc.setFont(VentanaPrincipal.FUENTE_NORMAL);
+        labelDesc.setForeground(VentanaPrincipal.COLOR_TEXTO);
+        fila.add(labelDesc, BorderLayout.CENTER);
+
+        JButton botonEliminar = crearBotonRojo("Eliminar");
+        botonEliminar.setActionCommand("eliminarDescuento:" + d.getId());
+        botonEliminar.addActionListener(controlador);
+        fila.add(botonEliminar, BorderLayout.EAST);
+
+        fila.setAlignmentX(Component.LEFT_ALIGNMENT);
+        return fila;
+    }
 
     public void procesarCambiarPrecio(String idProducto) {
         JSpinner spinner = spinnersPrecio.get(idProducto);
@@ -467,8 +503,8 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
                 JComboBox<String> comboCant = getComboDePanel(panelComboProdCant);
                 String selCant = comboCant != null
                     ? (String) comboCant.getSelectedItem() : "";
-                String idProdCant = extraerIdDeTexto(selCant, productos);
-                ok = controlador.crearDescuentoCantidad(nombre, idProdCant,
+                String idCant = extraerIdDeTexto(selCant, productos);
+                ok = controlador.crearDescuentoCantidad(nombre, idCant,
                     (int) spinnerCantidadMin.getValue(),
                     ((Number) spinnerPorcentajeCant.getValue()).doubleValue(),
                     inicio, fin);
@@ -477,8 +513,8 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
                 JComboBox<String> comboRegalo = getComboDePanel(panelComboProdRegalo);
                 String selRegalo = comboRegalo != null
                     ? (String) comboRegalo.getSelectedItem() : "";
-                String idProdRegalo = extraerIdDeTexto(selRegalo, productos);
-                ok = controlador.crearDescuentoRegalo(nombre, idProdRegalo,
+                String idRegalo = extraerIdDeTexto(selRegalo, productos);
+                ok = controlador.crearDescuentoRegalo(nombre, idRegalo,
                     ((Number) spinnerGastoRegalo.getValue()).doubleValue(),
                     inicio, fin);
                 break;

@@ -746,6 +746,7 @@ public class Gestor extends UsuarioRegistrado implements Serializable {
 		System.out.println("  Ingresos tasacion: " + String.format("%.2f", total) + "€");
 		return total;
 	}
+	
 
 	/**
 	 * Método llamado automáticamente cuando se guarda un Gestor en fichero.
@@ -755,6 +756,11 @@ public class Gestor extends UsuarioRegistrado implements Serializable {
 		out.defaultWriteObject();
 	}
 
+	public double consultarIngresosTasacionRango(LocalDate inicio, LocalDate fin)
+	        throws RangoFechasInvalidoException {
+	    return motorEstadistico.calcularTasacionesEnRango(inicio, fin);
+	}
+	
 	/**
 	 * Método llamado automáticamente cuando se carga un Gestor desde fichero.
 	 */
@@ -770,6 +776,46 @@ public class Gestor extends UsuarioRegistrado implements Serializable {
 		if (this.motorEstadistico == null) {
 			this.motorEstadistico = new MotorEstadistico();
 		}
+	}
+	
+	/**
+	 * Busca empleados por nickname o id (búsqueda parcial, ignora mayúsculas).
+	 *
+	 * @param texto Texto a buscar
+	 * @return Lista de empleados que coinciden
+	 */
+	public List<Empleado> buscarEmpleadoPorNombre(String texto) {
+	    List<Empleado> resultado = new ArrayList<>();
+	    if (texto == null || texto.isBlank()) {
+	        return Tienda.getInstancia().obtenerEmpleadosTienda();
+	    }
+	    String textoBajo = texto.trim().toLowerCase();
+	    for (UsuarioRegistrado u : Tienda.getInstancia().getUsuarios()) {
+	        if (u instanceof Empleado) {
+	            Empleado e = (Empleado) u;
+	            if (e.getNickname().toLowerCase().contains(textoBajo)
+	                    || e.getId().toLowerCase().contains(textoBajo)) {
+	                resultado.add(e);
+	            }
+	        }
+	    }
+	    return resultado;
+	}
+	
+	/**
+	 * Elimina una categoría por su nombre.
+	 *
+	 * @param nombreCat Nombre de la categoría a eliminar
+	 * @return true si se eliminó correctamente
+	 */
+	public boolean eliminarCategoria(String nombreCat) {
+	    Tienda tienda = Tienda.getInstancia();
+	    Categoria cat = tienda.buscarCategoriaPorNombre(nombreCat);
+	    if (cat == null) {
+	        System.out.println("No existe ninguna categoría con nombre: " + nombreCat);
+	        return false;
+	    }
+	    return tienda.getCategorias().remove(cat);
 	}
 
 }
