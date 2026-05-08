@@ -33,6 +33,10 @@ public class ControladorEstadisticasGestor implements ActionListener {
             vista.procesarConsultarAño();
         } else if (cmd.equals("consultarRango")) {
             vista.procesarConsultarRango();
+        } else if (cmd.equals("consultarRangoVentas")) {
+            vista.procesarConsultarRangoVentas();
+        } else if (cmd.equals("consultarRangoTasacion")) {
+            vista.procesarConsultarRangoTasacion();
         }
     }
 
@@ -83,6 +87,14 @@ public class ControladorEstadisticasGestor implements ActionListener {
     public double getIngresosVentasRango(LocalDate inicio, LocalDate fin) {
         try {
             return gestor.consultarIngresosRango(inicio, fin);
+        } catch (RangoFechasInvalidoException e) {
+            return 0;
+        }
+    }
+
+    public double getIngresosTasacionRango(LocalDate inicio, LocalDate fin) {
+        try {
+            return gestor.consultarIngresosTasacionRango(inicio, fin);
         } catch (RangoFechasInvalidoException e) {
             return 0;
         }

@@ -9,10 +9,10 @@ import java.time.LocalDate;
 import java.util.List;
 import usuarios.Cliente;
 import usuarios.Gestor;
+import ventas.EstadoPedido;
 
 /**
  * Subpanel de estadísticas para el gestor.
- * Muestra tops de clientes, ingresos por mes, por año y por rango.
  *
  * @author Antonino
  * @version 1.0
@@ -21,22 +21,25 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
 
     private ControladorEstadisticasGestor controlador;
 
-    // Spinners para consulta por año
     private JSpinner spinnerAño;
-
-    // Spinners para consulta por rango
-    private JSpinner spinnerRangoInicio;
-    private JSpinner spinnerRangoFin;
-
-    // Panel donde se muestran los ingresos por año (se actualiza dinámicamente)
     private JPanel panelMesesAño;
 
-    // Panel donde se muestra el resultado del rango
+    private JSpinner spinnerRangoInicio;
+    private JSpinner spinnerRangoFin;
     private JLabel labelResultadoRango;
 
-    // Botones
+    private JSpinner spinnerRangoVentasInicio;
+    private JSpinner spinnerRangoVentasFin;
+    private JLabel labelResultadoVentas;
+
+    private JSpinner spinnerRangoTasacionInicio;
+    private JSpinner spinnerRangoTasacionFin;
+    private JLabel labelResultadoTasacion;
+
     private JButton botonConsultarAño;
     private JButton botonConsultarRango;
+    private JButton botonConsultarRangoVentas;
+    private JButton botonConsultarRangoTasacion;
 
     public SubpanelEstadisticasGestor(VentanaPrincipal ventana, Gestor gestor) {
         super(ventana, gestor);
@@ -52,35 +55,26 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
             VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(30),
             VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(30)));
 
-        // 1. Ingresos totales (ventas + tasaciones)
         panelContenido.add(crearSeccionIngresos());
         panelContenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(20)));
-
-        // 2. Ingresos por mes año actual
         panelContenido.add(crearSeccionMesesActual());
         panelContenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(20)));
-
-        // 3. Ingresos por mes de un año concreto
         panelContenido.add(crearSeccionMesesAño());
         panelContenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(20)));
-
-        // 4. Ingresos en rango de fechas
-        panelContenido.add(crearSeccionRango());
+        panelContenido.add(crearSeccionRangoTotal());
+        panelContenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(15)));
+        panelContenido.add(crearSeccionRangoVentas());
+        panelContenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(15)));
+        panelContenido.add(crearSeccionRangoTasacion());
         panelContenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(20)));
-
-        // 5. Top clientes compras
         panelContenido.add(crearSeccionTop(
             "Top clientes por compras",
             controlador.getTopCompras(), "compras"));
         panelContenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(20)));
-
-        // 6. Top clientes intercambios
         panelContenido.add(crearSeccionTop(
             "Top clientes por intercambios",
             controlador.getTopIntercambios(), "intercambios"));
         panelContenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(20)));
-
-        // 7. Top clientes pedidos cancelados
         panelContenido.add(crearSeccionTop(
             "Top clientes por pedidos cancelados",
             controlador.getTopCancelados(), "cancelados"));
@@ -91,7 +85,6 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
         scroll.getVerticalScrollBar().setUnitIncrement(VentanaPrincipal.escalar(16));
         add(scroll, BorderLayout.CENTER);
 
-        // Registramos el controlador en los botones
         setControlador(controlador);
     }
 
@@ -105,6 +98,16 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
             for (ActionListener al : botonConsultarRango.getActionListeners())
                 botonConsultarRango.removeActionListener(al);
             botonConsultarRango.addActionListener(c);
+        }
+        if (botonConsultarRangoVentas != null) {
+            for (ActionListener al : botonConsultarRangoVentas.getActionListeners())
+                botonConsultarRangoVentas.removeActionListener(al);
+            botonConsultarRangoVentas.addActionListener(c);
+        }
+        if (botonConsultarRangoTasacion != null) {
+            for (ActionListener al : botonConsultarRangoTasacion.getActionListeners())
+                botonConsultarRangoTasacion.removeActionListener(al);
+            botonConsultarRangoTasacion.addActionListener(c);
         }
     }
 
@@ -128,13 +131,8 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
     private JPanel crearSeccionMesesAño() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(VentanaPrincipal.COLOR_TARJETA);
-        panel.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-            javax.swing.BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
-            javax.swing.BorderFactory.createEmptyBorder(
-                VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15),
-                VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15))));
+        panel.setBorder(crearBordeTarjeta());
 
-        // Cabecera con spinner de año y botón
         JPanel cabecera = new JPanel(new FlowLayout(
             FlowLayout.LEFT, VentanaPrincipal.escalar(10), 0));
         cabecera.setBackground(VentanaPrincipal.COLOR_TARJETA);
@@ -157,7 +155,6 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
 
         panel.add(cabecera, BorderLayout.NORTH);
 
-        // Panel de meses — se rellena al pulsar el botón
         panelMesesAño = new JPanel(new GridLayout(
             3, 4, VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(10)));
         panelMesesAño.setBackground(VentanaPrincipal.COLOR_TARJETA);
@@ -169,43 +166,21 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
         return panel;
     }
 
-    private JPanel crearSeccionRango() {
+    private JPanel crearSeccionRangoTotal() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(VentanaPrincipal.COLOR_TARJETA);
-        panel.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-            javax.swing.BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
-            javax.swing.BorderFactory.createEmptyBorder(
-                VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15),
-                VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15))));
+        panel.setBorder(crearBordeTarjeta());
 
-        JLabel titulo = new JLabel("Ingresos en rango de fechas:");
+        JLabel titulo = new JLabel("Ingresos totales en rango de fechas:");
         titulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
         titulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
         panel.add(titulo, BorderLayout.NORTH);
 
-        JPanel panelControles = new JPanel(new FlowLayout(
-            FlowLayout.LEFT, VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(8)));
-        panelControles.setBackground(VentanaPrincipal.COLOR_TARJETA);
-
-        panelControles.add(crearLabel("Desde:"));
-        // Usamos SpinnerDateModel para elegir fechas
-        spinnerRangoInicio = new JSpinner(new SpinnerDateModel());
-        spinnerRangoInicio.setEditor(new JSpinner.DateEditor(spinnerRangoInicio, "dd/MM/yyyy"));
-        spinnerRangoInicio.setPreferredSize(new Dimension(
-            VentanaPrincipal.escalar(120), VentanaPrincipal.escalar(30)));
-        panelControles.add(spinnerRangoInicio);
-
-        panelControles.add(crearLabel("Hasta:"));
-        spinnerRangoFin = new JSpinner(new SpinnerDateModel());
-        spinnerRangoFin.setEditor(new JSpinner.DateEditor(spinnerRangoFin, "dd/MM/yyyy"));
-        spinnerRangoFin.setPreferredSize(new Dimension(
-            VentanaPrincipal.escalar(120), VentanaPrincipal.escalar(30)));
-        panelControles.add(spinnerRangoFin);
-
-        botonConsultarRango = crearBotonNaranja("Consultar");
+        JPanel panelControles = crearPanelControlesRango();
+        spinnerRangoInicio = (JSpinner) panelControles.getClientProperty("inicio");
+        spinnerRangoFin    = (JSpinner) panelControles.getClientProperty("fin");
+        botonConsultarRango = (JButton) panelControles.getClientProperty("boton");
         botonConsultarRango.setActionCommand("consultarRango");
-        panelControles.add(botonConsultarRango);
-
         panel.add(panelControles, BorderLayout.CENTER);
 
         labelResultadoRango = crearLabel("Introduce un rango y pulsa Consultar.");
@@ -216,15 +191,95 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
         return panel;
     }
 
+    private JPanel crearSeccionRangoVentas() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(VentanaPrincipal.COLOR_TARJETA);
+        panel.setBorder(crearBordeTarjeta());
+
+        JLabel titulo = new JLabel("Ingresos por ventas en rango de fechas:");
+        titulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
+        titulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
+        panel.add(titulo, BorderLayout.NORTH);
+
+        JPanel panelControles = crearPanelControlesRango();
+        spinnerRangoVentasInicio = (JSpinner) panelControles.getClientProperty("inicio");
+        spinnerRangoVentasFin    = (JSpinner) panelControles.getClientProperty("fin");
+        botonConsultarRangoVentas = (JButton) panelControles.getClientProperty("boton");
+        botonConsultarRangoVentas.setActionCommand("consultarRangoVentas");
+        panel.add(panelControles, BorderLayout.CENTER);
+
+        labelResultadoVentas = crearLabel("Introduce un rango y pulsa Consultar.");
+        labelResultadoVentas.setBorder(javax.swing.BorderFactory.createEmptyBorder(
+            VentanaPrincipal.escalar(5), 0, 0, 0));
+        panel.add(labelResultadoVentas, BorderLayout.SOUTH);
+
+        return panel;
+    }
+
+    private JPanel crearSeccionRangoTasacion() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(VentanaPrincipal.COLOR_TARJETA);
+        panel.setBorder(crearBordeTarjeta());
+
+        JLabel titulo = new JLabel("Ingresos por tasación en rango de fechas:");
+        titulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
+        titulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
+        panel.add(titulo, BorderLayout.NORTH);
+
+        JPanel panelControles = crearPanelControlesRango();
+        spinnerRangoTasacionInicio = (JSpinner) panelControles.getClientProperty("inicio");
+        spinnerRangoTasacionFin    = (JSpinner) panelControles.getClientProperty("fin");
+        botonConsultarRangoTasacion = (JButton) panelControles.getClientProperty("boton");
+        botonConsultarRangoTasacion.setActionCommand("consultarRangoTasacion");
+        panel.add(panelControles, BorderLayout.CENTER);
+
+        labelResultadoTasacion = crearLabel("Introduce un rango y pulsa Consultar.");
+        labelResultadoTasacion.setBorder(javax.swing.BorderFactory.createEmptyBorder(
+            VentanaPrincipal.escalar(5), 0, 0, 0));
+        panel.add(labelResultadoTasacion, BorderLayout.SOUTH);
+
+        return panel;
+    }
+
+    /**
+     * Crea un panel de controles de rango reutilizable.
+     * Guarda los spinners y el botón en clientProperty.
+     */
+    private JPanel crearPanelControlesRango() {
+        JPanel panel = new JPanel(new FlowLayout(
+            FlowLayout.LEFT, VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(8)));
+        panel.setBackground(VentanaPrincipal.COLOR_TARJETA);
+
+        panel.add(crearLabel("Desde:"));
+        JSpinner spinnerInicio = new JSpinner(new SpinnerDateModel());
+        spinnerInicio.setEditor(new JSpinner.DateEditor(spinnerInicio, "dd/MM/yyyy"));
+        spinnerInicio.setPreferredSize(new Dimension(
+            VentanaPrincipal.escalar(120), VentanaPrincipal.escalar(30)));
+        panel.add(spinnerInicio);
+
+        panel.add(crearLabel("Hasta:"));
+        JSpinner spinnerFin = new JSpinner(new SpinnerDateModel());
+        spinnerFin.setEditor(new JSpinner.DateEditor(spinnerFin, "dd/MM/yyyy"));
+        spinnerFin.setPreferredSize(new Dimension(
+            VentanaPrincipal.escalar(120), VentanaPrincipal.escalar(30)));
+        panel.add(spinnerFin);
+
+        JButton boton = crearBotonNaranja("Consultar");
+        panel.add(boton);
+
+        // Guardamos referencias para recuperarlas al crear cada sección
+        panel.putClientProperty("inicio", spinnerInicio);
+        panel.putClientProperty("fin",    spinnerFin);
+        panel.putClientProperty("boton",  boton);
+
+        return panel;
+    }
+
     private JPanel crearSeccionTop(String titulo,
                                     List<Cliente> clientes, String tipo) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(VentanaPrincipal.COLOR_TARJETA);
-        panel.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-            javax.swing.BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
-            javax.swing.BorderFactory.createEmptyBorder(
-                VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15),
-                VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15))));
+        panel.setBorder(crearBordeTarjeta());
 
         JLabel labelTitulo = new JLabel(titulo);
         labelTitulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
@@ -250,10 +305,8 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
                     info = pos + ". " + c.getNickname()
                         + " — " + c.contarIntercambios() + " intercambios";
                 } else {
-                    // cancelados
                     long cancelados = c.getHistorialPedidos().stream()
-                        .filter(p -> p.getEstado() ==
-                            ventas.EstadoPedido.CANCELADO)
+                        .filter(p -> p.getEstado() == EstadoPedido.CANCELADO)
                         .count();
                     info = pos + ". " + c.getNickname()
                         + " — " + cancelados + " cancelados";
@@ -274,11 +327,7 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
     private JPanel crearPanelMeses(String titulo, double[] ingresos) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(VentanaPrincipal.COLOR_TARJETA);
-        panel.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-            javax.swing.BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
-            javax.swing.BorderFactory.createEmptyBorder(
-                VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15),
-                VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15))));
+        panel.setBorder(crearBordeTarjeta());
 
         JLabel labelTitulo = new JLabel(titulo);
         labelTitulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
@@ -329,11 +378,7 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
     private JPanel crearTarjetaEstadistica(String titulo, String valor) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(VentanaPrincipal.COLOR_TARJETA);
-        panel.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-            javax.swing.BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
-            javax.swing.BorderFactory.createEmptyBorder(
-                VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(20),
-                VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(20))));
+        panel.setBorder(crearBordeTarjeta());
 
         JLabel labelTitulo = crearLabel(titulo);
         labelTitulo.setHorizontalAlignment(SwingConstants.CENTER);
@@ -347,31 +392,69 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
         return panel;
     }
 
+    /**
+     * Crea el borde estándar de tarjeta — reutilizado en todas las secciones.
+     */
+    private javax.swing.border.Border crearBordeTarjeta() {
+        return javax.swing.BorderFactory.createCompoundBorder(
+            javax.swing.BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
+            javax.swing.BorderFactory.createEmptyBorder(
+                VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15),
+                VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15)));
+    }
+
     // ── Métodos que llama el controlador ──────────────────────────────────
 
     public void procesarConsultarAño() {
         int año = (int) spinnerAño.getValue();
-        double[] ingresos = controlador.getIngresosPorAño(año);
-        rellenarPanelMeses(panelMesesAño, ingresos);
+        rellenarPanelMeses(panelMesesAño, controlador.getIngresosPorAño(año));
     }
 
     public void procesarConsultarRango() {
-        java.util.Date fechaInicio = (java.util.Date) spinnerRangoInicio.getValue();
-        java.util.Date fechaFin    = (java.util.Date) spinnerRangoFin.getValue();
-
-        LocalDate inicio = fechaInicio.toInstant()
-            .atZone(java.time.ZoneId.systemDefault()).toLocalDate();
-        LocalDate fin = fechaFin.toInstant()
-            .atZone(java.time.ZoneId.systemDefault()).toLocalDate();
-
+        LocalDate inicio = spinnerALocalDate(spinnerRangoInicio);
+        LocalDate fin    = spinnerALocalDate(spinnerRangoFin);
         if (fin.isBefore(inicio)) {
             mostrarError("La fecha de fin debe ser posterior a la de inicio.");
             return;
         }
-
-        double totalRango = controlador.getIngresosRango(inicio, fin);
+        double total = controlador.getIngresosRango(inicio, fin);
         labelResultadoRango.setText(
-            "Ingresos del " + inicio + " al " + fin
-            + ":  " + String.format("%.2f€", totalRango));
+            "Ingresos totales del " + inicio + " al " + fin
+            + ":  " + String.format("%.2f€", total));
+    }
+
+    public void procesarConsultarRangoVentas() {
+        LocalDate inicio = spinnerALocalDate(spinnerRangoVentasInicio);
+        LocalDate fin    = spinnerALocalDate(spinnerRangoVentasFin);
+        if (fin.isBefore(inicio)) {
+            mostrarError("La fecha de fin debe ser posterior a la de inicio.");
+            return;
+        }
+        double total = controlador.getIngresosVentasRango(inicio, fin);
+        labelResultadoVentas.setText(
+            "Ingresos por ventas del " + inicio + " al " + fin
+            + ":  " + String.format("%.2f€", total));
+    }
+
+    public void procesarConsultarRangoTasacion() {
+        LocalDate inicio = spinnerALocalDate(spinnerRangoTasacionInicio);
+        LocalDate fin    = spinnerALocalDate(spinnerRangoTasacionFin);
+        if (fin.isBefore(inicio)) {
+            mostrarError("La fecha de fin debe ser posterior a la de inicio.");
+            return;
+        }
+        double total = controlador.getIngresosTasacionRango(inicio, fin);
+        labelResultadoTasacion.setText(
+            "Ingresos por tasación del " + inicio + " al " + fin
+            + ":  " + String.format("%.2f€", total));
+    }
+
+    /**
+     * Convierte un JSpinner de fecha a LocalDate.
+     */
+    private LocalDate spinnerALocalDate(JSpinner spinner) {
+        java.util.Date fecha = (java.util.Date) spinner.getValue();
+        return fecha.toInstant()
+            .atZone(java.time.ZoneId.systemDefault()).toLocalDate();
     }
 }

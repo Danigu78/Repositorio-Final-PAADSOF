@@ -51,20 +51,23 @@ public class ControladorProductosDescuentosGestor implements ActionListener {
 
     public boolean crearDescuentoVolumen(String nombre, double precioMinimo,
             double porcentaje, LocalDateTime inicio, LocalDateTime fin) {
-        boolean ok = gestor.crearDescuentoVolumen(nombre, precioMinimo, porcentaje, inicio, fin);
+        boolean ok = gestor.crearDescuentoVolumen(nombre, precioMinimo,
+            porcentaje, inicio, fin);
         if (ok) GuardadoTienda.guardar(tienda);
         return ok;
     }
 
     public boolean crearDescuentoCategoria(String nombre, String categoria,
             double porcentaje, LocalDateTime inicio, LocalDateTime fin) {
-        boolean ok = gestor.crearDescuentoCategoria(nombre, categoria, porcentaje, inicio, fin);
+        boolean ok = gestor.crearDescuentoCategoria(nombre, categoria,
+            porcentaje, inicio, fin);
         if (ok) GuardadoTienda.guardar(tienda);
         return ok;
     }
 
     public boolean crearDescuentoCantidad(String nombre, String idProducto,
-            int cantidadMinima, double porcentaje, LocalDateTime inicio, LocalDateTime fin) {
+            int cantidadMinima, double porcentaje,
+            LocalDateTime inicio, LocalDateTime fin) {
         boolean ok = gestor.crearDescuentoCantidad(nombre, idProducto,
             cantidadMinima, porcentaje, inicio, fin);
         if (ok) GuardadoTienda.guardar(tienda);

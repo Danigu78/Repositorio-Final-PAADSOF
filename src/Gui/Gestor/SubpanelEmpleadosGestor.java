@@ -44,10 +44,16 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
         panelLista.setLayout(new BoxLayout(panelLista, BoxLayout.Y_AXIS));
         panelLista.setBackground(VentanaPrincipal.COLOR_FONDO);
 
-        JScrollPane scroll = new JScrollPane(panelLista);
+        // Wrapper para anclar contenido arriba
+        JPanel wrapper = new JPanel(new BorderLayout());
+        wrapper.setBackground(VentanaPrincipal.COLOR_FONDO);
+        wrapper.add(panelLista, BorderLayout.NORTH);
+
+        JScrollPane scroll = new JScrollPane(wrapper);
         scroll.setBorder(null);
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scroll.getViewport().setBackground(VentanaPrincipal.COLOR_FONDO);
+        scroll.getVerticalScrollBar().setUnitIncrement(VentanaPrincipal.escalar(16));
         add(scroll, BorderLayout.CENTER);
 
         setControlador(controlador);
@@ -139,46 +145,48 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
         labelTitulo.setAlignmentX(Component.LEFT_ALIGNMENT);
         panelLista.add(labelTitulo);
 
-        // Barra de búsqueda — usa crearCampoCompacto() de AbstractPanelSection
+        // Barra de búsqueda
         JPanel barraBusqueda = new JPanel(new FlowLayout(
             FlowLayout.LEFT, VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(8)));
         barraBusqueda.setBackground(VentanaPrincipal.COLOR_FONDO);
         barraBusqueda.setAlignmentX(Component.LEFT_ALIGNMENT);
+        barraBusqueda.setMaximumSize(new Dimension(
+            VentanaPrincipal.escalar(450), VentanaPrincipal.escalar(50)));
         barraBusqueda.add(crearLabel("Buscar:"));
         campoBusquedaEmpleados = crearCampoCompacto();
         campoBusquedaEmpleados.setPreferredSize(new Dimension(
             VentanaPrincipal.escalar(200), VentanaPrincipal.escalar(28)));
+        // escucharCambios() de AbstractPanelSection
         escucharCambios(campoBusquedaEmpleados, this::filtrarEmpleados);
         barraBusqueda.add(campoBusquedaEmpleados);
         panelLista.add(barraBusqueda);
 
-        List<Empleado> empleados = controlador.getEmpleados();
-        if (empleados.isEmpty()) {
-            JLabel labelVacio = crearLabel("No hay empleados registrados.");
-            labelVacio.setAlignmentX(Component.LEFT_ALIGNMENT);
-            panelLista.add(labelVacio);
-        } else {
-            for (Empleado e : empleados) {
-                JPanel fila = crearFilaEmpleado(e);
-                fila.setAlignmentX(Component.LEFT_ALIGNMENT);
-                panelLista.add(fila);
-            }
+        for (Empleado e : controlador.getEmpleados()) {
+            JPanel fila = crearFilaEmpleado(e);
+            fila.setAlignmentX(Component.LEFT_ALIGNMENT);
+            panelLista.add(fila);
         }
 
         panelLista.revalidate();
         panelLista.repaint();
     }
 
+    /**
+     * Filtra empleados usando gestor.buscarEmpleadoPorNombre() a través del controlador.
+     */
     private void filtrarEmpleados() {
-        String texto = normalizarTexto(campoBusquedaEmpleados.getText());
-        // Mantenemos título y barra de búsqueda (primeros 2 componentes)
+        String texto = campoBusquedaEmpleados.getText().trim();
+        // Mantenemos título y barra (2 primeros componentes)
         while (panelLista.getComponentCount() > 2)
             panelLista.remove(panelLista.getComponentCount() - 1);
 
-        for (Empleado e : controlador.getEmpleados()) {
-            if (texto.isEmpty()
-                    || contieneTexto(e.getNickname(), texto)
-                    || contieneTexto(e.getId(), texto)) {
+        List<Empleado> empleados = controlador.buscarEmpleados(texto);
+        if (empleados.isEmpty()) {
+            JLabel labelVacio = crearLabel("No se encontraron empleados.");
+            labelVacio.setAlignmentX(Component.LEFT_ALIGNMENT);
+            panelLista.add(labelVacio);
+        } else {
+            for (Empleado e : empleados) {
                 JPanel fila = crearFilaEmpleado(e);
                 fila.setAlignmentX(Component.LEFT_ALIGNMENT);
                 panelLista.add(fila);
@@ -239,7 +247,6 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
                 FlowLayout.RIGHT, VentanaPrincipal.escalar(5), 0));
             panelBotones.setBackground(VentanaPrincipal.COLOR_TARJETA);
 
-            // Combo con buscador para permisos
             String[] nombresPermisos = new String[TipoPermisos.values().length];
             for (int i = 0; i < TipoPermisos.values().length; i++)
                 nombresPermisos[i] = TipoPermisos.values()[i].name();
@@ -272,8 +279,6 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
 
         return fila;
     }
-
-    // ── Métodos que llama el controlador desde actionPerformed ─────────────
 
     public void procesarAlta() {
         String nick = campoNick.getText().trim();

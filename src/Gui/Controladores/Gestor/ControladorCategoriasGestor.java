@@ -37,6 +37,8 @@ public class ControladorCategoriasGestor implements ActionListener {
             vista.procesarAñadirProducto(cmd.substring(15));
         } else if (cmd.startsWith("quitarProducto:")) {
             vista.procesarQuitarProducto(cmd.substring(15));
+        }else if (cmd.startsWith("eliminarCategoria:")) {
+            vista.confirmarEliminarCategoria(cmd.substring(18));
         }
     }
 
@@ -64,5 +66,11 @@ public class ControladorCategoriasGestor implements ActionListener {
 
     public List<ProductoVenta> getProductos() {
         return tienda.getStockVentas();
+    }
+    
+    public boolean eliminarCategoria(String nombreCat) {
+        boolean ok = gestor.eliminarCategoria(nombreCat);
+        if (ok) GuardadoTienda.guardar(tienda);
+        return ok;
     }
 }

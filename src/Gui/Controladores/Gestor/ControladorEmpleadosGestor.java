@@ -12,7 +12,6 @@ import java.util.List;
 
 /**
  * Controlador de la gestión de empleados para el gestor.
- * Implementa ActionListener según el patrón MVC de los apuntes.
  *
  * @author Antonino
  * @version 1.0
@@ -66,6 +65,13 @@ public class ControladorEmpleadosGestor implements ActionListener {
         boolean ok = gestor.retirarPermiso(idEmpleado, permiso);
         if (ok) GuardadoTienda.guardar(tienda);
         return ok;
+    }
+
+    /**
+     * Busca empleados por nombre o id usando el método del gestor.
+     */
+    public List<Empleado> buscarEmpleados(String texto) {
+        return gestor.buscarEmpleadoPorNombre(texto);
     }
 
     public List<Empleado> getEmpleados() {
