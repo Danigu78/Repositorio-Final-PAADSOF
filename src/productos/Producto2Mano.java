@@ -70,7 +70,7 @@ public class Producto2Mano extends Producto implements Serializable {
 
 		Estadistica est = Estadistica.getInstancia();
 
-		this.id = "P2M-" + est.getnProducto2Mano();
+		this.id = "P2M" + est.getnProducto2Mano();
 		est.setnProducto2Mano(est.getnProducto2Mano() + 1);
 
 		this.valoracion = valoracion;

@@ -9,6 +9,7 @@ import productos.ProductoVenta;
 import tienda.GuardadoTienda;
 import tienda.Tienda;
 import usuarios.Empleado;
+import utilidades.RutasImagen;
 
 /**
  * Controlador de gestión de packs.
@@ -84,8 +85,8 @@ public class ControladorPacksEmpleado {
 
 			ArrayList<Categoria> categorias = leerCategorias(categoriasTexto);
 
-			boolean ok = empleado.crearPack(nombre.trim(), descripcion.trim(), imagen.trim(), precio, stock, lineas,
-					categorias);
+			boolean ok = empleado.crearPack(nombre.trim(), descripcion.trim(), normalizarRutaImagen(imagen), precio,
+					stock, lineas, categorias);
 			guardarSiExito(ok);
 
 			if (ok) {
@@ -352,6 +353,10 @@ public class ControladorPacksEmpleado {
 		}
 
 		return texto;
+	}
+
+	private String normalizarRutaImagen(String imagen) {
+		return RutasImagen.normalizarNombreArchivo(imagen);
 	}
 
 	private Integer leerEntero(String texto) {

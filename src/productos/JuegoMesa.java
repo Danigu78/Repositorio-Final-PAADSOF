@@ -86,4 +86,83 @@ public class JuegoMesa extends ProductoVenta {
 		return super.toString() + " | MinJugadores: " + this.minJugadores + " | MaxJugadores: " + this.maxJugadores
 				+ " | EdadMin: " + this.minEdad + " | EdadMax: " + this.maxEdad + " | Tipo: " + this.tipoJuego + " |";
 	}
+
+	public int getMinJugadores() {
+		return minJugadores;
+	}
+
+	public void setMinJugadores(int minJugadores) {
+		validarJugadores(minJugadores, this.maxJugadores);
+		this.minJugadores = minJugadores;
+	}
+
+	public int getMaxJugadores() {
+		return maxJugadores;
+	}
+
+	public void setMaxJugadores(int maxJugadores) {
+		validarJugadores(this.minJugadores, maxJugadores);
+		this.maxJugadores = maxJugadores;
+	}
+
+	public int getMinEdad() {
+		return minEdad;
+	}
+
+	public void setMinEdad(int minEdad) {
+		validarEdades(minEdad, this.maxEdad);
+		this.minEdad = minEdad;
+	}
+
+	public int getMaxEdad() {
+		return maxEdad;
+	}
+
+	public void setMaxEdad(int maxEdad) {
+		validarEdades(this.minEdad, maxEdad);
+		this.maxEdad = maxEdad;
+	}
+
+	public String getTipoJuego() {
+		return tipoJuego;
+	}
+
+	public void setTipoJuego(String tipoJuego) {
+		if (tipoJuego == null || tipoJuego.isBlank()) {
+			throw new ProductoInvalidoException("El tipo de juego no puede estar vacío.");
+		}
+		this.tipoJuego = tipoJuego;
+	}
+
+	public void actualizarDatos(int minJugadores, int maxJugadores, int minEdad, int maxEdad, String tipoJuego) {
+		validarJugadores(minJugadores, maxJugadores);
+		validarEdades(minEdad, maxEdad);
+		if (tipoJuego == null || tipoJuego.isBlank()) {
+			throw new ProductoInvalidoException("El tipo de juego no puede estar vacío.");
+		}
+
+		this.minJugadores = minJugadores;
+		this.maxJugadores = maxJugadores;
+		this.minEdad = minEdad;
+		this.maxEdad = maxEdad;
+		this.tipoJuego = tipoJuego;
+	}
+
+	private void validarJugadores(int minJugadores, int maxJugadores) {
+		if (minJugadores <= 0) {
+			throw new ProductoInvalidoException("El número mínimo de jugadores debe ser mayor que 0.");
+		}
+		if (maxJugadores < minJugadores) {
+			throw new ProductoInvalidoException("El número máximo de jugadores no puede ser menor que el mínimo.");
+		}
+	}
+
+	private void validarEdades(int minEdad, int maxEdad) {
+		if (minEdad < 0) {
+			throw new ProductoInvalidoException("La edad mínima no puede ser negativa.");
+		}
+		if (maxEdad < minEdad) {
+			throw new ProductoInvalidoException("La edad máxima no puede ser menor que la edad mínima.");
+		}
+	}
 }

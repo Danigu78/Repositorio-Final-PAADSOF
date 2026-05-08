@@ -8,6 +8,7 @@ import intercambios.*;
 import ventas.*;
 import tienda.*;
 import productos.*;
+import utilidades.RutasImagen;
 
 /**
  * Clase que representa a un empleado del sistema de la tienda.
@@ -413,6 +414,8 @@ public class Empleado extends UsuarioRegistrado implements Serializable {
 			return false;
 		}
 
+		String imagenNormalizada = normalizarRutaImagen(imagen);
+
 		boolean categoriasCorrectas = true;
 
 		for (Categoria categoria : categorias) {
@@ -440,8 +443,8 @@ public class Empleado extends UsuarioRegistrado implements Serializable {
 				return false;
 			}
 
-			ProductoVenta comic = new Comic(nombre, descripcion, imagen, precioOficial, Stock, numpaginas, editorial,
-					añoPublicacion);
+			ProductoVenta comic = new Comic(nombre, descripcion, imagenNormalizada, precioOficial, Stock, numpaginas,
+					editorial, añoPublicacion);
 
 			tienda.añadirProducto(comic);
 			meterCategoriasAlProducto(comic, categorias);
@@ -470,8 +473,8 @@ public class Empleado extends UsuarioRegistrado implements Serializable {
 				return false;
 			}
 
-			ProductoVenta juego = new JuegoMesa(nombre, descripcion, imagen, precioOficial, Stock, minNumjugadores,
-					maxNumjugadores, minEdad, maxEdad, Estilo);
+			ProductoVenta juego = new JuegoMesa(nombre, descripcion, imagenNormalizada, precioOficial, Stock,
+					minNumjugadores, maxNumjugadores, minEdad, maxEdad, Estilo);
 
 			tienda.añadirProducto(juego);
 			meterCategoriasAlProducto(juego, categorias);
@@ -495,8 +498,8 @@ public class Empleado extends UsuarioRegistrado implements Serializable {
 				return false;
 			}
 
-			ProductoVenta figura = new Figura(nombre, descripcion, imagen, precioOficial, Stock, altura, ancho, largo,
-					material, marca);
+			ProductoVenta figura = new Figura(nombre, descripcion, imagenNormalizada, precioOficial, Stock, altura,
+					ancho, largo, material, marca);
 
 			tienda.añadirProducto(figura);
 			meterCategoriasAlProducto(figura, categorias);
@@ -902,7 +905,7 @@ public class Empleado extends UsuarioRegistrado implements Serializable {
 			}
 		}
 
-		Pack p = new Pack(nombre, descripcion, imagen, precioOficial, stock, lineas);
+		Pack p = new Pack(nombre, descripcion, normalizarRutaImagen(imagen), precioOficial, stock, lineas);
 
 		for (Categoria c : categorias) {
 			try {
@@ -1125,8 +1128,86 @@ public class Empleado extends UsuarioRegistrado implements Serializable {
 		if (p == null)
 			return false;
 
-		p.setImagenRuta(imagen);
+		p.setImagenRuta(normalizarRutaImagen(imagen));
 		System.out.println("Imagen del producto " + idProducto + " modificada correctamente.");
+		return true;
+	}
+
+	public boolean modificarDatosBasicosProducto(String idProducto, String nombre, String descripcion, String imagen) {
+		if (idProducto == null || nombre == null || descripcion == null || imagen == null) {
+			System.out.println("Los datos básicos del producto no pueden ser null.");
+			return false;
+		}
+		if (!puedeRealizarTarea(TipoPermisos.MODIFICAR_PRODUCTO)) {
+			return false;
+		}
+
+		ProductoVenta p = Tienda.getInstancia().buscarProductoVentaPorId(idProducto.trim());
+		if (p == null) {
+			return false;
+		}
+
+		p.setNombre(nombre.trim());
+		p.setDescripcion(descripcion.trim());
+		p.setImagenRuta(normalizarRutaImagen(imagen));
+		System.out.println("Datos básicos del producto " + idProducto + " modificados correctamente.");
+		return true;
+	}
+
+	private String normalizarRutaImagen(String imagen) {
+		return RutasImagen.normalizarNombreArchivo(imagen);
+	}
+
+	public boolean modificarDatosComic(String idProducto, int numeroPaginas, String editorial, int añoPublicacion) {
+		if (!puedeRealizarTarea(TipoPermisos.MODIFICAR_PRODUCTO)) {
+			return false;
+		}
+
+		ProductoVenta p = Tienda.getInstancia().buscarProductoVentaPorId(idProducto);
+		if (!(p instanceof Comic)) {
+			return false;
+		}
+
+		Comic comic = (Comic) p;
+		comic.setNumeroPaginas(numeroPaginas);
+		comic.setEditorial(editorial);
+		comic.setAñoPublicacion(añoPublicacion);
+		return true;
+	}
+
+	public boolean modificarDatosJuegoMesa(String idProducto, int minJugadores, int maxJugadores, int minEdad,
+			int maxEdad, String tipoJuego) {
+		if (!puedeRealizarTarea(TipoPermisos.MODIFICAR_PRODUCTO)) {
+			return false;
+		}
+
+		ProductoVenta p = Tienda.getInstancia().buscarProductoVentaPorId(idProducto);
+		if (!(p instanceof JuegoMesa)) {
+			return false;
+		}
+
+		JuegoMesa juego = (JuegoMesa) p;
+		juego.actualizarDatos(minJugadores, maxJugadores, minEdad, maxEdad, tipoJuego);
+		return true;
+	}
+
+	public boolean modificarDatosFigura(String idProducto, double altura, double ancho, double largo, String material,
+			String marca) {
+		if (!puedeRealizarTarea(TipoPermisos.MODIFICAR_PRODUCTO)) {
+			return false;
+		}
+
+		ProductoVenta p = Tienda.getInstancia().buscarProductoVentaPorId(idProducto);
+		if (!(p instanceof Figura)) {
+			return false;
+		}
+
+		Figura figura = (Figura) p;
+		figura.setAltura(altura);
+		figura.setAncho(ancho);
+		figura.setLargo(largo);
+		figura.setMaterial(material);
+		figura.setMarca(marca);
 		return true;
 	}
 

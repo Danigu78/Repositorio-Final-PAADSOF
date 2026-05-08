@@ -275,36 +275,7 @@ public class SeccionTasacionEmpleado extends AbstractPanelEmpleadoSection {
 			return;
 		}
 
-		try {
-			String nombreArchivo = new java.io.File(rutaImagen).getName();
-			java.io.File archivo = new java.io.File("src/fotos", nombreArchivo);
-
-			if (!archivo.exists() || !archivo.isFile() || !archivo.canRead()) {
-				mostrarError("No se pudo abrir la imagen:\n" + archivo.getAbsolutePath());
-				return;
-			}
-
-			java.awt.image.BufferedImage imagenOriginal = javax.imageio.ImageIO.read(archivo);
-
-			if (imagenOriginal == null) {
-				mostrarError("El archivo existe, pero no es una imagen válida:\n" + archivo.getAbsolutePath());
-				return;
-			}
-
-			Image imagenEscalada = imagenOriginal.getScaledInstance(VentanaPrincipal.escalar(420),
-					VentanaPrincipal.escalar(320), Image.SCALE_SMOOTH);
-
-			JLabel labelImagen = new JLabel(new ImageIcon(imagenEscalada));
-			labelImagen.setHorizontalAlignment(JLabel.CENTER);
-
-			JScrollPane scrollImagen = new JScrollPane(labelImagen);
-			scrollImagen.setPreferredSize(new Dimension(VentanaPrincipal.escalar(470), VentanaPrincipal.escalar(370)));
-
-			JOptionPane.showMessageDialog(this, scrollImagen, "Imagen del producto", JOptionPane.PLAIN_MESSAGE);
-
-		} catch (Exception e) {
-			mostrarError("Error al abrir la imagen:\n" + rutaImagen);
-		}
+		UtilidadesImagenProducto.mostrarImagenProducto(this, rutaImagen);
 	}
 
 	private String obtenerRutaImagen(Producto2Mano producto) {

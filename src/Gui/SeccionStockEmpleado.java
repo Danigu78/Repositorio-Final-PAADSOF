@@ -18,6 +18,10 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 
 	private static final long serialVersionUID = 1L;
 
+	private static final String TIPO_COMIC = "Comic";
+	private static final String TIPO_JUEGO = "Juego";
+	private static final String TIPO_FIGURA = "Figura";
+
 	private JTextField campoIdProducto;
 	private JTextField campoUnidades;
 	private JTextField campoFichero;
@@ -25,6 +29,32 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 
 	/* La guardamos para poder refrescarla después de cambiar algo */
 	private SelectorVenta tablaProductos;
+	private java.util.List<JCheckBox> checksCategoriasProducto;
+	private JPanel panelCamposTipo;
+	private CardLayout cardCamposTipo;
+	private JComboBox<String> comboTipoProducto;
+
+	private JTextField campoNombreProducto;
+	private JTextArea areaDescripcionProducto;
+	private JTextField campoImagenProducto;
+	private JTextField campoPrecioProducto;
+	private JTextField campoStockProducto;
+
+	private JTextField campoPaginasComic;
+	private JTextField campoEditorialComic;
+	private JTextField campoAnioComic;
+
+	private JTextField campoMinJugadores;
+	private JTextField campoMaxJugadores;
+	private JTextField campoMinEdad;
+	private JTextField campoMaxEdad;
+	private JTextField campoEstiloJuego;
+
+	private JTextField campoAlturaFigura;
+	private JTextField campoAnchoFigura;
+	private JTextField campoLargoFigura;
+	private JTextField campoMaterialFigura;
+	private JTextField campoMarcaFigura;
 
 	public SeccionStockEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
@@ -35,7 +65,7 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 	private void construirUI() {
 		setLayout(new BorderLayout());
 
-		JPanel panelBase = crearPanelBase("Gestión de Stock");
+		JPanel panelBase = crearPanelBase("Inventario");
 		JPanel contenido = getContenido(panelBase);
 
 		campoIdProducto = crearCampo();
@@ -53,6 +83,8 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 		contenido.add(tablaProductos.bloque);
 		contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(18)));
 		contenido.add(crearBloqueAccionesStock());
+		contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(18)));
+		contenido.add(crearBloqueCrearProducto());
 
 		add(panelBase, BorderLayout.CENTER);
 	}
@@ -170,6 +202,225 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 		return panel;
 	}
 
+	private JPanel crearBloqueCrearProducto() {
+		JPanel bloque = crearBloque("Crear producto");
+
+		inicializarCamposCrearProducto();
+
+		JPanel panelCrear = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(25), 0));
+		panelCrear.setOpaque(false);
+		panelCrear.add(crearPanelDatosProducto());
+		panelCrear.add(crearPanelTipoProducto());
+
+		bloque.add(panelCrear, gbcCampo(1));
+
+		JButton botonLimpiar = crearBotonSecundario("Limpiar");
+		JButton botonCrear = crearBotonAccion("Crear producto");
+
+		JPanel filaBotones = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		filaBotones.setOpaque(false);
+		filaBotones.add(botonLimpiar);
+		filaBotones.add(Box.createHorizontalStrut(VentanaPrincipal.escalar(10)));
+		filaBotones.add(botonCrear);
+
+		bloque.add(filaBotones, gbcBoton(2));
+
+		botonLimpiar.addActionListener(e -> limpiarFormularioProducto());
+		botonCrear.addActionListener(e -> crearProducto());
+
+		return bloque;
+	}
+
+	private void inicializarCamposCrearProducto() {
+		checksCategoriasProducto = new java.util.ArrayList<>();
+
+		comboTipoProducto = crearCombo(new String[] { TIPO_COMIC, TIPO_JUEGO, TIPO_FIGURA });
+		campoNombreProducto = crearCampo();
+		areaDescripcionProducto = crearArea();
+		campoImagenProducto = crearCampo();
+		campoImagenProducto.addFocusListener(new java.awt.event.FocusAdapter() {
+			@Override
+			public void focusLost(java.awt.event.FocusEvent e) {
+				normalizarCampoImagenProducto();
+			}
+		});
+		campoPrecioProducto = crearCampo();
+		campoStockProducto = crearCampo();
+
+		campoPaginasComic = crearCampo();
+		campoEditorialComic = crearCampo();
+		campoAnioComic = crearCampo();
+
+		campoMinJugadores = crearCampo();
+		campoMaxJugadores = crearCampo();
+		campoMinEdad = crearCampo();
+		campoMaxEdad = crearCampo();
+		campoEstiloJuego = crearCampo();
+
+		campoAlturaFigura = crearCampo();
+		campoAnchoFigura = crearCampo();
+		campoLargoFigura = crearCampo();
+		campoMaterialFigura = crearCampo();
+		campoMarcaFigura = crearCampo();
+	}
+
+	private JPanel crearPanelDatosProducto() {
+		JPanel panel = new JPanel();
+		panel.setOpaque(false);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+		panel.add(crearLabel("Datos generales"));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(8)));
+		panel.add(crearCampoFormulario("Tipo", comboTipoProducto));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		panel.add(crearCampoFormulario("Nombre", campoNombreProducto));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		panel.add(crearCampoFormulario("Descripción", estilizarScroll(areaDescripcionProducto)));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		panel.add(crearCampoFormulario("Imagen", crearSelectorImagenProducto()));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		panel.add(crearCampoFormulario("Precio", campoPrecioProducto));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		panel.add(crearCampoFormulario("Stock", campoStockProducto));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		panel.add(crearLabel("Categorías"));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(5)));
+		panel.add(crearPanelCategoriasProducto());
+
+		return panel;
+	}
+
+	private JPanel crearSelectorImagenProducto() {
+		JButton botonSeleccionarImagen = crearBotonSecundario("Abrir...");
+		JButton botonVerImagen = crearBotonSecundario("Ver imagen");
+
+		ajustarBotonImagen(botonSeleccionarImagen);
+		ajustarBotonImagen(botonVerImagen);
+
+		botonSeleccionarImagen.addActionListener(e -> seleccionarImagenProducto());
+		botonVerImagen.addActionListener(e -> verImagenProducto());
+
+		JPanel selector = new JPanel();
+		selector.setOpaque(false);
+		selector.setLayout(new BoxLayout(selector, BoxLayout.Y_AXIS));
+		selector.add(campoImagenProducto);
+		selector.add(Box.createVerticalStrut(VentanaPrincipal.escalar(6)));
+
+		JPanel botones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+		botones.setOpaque(false);
+		botones.add(botonSeleccionarImagen);
+		botones.add(Box.createHorizontalStrut(VentanaPrincipal.escalar(8)));
+		botones.add(botonVerImagen);
+		selector.add(botones);
+
+		return selector;
+	}
+
+	private void ajustarBotonImagen(JButton boton) {
+		Dimension tamano = new Dimension(VentanaPrincipal.escalar(115), VentanaPrincipal.escalar(36));
+		boton.setPreferredSize(tamano);
+		boton.setMaximumSize(tamano);
+		boton.setMinimumSize(tamano);
+	}
+
+	private JPanel crearPanelCategoriasProducto() {
+		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
+		panel.setOpaque(false);
+		checksCategoriasProducto.clear();
+
+		for (String nombreCategoria : controlador.getNombresCategorias()) {
+			JCheckBox check = new JCheckBox(nombreCategoria);
+			check.setOpaque(false);
+			check.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+			check.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+			check.setFocusPainted(false);
+
+			checksCategoriasProducto.add(check);
+			panel.add(check);
+		}
+
+		JScrollPane scroll = new JScrollPane(panel);
+		scroll.setOpaque(false);
+		scroll.getViewport().setOpaque(false);
+		scroll.setBorder(null);
+		scroll.setPreferredSize(new Dimension(VentanaPrincipal.escalar(390), VentanaPrincipal.escalar(80)));
+
+		JPanel contenedor = new JPanel(new BorderLayout());
+		contenedor.setOpaque(false);
+		contenedor.add(scroll, BorderLayout.CENTER);
+
+		return contenedor;
+	}
+
+	private JPanel crearPanelTipoProducto() {
+		JPanel panel = new JPanel();
+		panel.setOpaque(false);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+		panel.add(crearLabel("Datos del tipo"));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(8)));
+
+		cardCamposTipo = new CardLayout();
+		panelCamposTipo = new JPanel(cardCamposTipo);
+		panelCamposTipo.setOpaque(false);
+		panelCamposTipo.add(crearCamposComic(), TIPO_COMIC);
+		panelCamposTipo.add(crearCamposJuego(), TIPO_JUEGO);
+		panelCamposTipo.add(crearCamposFigura(), TIPO_FIGURA);
+
+		panel.add(panelCamposTipo);
+
+		comboTipoProducto.addActionListener(
+				e -> cardCamposTipo.show(panelCamposTipo, String.valueOf(comboTipoProducto.getSelectedItem())));
+		cardCamposTipo.show(panelCamposTipo, TIPO_COMIC);
+
+		return panel;
+	}
+
+	private JPanel crearCamposComic() {
+		JPanel panel = crearPanelCamposTipo();
+		panel.add(crearCampoFormulario("Páginas", campoPaginasComic));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		panel.add(crearCampoFormulario("Editorial", campoEditorialComic));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		panel.add(crearCampoFormulario("Año publicación", campoAnioComic));
+		return panel;
+	}
+
+	private JPanel crearCamposJuego() {
+		JPanel panel = crearPanelCamposTipo();
+		panel.add(crearCampoFormulario("Mín. jugadores", campoMinJugadores));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		panel.add(crearCampoFormulario("Máx. jugadores", campoMaxJugadores));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		panel.add(crearCampoFormulario("Edad mínima", campoMinEdad));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		panel.add(crearCampoFormulario("Edad máxima", campoMaxEdad));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		panel.add(crearCampoFormulario("Estilo", campoEstiloJuego));
+		return panel;
+	}
+
+	private JPanel crearCamposFigura() {
+		JPanel panel = crearPanelCamposTipo();
+		panel.add(crearCampoFormulario("Altura", campoAlturaFigura));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		panel.add(crearCampoFormulario("Ancho", campoAnchoFigura));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		panel.add(crearCampoFormulario("Largo", campoLargoFigura));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		panel.add(crearCampoFormulario("Material", campoMaterialFigura));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		panel.add(crearCampoFormulario("Marca", campoMarcaFigura));
+		return panel;
+	}
+
+	private JPanel crearPanelCamposTipo() {
+		JPanel panel = new JPanel();
+		panel.setOpaque(false);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		return panel;
+	}
+
 	private void ajustarAnchoFormulario(JPanel panelFormulario) {
 		Dimension tamano = new Dimension(VentanaPrincipal.escalar(520), VentanaPrincipal.escalar(68));
 		panelFormulario.setPreferredSize(tamano);
@@ -219,6 +470,28 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 		}
 	}
 
+	private void seleccionarImagenProducto() {
+		JFileChooser selectorImagen = new JFileChooser();
+		int opcion = selectorImagen.showOpenDialog(this);
+
+		if (opcion == JFileChooser.APPROVE_OPTION && selectorImagen.getSelectedFile() != null) {
+			campoImagenProducto
+					.setText(UtilidadesImagenProducto.normalizarRutaImagen(selectorImagen.getSelectedFile().getPath()));
+		}
+	}
+
+	private void verImagenProducto() {
+		normalizarCampoImagenProducto();
+		String rutaImagen = campoImagenProducto.getText().trim();
+
+		if (rutaImagen.isBlank()) {
+			mostrarError("Selecciona o escribe la imagen del producto.");
+			return;
+		}
+
+		UtilidadesImagenProducto.mostrarImagenProducto(this, rutaImagen);
+	}
+
 	private void cargarFichero() {
 		ResultadoOperacion resultado = controlador.cargarProductosDesdeFichero(campoFichero.getText());
 
@@ -228,5 +501,73 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 		} else {
 			mostrarError(resultado.getMensaje());
 		}
+	}
+
+	private void crearProducto() {
+		normalizarCampoImagenProducto();
+		ResultadoOperacion resultado = controlador.crearProducto(String.valueOf(comboTipoProducto.getSelectedItem()),
+				campoNombreProducto.getText(), areaDescripcionProducto.getText(), campoImagenProducto.getText(),
+				campoPrecioProducto.getText(), campoStockProducto.getText(), obtenerCategoriasSeleccionadas(),
+				campoPaginasComic.getText(), campoEditorialComic.getText(), campoAnioComic.getText(),
+				campoMinJugadores.getText(), campoMaxJugadores.getText(), campoMinEdad.getText(),
+				campoMaxEdad.getText(), campoEstiloJuego.getText(), campoAlturaFigura.getText(),
+				campoAnchoFigura.getText(), campoLargoFigura.getText(), campoMaterialFigura.getText(),
+				campoMarcaFigura.getText());
+
+		if (resultado.isExito()) {
+			recargarTablaProductos(tablaProductos.tabla);
+			limpiarFormularioProducto();
+			mostrarMensaje(resultado.getMensaje());
+		} else {
+			mostrarError(resultado.getMensaje());
+		}
+	}
+
+	private String obtenerCategoriasSeleccionadas() {
+		String texto = "";
+
+		for (JCheckBox check : checksCategoriasProducto) {
+			if (check.isSelected()) {
+				if (!texto.isEmpty()) {
+					texto += ",";
+				}
+				texto += check.getText();
+			}
+		}
+
+		return texto;
+	}
+
+	private void limpiarFormularioProducto() {
+		comboTipoProducto.setSelectedIndex(0);
+		campoNombreProducto.setText("");
+		areaDescripcionProducto.setText("");
+		campoImagenProducto.setText("");
+		campoPrecioProducto.setText("");
+		campoStockProducto.setText("");
+
+		campoPaginasComic.setText("");
+		campoEditorialComic.setText("");
+		campoAnioComic.setText("");
+
+		campoMinJugadores.setText("");
+		campoMaxJugadores.setText("");
+		campoMinEdad.setText("");
+		campoMaxEdad.setText("");
+		campoEstiloJuego.setText("");
+
+		campoAlturaFigura.setText("");
+		campoAnchoFigura.setText("");
+		campoLargoFigura.setText("");
+		campoMaterialFigura.setText("");
+		campoMarcaFigura.setText("");
+
+		for (JCheckBox check : checksCategoriasProducto) {
+			check.setSelected(false);
+		}
+	}
+
+	private void normalizarCampoImagenProducto() {
+		campoImagenProducto.setText(UtilidadesImagenProducto.normalizarRutaImagen(campoImagenProducto.getText()));
 	}
 }

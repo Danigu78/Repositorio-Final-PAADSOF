@@ -1,6 +1,7 @@
 package Gui.Controladores;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import tienda.GuardadoTienda;
@@ -29,6 +30,8 @@ public class ControladorNotificacionesEmpleado {
                 resultado.add(notificacion);
             }
         }
+        resultado.sort(Comparator.comparing(Notificacion::getFechaEnvio,
+                Comparator.nullsFirst(Comparator.naturalOrder())).reversed());
         return resultado;
     }
 
@@ -76,7 +79,15 @@ public class ControladorNotificacionesEmpleado {
         String estado = notificacion.isLeida() ? "Vista" : "Nueva";
         String tipo = obtenerTipo(notificacion);
         String fecha = formatearFecha(notificacion);
-        return estado + "   |   " + tipo + "   |   " + fecha;
+        return estado + "   |   " + tipo + "   |   " + fecha + "   |   " + crearResumenMensaje(notificacion);
+    }
+
+    private String crearResumenMensaje(Notificacion notificacion) {
+        if (notificacion == null || notificacion.getMensaje() == null || notificacion.getMensaje().trim().isBlank()) {
+            return "Sin detalle";
+        }
+        String mensaje = notificacion.getMensaje().trim().replaceAll("\\s+", " ");
+        return mensaje.length() > 75 ? mensaje.substring(0, 72) + "..." : mensaje;
     }
 
     public String crearTextoNotificacion(Notificacion notificacion) {

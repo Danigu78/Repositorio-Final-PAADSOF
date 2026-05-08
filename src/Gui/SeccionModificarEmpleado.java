@@ -6,24 +6,53 @@ import javax.swing.*;
 
 import Gui.Controladores.ControladorModificarEmpleado;
 import Gui.Controladores.ResultadoOperacion;
+import productos.Comic;
+import productos.Figura;
+import productos.JuegoMesa;
 import productos.ProductoVenta;
 import usuarios.Empleado;
 
 /**
- * Pantalla para modificar algunos datos básicos de los productos.
- * 
- * Desde aquí el empleado puede consultar los productos y cambiar la descripción
- * o la imagen de un producto concreto.
+ * Pantalla para editar los datos modificables de productos de venta.
+ *
+ * No permite cambiar ID, categorías, reseñas, precio oficial ni stock.
  */
 public class SeccionModificarEmpleado extends AbstractPanelEmpleadoVentaSection {
 
 	private static final long serialVersionUID = 1L;
 
+	private static final String TIPO_COMIC = "Comic";
+	private static final String TIPO_JUEGO = "Juego";
+	private static final String TIPO_FIGURA = "Figura";
+	private static final String TIPO_SIN_ESPECIFICOS = "Sin específicos";
+
 	private SelectorVenta selectorProductos;
 
 	private JTextField campoIdProducto;
+	private JTextField campoTipoProducto;
+	private JTextField campoNombre;
 	private JTextArea areaDescripcion;
 	private JTextField campoImagen;
+
+	private CardLayout cardCamposTipo;
+	private JPanel panelCamposTipo;
+
+	private JTextField campoPaginasComic;
+	private JTextField campoEditorialComic;
+	private JTextField campoAnioComic;
+
+	private JTextField campoMinJugadores;
+	private JTextField campoMaxJugadores;
+	private JTextField campoMinEdad;
+	private JTextField campoMaxEdad;
+	private JTextField campoEstiloJuego;
+
+	private JTextField campoAlturaFigura;
+	private JTextField campoAnchoFigura;
+	private JTextField campoLargoFigura;
+	private JTextField campoMaterialFigura;
+	private JTextField campoMarcaFigura;
+
 	private ControladorModificarEmpleado controlador;
 
 	public SeccionModificarEmpleado(VentanaPrincipal ventana, Empleado empleado) {
@@ -35,120 +64,208 @@ public class SeccionModificarEmpleado extends AbstractPanelEmpleadoVentaSection 
 	private void construirUI() {
 		setLayout(new BorderLayout());
 
-		JPanel panelBase = crearPanelBase("Modificar Productos");
+		JPanel panelBase = crearPanelBase("Editar producto");
 		JPanel contenido = getContenido(panelBase);
 
-		campoIdProducto = crearCampo();
-		areaDescripcion = crearArea();
-		campoImagen = crearCampo();
+		inicializarCampos();
 
-		/*
-		 * La tabla se queda como consulta, igual que en stock. El ID se escribe abajo a
-		 * mano para que no haga cosas raras al pulsar una fila.
-		 */
 		selectorProductos = crearSelectorProductosVenta("Productos actuales",
-				"Filtra los productos para consultar sus datos antes de modificarlos.", true);
+				"Filtra los productos para consultar sus datos antes de editarlos.", true);
 
 		selectorProductos.tabla.setRowSelectionAllowed(false);
 		selectorProductos.tabla.setCellSelectionEnabled(false);
 
 		contenido.add(selectorProductos.bloque);
 		contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(18)));
-		contenido.add(crearBloqueModificarProducto());
+		contenido.add(crearBloqueEditarProducto());
 
 		add(panelBase, BorderLayout.CENTER);
 	}
 
-	private JPanel crearBloqueModificarProducto() {
-		JPanel bloque = crearBloque("Modificar datos del producto");
+	private void inicializarCampos() {
+		campoIdProducto = crearCampo();
+		campoTipoProducto = crearCampo();
+		campoTipoProducto.setEditable(false);
+		campoNombre = crearCampo();
+		areaDescripcion = crearArea();
+		campoImagen = crearCampo();
+		campoImagen.addFocusListener(new java.awt.event.FocusAdapter() {
+			@Override
+			public void focusLost(java.awt.event.FocusEvent e) {
+				normalizarCampoImagen();
+			}
+		});
 
-		JPanel panelCambios = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(35), 0));
-		panelCambios.setOpaque(false);
+		campoPaginasComic = crearCampo();
+		campoEditorialComic = crearCampo();
+		campoAnioComic = crearCampo();
 
-		panelCambios.add(crearPanelDatosProducto());
-		panelCambios.add(crearPanelCambiosProducto());
+		campoMinJugadores = crearCampo();
+		campoMaxJugadores = crearCampo();
+		campoMinEdad = crearCampo();
+		campoMaxEdad = crearCampo();
+		campoEstiloJuego = crearCampo();
 
-		bloque.add(panelCambios, gbcCampo(1));
+		campoAlturaFigura = crearCampo();
+		campoAnchoFigura = crearCampo();
+		campoLargoFigura = crearCampo();
+		campoMaterialFigura = crearCampo();
+		campoMarcaFigura = crearCampo();
+	}
+
+	private JPanel crearBloqueEditarProducto() {
+		JPanel bloque = crearBloque("Editar datos del producto");
+
+		JPanel panelEdicion = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(30), 0));
+		panelEdicion.setOpaque(false);
+
+		panelEdicion.add(crearPanelDatosComunes());
+		panelEdicion.add(crearPanelDatosEspecificos());
+
+		bloque.add(panelEdicion, gbcCampo(1));
+
+		JButton botonCargar = crearBotonSecundario("Cargar datos");
+		JButton botonGuardar = crearBotonAccion("Guardar cambios");
+
+		JPanel filaBotones = crearFilaBotones();
+		filaBotones.add(botonCargar);
+		filaBotones.add(Box.createHorizontalStrut(VentanaPrincipal.escalar(10)));
+		filaBotones.add(botonGuardar);
+
+		bloque.add(filaBotones, gbcBoton(2));
+
+		botonCargar.addActionListener(e -> cargarDatosProducto());
+		botonGuardar.addActionListener(e -> guardarCambios());
 
 		return bloque;
 	}
 
-	private JPanel crearPanelDatosProducto() {
+	private JPanel crearPanelDatosComunes() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-		JLabel titulo = crearLabel("Producto");
-		titulo.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-		JPanel campoId = crearCampoFormulario("ID producto", campoIdProducto);
-		campoId.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-		JButton botonCargar = crearBotonAccion("Cargar datos");
-
-		JPanel filaBoton = crearFilaBotones();
-		filaBoton.setAlignmentX(Component.LEFT_ALIGNMENT);
-		filaBoton.add(botonCargar);
-
-		panel.add(titulo);
+		panel.add(crearLabel("Datos comunes"));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(8)));
+		panel.add(crearCampoFormulario("ID producto", campoIdProducto));
 		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
-		panel.add(campoId);
-		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(12)));
-		panel.add(filaBoton);
+		panel.add(crearCampoFormulario("Tipo", campoTipoProducto));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		panel.add(crearCampoFormulario("Nombre", campoNombre));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
-		botonCargar.addActionListener(e -> cargarDatosProducto());
+		JScrollPane scrollDescripcion = estilizarScroll(areaDescripcion);
+		scrollDescripcion.setPreferredSize(new Dimension(VentanaPrincipal.escalar(420), VentanaPrincipal.escalar(120)));
+		panel.add(crearCampoFormulario("Descripción", scrollDescripcion));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		panel.add(crearCampoFormulario("Ruta de imagen", crearSelectorImagen()));
 
 		return panel;
 	}
 
-	private JPanel crearPanelCambiosProducto() {
+	private JPanel crearSelectorImagen() {
+		JButton botonSeleccionarImagen = crearBotonSecundario("Abrir...");
+		JButton botonVerImagen = crearBotonSecundario("Ver imagen");
+
+		ajustarBotonImagen(botonSeleccionarImagen);
+		ajustarBotonImagen(botonVerImagen);
+
+		botonSeleccionarImagen.addActionListener(e -> seleccionarImagen());
+		botonVerImagen.addActionListener(e -> verImagenProducto());
+
+		JPanel selector = new JPanel();
+		selector.setOpaque(false);
+		selector.setLayout(new BoxLayout(selector, BoxLayout.Y_AXIS));
+		selector.add(campoImagen);
+		selector.add(Box.createVerticalStrut(VentanaPrincipal.escalar(6)));
+
+		JPanel botones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+		botones.setOpaque(false);
+		botones.add(botonSeleccionarImagen);
+		botones.add(Box.createHorizontalStrut(VentanaPrincipal.escalar(8)));
+		botones.add(botonVerImagen);
+		selector.add(botones);
+
+		return selector;
+	}
+
+	private void ajustarBotonImagen(JButton boton) {
+		Dimension tamano = new Dimension(VentanaPrincipal.escalar(115), VentanaPrincipal.escalar(36));
+		boton.setPreferredSize(tamano);
+		boton.setMaximumSize(tamano);
+		boton.setMinimumSize(tamano);
+	}
+
+	private JPanel crearPanelDatosEspecificos() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-		JLabel titulo = crearLabel("Cambios");
-		titulo.setAlignmentX(Component.LEFT_ALIGNMENT);
+		panel.add(crearLabel("Datos específicos"));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(8)));
 
-		JScrollPane scrollDescripcion = estilizarScroll(areaDescripcion);
-		scrollDescripcion.setPreferredSize(new Dimension(VentanaPrincipal.escalar(420), VentanaPrincipal.escalar(130)));
+		cardCamposTipo = new CardLayout();
+		panelCamposTipo = new JPanel(cardCamposTipo);
+		panelCamposTipo.setOpaque(false);
+		panelCamposTipo.add(crearCamposComic(), TIPO_COMIC);
+		panelCamposTipo.add(crearCamposJuego(), TIPO_JUEGO);
+		panelCamposTipo.add(crearCamposFigura(), TIPO_FIGURA);
+		panelCamposTipo.add(crearPanelSinEspecificos(), TIPO_SIN_ESPECIFICOS);
 
-		JPanel campoDescripcion = crearCampoFormulario("Descripción", scrollDescripcion);
-		campoDescripcion.setAlignmentX(Component.LEFT_ALIGNMENT);
+		panel.add(panelCamposTipo);
+		cardCamposTipo.show(panelCamposTipo, TIPO_SIN_ESPECIFICOS);
 
-		JButton botonGuardarDescripcion = crearBotonAccion("Guardar descripción");
+		return panel;
+	}
 
-		JPanel filaDescripcion = crearFilaBotones();
-		filaDescripcion.setAlignmentX(Component.LEFT_ALIGNMENT);
-		filaDescripcion.add(botonGuardarDescripcion);
-
-		JPanel campoRuta = crearCampoFormulario("Ruta de imagen", campoImagen);
-		campoRuta.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-		JButton botonAbrirImagen = crearBotonSecundario("Abrir...");
-		JButton botonGuardarImagen = crearBotonAccion("Guardar imagen");
-
-		JPanel filaImagen = crearFilaBotones();
-		filaImagen.setAlignmentX(Component.LEFT_ALIGNMENT);
-		filaImagen.add(botonAbrirImagen);
-		filaImagen.add(Box.createHorizontalStrut(VentanaPrincipal.escalar(10)));
-		filaImagen.add(botonGuardarImagen);
-
-		panel.add(titulo);
+	private JPanel crearCamposComic() {
+		JPanel panel = crearPanelCamposTipo();
+		panel.add(crearCampoFormulario("Páginas", campoPaginasComic));
 		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
-
-		panel.add(campoDescripcion);
+		panel.add(crearCampoFormulario("Editorial", campoEditorialComic));
 		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
-		panel.add(filaDescripcion);
+		panel.add(crearCampoFormulario("Año publicación", campoAnioComic));
+		return panel;
+	}
 
-		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(18)));
-		panel.add(campoRuta);
+	private JPanel crearCamposJuego() {
+		JPanel panel = crearPanelCamposTipo();
+		panel.add(crearCampoFormulario("Mín. jugadores", campoMinJugadores));
 		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
-		panel.add(filaImagen);
+		panel.add(crearCampoFormulario("Máx. jugadores", campoMaxJugadores));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		panel.add(crearCampoFormulario("Edad mínima", campoMinEdad));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		panel.add(crearCampoFormulario("Edad máxima", campoMaxEdad));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		panel.add(crearCampoFormulario("Estilo", campoEstiloJuego));
+		return panel;
+	}
 
-		botonGuardarDescripcion.addActionListener(e -> guardarDescripcion());
-		botonAbrirImagen.addActionListener(e -> seleccionarImagen());
-		botonGuardarImagen.addActionListener(e -> guardarImagen());
+	private JPanel crearCamposFigura() {
+		JPanel panel = crearPanelCamposTipo();
+		panel.add(crearCampoFormulario("Altura", campoAlturaFigura));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		panel.add(crearCampoFormulario("Ancho", campoAnchoFigura));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		panel.add(crearCampoFormulario("Largo", campoLargoFigura));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		panel.add(crearCampoFormulario("Material", campoMaterialFigura));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		panel.add(crearCampoFormulario("Marca", campoMarcaFigura));
+		return panel;
+	}
 
+	private JPanel crearPanelSinEspecificos() {
+		JPanel panel = crearPanelCamposTipo();
+		panel.add(crearLabel("Este producto no tiene atributos específicos editables aquí."));
+		return panel;
+	}
+
+	private JPanel crearPanelCamposTipo() {
+		JPanel panel = new JPanel();
+		panel.setOpaque(false);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		return panel;
 	}
 
@@ -160,13 +277,41 @@ public class SeccionModificarEmpleado extends AbstractPanelEmpleadoVentaSection 
 
 	private void cargarDatosProducto() {
 		ProductoVenta producto = buscarProductoEscrito();
-
 		if (producto == null) {
 			return;
 		}
 
+		campoTipoProducto.setText(controlador.obtenerTipoProducto(producto));
+		campoNombre.setText(producto.getNombre());
 		areaDescripcion.setText(producto.getDescripcion());
-		campoImagen.setText(producto.getImagenRuta());
+		campoImagen.setText(UtilidadesImagenProducto.normalizarRutaImagen(producto.getImagenRuta()));
+		limpiarCamposEspecificos();
+
+		if (producto instanceof Comic) {
+			Comic comic = (Comic) producto;
+			campoPaginasComic.setText(String.valueOf(comic.getNumeroPaginas()));
+			campoEditorialComic.setText(comic.getEditorial());
+			campoAnioComic.setText(String.valueOf(comic.getAñoPublicacion()));
+			cardCamposTipo.show(panelCamposTipo, TIPO_COMIC);
+		} else if (producto instanceof JuegoMesa) {
+			JuegoMesa juego = (JuegoMesa) producto;
+			campoMinJugadores.setText(String.valueOf(juego.getMinJugadores()));
+			campoMaxJugadores.setText(String.valueOf(juego.getMaxJugadores()));
+			campoMinEdad.setText(String.valueOf(juego.getMinEdad()));
+			campoMaxEdad.setText(String.valueOf(juego.getMaxEdad()));
+			campoEstiloJuego.setText(juego.getTipoJuego());
+			cardCamposTipo.show(panelCamposTipo, TIPO_JUEGO);
+		} else if (producto instanceof Figura) {
+			Figura figura = (Figura) producto;
+			campoAlturaFigura.setText(String.valueOf(figura.getAltura()));
+			campoAnchoFigura.setText(String.valueOf(figura.getAncho()));
+			campoLargoFigura.setText(String.valueOf(figura.getLargo()));
+			campoMaterialFigura.setText(figura.getMaterial());
+			campoMarcaFigura.setText(figura.getMarca());
+			cardCamposTipo.show(panelCamposTipo, TIPO_FIGURA);
+		} else {
+			cardCamposTipo.show(panelCamposTipo, TIPO_SIN_ESPECIFICOS);
+		}
 
 		mostrarMensaje("Datos cargados.");
 	}
@@ -180,7 +325,6 @@ public class SeccionModificarEmpleado extends AbstractPanelEmpleadoVentaSection 
 		}
 
 		ProductoVenta producto = controlador.buscarProducto(idProducto);
-
 		if (producto == null) {
 			mostrarError("No existe ningún producto con ese ID.");
 			return null;
@@ -191,29 +335,36 @@ public class SeccionModificarEmpleado extends AbstractPanelEmpleadoVentaSection 
 
 	private void seleccionarImagen() {
 		JFileChooser selectorImagen = new JFileChooser();
-
 		int opcion = selectorImagen.showOpenDialog(this);
 
 		if (opcion == JFileChooser.APPROVE_OPTION && selectorImagen.getSelectedFile() != null) {
-			campoImagen.setText(selectorImagen.getSelectedFile().getAbsolutePath());
+			campoImagen.setText(UtilidadesImagenProducto.normalizarRutaImagen(selectorImagen.getSelectedFile().getPath()));
 		}
 	}
 
-	private void guardarDescripcion() {
-		String idProducto = campoIdProducto.getText().trim();
-		String descripcion = areaDescripcion.getText().trim();
+	private void verImagenProducto() {
+		normalizarCampoImagen();
+		String rutaImagen = campoImagen.getText().trim();
 
-		if (idProducto.isBlank()) {
-			mostrarError("Escribe el ID del producto.");
-			return;
+		if (rutaImagen.isBlank()) {
+			ProductoVenta producto = buscarProductoEscrito();
+			if (producto == null) {
+				return;
+			}
+			rutaImagen = producto.getImagenRuta();
 		}
 
-		if (descripcion.isBlank()) {
-			mostrarError("Escribe una descripción.");
-			return;
-		}
+		UtilidadesImagenProducto.mostrarImagenProducto(this, rutaImagen);
+	}
 
-		ResultadoOperacion resultado = controlador.guardarDescripcion(idProducto, descripcion);
+	private void guardarCambios() {
+		normalizarCampoImagen();
+		ResultadoOperacion resultado = controlador.guardarProducto(campoIdProducto.getText(), campoNombre.getText(),
+				areaDescripcion.getText(), campoImagen.getText(), campoPaginasComic.getText(),
+				campoEditorialComic.getText(), campoAnioComic.getText(), campoMinJugadores.getText(),
+				campoMaxJugadores.getText(), campoMinEdad.getText(), campoMaxEdad.getText(),
+				campoEstiloJuego.getText(), campoAlturaFigura.getText(), campoAnchoFigura.getText(),
+				campoLargoFigura.getText(), campoMaterialFigura.getText(), campoMarcaFigura.getText());
 
 		if (resultado.isExito()) {
 			recargarTablaProductos(selectorProductos.tabla);
@@ -223,27 +374,25 @@ public class SeccionModificarEmpleado extends AbstractPanelEmpleadoVentaSection 
 		}
 	}
 
-	private void guardarImagen() {
-		String idProducto = campoIdProducto.getText().trim();
-		String imagen = campoImagen.getText().trim();
+	private void normalizarCampoImagen() {
+		campoImagen.setText(UtilidadesImagenProducto.normalizarRutaImagen(campoImagen.getText()));
+	}
 
-		if (idProducto.isBlank()) {
-			mostrarError("Escribe el ID del producto.");
-			return;
-		}
+	private void limpiarCamposEspecificos() {
+		campoPaginasComic.setText("");
+		campoEditorialComic.setText("");
+		campoAnioComic.setText("");
 
-		if (imagen.isBlank()) {
-			mostrarError("Escribe una ruta de imagen.");
-			return;
-		}
+		campoMinJugadores.setText("");
+		campoMaxJugadores.setText("");
+		campoMinEdad.setText("");
+		campoMaxEdad.setText("");
+		campoEstiloJuego.setText("");
 
-		ResultadoOperacion resultado = controlador.guardarImagen(idProducto, imagen);
-
-		if (resultado.isExito()) {
-			recargarTablaProductos(selectorProductos.tabla);
-			mostrarMensaje(resultado.getMensaje());
-		} else {
-			mostrarError(resultado.getMensaje());
-		}
+		campoAlturaFigura.setText("");
+		campoAnchoFigura.setText("");
+		campoLargoFigura.setText("");
+		campoMaterialFigura.setText("");
+		campoMarcaFigura.setText("");
 	}
 }

@@ -121,6 +121,11 @@ public class PanelEmpleado extends JPanel {
 			primeraSeccion = primeraSeccion == null ? SEC_STOCK : primeraSeccion;
 		}
 
+		if (controlador.tienePermiso(TipoPermisos.MODIFICAR_PRODUCTO)) {
+			panelSecciones.add(new SeccionModificarEmpleado(ventana, empleado), SEC_MODIFICAR);
+			primeraSeccion = primeraSeccion == null ? SEC_MODIFICAR : primeraSeccion;
+		}
+
 		if (controlador.tienePermiso(TipoPermisos.GESTION_CATEGORIAS)) {
 			panelSecciones.add(new SeccionCategoriasEmpleado(ventana, empleado), SEC_CATEGORIAS);
 			primeraSeccion = primeraSeccion == null ? SEC_CATEGORIAS : primeraSeccion;
@@ -129,11 +134,6 @@ public class PanelEmpleado extends JPanel {
 		if (controlador.tienePermiso(TipoPermisos.GESTION_PACKS)) {
 			panelSecciones.add(new SeccionPacksEmpleado(ventana, empleado), SEC_PACKS);
 			primeraSeccion = primeraSeccion == null ? SEC_PACKS : primeraSeccion;
-		}
-
-		if (controlador.tienePermiso(TipoPermisos.MODIFICAR_PRODUCTO)) {
-			panelSecciones.add(new SeccionModificarEmpleado(ventana, empleado), SEC_MODIFICAR);
-			primeraSeccion = primeraSeccion == null ? SEC_MODIFICAR : primeraSeccion;
 		}
 
 		if (controlador.tienePermiso(TipoPermisos.GESTION_PEDIDOS)) {
@@ -188,7 +188,11 @@ public class PanelEmpleado extends JPanel {
 		botonActivo = null;
 
 		if (controlador.tienePermiso(TipoPermisos.GESTION_STOCK)) {
-			agregarPestana(panelPestanas, "Stock", SEC_STOCK);
+			agregarPestana(panelPestanas, "Inventario", SEC_STOCK);
+		}
+
+		if (controlador.tienePermiso(TipoPermisos.MODIFICAR_PRODUCTO)) {
+			agregarPestana(panelPestanas, "Editar producto", SEC_MODIFICAR);
 		}
 
 		if (controlador.tienePermiso(TipoPermisos.GESTION_CATEGORIAS)) {
@@ -197,10 +201,6 @@ public class PanelEmpleado extends JPanel {
 
 		if (controlador.tienePermiso(TipoPermisos.GESTION_PACKS)) {
 			agregarPestana(panelPestanas, "Packs", SEC_PACKS);
-		}
-
-		if (controlador.tienePermiso(TipoPermisos.MODIFICAR_PRODUCTO)) {
-			agregarPestana(panelPestanas, "Modificar", SEC_MODIFICAR);
 		}
 
 		if (controlador.tienePermiso(TipoPermisos.GESTION_PEDIDOS)) {
