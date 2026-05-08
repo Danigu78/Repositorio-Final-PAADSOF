@@ -537,14 +537,13 @@ public abstract class UsuarioRegistrado implements Serializable {
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		in.defaultReadObject();
 		inicializarCamposNulos();
+		this.sesionIniciada = false;
 	}
 
 	/**
 	 * Reinicia los campos que no se guardan o que podrían quedar a null.
 	 */
 	private void inicializarCamposNulos() {
-		this.sesionIniciada = false;
-
 		if (this.filtroVenta == null) {
 			this.filtroVenta = new FiltroVenta();
 		}

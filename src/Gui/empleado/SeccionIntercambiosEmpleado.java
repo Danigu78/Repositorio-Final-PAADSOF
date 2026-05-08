@@ -18,7 +18,7 @@ import usuarios.Empleado;
  * Muestra las ofertas de intercambio de la tienda. Para consultar o confirmar
  * una oferta concreta, el empleado escribe su ID abajo.
  */
-public class SeccionIntercambiosEmpleado extends AbstractPanelEmpleadoSection {
+public class SeccionIntercambiosEmpleado extends SeccionEmpleadoBase {
 
 	private static final long serialVersionUID = 1L;
 

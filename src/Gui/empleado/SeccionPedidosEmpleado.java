@@ -19,7 +19,7 @@ import ventas.Pedido;
  * La tabla solo sirve para ver los pedidos de la tienda. Para trabajar con un
  * pedido concreto, se escribe su ID en el campo inferior.
  */
-public class SeccionPedidosEmpleado extends AbstractPanelEmpleadoSection {
+public class SeccionPedidosEmpleado extends SeccionEmpleadoBase {
 
 	private static final long serialVersionUID = 1L;
 

@@ -19,7 +19,7 @@ import ventas.Pedido;
  * Muestra los pedidos que ya están listos para recoger. Para entregar uno, el
  * empleado escribe el código de recogida y pulsa el botón correspondiente.
  */
-public class SeccionEntregasEmpleado extends AbstractPanelEmpleadoSection {
+public class SeccionEntregasEmpleado extends SeccionEmpleadoBase {
 
 	private static final long serialVersionUID = 1L;
 

@@ -20,7 +20,7 @@ import usuarios.Empleado;
  * 
  * Permite consultar productos, crear packs y modificar packs ya existentes.
  */
-public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
+public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 
 	private static final long serialVersionUID = 1L;
 

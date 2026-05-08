@@ -20,7 +20,7 @@ import usuarios.Empleado;
  *
  * No permite cambiar ID, categorías, reseñas, precio oficial ni stock.
  */
-public class SeccionModificarEmpleado extends AbstractPanelEmpleadoVentaSection {
+public class SeccionModificarEmpleado extends SeccionProductosVentaEmpleadoBase {
 
 	private static final long serialVersionUID = 1L;
 

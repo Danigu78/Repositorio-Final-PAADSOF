@@ -27,7 +27,7 @@ import tienda.Notificacion;
 import usuarios.Empleado;
 
 /** Pantalla de notificaciones del empleado. */
-public class SeccionNotificacionesEmpleado extends AbstractPanelEmpleadoSection {
+public class SeccionNotificacionesEmpleado extends SeccionEmpleadoBase {
 
     private static final long serialVersionUID = 1L;
 
