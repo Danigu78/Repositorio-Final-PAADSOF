@@ -1,266 +1,342 @@
 package Gui.Gestor;
 
-import Gui.Controladores.ControladorEstadisticasGestor;
+import Gui.Controladores.Gestor.ControladorEstadisticasGestor;
 import Gui.VentanaPrincipal;
 import javax.swing.*;
-import javax.swing.border.*;
 import java.awt.*;
+import java.awt.event.*;
+import java.time.LocalDate;
 import java.util.List;
 import usuarios.Cliente;
 import usuarios.Gestor;
 
 /**
  * Subpanel de estadísticas para el gestor.
- * Muestra recaudación, actividad de usuarios e ingresos por mes.
+ * Muestra tops de clientes, ingresos por mes, por año y por rango.
  *
  * @author Antonino
  * @version 1.0
  */
-public class SubpanelEstadisticasGestor extends JPanel {
+public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
 
-    private VentanaPrincipal ventana;
-    private Gestor gestor;
     private ControladorEstadisticasGestor controlador;
 
-    /**
-     * Constructor del subpanel de estadísticas.
-     *
-     * @param ventana La ventana principal
-     * @param gestor  El gestor logueado
-     */
+    // Spinners para consulta por año
+    private JSpinner spinnerAño;
+
+    // Spinners para consulta por rango
+    private JSpinner spinnerRangoInicio;
+    private JSpinner spinnerRangoFin;
+
+    // Panel donde se muestran los ingresos por año (se actualiza dinámicamente)
+    private JPanel panelMesesAño;
+
+    // Panel donde se muestra el resultado del rango
+    private JLabel labelResultadoRango;
+
+    // Botones
+    private JButton botonConsultarAño;
+    private JButton botonConsultarRango;
+
     public SubpanelEstadisticasGestor(VentanaPrincipal ventana, Gestor gestor) {
-        this.ventana = ventana;
-        this.gestor = gestor;
-        this.controlador = new ControladorEstadisticasGestor(gestor);
-        setLayout(new BorderLayout());
-        setBackground(VentanaPrincipal.COLOR_FONDO);
+        super(ventana, gestor);
+        this.controlador = new ControladorEstadisticasGestor(this, gestor);
         inicializarUI();
     }
 
-    /**
-     * Construye la interfaz con todas las estadísticas disponibles.
-     */
     private void inicializarUI() {
         JPanel panelContenido = new JPanel();
         panelContenido.setLayout(new BoxLayout(panelContenido, BoxLayout.Y_AXIS));
         panelContenido.setBackground(VentanaPrincipal.COLOR_FONDO);
-        panelContenido.setBorder(BorderFactory.createEmptyBorder(
+        panelContenido.setBorder(javax.swing.BorderFactory.createEmptyBorder(
             VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(30),
             VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(30)));
 
-        // Ingresos totales
+        // 1. Ingresos totales (ventas + tasaciones)
         panelContenido.add(crearSeccionIngresos());
         panelContenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(20)));
 
-        // Ingresos por mes
-        panelContenido.add(crearSeccionMeses());
+        // 2. Ingresos por mes año actual
+        panelContenido.add(crearSeccionMesesActual());
         panelContenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(20)));
 
-        // Top compras
-        panelContenido.add(crearSeccionTopCompras());
+        // 3. Ingresos por mes de un año concreto
+        panelContenido.add(crearSeccionMesesAño());
         panelContenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(20)));
 
-        // Top intercambios
-        panelContenido.add(crearSeccionTopIntercambios());
+        // 4. Ingresos en rango de fechas
+        panelContenido.add(crearSeccionRango());
+        panelContenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(20)));
+
+        // 5. Top clientes compras
+        panelContenido.add(crearSeccionTop(
+            "Top clientes por compras",
+            controlador.getTopCompras(), "compras"));
+        panelContenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(20)));
+
+        // 6. Top clientes intercambios
+        panelContenido.add(crearSeccionTop(
+            "Top clientes por intercambios",
+            controlador.getTopIntercambios(), "intercambios"));
+        panelContenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(20)));
+
+        // 7. Top clientes pedidos cancelados
+        panelContenido.add(crearSeccionTop(
+            "Top clientes por pedidos cancelados",
+            controlador.getTopCancelados(), "cancelados"));
 
         JScrollPane scroll = new JScrollPane(panelContenido);
         scroll.setBorder(null);
         scroll.getViewport().setBackground(VentanaPrincipal.COLOR_FONDO);
+        scroll.getVerticalScrollBar().setUnitIncrement(VentanaPrincipal.escalar(16));
         add(scroll, BorderLayout.CENTER);
+
+        // Registramos el controlador en los botones
+        setControlador(controlador);
     }
 
-    /**
-     * Crea la sección de ingresos totales por ventas y tasaciones.
-     *
-     * @return Panel con la sección de ingresos
-     */
+    public void setControlador(ActionListener c) {
+        if (botonConsultarAño != null) {
+            for (ActionListener al : botonConsultarAño.getActionListeners())
+                botonConsultarAño.removeActionListener(al);
+            botonConsultarAño.addActionListener(c);
+        }
+        if (botonConsultarRango != null) {
+            for (ActionListener al : botonConsultarRango.getActionListeners())
+                botonConsultarRango.removeActionListener(al);
+            botonConsultarRango.addActionListener(c);
+        }
+    }
+
     private JPanel crearSeccionIngresos() {
-        JPanel panel = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(15), 0));
+        JPanel panel = new JPanel(
+            new GridLayout(1, 2, VentanaPrincipal.escalar(15), 0));
         panel.setBackground(VentanaPrincipal.COLOR_FONDO);
+        panel.add(crearTarjetaEstadistica("Ingresos por ventas",
+            String.format("%.2f€", controlador.getIngresosVentas())));
+        panel.add(crearTarjetaEstadistica("Ingresos por tasaciones",
+            String.format("%.2f€", controlador.getIngresosTasaciones())));
+        return panel;
+    }
 
-        // Tarjeta ventas
-        JPanel tarjetaVentas = crearTarjetaEstadistica(
-            "Ingresos por ventas",
-            String.format("%.2f€", controlador.getIngresosVentas())
-        );
-        panel.add(tarjetaVentas);
+    private JPanel crearSeccionMesesActual() {
+        return crearPanelMeses(
+            "Recaudación por mes (año actual)",
+            controlador.getIngresosPorMeses());
+    }
 
-        // Tarjeta tasaciones
-        JPanel tarjetaTasaciones = crearTarjetaEstadistica(
-            "Ingresos por tasaciones",
-            String.format("%.2f€", controlador.getIngresosTasaciones())
-        );
-        panel.add(tarjetaTasaciones);
+    private JPanel crearSeccionMesesAño() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(VentanaPrincipal.COLOR_TARJETA);
+        panel.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+            javax.swing.BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
+            javax.swing.BorderFactory.createEmptyBorder(
+                VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15),
+                VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15))));
+
+        // Cabecera con spinner de año y botón
+        JPanel cabecera = new JPanel(new FlowLayout(
+            FlowLayout.LEFT, VentanaPrincipal.escalar(10), 0));
+        cabecera.setBackground(VentanaPrincipal.COLOR_TARJETA);
+
+        JLabel titulo = new JLabel("Recaudación por mes de un año:");
+        titulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
+        titulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
+        cabecera.add(titulo);
+
+        spinnerAño = new JSpinner(new SpinnerNumberModel(
+            LocalDate.now().getYear(), 2000, 2100, 1));
+        spinnerAño.setFont(VentanaPrincipal.FUENTE_NORMAL);
+        spinnerAño.setPreferredSize(new Dimension(
+            VentanaPrincipal.escalar(80), VentanaPrincipal.escalar(30)));
+        cabecera.add(spinnerAño);
+
+        botonConsultarAño = crearBotonNaranja("Consultar");
+        botonConsultarAño.setActionCommand("consultarAño");
+        cabecera.add(botonConsultarAño);
+
+        panel.add(cabecera, BorderLayout.NORTH);
+
+        // Panel de meses — se rellena al pulsar el botón
+        panelMesesAño = new JPanel(new GridLayout(
+            3, 4, VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(10)));
+        panelMesesAño.setBackground(VentanaPrincipal.COLOR_TARJETA);
+        panelMesesAño.setBorder(javax.swing.BorderFactory.createEmptyBorder(
+            VentanaPrincipal.escalar(10), 0, 0, 0));
+        rellenarPanelMeses(panelMesesAño, new double[12]);
+        panel.add(panelMesesAño, BorderLayout.CENTER);
 
         return panel;
     }
 
-    /**
-     * Crea la sección de ingresos desglosados por mes del año actual.
-     *
-     * @return Panel con la sección de meses
-     */
-    private JPanel crearSeccionMeses() {
+    private JPanel crearSeccionRango() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(VentanaPrincipal.COLOR_TARJETA);
-        panel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
-            BorderFactory.createEmptyBorder(
+        panel.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+            javax.swing.BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
+            javax.swing.BorderFactory.createEmptyBorder(
                 VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15),
-                VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15))
-        ));
+                VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15))));
 
-        JLabel titulo = new JLabel("Recaudación por mes (año actual)");
+        JLabel titulo = new JLabel("Ingresos en rango de fechas:");
         titulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
         titulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
         panel.add(titulo, BorderLayout.NORTH);
 
-        String[] meses = {"Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"};
-        double[] ingresos = controlador.getIngresosPorMeses();
+        JPanel panelControles = new JPanel(new FlowLayout(
+            FlowLayout.LEFT, VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(8)));
+        panelControles.setBackground(VentanaPrincipal.COLOR_TARJETA);
 
-        JPanel panelMeses = new JPanel(new GridLayout(3, 4, VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(10)));
+        panelControles.add(crearLabel("Desde:"));
+        // Usamos SpinnerDateModel para elegir fechas
+        spinnerRangoInicio = new JSpinner(new SpinnerDateModel());
+        spinnerRangoInicio.setEditor(new JSpinner.DateEditor(spinnerRangoInicio, "dd/MM/yyyy"));
+        spinnerRangoInicio.setPreferredSize(new Dimension(
+            VentanaPrincipal.escalar(120), VentanaPrincipal.escalar(30)));
+        panelControles.add(spinnerRangoInicio);
+
+        panelControles.add(crearLabel("Hasta:"));
+        spinnerRangoFin = new JSpinner(new SpinnerDateModel());
+        spinnerRangoFin.setEditor(new JSpinner.DateEditor(spinnerRangoFin, "dd/MM/yyyy"));
+        spinnerRangoFin.setPreferredSize(new Dimension(
+            VentanaPrincipal.escalar(120), VentanaPrincipal.escalar(30)));
+        panelControles.add(spinnerRangoFin);
+
+        botonConsultarRango = crearBotonNaranja("Consultar");
+        botonConsultarRango.setActionCommand("consultarRango");
+        panelControles.add(botonConsultarRango);
+
+        panel.add(panelControles, BorderLayout.CENTER);
+
+        labelResultadoRango = crearLabel("Introduce un rango y pulsa Consultar.");
+        labelResultadoRango.setBorder(javax.swing.BorderFactory.createEmptyBorder(
+            VentanaPrincipal.escalar(5), 0, 0, 0));
+        panel.add(labelResultadoRango, BorderLayout.SOUTH);
+
+        return panel;
+    }
+
+    private JPanel crearSeccionTop(String titulo,
+                                    List<Cliente> clientes, String tipo) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(VentanaPrincipal.COLOR_TARJETA);
+        panel.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+            javax.swing.BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
+            javax.swing.BorderFactory.createEmptyBorder(
+                VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15),
+                VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15))));
+
+        JLabel labelTitulo = new JLabel(titulo);
+        labelTitulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
+        labelTitulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
+        panel.add(labelTitulo, BorderLayout.NORTH);
+
+        JPanel panelClientes = new JPanel();
+        panelClientes.setLayout(new BoxLayout(panelClientes, BoxLayout.Y_AXIS));
+        panelClientes.setBackground(VentanaPrincipal.COLOR_TARJETA);
+        panelClientes.setBorder(javax.swing.BorderFactory.createEmptyBorder(
+            VentanaPrincipal.escalar(10), 0, 0, 0));
+
+        if (clientes.isEmpty()) {
+            panelClientes.add(crearLabel("No hay datos."));
+        } else {
+            int pos = 1;
+            for (Cliente c : clientes) {
+                String info;
+                if (tipo.equals("compras")) {
+                    info = pos + ". " + c.getNickname()
+                        + " — " + c.contarPedidosCompletados() + " pedidos";
+                } else if (tipo.equals("intercambios")) {
+                    info = pos + ". " + c.getNickname()
+                        + " — " + c.contarIntercambios() + " intercambios";
+                } else {
+                    // cancelados
+                    long cancelados = c.getHistorialPedidos().stream()
+                        .filter(p -> p.getEstado() ==
+                            ventas.EstadoPedido.CANCELADO)
+                        .count();
+                    info = pos + ". " + c.getNickname()
+                        + " — " + cancelados + " cancelados";
+                }
+                JLabel label = new JLabel(info);
+                label.setFont(VentanaPrincipal.FUENTE_NORMAL);
+                label.setForeground(pos == 1
+                    ? VentanaPrincipal.COLOR_ACENTO : VentanaPrincipal.COLOR_TEXTO);
+                panelClientes.add(label);
+                pos++;
+            }
+        }
+
+        panel.add(panelClientes, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private JPanel crearPanelMeses(String titulo, double[] ingresos) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(VentanaPrincipal.COLOR_TARJETA);
+        panel.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+            javax.swing.BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
+            javax.swing.BorderFactory.createEmptyBorder(
+                VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15),
+                VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15))));
+
+        JLabel labelTitulo = new JLabel(titulo);
+        labelTitulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
+        labelTitulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
+        panel.add(labelTitulo, BorderLayout.NORTH);
+
+        JPanel panelMeses = new JPanel(new GridLayout(
+            3, 4, VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(10)));
         panelMeses.setBackground(VentanaPrincipal.COLOR_TARJETA);
-        panelMeses.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(10), 0, 0, 0));
+        panelMeses.setBorder(javax.swing.BorderFactory.createEmptyBorder(
+            VentanaPrincipal.escalar(10), 0, 0, 0));
+        rellenarPanelMeses(panelMeses, ingresos);
+        panel.add(panelMeses, BorderLayout.CENTER);
 
+        return panel;
+    }
+
+    private void rellenarPanelMeses(JPanel panel, double[] ingresos) {
+        panel.removeAll();
+        String[] meses = {"Ene","Feb","Mar","Abr","May","Jun",
+                          "Jul","Ago","Sep","Oct","Nov","Dic"};
         for (int i = 0; i < 12; i++) {
             JPanel tarjeta = new JPanel(new BorderLayout());
             tarjeta.setBackground(VentanaPrincipal.COLOR_FONDO);
-            tarjeta.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
-                BorderFactory.createEmptyBorder(
+            tarjeta.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+                javax.swing.BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
+                javax.swing.BorderFactory.createEmptyBorder(
                     VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(8),
-                    VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(8))
-            ));
+                    VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(8))));
 
-            JLabel labelMes = new JLabel(meses[i], SwingConstants.CENTER);
-            labelMes.setFont(VentanaPrincipal.FUENTE_PEQUENA);
-            labelMes.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+            JLabel labelMes = crearLabel(meses[i]);
+            labelMes.setHorizontalAlignment(SwingConstants.CENTER);
             tarjeta.add(labelMes, BorderLayout.NORTH);
 
-            JLabel labelValor = new JLabel(String.format("%.2f€", ingresos[i]), SwingConstants.CENTER);
+            JLabel labelValor = new JLabel(
+                String.format("%.2f€", ingresos[i]), SwingConstants.CENTER);
             labelValor.setFont(VentanaPrincipal.FUENTE_BOTON);
-            labelValor.setForeground(ingresos[i] > 0 ? VentanaPrincipal.COLOR_ACENTO : VentanaPrincipal.COLOR_TEXTO2);
+            labelValor.setForeground(ingresos[i] > 0
+                ? VentanaPrincipal.COLOR_ACENTO : VentanaPrincipal.COLOR_TEXTO2);
             tarjeta.add(labelValor, BorderLayout.CENTER);
 
-            panelMeses.add(tarjeta);
+            panel.add(tarjeta);
         }
-
-        panel.add(panelMeses, BorderLayout.CENTER);
-        return panel;
+        panel.revalidate();
+        panel.repaint();
     }
 
-    /**
-     * Crea la sección con el ranking de clientes por compras.
-     *
-     * @return Panel con la sección de top compras
-     */
-    private JPanel crearSeccionTopCompras() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(VentanaPrincipal.COLOR_TARJETA);
-        panel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
-            BorderFactory.createEmptyBorder(
-                VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15),
-                VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15))
-        ));
-
-        JLabel titulo = new JLabel("Top clientes por compras");
-        titulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
-        titulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
-        panel.add(titulo, BorderLayout.NORTH);
-
-        JPanel panelClientes = new JPanel();
-        panelClientes.setLayout(new BoxLayout(panelClientes, BoxLayout.Y_AXIS));
-        panelClientes.setBackground(VentanaPrincipal.COLOR_TARJETA);
-        panelClientes.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(10), 0, 0, 0));
-
-        List<Cliente> clientes = controlador.getTopCompras();
-        if (clientes.isEmpty()) {
-            JLabel labelVacio = new JLabel("No hay datos de compras.");
-            labelVacio.setFont(VentanaPrincipal.FUENTE_NORMAL);
-            labelVacio.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-            panelClientes.add(labelVacio);
-        } else {
-            int pos = 1;
-            for (Cliente c : clientes) {
-                JLabel label = new JLabel(pos + ". " + c.getNickname() + " — " + c.contarPedidosCompletados() + " pedidos");
-                label.setFont(VentanaPrincipal.FUENTE_NORMAL);
-                label.setForeground(pos == 1 ? VentanaPrincipal.COLOR_ACENTO : VentanaPrincipal.COLOR_TEXTO);
-                panelClientes.add(label);
-                pos++;
-            }
-        }
-
-        panel.add(panelClientes, BorderLayout.CENTER);
-        return panel;
-    }
-
-    /**
-     * Crea la sección con el ranking de clientes por intercambios.
-     *
-     * @return Panel con la sección de top intercambios
-     */
-    private JPanel crearSeccionTopIntercambios() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(VentanaPrincipal.COLOR_TARJETA);
-        panel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
-            BorderFactory.createEmptyBorder(
-                VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15),
-                VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15))
-        ));
-
-        JLabel titulo = new JLabel("Top clientes por intercambios");
-        titulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
-        titulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
-        panel.add(titulo, BorderLayout.NORTH);
-
-        JPanel panelClientes = new JPanel();
-        panelClientes.setLayout(new BoxLayout(panelClientes, BoxLayout.Y_AXIS));
-        panelClientes.setBackground(VentanaPrincipal.COLOR_TARJETA);
-        panelClientes.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(10), 0, 0, 0));
-
-        List<Cliente> clientes = controlador.getTopIntercambios();
-        if (clientes.isEmpty()) {
-            JLabel labelVacio = new JLabel("No hay datos de intercambios.");
-            labelVacio.setFont(VentanaPrincipal.FUENTE_NORMAL);
-            labelVacio.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-            panelClientes.add(labelVacio);
-        } else {
-            int pos = 1;
-            for (Cliente c : clientes) {
-                JLabel label = new JLabel(pos + ". " + c.getNickname() + " — " + c.contarIntercambios() + " intercambios");
-                label.setFont(VentanaPrincipal.FUENTE_NORMAL);
-                label.setForeground(pos == 1 ? VentanaPrincipal.COLOR_ACENTO : VentanaPrincipal.COLOR_TEXTO);
-                panelClientes.add(label);
-                pos++;
-            }
-        }
-
-        panel.add(panelClientes, BorderLayout.CENTER);
-        return panel;
-    }
-
-    /**
-     * Crea una tarjeta visual con un título y un valor destacado.
-     *
-     * @param titulo Título de la tarjeta
-     * @param valor  Valor a mostrar destacado
-     * @return Panel con la tarjeta
-     */
     private JPanel crearTarjetaEstadistica(String titulo, String valor) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(VentanaPrincipal.COLOR_TARJETA);
-        panel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
-            BorderFactory.createEmptyBorder(
+        panel.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+            javax.swing.BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
+            javax.swing.BorderFactory.createEmptyBorder(
                 VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(20),
-                VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(20))
-        ));
+                VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(20))));
 
-        JLabel labelTitulo = new JLabel(titulo, SwingConstants.CENTER);
-        labelTitulo.setFont(VentanaPrincipal.FUENTE_NORMAL);
-        labelTitulo.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+        JLabel labelTitulo = crearLabel(titulo);
+        labelTitulo.setHorizontalAlignment(SwingConstants.CENTER);
         panel.add(labelTitulo, BorderLayout.NORTH);
 
         JLabel labelValor = new JLabel(valor, SwingConstants.CENTER);
@@ -269,5 +345,33 @@ public class SubpanelEstadisticasGestor extends JPanel {
         panel.add(labelValor, BorderLayout.CENTER);
 
         return panel;
+    }
+
+    // ── Métodos que llama el controlador ──────────────────────────────────
+
+    public void procesarConsultarAño() {
+        int año = (int) spinnerAño.getValue();
+        double[] ingresos = controlador.getIngresosPorAño(año);
+        rellenarPanelMeses(panelMesesAño, ingresos);
+    }
+
+    public void procesarConsultarRango() {
+        java.util.Date fechaInicio = (java.util.Date) spinnerRangoInicio.getValue();
+        java.util.Date fechaFin    = (java.util.Date) spinnerRangoFin.getValue();
+
+        LocalDate inicio = fechaInicio.toInstant()
+            .atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+        LocalDate fin = fechaFin.toInstant()
+            .atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+
+        if (fin.isBefore(inicio)) {
+            mostrarError("La fecha de fin debe ser posterior a la de inicio.");
+            return;
+        }
+
+        double totalRango = controlador.getIngresosRango(inicio, fin);
+        labelResultadoRango.setText(
+            "Ingresos del " + inicio + " al " + fin
+            + ":  " + String.format("%.2f€", totalRango));
     }
 }

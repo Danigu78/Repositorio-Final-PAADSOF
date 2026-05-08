@@ -1,6 +1,6 @@
 package Gui.Gestor;
 
-import Gui.Controladores.ControladorEmpleadosGestor;
+import Gui.Controladores.Gestor.ControladorEmpleadosGestor;
 import Gui.VentanaPrincipal;
 import javax.swing.*;
 import java.awt.*;
@@ -15,8 +15,6 @@ import usuarios.TipoPermisos;
 
 /**
  * Subpanel de gestión de empleados para el gestor.
- * Extiende AbstractPanelGestor para reutilizar helpers visuales.
- * Sigue el patrón MVC de los apuntes.
  *
  * @author Antonino
  * @version 1.0
@@ -26,15 +24,11 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
     private ControladorEmpleadosGestor controlador;
     private JPanel panelLista;
 
-    // Campos del formulario — atributos para que el controlador pueda leerlos
     private JTextField campoNick;
     private JPasswordField campoPass;
     private List<JCheckBox> checks;
-
-    // Combos de permisos por empleado — mapa id→combo para que el controlador los lea
-    private Map<String, JComboBox<TipoPermisos>> combosPermisos = new HashMap<>();
-
-    // Botón alta — atributo para registrar el controlador
+    private JTextField campoBusquedaEmpleados;
+    private Map<String, JPanel> combosPermisosPanel = new HashMap<>();
     private JButton botonAlta;
 
     public SubpanelEmpleadosGestor(VentanaPrincipal ventana, Gestor gestor) {
@@ -60,9 +54,6 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
         actualizarLista();
     }
 
-    /**
-     * Registra el controlador en los botones — patrón de los apuntes.
-     */
     public void setControlador(ActionListener c) {
         if (botonAlta != null) {
             for (ActionListener al : botonAlta.getActionListeners())
@@ -87,7 +78,6 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Título
         JLabel titulo = new JLabel("Dar de alta nuevo empleado");
         titulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
         titulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
@@ -95,23 +85,18 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
         panel.add(titulo, gbc);
         gbc.gridwidth = 1;
 
-        // Nickname — crearLabel() de AbstractPanelSection
         gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0;
         panel.add(crearLabel("Nickname:"), gbc);
-        // crearCampoColumnas() de AbstractPanelGestor
         campoNick = crearCampoColumnas(15);
         gbc.gridx = 1; gbc.weightx = 1;
         panel.add(campoNick, gbc);
 
-        // Contraseña — crearLabel() de AbstractPanelSection
         gbc.gridx = 2; gbc.weightx = 0;
         panel.add(crearLabel("Contraseña:"), gbc);
-        // crearCampoPasswordGestor() de AbstractPanelGestor
         campoPass = crearCampoPasswordGestor();
         gbc.gridx = 3; gbc.weightx = 1;
         panel.add(campoPass, gbc);
 
-        // Permisos
         gbc.gridx = 0; gbc.gridy = 2; gbc.gridwidth = 4; gbc.weightx = 1;
         panel.add(crearLabel("Permisos:"), gbc);
 
@@ -131,7 +116,6 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
         panel.add(panelPermisos, gbc);
         gbc.gridwidth = 1;
 
-        // Botón — crearBotonNaranja() de AbstractPanelSection
         botonAlta = crearBotonNaranja("Dar de alta");
         botonAlta.setActionCommand("darDeAlta");
         gbc.gridx = 0; gbc.gridy = 4; gbc.gridwidth = 4;
@@ -144,23 +128,33 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
 
     private void actualizarLista() {
         panelLista.removeAll();
-        combosPermisos.clear();
+        combosPermisosPanel.clear();
 
         JLabel labelTitulo = new JLabel("Empleados registrados:");
         labelTitulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
         labelTitulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
         labelTitulo.setBorder(javax.swing.BorderFactory.createEmptyBorder(
-            VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15),
-            VentanaPrincipal.escalar(10), 0));
+            VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(15),
+            VentanaPrincipal.escalar(5), 0));
         labelTitulo.setAlignmentX(Component.LEFT_ALIGNMENT);
         panelLista.add(labelTitulo);
 
+        // Barra de búsqueda — usa crearCampoCompacto() de AbstractPanelSection
+        JPanel barraBusqueda = new JPanel(new FlowLayout(
+            FlowLayout.LEFT, VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(8)));
+        barraBusqueda.setBackground(VentanaPrincipal.COLOR_FONDO);
+        barraBusqueda.setAlignmentX(Component.LEFT_ALIGNMENT);
+        barraBusqueda.add(crearLabel("Buscar:"));
+        campoBusquedaEmpleados = crearCampoCompacto();
+        campoBusquedaEmpleados.setPreferredSize(new Dimension(
+            VentanaPrincipal.escalar(200), VentanaPrincipal.escalar(28)));
+        escucharCambios(campoBusquedaEmpleados, this::filtrarEmpleados);
+        barraBusqueda.add(campoBusquedaEmpleados);
+        panelLista.add(barraBusqueda);
+
         List<Empleado> empleados = controlador.getEmpleados();
         if (empleados.isEmpty()) {
-            // crearLabel() de AbstractPanelSection
             JLabel labelVacio = crearLabel("No hay empleados registrados.");
-            labelVacio.setBorder(javax.swing.BorderFactory.createEmptyBorder(
-                0, VentanaPrincipal.escalar(15), 0, 0));
             labelVacio.setAlignmentX(Component.LEFT_ALIGNMENT);
             panelLista.add(labelVacio);
         } else {
@@ -175,6 +169,25 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
         panelLista.repaint();
     }
 
+    private void filtrarEmpleados() {
+        String texto = normalizarTexto(campoBusquedaEmpleados.getText());
+        // Mantenemos título y barra de búsqueda (primeros 2 componentes)
+        while (panelLista.getComponentCount() > 2)
+            panelLista.remove(panelLista.getComponentCount() - 1);
+
+        for (Empleado e : controlador.getEmpleados()) {
+            if (texto.isEmpty()
+                    || contieneTexto(e.getNickname(), texto)
+                    || contieneTexto(e.getId(), texto)) {
+                JPanel fila = crearFilaEmpleado(e);
+                fila.setAlignmentX(Component.LEFT_ALIGNMENT);
+                panelLista.add(fila);
+            }
+        }
+        panelLista.revalidate();
+        panelLista.repaint();
+    }
+
     private JPanel crearFilaEmpleado(Empleado empleado) {
         JPanel fila = new JPanel(new GridBagLayout());
         fila.setBackground(VentanaPrincipal.COLOR_TARJETA);
@@ -185,12 +198,11 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
                 VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(15),
                 VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(15))));
         fila.setMaximumSize(new Dimension(Integer.MAX_VALUE,
-            VentanaPrincipal.escalar(120)));
+            VentanaPrincipal.escalar(150)));
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(VentanaPrincipal.escalar(3),
-            VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(3),
-            VentanaPrincipal.escalar(8));
+        gbc.insets = new Insets(VentanaPrincipal.escalar(3), VentanaPrincipal.escalar(8),
+            VentanaPrincipal.escalar(3), VentanaPrincipal.escalar(8));
         gbc.anchor = GridBagConstraints.WEST;
 
         JLabel labelNick = new JLabel(empleado.getNickname());
@@ -200,7 +212,6 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
         gbc.gridx = 0; gbc.gridy = 0; gbc.weightx = 0;
         fila.add(labelNick, gbc);
 
-        // crearLabel() de AbstractPanelSection
         JLabel labelId = crearLabel("ID: " + empleado.getId());
         gbc.gridx = 1;
         fila.add(labelId, gbc);
@@ -213,13 +224,11 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
         gbc.gridx = 2;
         fila.add(labelEstado, gbc);
 
+        // Permisos actuales visibles
         StringBuilder sb = new StringBuilder("Permisos: ");
-        if (empleado.getPermisos().isEmpty()) {
-            sb.append("ninguno");
-        } else {
-            for (TipoPermisos p : empleado.getPermisos())
-                sb.append(p.name()).append("  ");
-        }
+        if (empleado.getPermisos().isEmpty()) sb.append("ninguno");
+        else for (TipoPermisos p : empleado.getPermisos())
+            sb.append(p.name()).append("  ");
         JLabel labelPermisos = crearLabel(sb.toString());
         gbc.gridx = 0; gbc.gridy = 1; gbc.gridwidth = 3;
         fila.add(labelPermisos, gbc);
@@ -230,12 +239,15 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
                 FlowLayout.RIGHT, VentanaPrincipal.escalar(5), 0));
             panelBotones.setBackground(VentanaPrincipal.COLOR_TARJETA);
 
-            // crearCombo() de AbstractPanelSection
-            JComboBox<TipoPermisos> comboPermiso = crearCombo(TipoPermisos.values());
-            combosPermisos.put(empleado.getId(), comboPermiso);
-            panelBotones.add(comboPermiso);
+            // Combo con buscador para permisos
+            String[] nombresPermisos = new String[TipoPermisos.values().length];
+            for (int i = 0; i < TipoPermisos.values().length; i++)
+                nombresPermisos[i] = TipoPermisos.values()[i].name();
+            JPanel panelComboPermiso = crearComboConBuscador(
+                nombresPermisos, VentanaPrincipal.escalar(160));
+            combosPermisosPanel.put(empleado.getId(), panelComboPermiso);
+            panelBotones.add(panelComboPermiso);
 
-            // crearBotonNaranja() de AbstractPanelSection
             JButton botonAsignar = crearBotonNaranja("+ Permiso");
             botonAsignar.setActionCommand("asignarPermiso:" + empleado.getId());
             botonAsignar.addActionListener(controlador);
@@ -246,7 +258,6 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
             botonRetirar.addActionListener(controlador);
             panelBotones.add(botonRetirar);
 
-            // crearBotonRojo() de AbstractPanelSection
             JButton botonBaja = crearBotonRojo("Dar de baja");
             botonBaja.setActionCommand("darDeBaja:" + empleado.getId());
             botonBaja.addActionListener(controlador);
@@ -262,50 +273,38 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
         return fila;
     }
 
-    // ── Métodos que llama el controlador ──────────────────────────────────
+    // ── Métodos que llama el controlador desde actionPerformed ─────────────
 
-    /**
-     * Lee los campos del formulario y da de alta al empleado.
-     * Lo llama el controlador.
-     */
     public void procesarAlta() {
         String nick = campoNick.getText().trim();
         String pass = new String(campoPass.getPassword());
         List<TipoPermisos> permisos = new ArrayList<>();
-        for (int i = 0; i < checks.size(); i++) {
+        for (int i = 0; i < checks.size(); i++)
             if (checks.get(i).isSelected())
                 permisos.add(TipoPermisos.values()[i]);
-        }
         if (nick.isEmpty() || pass.isEmpty()) {
             mostrarError("Rellena el nickname y la contraseña.");
             return;
         }
         if (controlador.darDeAlta(nick, pass, permisos)) {
-            mostrarExito("Empleado '" + nick + "' dado de alta correctamente.");
+            mostrarMensaje("Empleado '" + nick + "' dado de alta correctamente.");
             campoNick.setText("");
             campoPass.setText("");
-            checks.forEach(cb -> cb.setSelected(false));
+            for (JCheckBox cb : checks) cb.setSelected(false);
             actualizarLista();
         } else {
             mostrarError("No se pudo dar de alta. Comprueba los datos.");
         }
     }
 
-    /**
-     * Muestra confirmación y da de baja al empleado.
-     * Lo llama el controlador.
-     */
     public void confirmarBaja(String id) {
-        Empleado emp = controlador.getEmpleados().stream()
-            .filter(e -> e.getId().equals(id))
-            .findFirst().orElse(null);
-        if (emp == null) return;
+        String nick = controlador.getNicknameEmpleado(id);
         int confirm = JOptionPane.showConfirmDialog(this,
-            "¿Seguro que quieres dar de baja a " + emp.getNickname() + "?",
+            "¿Seguro que quieres dar de baja a " + nick + "?",
             "Confirmar", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
             if (controlador.darDeBaja(id)) {
-                mostrarExito("Empleado dado de baja.");
+                mostrarMensaje("Empleado dado de baja.");
                 actualizarLista();
             } else {
                 mostrarError("No se pudo dar de baja.");
@@ -313,32 +312,28 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
         }
     }
 
-    /**
-     * Asigna el permiso seleccionado en el combo al empleado.
-     * Lo llama el controlador.
-     */
     public void procesarAsignarPermiso(String id) {
-        JComboBox<TipoPermisos> combo = combosPermisos.get(id);
-        if (combo == null) return;
-        TipoPermisos p = (TipoPermisos) combo.getSelectedItem();
+        JPanel panelCombo = combosPermisosPanel.get(id);
+        if (panelCombo == null) return;
+        JComboBox<String> combo = getComboDePanel(panelCombo);
+        if (combo == null || combo.getSelectedItem() == null) return;
+        TipoPermisos p = TipoPermisos.valueOf((String) combo.getSelectedItem());
         if (controlador.asignarPermiso(id, p)) {
-            mostrarExito("Permiso asignado.");
+            mostrarMensaje("Permiso asignado.");
             actualizarLista();
         } else {
             mostrarError("No se pudo asignar el permiso.");
         }
     }
 
-    /**
-     * Retira el permiso seleccionado en el combo al empleado.
-     * Lo llama el controlador.
-     */
     public void procesarRetirarPermiso(String id) {
-        JComboBox<TipoPermisos> combo = combosPermisos.get(id);
-        if (combo == null) return;
-        TipoPermisos p = (TipoPermisos) combo.getSelectedItem();
+        JPanel panelCombo = combosPermisosPanel.get(id);
+        if (panelCombo == null) return;
+        JComboBox<String> combo = getComboDePanel(panelCombo);
+        if (combo == null || combo.getSelectedItem() == null) return;
+        TipoPermisos p = TipoPermisos.valueOf((String) combo.getSelectedItem());
         if (controlador.retirarPermiso(id, p)) {
-            mostrarExito("Permiso retirado.");
+            mostrarMensaje("Permiso retirado.");
             actualizarLista();
         } else {
             mostrarError("No se pudo retirar el permiso.");
