@@ -1,5 +1,8 @@
-package Gui.Controladores;
+package Gui.Controladores.empleado;
 
+import Gui.empleado.SeccionModificarEmpleado;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import productos.Comic;
 import productos.Figura;
 import productos.JuegoMesa;
@@ -12,7 +15,12 @@ import usuarios.TipoPermisos;
 import utilidades.RutasImagen;
 
 /** Controlador de la sección de edición de productos. */
-public class ControladorModificarEmpleado {
+public class ControladorModificarEmpleado implements ActionListener {
+
+	public static final String CARGAR_DATOS = "modificar.cargar";
+	public static final String GUARDAR_CAMBIOS = "modificar.guardar";
+	public static final String SELECCIONAR_IMAGEN = "modificar.seleccionarImagen";
+	public static final String VER_IMAGEN = "modificar.verImagen";
 
 	private static final String TIPO_COMIC = "Comic";
 	private static final String TIPO_JUEGO = "Juego";
@@ -21,9 +29,32 @@ public class ControladorModificarEmpleado {
 
 	private final Empleado empleado;
 	private final ControladorProductosEmpleado productos = new ControladorProductosEmpleado();
+	private SeccionModificarEmpleado vista;
 
 	public ControladorModificarEmpleado(Empleado empleado) {
 		this.empleado = empleado;
+	}
+
+	public void setVista(SeccionModificarEmpleado vista) {
+		this.vista = vista;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (vista == null || e == null) {
+			return;
+		}
+
+		String accion = e.getActionCommand();
+		if (CARGAR_DATOS.equals(accion)) {
+			vista.cargarDatosProducto();
+		} else if (GUARDAR_CAMBIOS.equals(accion)) {
+			vista.guardarCambios();
+		} else if (SELECCIONAR_IMAGEN.equals(accion)) {
+			vista.seleccionarImagen();
+		} else if (VER_IMAGEN.equals(accion)) {
+			vista.verImagenProducto();
+		}
 	}
 
 	public ProductoVenta buscarProducto(String idProducto) {

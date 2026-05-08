@@ -1,12 +1,15 @@
-package Gui;
+package Gui.empleado;
 
+
+import Gui.VentanaPrincipal;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
-import Gui.Controladores.ControladorEntregasEmpleado;
-import Gui.Controladores.ResultadoOperacion;
+import Gui.Controladores.empleado.ControladorEntregasEmpleado;
+import Gui.Controladores.empleado.ResultadoOperacion;
 import usuarios.Empleado;
 import ventas.Pedido;
 
@@ -29,7 +32,20 @@ public class SeccionEntregasEmpleado extends AbstractPanelEmpleadoSection {
 	public SeccionEntregasEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
 		this.controlador = new ControladorEntregasEmpleado(empleado);
+		this.controlador.setVista(this);
+		setControlador(this.controlador);
 		construirUI();
+	}
+
+	public void setControlador(ActionListener controlador) {
+		if (controlador instanceof ControladorEntregasEmpleado) {
+			this.controlador = (ControladorEntregasEmpleado) controlador;
+		}
+	}
+
+	private void conectar(JButton boton, String accion) {
+		boton.setActionCommand(accion);
+		boton.addActionListener(controlador);
 	}
 
 	private void construirUI() {
@@ -72,7 +88,7 @@ public class SeccionEntregasEmpleado extends AbstractPanelEmpleadoSection {
 		scrollTabla.setPreferredSize(new Dimension(VentanaPrincipal.escalar(1050), VentanaPrincipal.escalar(240)));
 
 		JButton botonRefrescar = crearBotonSecundario("Refrescar");
-		botonRefrescar.addActionListener(e -> cargarTablaEntregas());
+		conectar(botonRefrescar, ControladorEntregasEmpleado.REFRESCAR);
 
 		bloque.add(crearLabel("Consulta los pedidos preparados. Para entregarlo, escribe el código abajo."),
 				gbcCampo(1));
@@ -154,8 +170,8 @@ public class SeccionEntregasEmpleado extends AbstractPanelEmpleadoSection {
 
 		panel.add(filaBotones);
 
-		botonVerPedido.addActionListener(e -> verPedido());
-		botonEntregarPedido.addActionListener(e -> entregarPedido());
+		conectar(botonVerPedido, ControladorEntregasEmpleado.VER_PEDIDO);
+		conectar(botonEntregarPedido, ControladorEntregasEmpleado.ENTREGAR_PEDIDO);
 
 		return panel;
 	}
@@ -168,7 +184,7 @@ public class SeccionEntregasEmpleado extends AbstractPanelEmpleadoSection {
 		boton.setMaximumSize(tamano);
 	}
 
-	private void cargarTablaEntregas() {
+	public void cargarTablaEntregas() {
 		modeloPedidosListos.setRowCount(0);
 
 		for (Pedido pedido : controlador.getPedidosListosParaRecoger()) {
@@ -178,7 +194,7 @@ public class SeccionEntregasEmpleado extends AbstractPanelEmpleadoSection {
 		}
 	}
 
-	private void verPedido() {
+	public void verPedido() {
 		String codigo = campoCodigoRecogida.getText().trim();
 
 		if (codigo.isBlank()) {
@@ -196,7 +212,7 @@ public class SeccionEntregasEmpleado extends AbstractPanelEmpleadoSection {
 		mostrarPedidoEnVentana(pedido);
 	}
 
-	private void entregarPedido() {
+	public void entregarPedido() {
 		ResultadoOperacion resultado = controlador.entregarPedido(campoCodigoRecogida.getText());
 
 		if (resultado.isExito()) {

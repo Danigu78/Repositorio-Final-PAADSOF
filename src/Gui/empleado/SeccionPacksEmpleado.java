@@ -1,13 +1,16 @@
-package Gui;
+package Gui.empleado;
 
+
+import Gui.VentanaPrincipal;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
-import Gui.Controladores.ControladorPacksEmpleado;
-import Gui.Controladores.ResultadoOperacion;
+import Gui.Controladores.empleado.ControladorPacksEmpleado;
+import Gui.Controladores.empleado.ResultadoOperacion;
 import productos.LineaPack;
 import productos.Pack;
 import usuarios.Empleado;
@@ -26,6 +29,11 @@ public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 	private JTextArea areaLineasPack;
 
 	private ArrayList<JCheckBox> checksCategoriasPack;
+	private JTextField campoNombrePack;
+	private JTextArea areaDescripcionPack;
+	private JTextField campoImagenPack;
+	private JTextField campoPrecioPack;
+	private JTextField campoStockPack;
 
 	private JTextField campoIdPack;
 	private JTextField campoIdProducto;
@@ -37,7 +45,20 @@ public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 	public SeccionPacksEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
 		this.controlador = new ControladorPacksEmpleado(empleado);
+		this.controlador.setVista(this);
+		setControlador(this.controlador);
 		construirUI();
+	}
+
+	public void setControlador(ActionListener controlador) {
+		if (controlador instanceof ControladorPacksEmpleado) {
+			this.controlador = (ControladorPacksEmpleado) controlador;
+		}
+	}
+
+	private void conectar(JButton boton, String accion) {
+		boton.setActionCommand(accion);
+		boton.addActionListener(controlador);
 	}
 
 	private void construirUI() {
@@ -69,14 +90,14 @@ public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 
 		selectorProductos.bloque.add(filaBoton, gbcBoton(4));
 
-		botonRefrescar.addActionListener(e -> dejarSoloPacks());
+		conectar(botonRefrescar, ControladorPacksEmpleado.REFRESCAR_PACKS);
 
 		dejarSoloPacks();
 
 		return selectorProductos.bloque;
 	}
 
-	private void dejarSoloPacks() {
+	public void dejarSoloPacks() {
 		if (selectorProductos == null) {
 			return;
 		}
@@ -152,11 +173,11 @@ public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 	private JPanel crearBloqueCrearPack() {
 		JPanel bloque = crearBloque("Crear pack");
 
-		JTextField campoNombre = crearCampo();
-		JTextArea areaDescripcion = crearArea();
-		JTextField campoImagen = crearCampo();
-		JTextField campoPrecio = crearCampo();
-		JTextField campoStock = crearCampo();
+		campoNombrePack = crearCampo();
+		areaDescripcionPack = crearArea();
+		campoImagenPack = crearCampo();
+		campoPrecioPack = crearCampo();
+		campoStockPack = crearCampo();
 
 		checksCategoriasPack = new ArrayList<>();
 		areaLineasPack = crearArea();
@@ -164,7 +185,8 @@ public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 		JPanel panelCrear = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(25), 0));
 		panelCrear.setOpaque(false);
 
-		panelCrear.add(crearPanelDatosPack(campoNombre, areaDescripcion, campoImagen, campoPrecio, campoStock));
+		panelCrear.add(crearPanelDatosPack(campoNombrePack, areaDescripcionPack, campoImagenPack, campoPrecioPack,
+				campoStockPack));
 		panelCrear.add(crearPanelProductosPack());
 
 		bloque.add(panelCrear, gbcCampo(1));
@@ -182,13 +204,9 @@ public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 
 		bloque.add(filaBotones, gbcBoton(2));
 
-		botonVerLineas.addActionListener(e -> verContenidoEscrito());
-
-		botonLimpiar.addActionListener(
-				e -> limpiarFormularioCrear(campoNombre, areaDescripcion, campoImagen, campoPrecio, campoStock));
-
-		botonCrear.addActionListener(
-				e -> crearPack(campoNombre, areaDescripcion, campoImagen, campoPrecio, campoStock));
+		conectar(botonVerLineas, ControladorPacksEmpleado.VER_CONTENIDO);
+		conectar(botonLimpiar, ControladorPacksEmpleado.LIMPIAR_CREAR);
+		conectar(botonCrear, ControladorPacksEmpleado.CREAR_PACK);
 
 		return bloque;
 	}
@@ -349,12 +367,12 @@ public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 
 		panel.add(botones);
 
-		botonVerPack.addActionListener(e -> verPack());
-		botonAnadir.addActionListener(e -> anadirProductoAPack());
-		botonCambiarUnidades.addActionListener(e -> cambiarUnidadesPack());
-		botonQuitarProducto.addActionListener(e -> quitarProductoDelPack());
-		botonCambiarPrecio.addActionListener(e -> cambiarPrecioPack());
-		botonEliminarPack.addActionListener(e -> eliminarPack());
+		conectar(botonVerPack, ControladorPacksEmpleado.VER_PACK);
+		conectar(botonAnadir, ControladorPacksEmpleado.ANADIR_PRODUCTO);
+		conectar(botonCambiarUnidades, ControladorPacksEmpleado.CAMBIAR_UNIDADES);
+		conectar(botonQuitarProducto, ControladorPacksEmpleado.QUITAR_PRODUCTO);
+		conectar(botonCambiarPrecio, ControladorPacksEmpleado.CAMBIAR_PRECIO);
+		conectar(botonEliminarPack, ControladorPacksEmpleado.ELIMINAR_PACK);
 
 		return panel;
 	}
@@ -365,7 +383,7 @@ public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 		return fila;
 	}
 
-	private void verPack() {
+	public void verPack() {
 		String idPack = campoIdPack.getText().trim();
 
 		if (idPack.isBlank()) {
@@ -376,7 +394,7 @@ public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 		mostrarPackEnVentana(idPack);
 	}
 
-	private void verContenidoEscrito() {
+	public void verContenidoEscrito() {
 		try {
 			ArrayList<LineaPack> lineas = controlador.construirLineasPack(areaLineasPack.getText());
 
@@ -398,6 +416,10 @@ public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 		} catch (Exception e) {
 			mostrarError("No se puede mostrar el contenido: " + e.getMessage());
 		}
+	}
+
+	public void crearPack() {
+		crearPack(campoNombrePack, areaDescripcionPack, campoImagenPack, campoPrecioPack, campoStockPack);
 	}
 
 	private void crearPack(JTextField campoNombre, JTextArea areaDescripcion, JTextField campoImagen,
@@ -436,6 +458,10 @@ public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 		return texto;
 	}
 
+	public void limpiarFormularioCrear() {
+		limpiarFormularioCrear(campoNombrePack, areaDescripcionPack, campoImagenPack, campoPrecioPack, campoStockPack);
+	}
+
 	private void limpiarFormularioCrear(JTextField campoNombre, JTextArea areaDescripcion, JTextField campoImagen,
 			JTextField campoPrecio, JTextField campoStock) {
 
@@ -453,7 +479,7 @@ public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 		}
 	}
 
-	private void anadirProductoAPack() {
+	public void anadirProductoAPack() {
 		ResultadoOperacion resultado = controlador.anadirProductoAPack(campoIdProducto.getText(), campoIdPack.getText(),
 				campoUnidades.getText());
 
@@ -465,7 +491,7 @@ public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 		}
 	}
 
-	private void cambiarUnidadesPack() {
+	public void cambiarUnidadesPack() {
 		ResultadoOperacion resultado = controlador.cambiarUnidadesPack(campoIdProducto.getText(), campoIdPack.getText(),
 				campoUnidades.getText());
 
@@ -477,7 +503,7 @@ public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 		}
 	}
 
-	private void quitarProductoDelPack() {
+	public void quitarProductoDelPack() {
 		ResultadoOperacion resultado = controlador.quitarProductoDelPack(campoIdPack.getText(),
 				campoIdProducto.getText());
 
@@ -489,7 +515,7 @@ public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 		}
 	}
 
-	private void cambiarPrecioPack() {
+	public void cambiarPrecioPack() {
 		ResultadoOperacion resultado = controlador.cambiarPrecioPack(campoIdPack.getText(), campoNuevoPrecio.getText());
 
 		if (resultado.isExito()) {
@@ -500,7 +526,7 @@ public class SeccionPacksEmpleado extends AbstractPanelEmpleadoVentaSection {
 		}
 	}
 
-	private void eliminarPack() {
+	public void eliminarPack() {
 		ResultadoOperacion resultado = controlador.eliminarPack(campoIdPack.getText());
 
 		if (resultado.isExito()) {

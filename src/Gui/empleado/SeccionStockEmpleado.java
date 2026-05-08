@@ -1,11 +1,14 @@
-package Gui;
+package Gui.empleado;
 
+
+import Gui.VentanaPrincipal;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
-import Gui.Controladores.ControladorStockEmpleado;
-import Gui.Controladores.ResultadoOperacion;
+import Gui.Controladores.empleado.ControladorStockEmpleado;
+import Gui.Controladores.empleado.ResultadoOperacion;
 import usuarios.Empleado;
 
 /**
@@ -59,7 +62,20 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 	public SeccionStockEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
 		this.controlador = new ControladorStockEmpleado(empleado);
+		this.controlador.setVista(this);
+		setControlador(this.controlador);
 		construirUI();
+	}
+
+	public void setControlador(ActionListener controlador) {
+		if (controlador instanceof ControladorStockEmpleado) {
+			this.controlador = (ControladorStockEmpleado) controlador;
+		}
+	}
+
+	private void conectar(JButton boton, String accion) {
+		boton.setActionCommand(accion);
+		boton.addActionListener(controlador);
 	}
 
 	private void construirUI() {
@@ -149,8 +165,8 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 		gbc.weighty = 1.0;
 		panel.add(Box.createVerticalGlue(), gbc);
 
-		botonSumar.addActionListener(e -> reponerStock());
-		botonRestar.addActionListener(e -> retirarStock());
+		conectar(botonSumar, ControladorStockEmpleado.SUMAR_STOCK);
+		conectar(botonRestar, ControladorStockEmpleado.RESTAR_STOCK);
 
 		return panel;
 	}
@@ -196,8 +212,8 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 		gbc.weighty = 1.0;
 		panel.add(Box.createVerticalGlue(), gbc);
 
-		botonExaminar.addActionListener(e -> seleccionarFichero());
-		botonCargar.addActionListener(e -> cargarFichero());
+		conectar(botonExaminar, ControladorStockEmpleado.SELECCIONAR_FICHERO);
+		conectar(botonCargar, ControladorStockEmpleado.CARGAR_FICHERO);
 
 		return panel;
 	}
@@ -225,8 +241,8 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 
 		bloque.add(filaBotones, gbcBoton(2));
 
-		botonLimpiar.addActionListener(e -> limpiarFormularioProducto());
-		botonCrear.addActionListener(e -> crearProducto());
+		conectar(botonLimpiar, ControladorStockEmpleado.LIMPIAR_PRODUCTO);
+		conectar(botonCrear, ControladorStockEmpleado.CREAR_PRODUCTO);
 
 		return bloque;
 	}
@@ -297,8 +313,8 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 		ajustarBotonImagen(botonSeleccionarImagen);
 		ajustarBotonImagen(botonVerImagen);
 
-		botonSeleccionarImagen.addActionListener(e -> seleccionarImagenProducto());
-		botonVerImagen.addActionListener(e -> verImagenProducto());
+		conectar(botonSeleccionarImagen, ControladorStockEmpleado.SELECCIONAR_IMAGEN);
+		conectar(botonVerImagen, ControladorStockEmpleado.VER_IMAGEN);
 
 		JPanel selector = new JPanel();
 		selector.setOpaque(false);
@@ -435,7 +451,7 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 		boton.setMinimumSize(tamano);
 	}
 
-	private void reponerStock() {
+	public void reponerStock() {
 		ResultadoOperacion resultado = controlador.reponerStock(campoIdProducto.getText(), campoUnidades.getText());
 
 		if (resultado.isExito()) {
@@ -447,7 +463,7 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 		}
 	}
 
-	private void retirarStock() {
+	public void retirarStock() {
 		ResultadoOperacion resultado = controlador.retirarStock(campoIdProducto.getText(), campoUnidades.getText());
 
 		if (resultado.isExito()) {
@@ -459,7 +475,7 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 		}
 	}
 
-	private void seleccionarFichero() {
+	public void seleccionarFichero() {
 		JFileChooser selectorFichero = new JFileChooser(); // Para abrir archivos del ordenador
 
 		int opcion = selectorFichero.showOpenDialog(this);
@@ -470,7 +486,7 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 		}
 	}
 
-	private void seleccionarImagenProducto() {
+	public void seleccionarImagenProducto() {
 		JFileChooser selectorImagen = new JFileChooser();
 		int opcion = selectorImagen.showOpenDialog(this);
 
@@ -480,7 +496,7 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 		}
 	}
 
-	private void verImagenProducto() {
+	public void verImagenProducto() {
 		normalizarCampoImagenProducto();
 		String rutaImagen = campoImagenProducto.getText().trim();
 
@@ -492,7 +508,7 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 		UtilidadesImagenProducto.mostrarImagenProducto(this, rutaImagen);
 	}
 
-	private void cargarFichero() {
+	public void cargarFichero() {
 		ResultadoOperacion resultado = controlador.cargarProductosDesdeFichero(campoFichero.getText());
 
 		if (resultado.isExito()) {
@@ -503,7 +519,7 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 		}
 	}
 
-	private void crearProducto() {
+	public void crearProducto() {
 		normalizarCampoImagenProducto();
 		ResultadoOperacion resultado = controlador.crearProducto(String.valueOf(comboTipoProducto.getSelectedItem()),
 				campoNombreProducto.getText(), areaDescripcionProducto.getText(), campoImagenProducto.getText(),
@@ -538,7 +554,7 @@ public class SeccionStockEmpleado extends AbstractPanelEmpleadoVentaSection {
 		return texto;
 	}
 
-	private void limpiarFormularioProducto() {
+	public void limpiarFormularioProducto() {
 		comboTipoProducto.setSelectedIndex(0);
 		campoNombreProducto.setText("");
 		areaDescripcionProducto.setText("");

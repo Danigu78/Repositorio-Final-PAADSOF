@@ -1,5 +1,8 @@
-package Gui.Controladores;
+package Gui.Controladores.empleado;
 
+import Gui.empleado.SeccionTasacionEmpleado;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -11,12 +14,40 @@ import tienda.Tienda;
 import usuarios.Empleado;
 
 /** Controlador de tasaciones de productos de segunda mano. */
-public class ControladorTasacionEmpleado {
+public class ControladorTasacionEmpleado implements ActionListener {
+
+    public static final String REFRESCAR = "tasacion.refrescar";
+    public static final String VER_PRODUCTO = "tasacion.verProducto";
+    public static final String VER_IMAGEN = "tasacion.verImagen";
+    public static final String TASAR_PRODUCTO = "tasacion.tasar";
 
     private final Empleado empleado;
+    private SeccionTasacionEmpleado vista;
 
     public ControladorTasacionEmpleado(Empleado empleado) {
         this.empleado = empleado;
+    }
+
+    public void setVista(SeccionTasacionEmpleado vista) {
+        this.vista = vista;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (vista == null || e == null) {
+            return;
+        }
+
+        String accion = e.getActionCommand();
+        if (REFRESCAR.equals(accion)) {
+            vista.cargarTablaPendientes();
+        } else if (VER_PRODUCTO.equals(accion)) {
+            vista.verProducto();
+        } else if (VER_IMAGEN.equals(accion)) {
+            vista.verImagenProducto();
+        } else if (TASAR_PRODUCTO.equals(accion)) {
+            vista.tasarProducto();
+        }
     }
 
     public List<Producto2Mano> getPendientesTasacion() {

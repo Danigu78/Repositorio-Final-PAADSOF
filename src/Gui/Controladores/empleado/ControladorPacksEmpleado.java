@@ -1,5 +1,8 @@
-package Gui.Controladores;
+package Gui.Controladores.empleado;
 
+import Gui.empleado.SeccionPacksEmpleado;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import productos.Categoria;
@@ -14,13 +17,59 @@ import utilidades.RutasImagen;
 /**
  * Controlador de gestión de packs.
  */
-public class ControladorPacksEmpleado {
+public class ControladorPacksEmpleado implements ActionListener {
+
+	public static final String REFRESCAR_PACKS = "packs.refrescar";
+	public static final String VER_CONTENIDO = "packs.verContenido";
+	public static final String LIMPIAR_CREAR = "packs.limpiarCrear";
+	public static final String CREAR_PACK = "packs.crear";
+	public static final String VER_PACK = "packs.ver";
+	public static final String ANADIR_PRODUCTO = "packs.anadirProducto";
+	public static final String CAMBIAR_UNIDADES = "packs.cambiarUnidades";
+	public static final String QUITAR_PRODUCTO = "packs.quitarProducto";
+	public static final String CAMBIAR_PRECIO = "packs.cambiarPrecio";
+	public static final String ELIMINAR_PACK = "packs.eliminar";
 
 	private final Empleado empleado;
 	private final ControladorProductosEmpleado productos = new ControladorProductosEmpleado();
+	private SeccionPacksEmpleado vista;
 
 	public ControladorPacksEmpleado(Empleado empleado) {
 		this.empleado = empleado;
+	}
+
+	public void setVista(SeccionPacksEmpleado vista) {
+		this.vista = vista;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (vista == null || e == null) {
+			return;
+		}
+
+		String accion = e.getActionCommand();
+		if (REFRESCAR_PACKS.equals(accion)) {
+			vista.dejarSoloPacks();
+		} else if (VER_CONTENIDO.equals(accion)) {
+			vista.verContenidoEscrito();
+		} else if (LIMPIAR_CREAR.equals(accion)) {
+			vista.limpiarFormularioCrear();
+		} else if (CREAR_PACK.equals(accion)) {
+			vista.crearPack();
+		} else if (VER_PACK.equals(accion)) {
+			vista.verPack();
+		} else if (ANADIR_PRODUCTO.equals(accion)) {
+			vista.anadirProductoAPack();
+		} else if (CAMBIAR_UNIDADES.equals(accion)) {
+			vista.cambiarUnidadesPack();
+		} else if (QUITAR_PRODUCTO.equals(accion)) {
+			vista.quitarProductoDelPack();
+		} else if (CAMBIAR_PRECIO.equals(accion)) {
+			vista.cambiarPrecioPack();
+		} else if (ELIMINAR_PACK.equals(accion)) {
+			vista.eliminarPack();
+		}
 	}
 
 	public ArrayList<String> getNombresCategorias() {

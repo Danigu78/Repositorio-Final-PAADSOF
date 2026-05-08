@@ -1,12 +1,15 @@
-package Gui;
+package Gui.empleado;
 
+
+import Gui.VentanaPrincipal;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
-import Gui.Controladores.ControladorPedidosEmpleado;
-import Gui.Controladores.ResultadoOperacion;
+import Gui.Controladores.empleado.ControladorPedidosEmpleado;
+import Gui.Controladores.empleado.ResultadoOperacion;
 import usuarios.Empleado;
 import ventas.Pedido;
 
@@ -30,7 +33,20 @@ public class SeccionPedidosEmpleado extends AbstractPanelEmpleadoSection {
 	public SeccionPedidosEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
 		this.controlador = new ControladorPedidosEmpleado(empleado);
+		this.controlador.setVista(this);
+		setControlador(this.controlador);
 		construirUI();
+	}
+
+	public void setControlador(ActionListener controlador) {
+		if (controlador instanceof ControladorPedidosEmpleado) {
+			this.controlador = (ControladorPedidosEmpleado) controlador;
+		}
+	}
+
+	private void conectar(AbstractButton boton, String accion) {
+		boton.setActionCommand(accion);
+		boton.addActionListener(controlador);
 	}
 
 	private void construirUI() {
@@ -72,9 +88,10 @@ public class SeccionPedidosEmpleado extends AbstractPanelEmpleadoSection {
 		comboEstadoPedido = crearCombo(crearOpcionesEstado());
 
 		JButton botonRefrescar = crearBotonSecundario("Refrescar");
-		botonRefrescar.addActionListener(e -> cargarTablaPedidos());
+		conectar(botonRefrescar, ControladorPedidosEmpleado.REFRESCAR);
 
-		comboEstadoPedido.addActionListener(e -> cargarTablaPedidos());
+		comboEstadoPedido.setActionCommand(ControladorPedidosEmpleado.FILTRAR);
+		comboEstadoPedido.addActionListener(controlador);
 
 		JPanel filaFiltro = new JPanel(new BorderLayout(VentanaPrincipal.escalar(12), 0));
 		filaFiltro.setOpaque(false);
@@ -160,8 +177,8 @@ public class SeccionPedidosEmpleado extends AbstractPanelEmpleadoSection {
 
 		panel.add(filaBotones);
 
-		botonVerPedido.addActionListener(e -> verPedido());
-		botonPrepararPedido.addActionListener(e -> prepararPedido());
+		conectar(botonVerPedido, ControladorPedidosEmpleado.VER_PEDIDO);
+		conectar(botonPrepararPedido, ControladorPedidosEmpleado.PREPARAR_PEDIDO);
 
 		return panel;
 	}
@@ -170,7 +187,7 @@ public class SeccionPedidosEmpleado extends AbstractPanelEmpleadoSection {
 		return controlador.crearOpcionesEstado();
 	}
 
-	private void cargarTablaPedidos() {
+	public void cargarTablaPedidos() {
 		modeloPedidos.setRowCount(0);
 
 		String estadoElegido = "Todos";
@@ -186,7 +203,7 @@ public class SeccionPedidosEmpleado extends AbstractPanelEmpleadoSection {
 		}
 	}
 
-	private void verPedido() {
+	public void verPedido() {
 		String idPedido = campoIdPedido.getText().trim();
 
 		if (idPedido.isBlank()) {
@@ -204,7 +221,7 @@ public class SeccionPedidosEmpleado extends AbstractPanelEmpleadoSection {
 		mostrarPedidoEnVentana(pedido);
 	}
 
-	private void prepararPedido() {
+	public void prepararPedido() {
 		ResultadoOperacion resultado = controlador.prepararPedido(campoIdPedido.getText());
 
 		if (resultado.isExito()) {

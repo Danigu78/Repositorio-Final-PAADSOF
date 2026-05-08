@@ -1,11 +1,14 @@
-package Gui;
+package Gui.empleado;
 
+
+import Gui.VentanaPrincipal;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
-import Gui.Controladores.ControladorModificarEmpleado;
-import Gui.Controladores.ResultadoOperacion;
+import Gui.Controladores.empleado.ControladorModificarEmpleado;
+import Gui.Controladores.empleado.ResultadoOperacion;
 import productos.Comic;
 import productos.Figura;
 import productos.JuegoMesa;
@@ -58,7 +61,20 @@ public class SeccionModificarEmpleado extends AbstractPanelEmpleadoVentaSection 
 	public SeccionModificarEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
 		this.controlador = new ControladorModificarEmpleado(empleado);
+		this.controlador.setVista(this);
+		setControlador(this.controlador);
 		construirUI();
+	}
+
+	public void setControlador(ActionListener controlador) {
+		if (controlador instanceof ControladorModificarEmpleado) {
+			this.controlador = (ControladorModificarEmpleado) controlador;
+		}
+	}
+
+	private void conectar(JButton boton, String accion) {
+		boton.setActionCommand(accion);
+		boton.addActionListener(controlador);
 	}
 
 	private void construirUI() {
@@ -134,8 +150,8 @@ public class SeccionModificarEmpleado extends AbstractPanelEmpleadoVentaSection 
 
 		bloque.add(filaBotones, gbcBoton(2));
 
-		botonCargar.addActionListener(e -> cargarDatosProducto());
-		botonGuardar.addActionListener(e -> guardarCambios());
+		conectar(botonCargar, ControladorModificarEmpleado.CARGAR_DATOS);
+		conectar(botonGuardar, ControladorModificarEmpleado.GUARDAR_CAMBIOS);
 
 		return bloque;
 	}
@@ -170,8 +186,8 @@ public class SeccionModificarEmpleado extends AbstractPanelEmpleadoVentaSection 
 		ajustarBotonImagen(botonSeleccionarImagen);
 		ajustarBotonImagen(botonVerImagen);
 
-		botonSeleccionarImagen.addActionListener(e -> seleccionarImagen());
-		botonVerImagen.addActionListener(e -> verImagenProducto());
+		conectar(botonSeleccionarImagen, ControladorModificarEmpleado.SELECCIONAR_IMAGEN);
+		conectar(botonVerImagen, ControladorModificarEmpleado.VER_IMAGEN);
 
 		JPanel selector = new JPanel();
 		selector.setOpaque(false);
@@ -275,7 +291,7 @@ public class SeccionModificarEmpleado extends AbstractPanelEmpleadoVentaSection 
 		return fila;
 	}
 
-	private void cargarDatosProducto() {
+	public void cargarDatosProducto() {
 		ProductoVenta producto = buscarProductoEscrito();
 		if (producto == null) {
 			return;
@@ -333,7 +349,7 @@ public class SeccionModificarEmpleado extends AbstractPanelEmpleadoVentaSection 
 		return producto;
 	}
 
-	private void seleccionarImagen() {
+	public void seleccionarImagen() {
 		JFileChooser selectorImagen = new JFileChooser();
 		int opcion = selectorImagen.showOpenDialog(this);
 
@@ -342,7 +358,7 @@ public class SeccionModificarEmpleado extends AbstractPanelEmpleadoVentaSection 
 		}
 	}
 
-	private void verImagenProducto() {
+	public void verImagenProducto() {
 		normalizarCampoImagen();
 		String rutaImagen = campoImagen.getText().trim();
 
@@ -357,7 +373,7 @@ public class SeccionModificarEmpleado extends AbstractPanelEmpleadoVentaSection 
 		UtilidadesImagenProducto.mostrarImagenProducto(this, rutaImagen);
 	}
 
-	private void guardarCambios() {
+	public void guardarCambios() {
 		normalizarCampoImagen();
 		ResultadoOperacion resultado = controlador.guardarProducto(campoIdProducto.getText(), campoNombre.getText(),
 				areaDescripcion.getText(), campoImagen.getText(), campoPaginasComic.getText(),

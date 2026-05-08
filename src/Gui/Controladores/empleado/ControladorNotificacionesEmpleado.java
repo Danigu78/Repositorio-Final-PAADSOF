@@ -1,5 +1,8 @@
-package Gui.Controladores;
+package Gui.Controladores.empleado;
 
+import Gui.empleado.SeccionNotificacionesEmpleado;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -10,12 +13,38 @@ import tienda.Tienda;
 import usuarios.Empleado;
 
 /** Controlador de la bandeja de notificaciones del empleado. */
-public class ControladorNotificacionesEmpleado {
+public class ControladorNotificacionesEmpleado implements ActionListener {
+
+    public static final String REFRESCAR = "notificaciones.refrescar";
+    public static final String FILTRAR = "notificaciones.filtrar";
+    public static final String VER_NOTIFICACION = "notificaciones.ver";
+    public static final String MARCAR_TODAS = "notificaciones.marcarTodas";
 
     private final Empleado empleado;
+    private SeccionNotificacionesEmpleado vista;
 
     public ControladorNotificacionesEmpleado(Empleado empleado) {
         this.empleado = empleado;
+    }
+
+    public void setVista(SeccionNotificacionesEmpleado vista) {
+        this.vista = vista;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (vista == null || e == null) {
+            return;
+        }
+
+        String accion = e.getActionCommand();
+        if (REFRESCAR.equals(accion) || FILTRAR.equals(accion)) {
+            vista.cargarNotificaciones();
+        } else if (VER_NOTIFICACION.equals(accion)) {
+            vista.verNotificacionSeleccionada();
+        } else if (MARCAR_TODAS.equals(accion)) {
+            vista.marcarTodasComoVistas();
+        }
     }
 
     public List<Notificacion> getNotificacionesFiltradas(String filtro) {

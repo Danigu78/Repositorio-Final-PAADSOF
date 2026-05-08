@@ -1,14 +1,17 @@
-package Gui;
+package Gui.empleado;
 
+
+import Gui.VentanaPrincipal;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
 import productos.EstadoProducto;
 import productos.Producto2Mano;
-import Gui.Controladores.ControladorTasacionEmpleado;
-import Gui.Controladores.ResultadoOperacion;
+import Gui.Controladores.empleado.ControladorTasacionEmpleado;
+import Gui.Controladores.empleado.ResultadoOperacion;
 import usuarios.Empleado;
 
 /**
@@ -33,7 +36,20 @@ public class SeccionTasacionEmpleado extends AbstractPanelEmpleadoSection {
 	public SeccionTasacionEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
 		this.controlador = new ControladorTasacionEmpleado(empleado);
+		this.controlador.setVista(this);
+		setControlador(this.controlador);
 		construirUI();
+	}
+
+	public void setControlador(ActionListener controlador) {
+		if (controlador instanceof ControladorTasacionEmpleado) {
+			this.controlador = (ControladorTasacionEmpleado) controlador;
+		}
+	}
+
+	private void conectar(JButton boton, String accion) {
+		boton.setActionCommand(accion);
+		boton.addActionListener(controlador);
 	}
 
 	private void construirUI() {
@@ -75,7 +91,7 @@ public class SeccionTasacionEmpleado extends AbstractPanelEmpleadoSection {
 		scrollTabla.setPreferredSize(new Dimension(VentanaPrincipal.escalar(1050), VentanaPrincipal.escalar(240)));
 
 		JButton botonRefrescar = crearBotonSecundario("Refrescar");
-		botonRefrescar.addActionListener(e -> cargarTablaPendientes());
+		conectar(botonRefrescar, ControladorTasacionEmpleado.REFRESCAR);
 
 		bloque.add(crearLabel("Consulta los productos pendientes. Para tasar uno, escribe su ID abajo."), gbcCampo(1));
 		bloque.add(scrollTabla, gbcCampo(2));
@@ -168,9 +184,9 @@ public class SeccionTasacionEmpleado extends AbstractPanelEmpleadoSection {
 		panel.add(botones);
 		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(12)));
 
-		botonVerProducto.addActionListener(e -> verProducto());
-		botonVerImagen.addActionListener(e -> verImagenProducto());
-		botonTasar.addActionListener(e -> tasarProducto());
+		conectar(botonVerProducto, ControladorTasacionEmpleado.VER_PRODUCTO);
+		conectar(botonVerImagen, ControladorTasacionEmpleado.VER_IMAGEN);
+		conectar(botonTasar, ControladorTasacionEmpleado.TASAR_PRODUCTO);
 
 		return panel;
 	}
@@ -183,7 +199,7 @@ public class SeccionTasacionEmpleado extends AbstractPanelEmpleadoSection {
 		boton.setMaximumSize(tamano);
 	}
 
-	private void cargarTablaPendientes() {
+	public void cargarTablaPendientes() {
 		modeloPendientes.setRowCount(0);
 
 		for (Producto2Mano producto : controlador.getPendientesTasacion()) {
@@ -192,7 +208,7 @@ public class SeccionTasacionEmpleado extends AbstractPanelEmpleadoSection {
 		}
 	}
 
-	private void verProducto() {
+	public void verProducto() {
 		String idProducto = campoIdProducto.getText().trim();
 
 		if (idProducto.isBlank()) {
@@ -210,7 +226,7 @@ public class SeccionTasacionEmpleado extends AbstractPanelEmpleadoSection {
 		mostrarProductoEnVentana(producto);
 	}
 
-	private void verImagenProducto() {
+	public void verImagenProducto() {
 		String idProducto = campoIdProducto.getText().trim();
 
 		if (idProducto.isBlank()) {
@@ -228,7 +244,7 @@ public class SeccionTasacionEmpleado extends AbstractPanelEmpleadoSection {
 		abrirImagenProducto(producto);
 	}
 
-	private void tasarProducto() {
+	public void tasarProducto() {
 		EstadoProducto estado = (EstadoProducto) comboEstadoProducto.getSelectedItem();
 		ResultadoOperacion resultado = controlador.tasarProducto(campoIdProducto.getText(), campoPrecioTasado.getText(),
 				estado);

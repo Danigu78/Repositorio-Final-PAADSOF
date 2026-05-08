@@ -1,11 +1,14 @@
-package Gui;
+package Gui.empleado;
 
+
+import Gui.VentanaPrincipal;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
-import Gui.Controladores.ControladorCategoriasEmpleado;
-import Gui.Controladores.ResultadoOperacion;
+import Gui.Controladores.empleado.ControladorCategoriasEmpleado;
+import Gui.Controladores.empleado.ResultadoOperacion;
 import usuarios.Empleado;
 
 /**
@@ -28,7 +31,20 @@ public class SeccionCategoriasEmpleado extends AbstractPanelEmpleadoVentaSection
 	public SeccionCategoriasEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
 		this.controlador = new ControladorCategoriasEmpleado(empleado);
+		this.controlador.setVista(this);
+		setControlador(this.controlador);
 		construirUI();
+	}
+
+	public void setControlador(ActionListener controlador) {
+		if (controlador instanceof ControladorCategoriasEmpleado) {
+			this.controlador = (ControladorCategoriasEmpleado) controlador;
+		}
+	}
+
+	private void conectar(JButton boton, String accion) {
+		boton.setActionCommand(accion);
+		boton.addActionListener(controlador);
 	}
 
 	private void construirUI() {
@@ -107,13 +123,13 @@ public class SeccionCategoriasEmpleado extends AbstractPanelEmpleadoVentaSection
 
 		panel.add(filaBotones);
 
-		botonAnadir.addActionListener(e -> anadirCategoria());
-		botonEliminar.addActionListener(e -> quitarCategoria());
+		conectar(botonAnadir, ControladorCategoriasEmpleado.ANADIR_CATEGORIA);
+		conectar(botonEliminar, ControladorCategoriasEmpleado.QUITAR_CATEGORIA);
 
 		return panel;
 	}
 
-	private void anadirCategoria() {
+	public void anadirCategoria() {
 		ResultadoOperacion resultado = controlador.anadirCategoria(campoIdProducto.getText(), obtenerCategoriaSeleccionada());
 
 		if (resultado.isExito()) {
@@ -124,7 +140,7 @@ public class SeccionCategoriasEmpleado extends AbstractPanelEmpleadoVentaSection
 		}
 	}
 
-	private void quitarCategoria() {
+	public void quitarCategoria() {
 		ResultadoOperacion resultado = controlador.quitarCategoria(campoIdProducto.getText(), obtenerCategoriaSeleccionada());
 
 		if (resultado.isExito()) {
@@ -133,20 +149,6 @@ public class SeccionCategoriasEmpleado extends AbstractPanelEmpleadoVentaSection
 		} else {
 			mostrarError(resultado.getMensaje());
 		}
-	}
-
-	private boolean datosValidos(String idProducto, String categoria) {
-		if (idProducto.isBlank()) {
-			mostrarError("Escribe el ID del producto");
-			return false;
-		}
-
-		if (categoria == null) {
-			mostrarError("Selecciona una categoría");
-			return false;
-		}
-
-		return true;
 	}
 
 	private String obtenerCategoriaSeleccionada() {

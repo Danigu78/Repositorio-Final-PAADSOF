@@ -3,7 +3,7 @@ package Gui.Controladores;
 import Gui.VentanaPrincipal;
 import Gui.Gestor.PanelGestor;
 import Gui.PanelCliente;
-import Gui.PanelEmpleado;
+import Gui.empleado.PanelEmpleado;
 import Gui.PantallaLogin;
 import tienda.GuardadoTienda;
 import tienda.Tienda;

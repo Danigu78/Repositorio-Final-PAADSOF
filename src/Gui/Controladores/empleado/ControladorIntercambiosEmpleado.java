@@ -1,5 +1,8 @@
-package Gui.Controladores;
+package Gui.Controladores.empleado;
 
+import Gui.empleado.SeccionIntercambiosEmpleado;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -13,12 +16,38 @@ import usuarios.Cliente;
 import usuarios.Empleado;
 
 /** Controlador de confirmación de intercambios. */
-public class ControladorIntercambiosEmpleado {
+public class ControladorIntercambiosEmpleado implements ActionListener {
+
+    public static final String REFRESCAR = "intercambios.refrescar";
+    public static final String FILTRAR = "intercambios.filtrar";
+    public static final String VER_OFERTA = "intercambios.ver";
+    public static final String CONFIRMAR_OFERTA = "intercambios.confirmar";
 
     private final Empleado empleado;
+    private SeccionIntercambiosEmpleado vista;
 
     public ControladorIntercambiosEmpleado(Empleado empleado) {
         this.empleado = empleado;
+    }
+
+    public void setVista(SeccionIntercambiosEmpleado vista) {
+        this.vista = vista;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (vista == null || e == null) {
+            return;
+        }
+
+        String accion = e.getActionCommand();
+        if (REFRESCAR.equals(accion) || FILTRAR.equals(accion)) {
+            vista.cargarTablaOfertas();
+        } else if (VER_OFERTA.equals(accion)) {
+            vista.verOferta();
+        } else if (CONFIRMAR_OFERTA.equals(accion)) {
+            vista.confirmarOferta();
+        }
     }
 
     public List<Oferta> getOfertas(String estadoElegido) {

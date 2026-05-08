@@ -1,5 +1,8 @@
-package Gui.Controladores;
+package Gui.Controladores.empleado;
 
+import Gui.empleado.SeccionStockEmpleado;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,13 +13,53 @@ import usuarios.Empleado;
 import utilidades.RutasImagen;
 
 /** Controlador de la sección de stock del empleado. */
-public class ControladorStockEmpleado {
+public class ControladorStockEmpleado implements ActionListener {
+
+	public static final String SUMAR_STOCK = "stock.sumar";
+	public static final String RESTAR_STOCK = "stock.restar";
+	public static final String SELECCIONAR_FICHERO = "stock.seleccionarFichero";
+	public static final String CARGAR_FICHERO = "stock.cargarFichero";
+	public static final String LIMPIAR_PRODUCTO = "stock.limpiarProducto";
+	public static final String CREAR_PRODUCTO = "stock.crearProducto";
+	public static final String SELECCIONAR_IMAGEN = "stock.seleccionarImagen";
+	public static final String VER_IMAGEN = "stock.verImagen";
 
 	private final Empleado empleado;
 	private final ControladorProductosEmpleado productos = new ControladorProductosEmpleado();
+	private SeccionStockEmpleado vista;
 
 	public ControladorStockEmpleado(Empleado empleado) {
 		this.empleado = empleado;
+	}
+
+	public void setVista(SeccionStockEmpleado vista) {
+		this.vista = vista;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (vista == null || e == null) {
+			return;
+		}
+
+		String accion = e.getActionCommand();
+		if (SUMAR_STOCK.equals(accion)) {
+			vista.reponerStock();
+		} else if (RESTAR_STOCK.equals(accion)) {
+			vista.retirarStock();
+		} else if (SELECCIONAR_FICHERO.equals(accion)) {
+			vista.seleccionarFichero();
+		} else if (CARGAR_FICHERO.equals(accion)) {
+			vista.cargarFichero();
+		} else if (LIMPIAR_PRODUCTO.equals(accion)) {
+			vista.limpiarFormularioProducto();
+		} else if (CREAR_PRODUCTO.equals(accion)) {
+			vista.crearProducto();
+		} else if (SELECCIONAR_IMAGEN.equals(accion)) {
+			vista.seleccionarImagenProducto();
+		} else if (VER_IMAGEN.equals(accion)) {
+			vista.verImagenProducto();
+		}
 	}
 
 	public ResultadoOperacion reponerStock(String idProducto, String unidadesTexto) {
