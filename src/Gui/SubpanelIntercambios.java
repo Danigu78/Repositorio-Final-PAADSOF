@@ -1,52 +1,46 @@
 package Gui;
 
-import javax.swing.*;
-
 import Gui.Controladores.ControladorIntercambios;
 import intercambios.EstadoOferta;
 import intercambios.Oferta;
-import java.util.List;
+import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.security.PrivateKey;
-
+import java.awt.event.*;
+import java.util.List;
+import productos.Producto2Mano;
 import usuarios.Cliente;
-import productos.*;
-import java.util.ArrayList;
 
-public class SubpanelIntercambios extends JPanel {
-	private VentanaPrincipal ventana;
+/**
+ * Subpanel de intercambios del cliente. Extiende AbstractPanelSection para
+ * reutilizar helpers visuales. Sigue el patrón MVC de los apuntes.
+ *
+ * @author Daniel
+ * @version 1.0
+ */
+public class SubpanelIntercambios extends AbstractPanelSection {
+
 	private Cliente cliente;
 	private ControladorIntercambios controlador;
 
-	// En vez de guardar los wrappers guardamos directamente los paneles de
-	// contenido
 	private JPanel contenidoEnviadas;
 	private JPanel contenidoRecibidas;
 	private JPanel contenidoHistorial;
+	private JPanel contenidoRechazadas;
+	private JPanel contenidoAceptadas;
+
 	// Botones de la barra interna
 	private JButton botonEnviados;
 	private JButton botonRecibidos;
 	private JButton botonHistorial;
 	private JButton botonRechazadas;
+	private JButton botonAceptadas;
 	private JButton botonActivo;
 
-	// CardLayout para las tres secciones
 	private CardLayout cardSecciones;
 	private JPanel panelSecciones;
 
-	// Paneles de contenido
-	private JPanel panelEnviadas;
-	private JPanel panelRecibidos;
-	private JPanel panelHistorial;
-	private JPanel contenidoRechazadas;
-
 	public SubpanelIntercambios(VentanaPrincipal ventana) {
-		this.ventana = ventana;
-		setLayout(new BorderLayout());
-		setBackground(VentanaPrincipal.COLOR_FONDO);
+		super(ventana);
 
 		add(crearBarraInterna(), BorderLayout.NORTH);
 
@@ -54,21 +48,34 @@ public class SubpanelIntercambios extends JPanel {
 		panelSecciones = new JPanel(cardSecciones);
 		panelSecciones.setBackground(VentanaPrincipal.COLOR_FONDO);
 
-		panelSecciones.add(crearPanelEnviadas(), "ENVIADAS");
-		panelSecciones.add(crearPanelRecibidas(), "RECIBIDAS");
-		panelSecciones.add(crearPanelHistorial(), "HISTORIAL");
-		panelSecciones.add(crearPanelRechazadas(), "RECHAZADAS");
+		panelSecciones.add(crearPanelContenido("enviadas"), "ENVIADAS");
+		panelSecciones.add(crearPanelContenido("recibidas"), "RECIBIDAS");
+		panelSecciones.add(crearPanelContenido("historial"), "HISTORIAL");
+		panelSecciones.add(crearPanelContenido("rechazadas"), "RECHAZADAS");
+		panelSecciones.add(crearPanelContenido("aceptadas"), "ACEPTADAS");
 
 		add(panelSecciones, BorderLayout.CENTER);
 		cardSecciones.show(panelSecciones, "ENVIADAS");
 	}
 
-	public void setControladores(ActionListener c) {
+	/**
+	 * Registra el controlador en los botones de la barra — patrón de los apuntes.
+	 */
+	public void setControlador(ActionListener c) {
+		registrarBoton(botonEnviados, c, "enviadas");
+		registrarBoton(botonRecibidos, c, "recibidas");
+		registrarBoton(botonHistorial, c, "historial");
+		registrarBoton(botonRechazadas, c, "rechazadas");
+		registrarBoton(botonAceptadas, c, "aceptadas");
+	}
 
-		botonEnviados.addActionListener(c);
-		botonRecibidos.addActionListener(c);
-		botonHistorial.addActionListener(c);
-		botonRechazadas.addActionListener(c);
+	private void registrarBoton(JButton boton, ActionListener c, String cmd) {
+		if (boton == null)
+			return;
+		for (ActionListener al : boton.getActionListeners())
+			boton.removeActionListener(al);
+		boton.setActionCommand(cmd);
+		boton.addActionListener(c);
 	}
 
 	private JPanel crearBarraInterna() {
@@ -77,60 +84,97 @@ public class SubpanelIntercambios extends JPanel {
 		barra.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createMatteBorder(0, 0, VentanaPrincipal.escalar(2), 0, VentanaPrincipal.COLOR_ACENTO),
 				BorderFactory.createEmptyBorder(0, VentanaPrincipal.escalar(15), 0, VentanaPrincipal.escalar(15))));
-
 		barra.setPreferredSize(new Dimension(0, VentanaPrincipal.escalar(50)));
+
 		JPanel zonaPestañas = new JPanel(new FlowLayout(FlowLayout.LEFT, VentanaPrincipal.escalar(8), 0));
 		zonaPestañas.setBackground(VentanaPrincipal.COLOR_PANEL);
 		zonaPestañas.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(9), 0, 0, 0));
 
-		botonEnviados = crearBotonPestaña("Ofertas enviadas", "enviadas");
-		botonRecibidos = crearBotonPestaña("Ofertas recibidas", "recibidas");
-		botonHistorial = crearBotonPestaña("Historial", "historial");
-		botonRechazadas = crearBotonPestaña("Rechazadas/caducadas", "rechazadas");
-		marcarBotonActivo(botonEnviados);// primero vemos la pantalla de botonenviados
+		botonEnviados = crearBotonPestaña("Ofertas enviadas");
+		botonRecibidos = crearBotonPestaña("Ofertas recibidas");
+		botonAceptadas = crearBotonPestaña("Aceptadas / pendientes empleado");
+		botonHistorial = crearBotonPestaña("Historial");
+		botonRechazadas = crearBotonPestaña("Rechazadas/caducadas");
+
+		marcarBotonActivo(botonEnviados);
+
 		zonaPestañas.add(botonEnviados);
 		zonaPestañas.add(botonRecibidos);
+		zonaPestañas.add(botonAceptadas);
 		zonaPestañas.add(botonHistorial);
 		zonaPestañas.add(botonRechazadas);
+
 		barra.add(zonaPestañas, BorderLayout.CENTER);
 		return barra;
-
 	}
 
-	private JButton crearBotonPestaña(String texto, String comando) {
+	private JButton crearBotonPestaña(String texto) {
 		JButton boton = new JButton(texto);
 		boton.setFont(new Font("Segoe UI", Font.PLAIN, VentanaPrincipal.escalar(13)));
 		boton.setForeground(VentanaPrincipal.COLOR_TEXTO2);
 		boton.setBackground(VentanaPrincipal.COLOR_PANEL);
-		boton.setBorder(BorderFactory.createEmptyBorder(// padding alrededor del texto
-				VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(12), VentanaPrincipal.escalar(8),
-				VentanaPrincipal.escalar(12)));
+		boton.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(12),
+				VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(12)));
 		boton.setFocusPainted(false);
 		boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		boton.setActionCommand(comando);
-		;
 		boton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				if (boton != botonActivo) {
+				if (boton != botonActivo)
 					boton.setForeground(VentanaPrincipal.COLOR_TEXTO);
-				}
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				if (boton != botonActivo) {
+				if (boton != botonActivo)
 					boton.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-				}
 			}
-
 		});
 		return boton;
 	}
 
+	/**
+	 * Crea un panel con scroll para una sección. Guarda la referencia al contenido
+	 * en clientProperty.
+	 */
+	private JPanel crearPanelContenido(String seccion) {
+		JPanel contenido = new JPanel();
+		contenido.setLayout(new BoxLayout(contenido, BoxLayout.Y_AXIS));
+		contenido.setBackground(VentanaPrincipal.COLOR_FONDO);
+
+		switch (seccion) {
+		case "enviadas":
+			contenidoEnviadas = contenido;
+			break;
+		case "recibidas":
+			contenidoRecibidas = contenido;
+			break;
+		case "historial":
+			contenidoHistorial = contenido;
+			break;
+		case "rechazadas":
+			contenidoRechazadas = contenido;
+			break;
+		case "aceptadas":
+			contenidoAceptadas = contenido;
+			break;
+		}
+
+		JScrollPane scroll = new JScrollPane(contenido);
+		scroll.setBorder(null);
+		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scroll.getViewport().setBackground(VentanaPrincipal.COLOR_FONDO);
+
+		JPanel pan = new JPanel(new BorderLayout());
+		pan.setBackground(VentanaPrincipal.COLOR_FONDO);
+		pan.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(20),
+				VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(20)));
+		pan.add(scroll, BorderLayout.CENTER);
+		return pan;
+	}
+
 	public void mostrarSeccion(String seccion) {
 		cardSecciones.show(panelSecciones, seccion);
-
 		switch (seccion) {
 		case "ENVIADAS":
 			marcarBotonActivo(botonEnviados);
@@ -144,8 +188,10 @@ public class SubpanelIntercambios extends JPanel {
 		case "RECHAZADAS":
 			marcarBotonActivo(botonRechazadas);
 			break;
+		case "ACEPTADAS":
+			marcarBotonActivo(botonAceptadas);
+			break;
 		}
-
 	}
 
 	private void marcarBotonActivo(JButton boton) {
@@ -163,86 +209,11 @@ public class SubpanelIntercambios extends JPanel {
 				BorderFactory.createEmptyBorder(v, h, v - linea, h)));
 	}
 
-	private JPanel crearPanelEnviadas() {
-		contenidoEnviadas = new JPanel();
-		contenidoEnviadas.setLayout(new BoxLayout(contenidoEnviadas, BoxLayout.Y_AXIS));
-		contenidoEnviadas.setBackground(VentanaPrincipal.COLOR_FONDO);
-
-		JScrollPane scroll = new JScrollPane(contenidoEnviadas);
-		scroll.setBorder(null);
-		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		scroll.getViewport().setBackground(VentanaPrincipal.COLOR_FONDO);
-
-		JPanel pan = new JPanel(new BorderLayout());
-		pan.setBackground(VentanaPrincipal.COLOR_FONDO);
-		pan.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(20),
-				VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(20)));
-		pan.add(scroll, BorderLayout.CENTER);
-		return pan;
-	}
-
-	private JPanel crearPanelRecibidas() {
-		contenidoRecibidas = new JPanel();
-		contenidoRecibidas.setLayout(new BoxLayout(contenidoRecibidas, BoxLayout.Y_AXIS));
-		contenidoRecibidas.setBackground(VentanaPrincipal.COLOR_FONDO);
-
-		JScrollPane scroll = new JScrollPane(contenidoRecibidas);
-		scroll.setBorder(null);
-		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		scroll.getViewport().setBackground(VentanaPrincipal.COLOR_FONDO);
-
-		JPanel pan = new JPanel(new BorderLayout());
-		pan.setBackground(VentanaPrincipal.COLOR_FONDO);
-		pan.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(20),
-				VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(20)));
-		pan.add(scroll, BorderLayout.CENTER);
-		return pan;
-	}
-
-	private JPanel crearPanelHistorial() {
-		contenidoHistorial = new JPanel();
-		contenidoHistorial.setLayout(new BoxLayout(contenidoHistorial, BoxLayout.Y_AXIS));
-		contenidoHistorial.setBackground(VentanaPrincipal.COLOR_FONDO);
-
-		JScrollPane scroll = new JScrollPane(contenidoHistorial);
-		scroll.setBorder(null);
-		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		scroll.getViewport().setBackground(VentanaPrincipal.COLOR_FONDO);
-
-		JPanel pan = new JPanel(new BorderLayout());
-		pan.setBackground(VentanaPrincipal.COLOR_FONDO);
-		pan.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(20),
-				VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(20)));
-		pan.add(scroll, BorderLayout.CENTER);
-		return pan;
-	}
-
-	private JPanel crearPanelRechazadas() {
-		contenidoRechazadas = new JPanel();
-		contenidoRechazadas.setLayout(new BoxLayout(contenidoRechazadas, BoxLayout.Y_AXIS));
-		contenidoRechazadas.setBackground(VentanaPrincipal.COLOR_FONDO);
-
-		JScrollPane scroll = new JScrollPane(contenidoRechazadas);
-		scroll.setBorder(null);
-		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		scroll.getViewport().setBackground(VentanaPrincipal.COLOR_FONDO);
-
-		JPanel pan = new JPanel(new BorderLayout());
-		pan.setBackground(VentanaPrincipal.COLOR_FONDO);
-		pan.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(20),
-				VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(20)));
-		pan.add(scroll, BorderLayout.CENTER);
-		return pan;
-	}
-
-	/**
-	 * Rellena el panel de ofertas enviadas.
-	 */
 	private void rellenarEnviadas() {
 		contenidoEnviadas.removeAll();
 		List<Oferta> ofertas = controlador.getOfertasEnviadas();
 		if (ofertas.isEmpty()) {
-			contenidoEnviadas.add(crearLabelVacío("No tienes ofertas enviadas pendientes."));
+			contenidoEnviadas.add(crearLabelVacio("No tienes ofertas enviadas pendientes."));
 		} else {
 			for (Oferta o : ofertas) {
 				contenidoEnviadas.add(crearTarjetaOferta(o, false));
@@ -253,32 +224,44 @@ public class SubpanelIntercambios extends JPanel {
 		contenidoEnviadas.repaint();
 	}
 
-	/**
-	 * Rellena el panel de ofertas recibidas.
-	 */
 	private void rellenarRecibidas() {
 		contenidoRecibidas.removeAll();
 		List<Oferta> ofertas = controlador.getOfertasRecibidas();
 		if (ofertas.isEmpty()) {
-			contenidoRecibidas.add(crearLabelVacío("No tienes ofertas recibidas pendientes."));
+			contenidoRecibidas.add(crearLabelVacio("No tienes ofertas recibidas pendientes."));
 		} else {
 			for (Oferta o : ofertas) {
-				contenidoRecibidas.add(crearTarjetaOferta(o, true));
-				contenidoRecibidas.add(Box.createVerticalStrut(VentanaPrincipal.escalar(8)));
+				// Solo mostramos las PENDIENTE con botones aceptar/rechazar
+				if (o.getEstado() == EstadoOferta.PENDIENTE) {
+					contenidoRecibidas.add(crearTarjetaOferta(o, true));
+					contenidoRecibidas.add(Box.createVerticalStrut(VentanaPrincipal.escalar(8)));
+				}
 			}
 		}
 		contenidoRecibidas.revalidate();
 		contenidoRecibidas.repaint();
 	}
 
-	/**
-	 * Rellena el panel de historial de intercambios.
-	 */
+	private void rellenarAceptadas() {
+		contenidoAceptadas.removeAll();
+		List<Oferta> ofertas = controlador.getOfertasAceptadasPendientes();
+		if (ofertas.isEmpty()) {
+			contenidoAceptadas.add(crearLabelVacio("No tienes intercambios pendientes de confirmación."));
+		} else {
+			for (Oferta o : ofertas) {
+				contenidoAceptadas.add(crearTarjetaAceptada(o));
+				contenidoAceptadas.add(Box.createVerticalStrut(VentanaPrincipal.escalar(8)));
+			}
+		}
+		contenidoAceptadas.revalidate();
+		contenidoAceptadas.repaint();
+	}
+
 	private void rellenarHistorial() {
 		contenidoHistorial.removeAll();
 		List<Oferta> ofertas = controlador.getHistorial();
 		if (ofertas.isEmpty()) {
-			contenidoHistorial.add(crearLabelVacío("No tienes intercambios realizados todavía."));
+			contenidoHistorial.add(crearLabelVacio("No tienes intercambios realizados todavía."));
 		} else {
 			for (Oferta o : ofertas) {
 				contenidoHistorial.add(crearTarjetaHistorial(o));
@@ -293,7 +276,7 @@ public class SubpanelIntercambios extends JPanel {
 		contenidoRechazadas.removeAll();
 		List<Oferta> ofertas = controlador.getHistorialRechazadasCaducadas();
 		if (ofertas.isEmpty()) {
-			contenidoRechazadas.add(crearLabelVacío("No tienes ofertas rechazadas ni caducadas."));
+			contenidoRechazadas.add(crearLabelVacio("No tienes ofertas rechazadas ni caducadas."));
 		} else {
 			for (Oferta o : ofertas) {
 				contenidoRechazadas.add(crearTarjetaRechazada(o));
@@ -304,13 +287,6 @@ public class SubpanelIntercambios extends JPanel {
 		contenidoRechazadas.repaint();
 	}
 
-	/**
-	 * Crea una tarjeta para una oferta enviada o recibida.
-	 *
-	 * @param oferta     La oferta a mostrar
-	 * @param esRecibida true si es recibida, false si es enviada
-	 * @return Panel con la tarjeta
-	 */
 	private JPanel crearTarjetaOferta(Oferta oferta, boolean esRecibida) {
 		JPanel tarjeta = new JPanel(new BorderLayout(VentanaPrincipal.escalar(15), 0));
 		tarjeta.setBackground(VentanaPrincipal.COLOR_TARJETA);
@@ -325,13 +301,13 @@ public class SubpanelIntercambios extends JPanel {
 		panelInfo.setBackground(VentanaPrincipal.COLOR_TARJETA);
 
 		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.anchor = GridBagConstraints.WEST;// alineamos los ocmponentes en la izquierda
+		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets = new Insets(VentanaPrincipal.escalar(2), 0, VentanaPrincipal.escalar(2),
-				VentanaPrincipal.escalar(10)); // espacio margenes
-		gbc.weightx = 1;// crece en horizontal
-		gbc.fill = GridBagConstraints.HORIZONTAL; // se estira
-		gbc.gridx = 0; // columna fija
-		// ID
+				VentanaPrincipal.escalar(10));
+		gbc.weightx = 1;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridx = 0;
+
 		JLabel labelId = new JLabel(oferta.getId());
 		labelId.setFont(VentanaPrincipal.FUENTE_BOTON);
 		labelId.setForeground(VentanaPrincipal.COLOR_TEXTO);
@@ -359,6 +335,7 @@ public class SubpanelIntercambios extends JPanel {
 		panelInfo.add(labelSolicita, gbc);
 
 		tarjeta.add(panelInfo, BorderLayout.CENTER);
+
 		JPanel panelBotones = new JPanel(new GridBagLayout());
 		panelBotones.setBackground(VentanaPrincipal.COLOR_TARJETA);
 		GridBagConstraints gbcB = new GridBagConstraints();
@@ -367,21 +344,21 @@ public class SubpanelIntercambios extends JPanel {
 		gbcB.insets = new Insets(VentanaPrincipal.escalar(3), 0, VentanaPrincipal.escalar(3), 0);
 
 		if (esRecibida) {
-			// Botón aceptar
-			JButton botonAceptar = crearBotonPrincipal("Aceptar");
+			// crearBotonNaranja() de AbstractPanelSection
+			JButton botonAceptar = crearBotonNaranja("Aceptar");
 			botonAceptar.setActionCommand("aceptar:" + oferta.getId());
 			botonAceptar.addActionListener(controlador);
 			gbcB.gridy = 0;
 			panelBotones.add(botonAceptar, gbcB);
 
-			// Botón rechazar
+			// crearBotonRojo() de AbstractPanelSection
 			JButton botonRechazar = crearBotonRojo("Rechazar");
 			botonRechazar.setActionCommand("rechazar:" + oferta.getId());
 			botonRechazar.addActionListener(controlador);
 			gbcB.gridy = 1;
 			panelBotones.add(botonRechazar, gbcB);
 		} else {
-			// Oferta enviada — solo estado en amarillo
+			// crearLabel() de AbstractPanelSection
 			JLabel labelEstado = new JLabel(controlador.getTextoEstado(oferta));
 			labelEstado.setFont(VentanaPrincipal.FUENTE_PEQUENA);
 			labelEstado.setForeground(new Color(200, 150, 0));
@@ -389,7 +366,63 @@ public class SubpanelIntercambios extends JPanel {
 			gbcB.gridy = 0;
 			panelBotones.add(labelEstado, gbcB);
 		}
+
 		tarjeta.add(panelBotones, BorderLayout.EAST);
+		return tarjeta;
+	}
+
+	/**
+	 * Tarjeta para ofertas aceptadas pendientes de confirmación por empleado.
+	 */
+	private JPanel crearTarjetaAceptada(Oferta oferta) {
+		JPanel tarjeta = new JPanel(new BorderLayout(VentanaPrincipal.escalar(15), 0));
+		tarjeta.setBackground(VentanaPrincipal.COLOR_TARJETA);
+		tarjeta.setMaximumSize(new Dimension(Integer.MAX_VALUE, VentanaPrincipal.escalar(140)));
+		tarjeta.setAlignmentX(Component.LEFT_ALIGNMENT);
+		tarjeta.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createMatteBorder(0, 0, 1, 0, VentanaPrincipal.COLOR_BORDE),
+				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(12), VentanaPrincipal.escalar(15),
+						VentanaPrincipal.escalar(12), VentanaPrincipal.escalar(15))));
+
+		JPanel panelInfo = new JPanel(new GridBagLayout());
+		panelInfo.setBackground(VentanaPrincipal.COLOR_TARJETA);
+
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.insets = new Insets(VentanaPrincipal.escalar(2), 0, VentanaPrincipal.escalar(2),
+				VentanaPrincipal.escalar(10));
+		gbc.weightx = 1;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridx = 0;
+
+		JLabel labelId = new JLabel(oferta.getId() + "  —  ⏳ Esperando confirmación de empleado");
+		labelId.setFont(VentanaPrincipal.FUENTE_BOTON);
+		labelId.setForeground(new Color(0, 120, 200));
+		gbc.gridy = 0;
+		panelInfo.add(labelId, gbc);
+
+		boolean soyOrigen = oferta.getOrigen().equals(cliente);
+		String conQuien = soyOrigen ? "Con: " + oferta.getDestino().getNickname()
+				: "Con: " + oferta.getOrigen().getNickname();
+		JLabel labelConQuien = new JLabel(conQuien);
+		labelConQuien.setFont(VentanaPrincipal.FUENTE_NORMAL);
+		labelConQuien.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+		gbc.gridy = 1;
+		panelInfo.add(labelConQuien, gbc);
+
+		JLabel labelOfrece = new JLabel("Ofrece: " + getListaProductos(oferta.getProductosOfertados()));
+		labelOfrece.setFont(VentanaPrincipal.FUENTE_PEQUENA);
+		labelOfrece.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+		gbc.gridy = 2;
+		panelInfo.add(labelOfrece, gbc);
+
+		JLabel labelSolicita = new JLabel("Solicita: " + getListaProductos(oferta.getProductosSolicitados()));
+		labelSolicita.setFont(VentanaPrincipal.FUENTE_PEQUENA);
+		labelSolicita.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+		gbc.gridy = 3;
+		panelInfo.add(labelSolicita, gbc);
+
+		tarjeta.add(panelInfo, BorderLayout.CENTER);
 		return tarjeta;
 	}
 
@@ -414,14 +447,12 @@ public class SubpanelIntercambios extends JPanel {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 0;
 
-		// ID + estado en verde
 		JLabel labelId = new JLabel(oferta.getId() + "  —  " + controlador.getTextoEstado(oferta));
 		labelId.setFont(VentanaPrincipal.FUENTE_BOTON);
 		labelId.setForeground(new Color(50, 150, 50));
 		gbc.gridy = 0;
 		panelInfo.add(labelId, gbc);
 
-		// Con quién
 		boolean soyOrigen = oferta.getOrigen().equals(cliente);
 		String conQuien = soyOrigen ? "Con: " + oferta.getDestino().getNickname()
 				: "Con: " + oferta.getOrigen().getNickname();
@@ -431,7 +462,6 @@ public class SubpanelIntercambios extends JPanel {
 		gbc.gridy = 1;
 		panelInfo.add(labelConQuien, gbc);
 
-		// Entregados y recibidos según si soy origen o destino
 		List<Producto2Mano> entregados = soyOrigen ? oferta.getProductosOfertados() : oferta.getProductosSolicitados();
 		List<Producto2Mano> recibidos = soyOrigen ? oferta.getProductosSolicitados() : oferta.getProductosOfertados();
 
@@ -473,17 +503,15 @@ public class SubpanelIntercambios extends JPanel {
 		gbc.gridx = 0;
 
 		String motivo = oferta.getEstado() == EstadoOferta.CADUCADA ? "Caducada" : "Rechazada";
-
-		Color colorEstado = oferta.getEstado() == EstadoOferta.CADUCADA ? new Color(150, 100, 0) // amarillo oscuro para
-																									// caducada
-				: new Color(180, 50, 50); // rojo para rechazada
+		Color colorEstado = oferta.getEstado() == EstadoOferta.CADUCADA ? new Color(150, 100, 0)
+				: new Color(180, 50, 50);
 
 		JLabel labelId = new JLabel(oferta.getId() + "  —  " + motivo);
 		labelId.setFont(VentanaPrincipal.FUENTE_BOTON);
 		labelId.setForeground(colorEstado);
 		gbc.gridy = 0;
 		panelInfo.add(labelId, gbc);
-		// Con quién
+
 		boolean soyOrigen = oferta.getOrigen().equals(cliente);
 		String conQuien = soyOrigen ? "Para: " + oferta.getDestino().getNickname()
 				: "De: " + oferta.getOrigen().getNickname();
@@ -493,7 +521,6 @@ public class SubpanelIntercambios extends JPanel {
 		gbc.gridy = 1;
 		panelInfo.add(labelConQuien, gbc);
 
-		// Productos
 		JLabel labelOfrece = new JLabel("Ofrecía: " + getListaProductos(oferta.getProductosOfertados()));
 		labelOfrece.setFont(VentanaPrincipal.FUENTE_PEQUENA);
 		labelOfrece.setForeground(VentanaPrincipal.COLOR_TEXTO2);
@@ -522,13 +549,7 @@ public class SubpanelIntercambios extends JPanel {
 		return sb.toString();
 	}
 
-	/**
-	 * Crea una etiqueta de texto vacío centrada.
-	 *
-	 * @param texto El texto a mostrar
-	 * @return La etiqueta configurada
-	 */
-	private JLabel crearLabelVacío(String texto) {
+	private JLabel crearLabelVacio(String texto) {
 		JLabel label = new JLabel(texto);
 		label.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
 		label.setForeground(VentanaPrincipal.COLOR_TEXTO2);
@@ -537,79 +558,45 @@ public class SubpanelIntercambios extends JPanel {
 	}
 
 	/**
-	 * Muestra un mensaje de error. Lo llama el controlador.
-	 *
-	 * @param mensaje El mensaje de error
+	 * Procesa aceptar una oferta — lo llama el controlador.
 	 */
-	public void mostrarError(String mensaje) {
-		JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
+	public void procesarAceptarOferta(String idOferta) {
+		boolean ok = controlador.aceptarOferta(idOferta);
+		if (ok) {
+			mostrarMensaje("Oferta aceptada. Un empleado confirmará el intercambio.");
+			actualizar(cliente);
+			// Navegamos a la pestaña de aceptadas para que lo vea
+			mostrarSeccion("ACEPTADAS");
+		} else {
+			mostrarError("No se encontró la oferta.");
+		}
 	}
 
 	/**
-	 * Muestra un mensaje de éxito. Lo llama el controlador.
-	 *
-	 * @param mensaje El mensaje de éxito
+	 * Procesa rechazar una oferta — lo llama el controlador.
 	 */
-	public void mostrarExito(String mensaje) {
-		JOptionPane.showMessageDialog(this, mensaje, "Éxito", JOptionPane.INFORMATION_MESSAGE);
+	public void procesarRechazarOferta(String idOferta) {
+		boolean ok = controlador.rechazarOferta(idOferta);
+		if (ok) {
+			mostrarMensaje("Oferta rechazada correctamente.");
+			actualizar(cliente);
+		} else {
+			mostrarError("No se pudo rechazar la oferta.");
+		}
 	}
 
-	private JButton crearBotonPrincipal(String texto) {
-		JButton boton = new JButton(texto);
-		boton.setFont(VentanaPrincipal.FUENTE_BOTON);
-		boton.setBackground(VentanaPrincipal.COLOR_ACENTO);
-		boton.setForeground(Color.WHITE);
-		boton.setOpaque(true);
-		boton.setBorderPainted(false);
-		boton.setFocusPainted(false);
-		boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		boton.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(12),
-				VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(12)));
-		boton.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				boton.setBackground(VentanaPrincipal.COLOR_ACENTO.darker());
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				boton.setBackground(VentanaPrincipal.COLOR_ACENTO);
-			}
-		});
-		return boton;
-	}
-
-	private JButton crearBotonRojo(String texto) {
-		JButton boton = new JButton(texto);
-		boton.setFont(VentanaPrincipal.FUENTE_BOTON);
-		boton.setBackground(new Color(180, 50, 50));
-		boton.setForeground(Color.WHITE);
-		boton.setOpaque(true);
-		boton.setBorderPainted(false);
-		boton.setFocusPainted(false);
-		boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		boton.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(12),
-				VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(12)));
-		boton.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				boton.setBackground(new Color(200, 60, 60));
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				boton.setBackground(new Color(180, 50, 50));
-			}
-		});
-		return boton;
+	@Override
+	public void mostrarError(String mensaje) {
+		JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
 	}
 
 	public void actualizar(Cliente cliente) {
 		this.cliente = cliente;
 		this.controlador = new ControladorIntercambios(this, cliente);
-		setControladores(controlador);
+		setControlador(controlador);
 		rellenarEnviadas();
 		rellenarRecibidas();
+		rellenarAceptadas();
 		rellenarHistorial();
 		rellenarRechazadas();
 		cardSecciones.show(panelSecciones, "ENVIADAS");

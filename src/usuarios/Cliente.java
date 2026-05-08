@@ -208,7 +208,7 @@ public class Cliente extends UsuarioRegistrado implements Serializable {
 		for (Oferta o : ofertasPendientes) {
 			// Si el destino de la oferta soy yo, es que tengo que contestar por lo que son
 			// ofertas pendientes
-			if (o.getDestino().equals(this)) {//
+			if (o.getDestino().equals(this)&&o.getEstado()==EstadoOferta.PENDIENTE) {//
 				paraDecidir.add(o);
 			}
 		}
