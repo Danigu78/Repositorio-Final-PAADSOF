@@ -1,5 +1,6 @@
-package Gui;
+package Gui.Gestor;
 
+import Gui.VentanaPrincipal;
 import Gui.Controladores.ControladorConfiguracionGestor;
 import javax.swing.*;
 import javax.swing.border.*;

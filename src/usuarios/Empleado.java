@@ -878,17 +878,14 @@ public class Empleado extends UsuarioRegistrado implements Serializable {
 			System.out.println("El empleado " + this.getNickname() + " no tiene permiso para trabajar con packs.");
 			return false;
 		}
-
 		if (nombre == null || nombre.isBlank() || descripcion == null || descripcion.isBlank() || imagen == null) {
 			System.out.println("El nombre, descripcion o imagen no pueden estar vacios");
 			return false;
 		}
-
 		if (stock <= 0) {
 			System.out.println("El stock debe ser mayor que 0");
 			return false;
 		}
-
 		if (lineas == null || lineas.size() <= 1) {
 			System.out.println("Para crear un pack minimo tiene que haber dos productos distintos");
 			return false;

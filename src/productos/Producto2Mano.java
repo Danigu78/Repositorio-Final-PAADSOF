@@ -17,7 +17,6 @@ import tienda.*;
 public class Producto2Mano extends Producto implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-
 	/** Resultado de la tasación oficial realizada por un empleado. */
 	private Valoracion valoracion = null;
 

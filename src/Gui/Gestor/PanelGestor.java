@@ -1,14 +1,9 @@
-package Gui;
+package Gui.Gestor;
 
 import javax.swing.*;
 import javax.swing.border.*;
 
-import Gui.Gestor.SubpanelCategoriasGestor;
-import Gui.Gestor.SubpanelConfiguracionGestor;
-import Gui.Gestor.SubpanelEmpleadosGestor;
-import Gui.Gestor.SubpanelEstadisticasGestor;
-import Gui.Gestor.SubpanelGestionPack;
-import Gui.Gestor.SubpanelProductosDescuentosGestor;
+import Gui.VentanaPrincipal;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -42,7 +37,7 @@ public class PanelGestor extends JPanel {
     private SubpanelEmpleadosGestor subpanelEmpleados;
     private SubpanelCategoriasGestor subpanelCategorias;
     private SubpanelProductosDescuentosGestor subpanelProductosDescuentos;
-    private SubpanelGestionPack subpanelPacks;
+ 
     private SubpanelEstadisticasGestor subpanelEstadisticas;
     private SubpanelConfiguracionGestor subpanelConfiguracion;
     private SubpanelPerfilGestor subpanelPerfil;
@@ -84,7 +79,7 @@ public class PanelGestor extends JPanel {
         subpanelEmpleados = new SubpanelEmpleadosGestor(ventana, gestor);
         subpanelCategorias = new SubpanelCategoriasGestor(ventana, gestor);
         subpanelProductosDescuentos = new SubpanelProductosDescuentosGestor(ventana, gestor);
-        subpanelPacks = new SubpanelGestionPack(ventana, gestor);
+ 
         subpanelEstadisticas = new SubpanelEstadisticasGestor(ventana, gestor);
         subpanelConfiguracion = new SubpanelConfiguracionGestor(ventana, gestor);
         subpanelPerfil = new SubpanelPerfilGestor(ventana, gestor);
@@ -92,7 +87,7 @@ public class PanelGestor extends JPanel {
         panelSecciones.add(subpanelEmpleados, SEC_EMPLEADOS);
         panelSecciones.add(subpanelCategorias, SEC_CATEGORIAS);
         panelSecciones.add(subpanelProductosDescuentos, SEC_PRODUCTOS_DESCUENTOS);
-        panelSecciones.add(subpanelPacks, SEC_PACKS);
+
         panelSecciones.add(subpanelEstadisticas, SEC_ESTADISTICAS);
         panelSecciones.add(subpanelConfiguracion, SEC_CONFIGURACION);
         panelSecciones.add(subpanelPerfil, SEC_PERFIL);
