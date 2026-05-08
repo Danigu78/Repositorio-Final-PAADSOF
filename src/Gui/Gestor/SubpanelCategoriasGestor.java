@@ -1,48 +1,45 @@
 package Gui.Gestor;
 
+import Gui.Controladores.Gestor.ControladorCategoriasGestor;
 import Gui.VentanaPrincipal;
-import Gui.Controladores.ControladorCategoriasGestor;
 import javax.swing.*;
-import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import productos.Categoria;
 import productos.ProductoVenta;
 import usuarios.Gestor;
 
 /**
  * Subpanel de gestión de categorías para el gestor.
- * Permite crear categorías y gestionar qué productos pertenecen a cada una.
  *
  * @author Antonino
  * @version 1.0
  */
-public class SubpanelCategoriasGestor extends JPanel {
+public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 
-    private VentanaPrincipal ventana;
-    private Gestor gestor;
     private ControladorCategoriasGestor controlador;
     private JPanel panelLista;
 
-    /**
-     * Constructor del subpanel de categorías.
-     *
-     * @param ventana La ventana principal
-     * @param gestor  El gestor logueado
-     */
+    private JTextField campoNombre;
+    private JTextField campoDesc;
+    private JTextField campoBusquedaCategorias;
+
+    // Combos de productos por categoría — nombre categoría → panel combo
+    private Map<String, JPanel> combosProductosPanel = new HashMap<>();
+    // Productos por categoría para recuperar el id
+    private Map<String, List<ProductoVenta>> productosMap = new HashMap<>();
+
+    private JButton botonCrear;
+
     public SubpanelCategoriasGestor(VentanaPrincipal ventana, Gestor gestor) {
-        this.ventana = ventana;
-        this.gestor = gestor;
-        this.controlador = new ControladorCategoriasGestor(gestor);
-        setLayout(new BorderLayout());
-        setBackground(VentanaPrincipal.COLOR_FONDO);
+        super(ventana, gestor);
+        this.controlador = new ControladorCategoriasGestor(this, gestor);
         inicializarUI();
     }
 
-    /**
-     * Construye la interfaz con formulario de nueva categoría y lista de categorías.
-     */
     private void inicializarUI() {
         add(crearFormularioNuevaCategoria(), BorderLayout.NORTH);
 
@@ -55,65 +52,76 @@ public class SubpanelCategoriasGestor extends JPanel {
         scroll.getViewport().setBackground(VentanaPrincipal.COLOR_FONDO);
         add(scroll, BorderLayout.CENTER);
 
+        setControlador(controlador);
         actualizarLista();
     }
 
-    /**
-     * Crea el formulario para crear una nueva categoría.
-     *
-     * @return Panel con el formulario
-     */
+    public void setControlador(ActionListener c) {
+        if (botonCrear != null) {
+            for (ActionListener al : botonCrear.getActionListeners())
+                botonCrear.removeActionListener(al);
+            botonCrear.addActionListener(c);
+        }
+    }
+
     private JPanel crearFormularioNuevaCategoria() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(10)));
+        JPanel panel = new JPanel(new FlowLayout(
+            FlowLayout.LEFT, VentanaPrincipal.escalar(10),
+            VentanaPrincipal.escalar(10)));
         panel.setBackground(VentanaPrincipal.COLOR_PANEL);
-        panel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createMatteBorder(0, 0, 1, 0, VentanaPrincipal.COLOR_BORDE),
-            BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(15))
-        ));
+        panel.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+            javax.swing.BorderFactory.createMatteBorder(
+                0, 0, 1, 0, VentanaPrincipal.COLOR_BORDE),
+            javax.swing.BorderFactory.createEmptyBorder(
+                VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(15),
+                VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(15))));
 
         JLabel titulo = new JLabel("Nueva categoría:");
         titulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
         titulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
         panel.add(titulo);
 
-        panel.add(crearEtiqueta("Nombre:"));
-        JTextField campoNombre = crearCampo(10);
+        panel.add(crearLabel("Nombre:"));
+        campoNombre = crearCampoColumnas(10);
         panel.add(campoNombre);
 
-        panel.add(crearEtiqueta("Descripción:"));
-        JTextField campoDesc = crearCampo(20);
+        panel.add(crearLabel("Descripción:"));
+        campoDesc = crearCampoColumnas(20);
         panel.add(campoDesc);
 
-        JButton botonCrear = crearBoton("Crear categoría");
-        botonCrear.addActionListener(e -> {
-            String nombre = campoNombre.getText().trim();
-            String desc = campoDesc.getText().trim();
-            if (controlador.crearCategoria(nombre, desc)) {
-                mostrarExito("Categoría '" + nombre + "' creada.");
-                campoNombre.setText("");
-                campoDesc.setText("");
-                actualizarLista();
-            } else {
-                mostrarError("No se pudo crear la categoría.");
-            }
-        });
+        botonCrear = crearBotonNaranja("Crear categoría");
+        botonCrear.setActionCommand("crearCategoria");
         panel.add(botonCrear);
 
         return panel;
     }
 
-    /**
-     * Actualiza la lista de categorías mostrada.
-     */
     private void actualizarLista() {
         panelLista.removeAll();
+        combosProductosPanel.clear();
+        productosMap.clear();
 
         JLabel titulo = new JLabel("Categorías:");
         titulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
         titulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
-        titulo.setBorder(BorderFactory.createEmptyBorder(
-            VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(10), 0));
+        titulo.setBorder(javax.swing.BorderFactory.createEmptyBorder(
+            VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(15),
+            VentanaPrincipal.escalar(5), 0));
+        titulo.setAlignmentX(Component.LEFT_ALIGNMENT);
         panelLista.add(titulo);
+
+        // Barra de búsqueda de categorías
+        JPanel barraBusqueda = new JPanel(new FlowLayout(
+            FlowLayout.LEFT, VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(8)));
+        barraBusqueda.setBackground(VentanaPrincipal.COLOR_FONDO);
+        barraBusqueda.setAlignmentX(Component.LEFT_ALIGNMENT);
+        barraBusqueda.add(crearLabel("Buscar categoría:"));
+        campoBusquedaCategorias = crearCampoCompacto();
+        campoBusquedaCategorias.setPreferredSize(new Dimension(
+            VentanaPrincipal.escalar(200), VentanaPrincipal.escalar(28)));
+        escucharCambios(campoBusquedaCategorias, this::filtrarCategorias);
+        barraBusqueda.add(campoBusquedaCategorias);
+        panelLista.add(barraBusqueda);
 
         for (Categoria cat : controlador.getCategorias()) {
             panelLista.add(crearFilaCategoria(cat));
@@ -123,23 +131,32 @@ public class SubpanelCategoriasGestor extends JPanel {
         panelLista.repaint();
     }
 
-    /**
-     * Crea una fila visual para una categoría con sus productos y acciones.
-     *
-     * @param cat La categoría a mostrar
-     * @return Panel con la fila de la categoría
-     */
+    private void filtrarCategorias() {
+        String texto = normalizarTexto(campoBusquedaCategorias.getText());
+        while (panelLista.getComponentCount() > 2)
+            panelLista.remove(panelLista.getComponentCount() - 1);
+        for (Categoria cat : controlador.getCategorias()) {
+            if (texto.isEmpty() || contieneTexto(cat.getNombre(), texto)) {
+                panelLista.add(crearFilaCategoria(cat));
+            }
+        }
+        panelLista.revalidate();
+        panelLista.repaint();
+    }
+
     private JPanel crearFilaCategoria(Categoria cat) {
         JPanel fila = new JPanel(new BorderLayout());
         fila.setBackground(VentanaPrincipal.COLOR_TARJETA);
-        fila.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createMatteBorder(0, 0, 1, 0, VentanaPrincipal.COLOR_BORDE),
-            BorderFactory.createEmptyBorder(
+        fila.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+            javax.swing.BorderFactory.createMatteBorder(
+                0, 0, 1, 0, VentanaPrincipal.COLOR_BORDE),
+            javax.swing.BorderFactory.createEmptyBorder(
                 VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(15),
-                VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(15))
-        ));
+                VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(15))));
 
-        JPanel panelInfo = new JPanel(new FlowLayout(FlowLayout.LEFT, VentanaPrincipal.escalar(10), 0));
+        // Info izquierda: nombre + productos actuales con buscador
+        JPanel panelInfo = new JPanel();
+        panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.Y_AXIS));
         panelInfo.setBackground(VentanaPrincipal.COLOR_TARJETA);
 
         JLabel labelNombre = new JLabel(cat.getNombre());
@@ -147,102 +164,113 @@ public class SubpanelCategoriasGestor extends JPanel {
         labelNombre.setForeground(VentanaPrincipal.COLOR_TEXTO);
         panelInfo.add(labelNombre);
 
-        JLabel labelProductos = new JLabel("(" + cat.getProductos().size() + " productos)");
-        labelProductos.setFont(VentanaPrincipal.FUENTE_PEQUENA);
-        labelProductos.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-        panelInfo.add(labelProductos);
+        // Desplegable con buscador de productos actuales de esta categoría
+        if (!cat.getProductos().isEmpty()) {
+            String[] productosActuales = cat.getProductos().stream()
+                .map(p -> p.getNombre() + " (" + p.getId() + ")")
+                .toArray(String[]::new);
+            JPanel comboActuales = crearComboConBuscador(
+                productosActuales, VentanaPrincipal.escalar(220));
+            comboActuales.setAlignmentX(Component.LEFT_ALIGNMENT);
+            panelInfo.add(comboActuales);
+        } else {
+            JLabel labelVacio = crearLabel("Sin productos");
+            panelInfo.add(labelVacio);
+        }
 
         fila.add(panelInfo, BorderLayout.CENTER);
 
-        // Botones para añadir/quitar producto
-        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, VentanaPrincipal.escalar(5), 0));
+        // Botones derecha: combo con buscador para añadir/quitar + botones
+        JPanel panelBotones = new JPanel(new FlowLayout(
+            FlowLayout.RIGHT, VentanaPrincipal.escalar(5), 0));
         panelBotones.setBackground(VentanaPrincipal.COLOR_TARJETA);
 
-        // Combo con todos los productos
         List<ProductoVenta> productos = controlador.getProductos();
+        productosMap.put(cat.getNombre(), productos);
+
         String[] nombresProductos = new String[productos.size()];
         for (int i = 0; i < productos.size(); i++) {
-            nombresProductos[i] = productos.get(i).getNombre() + " (" + productos.get(i).getId() + ")";
+            nombresProductos[i] = productos.get(i).getNombre()
+                + " (" + productos.get(i).getId() + ")";
         }
-        JComboBox<String> comboProductos = new JComboBox<>(nombresProductos);
-        comboProductos.setFont(VentanaPrincipal.FUENTE_PEQUENA);
-        panelBotones.add(comboProductos);
+        JPanel panelComboProductos = crearComboConBuscador(
+            nombresProductos, VentanaPrincipal.escalar(200));
+        combosProductosPanel.put(cat.getNombre(), panelComboProductos);
+        panelBotones.add(panelComboProductos);
 
-        JButton botonAnadir = crearBoton("+ Añadir");
-        botonAnadir.addActionListener(e -> {
-            int idx = comboProductos.getSelectedIndex();
-            if (idx >= 0) {
-                String idProducto = productos.get(idx).getId();
-                if (controlador.añadirProductoACategoria(idProducto, cat.getNombre())) {
-                    mostrarExito("Producto añadido a " + cat.getNombre());
-                    actualizarLista();
-                } else {
-                    mostrarError("No se pudo añadir el producto.");
-                }
-            }
-        });
+        JButton botonAnadir = crearBotonNaranja("+ Añadir");
+        botonAnadir.setActionCommand("añadirProducto:" + cat.getNombre());
+        botonAnadir.addActionListener(controlador);
         panelBotones.add(botonAnadir);
 
-        JButton botonQuitar = crearBoton("- Quitar");
-        botonQuitar.addActionListener(e -> {
-            int idx = comboProductos.getSelectedIndex();
-            if (idx >= 0) {
-                String idProducto = productos.get(idx).getId();
-                if (controlador.eliminarProductoDeCategoria(idProducto, cat.getNombre())) {
-                    mostrarExito("Producto quitado de " + cat.getNombre());
-                    actualizarLista();
-                } else {
-                    mostrarError("No se pudo quitar el producto.");
-                }
-            }
-        });
+        JButton botonQuitar = crearBotonNaranja("- Quitar");
+        botonQuitar.setActionCommand("quitarProducto:" + cat.getNombre());
+        botonQuitar.addActionListener(controlador);
         panelBotones.add(botonQuitar);
 
         fila.add(panelBotones, BorderLayout.EAST);
         return fila;
     }
 
-    private JLabel crearEtiqueta(String texto) {
-        JLabel label = new JLabel(texto);
-        label.setFont(VentanaPrincipal.FUENTE_NORMAL);
-        label.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-        return label;
+    public void procesarCrearCategoria() {
+        String nombre = campoNombre.getText().trim();
+        String desc = campoDesc.getText().trim();
+        if (nombre.isEmpty()) {
+            mostrarError("El nombre no puede estar vacío.");
+            return;
+        }
+        if (controlador.crearCategoria(nombre, desc)) {
+            mostrarMensaje("Categoría '" + nombre + "' creada.");
+            campoNombre.setText("");
+            campoDesc.setText("");
+            actualizarLista();
+        } else {
+            mostrarError("No se pudo crear la categoría.");
+        }
     }
 
-    private JTextField crearCampo(int columnas) {
-        JTextField campo = new JTextField(columnas);
-        campo.setFont(VentanaPrincipal.FUENTE_NORMAL);
-        campo.setForeground(Color.BLACK);
-        campo.setBackground(Color.WHITE);
-        campo.setCaretColor(Color.BLACK);
-        campo.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
-            BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(8))
-        ));
-        return campo;
+    public void procesarAñadirProducto(String nombreCat) {
+        JPanel panelCombo = combosProductosPanel.get(nombreCat);
+        List<ProductoVenta> productos = productosMap.get(nombreCat);
+        if (panelCombo == null || productos == null) return;
+        JComboBox<String> combo = getComboDePanel(panelCombo);
+        if (combo == null || combo.getSelectedItem() == null) return;
+        // Buscamos el producto por nombre en el combo
+        String seleccionado = (String) combo.getSelectedItem();
+        String idProducto = extraerIdDeNombre(seleccionado, productos);
+        if (idProducto == null) return;
+        if (controlador.añadirProductoACategoria(idProducto, nombreCat)) {
+            mostrarMensaje("Producto añadido a " + nombreCat);
+            actualizarLista();
+        } else {
+            mostrarError("No se pudo añadir el producto.");
+        }
     }
 
-    private JButton crearBoton(String texto) {
-        JButton boton = new JButton(texto);
-        boton.setFont(VentanaPrincipal.FUENTE_BOTON);
-        boton.setBackground(VentanaPrincipal.COLOR_ACENTO);
-        boton.setForeground(Color.WHITE);
-        boton.setOpaque(true);
-        boton.setBorderPainted(false);
-        boton.setFocusPainted(false);
-        boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        boton.setBorder(BorderFactory.createEmptyBorder(
-            VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(12),
-            VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(12)
-        ));
-        return boton;
+    public void procesarQuitarProducto(String nombreCat) {
+        JPanel panelCombo = combosProductosPanel.get(nombreCat);
+        List<ProductoVenta> productos = productosMap.get(nombreCat);
+        if (panelCombo == null || productos == null) return;
+        JComboBox<String> combo = getComboDePanel(panelCombo);
+        if (combo == null || combo.getSelectedItem() == null) return;
+        String seleccionado = (String) combo.getSelectedItem();
+        String idProducto = extraerIdDeNombre(seleccionado, productos);
+        if (idProducto == null) return;
+        if (controlador.eliminarProductoDeCategoria(idProducto, nombreCat)) {
+            mostrarMensaje("Producto quitado de " + nombreCat);
+            actualizarLista();
+        } else {
+            mostrarError("No se pudo quitar el producto.");
+        }
     }
 
-    private void mostrarError(String msg) {
-        JOptionPane.showMessageDialog(this, msg, "Error", JOptionPane.ERROR_MESSAGE);
-    }
-
-    private void mostrarExito(String msg) {
-        JOptionPane.showMessageDialog(this, msg, "Éxito", JOptionPane.INFORMATION_MESSAGE);
+    /**
+     * Extrae el id del producto a partir del texto "nombre (id)"
+     */
+    private String extraerIdDeNombre(String texto, List<ProductoVenta> productos) {
+        for (ProductoVenta p : productos) {
+            if (texto.contains(p.getId())) return p.getId();
+        }
+        return null;
     }
 }

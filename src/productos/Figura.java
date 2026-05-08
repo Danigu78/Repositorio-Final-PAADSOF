@@ -85,4 +85,59 @@ public class Figura extends ProductoVenta {
 		return super.toString() + " | Altura: " + this.altura + " | Ancho: " + this.ancho + " | Largo: " + this.largo
 				+ " | Material: " + this.material + " | Marca: " + this.marca + " |";
 	}
+
+	public double getAltura() {
+		return altura;
+	}
+
+	public void setAltura(double altura) {
+		if (altura <= 0) {
+			throw new ProductoInvalidoException("La altura debe ser mayor que 0.");
+		}
+		this.altura = altura;
+	}
+
+	public double getAncho() {
+		return ancho;
+	}
+
+	public void setAncho(double ancho) {
+		if (ancho <= 0) {
+			throw new ProductoInvalidoException("El ancho debe ser mayor que 0.");
+		}
+		this.ancho = ancho;
+	}
+
+	public double getLargo() {
+		return largo;
+	}
+
+	public void setLargo(double largo) {
+		if (largo <= 0) {
+			throw new ProductoInvalidoException("El largo debe ser mayor que 0.");
+		}
+		this.largo = largo;
+	}
+
+	public String getMaterial() {
+		return material;
+	}
+
+	public void setMaterial(String material) {
+		if (material == null || material.isBlank()) {
+			throw new ProductoInvalidoException("El material no puede estar vacío.");
+		}
+		this.material = material;
+	}
+
+	public String getMarca() {
+		return marca;
+	}
+
+	public void setMarca(String marca) {
+		if (marca == null || marca.isBlank()) {
+			throw new ProductoInvalidoException("La marca no puede estar vacía.");
+		}
+		this.marca = marca;
+	}
 }
