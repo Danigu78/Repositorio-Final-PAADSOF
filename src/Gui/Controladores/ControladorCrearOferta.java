@@ -71,7 +71,7 @@ public class ControladorCrearOferta implements ActionListener {
         List<Producto2Mano> productos = new ArrayList<>();
         Cliente propietario = productoObjetivo.getPropietario();
         for (Producto2Mano p : propietario.getCarteraIntercambio()) {
-            if (p.isVisible() && !p.isBloqueado()) {
+        	if (p.getValoracion() != null && p.isVisible() && !p.isBloqueado()){
                 productos.add(p);
             }
         }

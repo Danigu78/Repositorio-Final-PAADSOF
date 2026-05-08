@@ -524,4 +524,44 @@ public abstract class AbstractPanelSection extends JPanel {
 	    });
 	    return boton;
 	}
+	/**
+	 * Crea un combo con buscador integrado.
+	 * El campo de texto filtra los items en tiempo real.
+	 */
+	protected JPanel crearComboConBuscador(String[] items, int ancho) {
+	    JPanel panel = new JPanel(new BorderLayout(0, VentanaPrincipal.escalar(2)));
+	    panel.setBackground(VentanaPrincipal.COLOR_PANEL);
+	    panel.setOpaque(false);
+
+	    JTextField campoBusqueda = crearCampoCompacto();
+	    campoBusqueda.setPreferredSize(new Dimension(ancho, VentanaPrincipal.escalar(28)));
+
+	    DefaultComboBoxModel<String> modelo = new DefaultComboBoxModel<>(items);
+	    JComboBox<String> combo = new JComboBox<>(modelo);
+	    combo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+	    combo.setBackground(Color.WHITE);
+	    combo.setPreferredSize(new Dimension(ancho, VentanaPrincipal.escalar(28)));
+
+	    escucharCambios(campoBusqueda, () -> {
+	        String texto = campoBusqueda.getText().trim().toLowerCase(java.util.Locale.ROOT);
+	        modelo.removeAllElements();
+	        for (String item : items) {
+	            if (item.toLowerCase(java.util.Locale.ROOT).contains(texto))
+	                modelo.addElement(item);
+	        }
+	        if (modelo.getSize() > 0) combo.setSelectedIndex(0);
+	    });
+
+	    panel.add(campoBusqueda, BorderLayout.NORTH);
+	    panel.add(combo, BorderLayout.CENTER);
+	    panel.putClientProperty("combo", combo);
+	    return panel;
+	}
+
+	/**
+	 * Recupera el JComboBox de un panel creado con crearComboConBuscador.
+	 */
+	protected JComboBox<String> getComboDePanel(JPanel panel) {
+	    return (JComboBox<String>) panel.getClientProperty("combo");
+	}
 }

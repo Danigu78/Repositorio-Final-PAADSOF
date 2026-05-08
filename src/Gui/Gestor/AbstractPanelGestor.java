@@ -23,7 +23,7 @@ public abstract class AbstractPanelGestor extends AbstractPanelSection {
     }
 
     /**
-     * Crea un campo de texto compacto con columnas — útil en formularios del gestor.
+     * Crea un campo de texto con columnas — útil en formularios del gestor.
      */
     protected JTextField crearCampoColumnas(int columnas) {
         JTextField campo = new JTextField(columnas);
@@ -63,7 +63,6 @@ public abstract class AbstractPanelGestor extends AbstractPanelSection {
     }
 
     public void mostrarExito(String msg) {
-        JOptionPane.showMessageDialog(this, msg, "Éxito",
-            JOptionPane.INFORMATION_MESSAGE);
+        mostrarMensaje(msg);
     }
 }

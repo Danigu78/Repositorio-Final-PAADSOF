@@ -1,4 +1,4 @@
-package Gui.Controladores;
+package Gui.Controladores.Gestor;
 
 import Gui.Gestor.SubpanelEmpleadosGestor;
 import tienda.GuardadoTienda;
@@ -35,14 +35,11 @@ public class ControladorEmpleadosGestor implements ActionListener {
         if (cmd.equals("darDeAlta")) {
             vista.procesarAlta();
         } else if (cmd.startsWith("darDeBaja:")) {
-            String id = cmd.substring(10);
-            vista.confirmarBaja(id);
+            vista.confirmarBaja(cmd.substring(10));
         } else if (cmd.startsWith("asignarPermiso:")) {
-            String id = cmd.substring(15);
-            vista.procesarAsignarPermiso(id);
+            vista.procesarAsignarPermiso(cmd.substring(15));
         } else if (cmd.startsWith("retirarPermiso:")) {
-            String id = cmd.substring(15);
-            vista.procesarRetirarPermiso(id);
+            vista.procesarRetirarPermiso(cmd.substring(15));
         }
     }
 
@@ -74,13 +71,11 @@ public class ControladorEmpleadosGestor implements ActionListener {
     public List<Empleado> getEmpleados() {
         return tienda.obtenerEmpleadosTienda();
     }
-    /**
-     * Devuelve el nickname de un empleado por su id.
-     */
+
     public String getNicknameEmpleado(String id) {
         return getEmpleados().stream()
             .filter(e -> e.getId().equals(id))
-            .map(e -> e.getNickname())
+            .map(Empleado::getNickname)
             .findFirst().orElse(id);
     }
 }
