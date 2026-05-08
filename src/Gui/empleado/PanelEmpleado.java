@@ -1,5 +1,7 @@
-package Gui;
+package Gui.empleado;
 
+
+import Gui.VentanaPrincipal;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -7,6 +9,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -15,7 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.plaf.basic.BasicButtonUI;
 
-import Gui.Controladores.ControladorPanelEmpleado;
+import Gui.Controladores.empleado.ControladorPanelEmpleado;
 import usuarios.Empleado;
 import usuarios.TipoPermisos;
 
@@ -64,6 +67,8 @@ public class PanelEmpleado extends JPanel {
 	public void actualizarEmpleado(Empleado empleado) {
 		this.empleado = empleado;
 		this.controlador = new ControladorPanelEmpleado(empleado);
+		this.controlador.setVista(this);
+		setControlador(this.controlador);
 
 		removeAll();
 
@@ -87,6 +92,23 @@ public class PanelEmpleado extends JPanel {
 	 */
 	private boolean empleadoPuedeVerPanel() {
 		return controlador != null && controlador.empleadoPuedeVerPanel();
+	}
+
+	public void setControlador(ActionListener controlador) {
+		if (controlador instanceof ControladorPanelEmpleado) {
+			this.controlador = (ControladorPanelEmpleado) controlador;
+		}
+	}
+
+	public void salir() {
+		ventana.logout();
+	}
+
+	public void mostrarSeccion(String seccion) {
+		if (seccion == null || cardSecciones == null || panelSecciones == null) {
+			return;
+		}
+		cardSecciones.show(panelSecciones, seccion);
 	}
 
 	/**
@@ -121,6 +143,11 @@ public class PanelEmpleado extends JPanel {
 			primeraSeccion = primeraSeccion == null ? SEC_STOCK : primeraSeccion;
 		}
 
+		if (controlador.tienePermiso(TipoPermisos.MODIFICAR_PRODUCTO)) {
+			panelSecciones.add(new SeccionModificarEmpleado(ventana, empleado), SEC_MODIFICAR);
+			primeraSeccion = primeraSeccion == null ? SEC_MODIFICAR : primeraSeccion;
+		}
+
 		if (controlador.tienePermiso(TipoPermisos.GESTION_CATEGORIAS)) {
 			panelSecciones.add(new SeccionCategoriasEmpleado(ventana, empleado), SEC_CATEGORIAS);
 			primeraSeccion = primeraSeccion == null ? SEC_CATEGORIAS : primeraSeccion;
@@ -129,11 +156,6 @@ public class PanelEmpleado extends JPanel {
 		if (controlador.tienePermiso(TipoPermisos.GESTION_PACKS)) {
 			panelSecciones.add(new SeccionPacksEmpleado(ventana, empleado), SEC_PACKS);
 			primeraSeccion = primeraSeccion == null ? SEC_PACKS : primeraSeccion;
-		}
-
-		if (controlador.tienePermiso(TipoPermisos.MODIFICAR_PRODUCTO)) {
-			panelSecciones.add(new SeccionModificarEmpleado(ventana, empleado), SEC_MODIFICAR);
-			primeraSeccion = primeraSeccion == null ? SEC_MODIFICAR : primeraSeccion;
 		}
 
 		if (controlador.tienePermiso(TipoPermisos.GESTION_PEDIDOS)) {
@@ -188,7 +210,11 @@ public class PanelEmpleado extends JPanel {
 		botonActivo = null;
 
 		if (controlador.tienePermiso(TipoPermisos.GESTION_STOCK)) {
-			agregarPestana(panelPestanas, "Stock", SEC_STOCK);
+			agregarPestana(panelPestanas, "Inventario", SEC_STOCK);
+		}
+
+		if (controlador.tienePermiso(TipoPermisos.MODIFICAR_PRODUCTO)) {
+			agregarPestana(panelPestanas, "Editar producto", SEC_MODIFICAR);
 		}
 
 		if (controlador.tienePermiso(TipoPermisos.GESTION_CATEGORIAS)) {
@@ -197,10 +223,6 @@ public class PanelEmpleado extends JPanel {
 
 		if (controlador.tienePermiso(TipoPermisos.GESTION_PACKS)) {
 			agregarPestana(panelPestanas, "Packs", SEC_PACKS);
-		}
-
-		if (controlador.tienePermiso(TipoPermisos.MODIFICAR_PRODUCTO)) {
-			agregarPestana(panelPestanas, "Modificar", SEC_MODIFICAR);
 		}
 
 		if (controlador.tienePermiso(TipoPermisos.GESTION_PEDIDOS)) {
@@ -240,7 +262,8 @@ public class PanelEmpleado extends JPanel {
 		botonLogout.setBorderPainted(false);
 		botonLogout.setFocusPainted(false);
 		botonLogout.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		botonLogout.addActionListener(e -> ventana.logout());
+		botonLogout.setActionCommand(ControladorPanelEmpleado.LOGOUT);
+		botonLogout.addActionListener(controlador);
 		panelDerecha.add(botonLogout);
 
 		barra.add(panelDerecha, BorderLayout.EAST);
@@ -286,10 +309,8 @@ public class PanelEmpleado extends JPanel {
 			}
 		});
 
-		boton.addActionListener(e -> {
-			activarPestana(boton);
-			cardSecciones.show(panelSecciones, seccion);
-		});
+		boton.setActionCommand(ControladorPanelEmpleado.CAMBIAR_SECCION + seccion);
+		boton.addActionListener(controlador);
 
 		if (botonActivo == null) {
 			botonActivo = boton;
@@ -318,7 +339,7 @@ public class PanelEmpleado extends JPanel {
 	 *
 	 * @param boton nueva pestaña activa
 	 */
-	private void activarPestana(JButton boton) {
+	public void activarPestana(JButton boton) {
 		if (botonActivo != null) {
 			botonActivo.setForeground(VentanaPrincipal.COLOR_TEXTO_BARRA);
 			botonActivo.setBackground(VentanaPrincipal.COLOR_BARRA);
@@ -359,7 +380,8 @@ public class PanelEmpleado extends JPanel {
 		botonVolver.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		botonVolver.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(10),
 				VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(20)));
-		botonVolver.addActionListener(e -> ventana.logout());
+		botonVolver.setActionCommand(ControladorPanelEmpleado.LOGOUT);
+		botonVolver.addActionListener(controlador);
 
 		JPanel panelBoton = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		panelBoton.setBackground(VentanaPrincipal.COLOR_FONDO);

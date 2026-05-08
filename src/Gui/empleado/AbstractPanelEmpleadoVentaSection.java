@@ -1,5 +1,7 @@
-package Gui;
+package Gui.empleado;
 
+
+import Gui.VentanaPrincipal;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -23,7 +25,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
-import Gui.Controladores.ControladorProductosEmpleado;
+import Gui.Controladores.empleado.ControladorProductosEmpleado;
 import productos.LineaPack;
 import productos.ProductoVenta;
 import usuarios.Empleado;

@@ -1,12 +1,15 @@
-package Gui;
+package Gui.empleado;
 
+
+import Gui.VentanaPrincipal;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.table.*;
 
 import intercambios.Oferta;
-import Gui.Controladores.ControladorIntercambiosEmpleado;
-import Gui.Controladores.ResultadoOperacion;
+import Gui.Controladores.empleado.ControladorIntercambiosEmpleado;
+import Gui.Controladores.empleado.ResultadoOperacion;
 import usuarios.Empleado;
 
 /**
@@ -29,7 +32,20 @@ public class SeccionIntercambiosEmpleado extends AbstractPanelEmpleadoSection {
 	public SeccionIntercambiosEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
 		this.controlador = new ControladorIntercambiosEmpleado(empleado);
+		this.controlador.setVista(this);
+		setControlador(this.controlador);
 		construirUI();
+	}
+
+	public void setControlador(ActionListener controlador) {
+		if (controlador instanceof ControladorIntercambiosEmpleado) {
+			this.controlador = (ControladorIntercambiosEmpleado) controlador;
+		}
+	}
+
+	private void conectar(AbstractButton boton, String accion) {
+		boton.setActionCommand(accion);
+		boton.addActionListener(controlador);
 	}
 
 	private void construirUI() {
@@ -71,9 +87,10 @@ public class SeccionIntercambiosEmpleado extends AbstractPanelEmpleadoSection {
 		comboEstadoOferta = crearCombo(crearOpcionesEstado());
 
 		JButton botonRefrescar = crearBotonSecundario("Refrescar");
-		botonRefrescar.addActionListener(e -> cargarTablaOfertas());
+		conectar(botonRefrescar, ControladorIntercambiosEmpleado.REFRESCAR);
 
-		comboEstadoOferta.addActionListener(e -> cargarTablaOfertas());
+		comboEstadoOferta.setActionCommand(ControladorIntercambiosEmpleado.FILTRAR);
+		comboEstadoOferta.addActionListener(controlador);
 
 		JPanel filaFiltro = new JPanel(new BorderLayout(VentanaPrincipal.escalar(12), 0));
 		filaFiltro.setOpaque(false);
@@ -172,8 +189,8 @@ public class SeccionIntercambiosEmpleado extends AbstractPanelEmpleadoSection {
 
 		panel.add(filaBotones);
 
-		botonVerOferta.addActionListener(e -> verOferta());
-		botonConfirmar.addActionListener(e -> confirmarOferta());
+		conectar(botonVerOferta, ControladorIntercambiosEmpleado.VER_OFERTA);
+		conectar(botonConfirmar, ControladorIntercambiosEmpleado.CONFIRMAR_OFERTA);
 
 		return panel;
 	}
@@ -190,7 +207,7 @@ public class SeccionIntercambiosEmpleado extends AbstractPanelEmpleadoSection {
 		return controlador.crearOpcionesEstado();
 	}
 
-	private void cargarTablaOfertas() {
+	public void cargarTablaOfertas() {
 		modeloOfertas.setRowCount(0);
 
 		String estadoElegido = "Todos";
@@ -206,7 +223,7 @@ public class SeccionIntercambiosEmpleado extends AbstractPanelEmpleadoSection {
 		}
 	}
 
-	private void verOferta() {
+	public void verOferta() {
 		String idOferta = campoIdOferta.getText().trim();
 
 		if (idOferta.isBlank()) {
@@ -224,7 +241,7 @@ public class SeccionIntercambiosEmpleado extends AbstractPanelEmpleadoSection {
 		mostrarOfertaEnVentana(oferta);
 	}
 
-	private void confirmarOferta() {
+	public void confirmarOferta() {
 		ResultadoOperacion resultado = controlador.confirmarOferta(campoIdOferta.getText());
 
 		if (resultado.isExito()) {

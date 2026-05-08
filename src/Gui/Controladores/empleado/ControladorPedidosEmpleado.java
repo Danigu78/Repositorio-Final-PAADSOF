@@ -1,5 +1,8 @@
-package Gui.Controladores;
+package Gui.Controladores.empleado;
 
+import Gui.empleado.SeccionPedidosEmpleado;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -13,12 +16,38 @@ import ventas.LineaPedido;
 import ventas.Pedido;
 
 /** Controlador de gestión de pedidos del empleado. */
-public class ControladorPedidosEmpleado {
+public class ControladorPedidosEmpleado implements ActionListener {
+
+    public static final String REFRESCAR = "pedidos.refrescar";
+    public static final String FILTRAR = "pedidos.filtrar";
+    public static final String VER_PEDIDO = "pedidos.ver";
+    public static final String PREPARAR_PEDIDO = "pedidos.preparar";
 
     private final Empleado empleado;
+    private SeccionPedidosEmpleado vista;
 
     public ControladorPedidosEmpleado(Empleado empleado) {
         this.empleado = empleado;
+    }
+
+    public void setVista(SeccionPedidosEmpleado vista) {
+        this.vista = vista;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (vista == null || e == null) {
+            return;
+        }
+
+        String accion = e.getActionCommand();
+        if (REFRESCAR.equals(accion) || FILTRAR.equals(accion)) {
+            vista.cargarTablaPedidos();
+        } else if (VER_PEDIDO.equals(accion)) {
+            vista.verPedido();
+        } else if (PREPARAR_PEDIDO.equals(accion)) {
+            vista.prepararPedido();
+        }
     }
 
     public List<Pedido> getPedidos(String estadoElegido) {

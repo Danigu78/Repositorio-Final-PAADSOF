@@ -1,4 +1,4 @@
-package Gui.Controladores;
+package Gui.Controladores.empleado;
 
 /**
  * Resultado simple para comunicar a la vista si una operación salió bien y qué

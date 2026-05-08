@@ -79,6 +79,14 @@ public abstract class Producto implements Serializable {
 		return this.nombre;
 	}
 
+	public void setNombre(String nombre) {
+		if (nombre == null || nombre.isBlank()) {
+			throw new ProductoInvalidoException("El nombre del producto no puede estar vacío.");
+		}
+
+		this.nombre = nombre;
+	}
+
 	/**
 	 * Devuelve la descripción del producto.
 	 *

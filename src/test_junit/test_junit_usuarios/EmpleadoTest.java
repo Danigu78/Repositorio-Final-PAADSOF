@@ -246,7 +246,7 @@ public class EmpleadoTest {
 		ArrayList<LineaPack> lineas = new ArrayList<>();
 		lineas.add(new LineaPack(watchmen, 1));
 		lineas.add(new LineaPack(akira, 1));
-		assertTrue(empStock.crearPack("TestPack", "desc", "img.jpg", 20.0, 3, lineas));
+		assertTrue(empStock.crearPack("TestPack", "desc", "img.jpg", 20.0, 3, lineas,new ArrayList<Categoria>()));
 	}
 
 	@Test
@@ -254,7 +254,7 @@ public class EmpleadoTest {
 	void testCrearPackUnProducto() {
 		ArrayList<LineaPack> lineas = new ArrayList<>();
 		lineas.add(new LineaPack(watchmen, 1));
-		assertFalse(empStock.crearPack("TestPack", "desc", "img.jpg", 20.0, 3, lineas));
+		assertFalse(empStock.crearPack("TestPack", "desc", "img.jpg", 20.0, 3, lineas,new ArrayList<Categoria>()));
 	}
 
 	@Test
@@ -263,7 +263,7 @@ public class EmpleadoTest {
 		ArrayList<LineaPack> lineas = new ArrayList<>();
 		lineas.add(new LineaPack(watchmen, 1));
 		lineas.add(new LineaPack(akira, 1));
-		assertFalse(empStock.crearPack(null, "desc", "img.jpg", 20.0, 3, lineas));
+		assertFalse(empStock.crearPack(null, "desc", "img.jpg", 20.0, 3, lineas,new ArrayList<Categoria>()));
 	}
 
 	@Test
@@ -272,7 +272,7 @@ public class EmpleadoTest {
 		ArrayList<LineaPack> lineas = new ArrayList<>();
 		lineas.add(new LineaPack(watchmen, 1));
 		lineas.add(new LineaPack(akira, 1));
-		assertFalse(empSinPermisos.crearPack("TestPack", "desc", "img.jpg", 20.0, 3, lineas));
+		assertFalse(empSinPermisos.crearPack("TestPack", "desc", "img.jpg", 20.0, 3, lineas,new ArrayList<Categoria>()));
 	}
 
 	@Test
@@ -434,7 +434,7 @@ public class EmpleadoTest {
 		ArrayList<LineaPack> lineas = new ArrayList<>();
 		lineas.add(new LineaPack(watchmen, 1));
 		lineas.add(new LineaPack(akira, 1));
-		empStock.crearPack("PackMod", "desc", "img.jpg", 25.0, 5, lineas);
+		empStock.crearPack("PackMod", "desc", "img.jpg", 25.0, 5, lineas,new ArrayList<Categoria>());
 		String idPack = tienda.buscarproductoPorNombre("PackMod").get(0).getId();
 
 		assertTrue(empStock.modificarUnidadesProductoEnPack(watchmen.getId(), idPack, 3));
@@ -446,7 +446,7 @@ public class EmpleadoTest {
 		ArrayList<LineaPack> lineas = new ArrayList<>();
 		lineas.add(new LineaPack(watchmen, 1));
 		lineas.add(new LineaPack(akira, 1));
-		empStock.crearPack("PackDel", "desc", "img.jpg", 25.0, 5, lineas);
+		empStock.crearPack("PackDel", "desc", "img.jpg", 25.0, 5, lineas,new ArrayList<Categoria>() );
 		String idPack = tienda.buscarproductoPorNombre("PackDel").get(0).getId();
 
 		assertTrue(empStock.eliminarProductoDePack(idPack, watchmen.getId()));
@@ -458,7 +458,7 @@ public class EmpleadoTest {
 		ArrayList<LineaPack> lineas = new ArrayList<>();
 		lineas.add(new LineaPack(watchmen, 2));
 		lineas.add(new LineaPack(akira, 1));
-		empStock.crearPack("PackEliminar", "desc", "img.jpg", 30.0, 10, lineas);
+		empStock.crearPack("PackEliminar", "desc", "img.jpg", 30.0, 10, lineas,new ArrayList<Categoria>());
 		String idPack = tienda.buscarproductoPorNombre("PackEliminar").get(0).getId();
 
 		assertTrue(empStock.eliminarPack(idPack));
@@ -470,7 +470,7 @@ public class EmpleadoTest {
 		ArrayList<LineaPack> lineas = new ArrayList<>();
 		lineas.add(new LineaPack(watchmen, 1));
 		lineas.add(new LineaPack(akira, 1));
-		empStock.crearPack("PackPrecio", "desc", "img.jpg", 20.0, 5, lineas);
+		empStock.crearPack("PackPrecio", "desc", "img.jpg", 20.0, 5, lineas,new ArrayList<Categoria>());
 		String idPack = tienda.buscarproductoPorNombre("PackPrecio").get(0).getId();
 
 		assertTrue(empStock.modificarPrecioPack(idPack, 18.0));
@@ -648,7 +648,7 @@ public class EmpleadoTest {
 		lineas.add(new LineaPack(watchmen, 1));
 		lineas.add(new LineaPack(akira, 1));
 
-		empStock.crearPack("PackSoloWatchmen", "desc", "img.jpg", 20.0, 5, lineas);
+		empStock.crearPack("PackSoloWatchmen", "desc", "img.jpg", 20.0, 5, lineas,new ArrayList<Categoria>());
 
 		String idPack = null;
 		for (ProductoVenta p : tienda.getStockVentas()) {
@@ -770,7 +770,7 @@ public class EmpleadoTest {
 		ArrayList<LineaPack> lineas = new ArrayList<>();
 		lineas.add(new LineaPack(watchmen, 1));
 		lineas.add(new LineaPack(akira, 1));
-		empStock.crearPack("PackReal", "desc", "img.jpg", 20.0, 5, lineas);
+		empStock.crearPack("PackReal", "desc", "img.jpg", 20.0, 5, lineas,new ArrayList<Categoria>());
 		String idPack = tienda.buscarproductoPorNombre("PackReal").get(0).getId();
 
 		assertFalse(empStock.añadirProductoaPack("PRODUCTO-FANTASMA", idPack, 1));
@@ -782,7 +782,7 @@ public class EmpleadoTest {
 		ArrayList<LineaPack> lineas = new ArrayList<>();
 		lineas.add(new LineaPack(watchmen, 1));
 		lineas.add(new LineaPack(akira, 1));
-		empStock.crearPack("PackRepetido", "desc", "img.jpg", 20.0, 5, lineas);
+		empStock.crearPack("PackRepetido", "desc", "img.jpg", 20.0, 5, lineas,new ArrayList<Categoria>());
 		String idPack = tienda.buscarproductoPorNombre("PackRepetido").get(0).getId();
 
 		assertFalse(empStock.añadirProductoaPack(watchmen.getId(), idPack, 1));
@@ -794,7 +794,7 @@ public class EmpleadoTest {
 		ArrayList<LineaPack> lineas = new ArrayList<>();
 		lineas.add(new LineaPack(watchmen, 1));
 		lineas.add(new LineaPack(akira, 1));
-		empStock.crearPack("PackInvalido", "desc", "img.jpg", 20.0, 5, lineas);
+		empStock.crearPack("PackInvalido", "desc", "img.jpg", 20.0, 5, lineas,new ArrayList<Categoria>());
 		String idPack = tienda.buscarproductoPorNombre("PackInvalido").get(0).getId();
 		assertFalse(empStock.añadirProductoaPack(idPack, idPack, 1));
 	}
@@ -805,7 +805,7 @@ public class EmpleadoTest {
 		ArrayList<LineaPack> lineas = new ArrayList<>();
 		lineas.add(new LineaPack(watchmen, 1));
 		lineas.add(new LineaPack(akira, 1));
-		empStock.crearPack("PackSinStock", "desc", "img.jpg", 20.0, 5, lineas);
+		empStock.crearPack("PackSinStock", "desc", "img.jpg", 20.0, 5, lineas,new ArrayList<Categoria>());
 		String idPack = tienda.buscarproductoPorNombre("PackSinStock").get(0).getId();
 
 		// Creamos un producto con stock 1
@@ -832,7 +832,7 @@ public class EmpleadoTest {
 		ArrayList<LineaPack> lineas = new ArrayList<>();
 		lineas.add(new LineaPack(watchmen, 1));
 		lineas.add(new LineaPack(akira, 1));
-		empStock.crearPack("PackCaminoFeliz", "desc", "img.jpg", 30.0, 10, lineas);
+		empStock.crearPack("PackCaminoFeliz", "desc", "img.jpg", 30.0, 10, lineas,new ArrayList<Categoria>());
 
 		ProductoVenta pack = tienda.buscarproductoPorNombre("PackCaminoFeliz").get(0);
 
@@ -919,7 +919,7 @@ public class EmpleadoTest {
 		lineas.add(new LineaPack(watchmen, 1));
 		lineas.add(new LineaPack(akira, 1));
 
-		empStock.crearPack("PackParaTest", "desc", "img.jpg", 10.0, 5, lineas);
+		empStock.crearPack("PackParaTest", "desc", "img.jpg", 10.0, 5, lineas,new ArrayList<Categoria>());
 
 		List<ProductoVenta> resultados = Tienda.getInstancia().buscarproductoPorNombre("PackParaTest");
 		assertFalse(resultados.isEmpty(), "El pack 'PackParaTest' no se creó. Asegúrate de que tenga > 1 producto.");
@@ -947,7 +947,7 @@ public class EmpleadoTest {
 		lineas.add(new LineaPack(akira, 1)); // Añadimos un segundo producto
 
 		// 3. Crear el pack
-		boolean creado = empStock.crearPack("PackFinal", "desc", "img.jpg", 15.0, 10, lineas);
+		boolean creado = empStock.crearPack("PackFinal", "desc", "img.jpg", 15.0, 10, lineas,new ArrayList<Categoria>());
 		assertTrue(creado,
 				"El método crearPack devolvió false. Revisa que el pack tenga > 1 producto y stock suficiente.");
 

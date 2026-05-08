@@ -5,6 +5,7 @@ import java.awt.*;
 
 import Gui.Controladores.ControladorVentana;
 import Gui.Gestor.PanelGestor;
+import Gui.empleado.PanelEmpleado;
 import tienda.GuardadoTienda;
 import tienda.Tienda;
 import usuarios.Cliente;

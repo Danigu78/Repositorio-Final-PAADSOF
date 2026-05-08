@@ -1,5 +1,8 @@
-package Gui.Controladores;
+package Gui.Controladores.empleado;
 
+import Gui.empleado.SeccionEntregasEmpleado;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -13,12 +16,37 @@ import ventas.LineaPedido;
 import ventas.Pedido;
 
 /** Controlador de entrega de pedidos. */
-public class ControladorEntregasEmpleado {
+public class ControladorEntregasEmpleado implements ActionListener {
+
+    public static final String REFRESCAR = "entregas.refrescar";
+    public static final String VER_PEDIDO = "entregas.ver";
+    public static final String ENTREGAR_PEDIDO = "entregas.entregar";
 
     private final Empleado empleado;
+    private SeccionEntregasEmpleado vista;
 
     public ControladorEntregasEmpleado(Empleado empleado) {
         this.empleado = empleado;
+    }
+
+    public void setVista(SeccionEntregasEmpleado vista) {
+        this.vista = vista;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (vista == null || e == null) {
+            return;
+        }
+
+        String accion = e.getActionCommand();
+        if (REFRESCAR.equals(accion)) {
+            vista.cargarTablaEntregas();
+        } else if (VER_PEDIDO.equals(accion)) {
+            vista.verPedido();
+        } else if (ENTREGAR_PEDIDO.equals(accion)) {
+            vista.entregarPedido();
+        }
     }
 
     public List<Pedido> getPedidosListosParaRecoger() {

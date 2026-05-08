@@ -1,6 +1,10 @@
-package Gui.Controladores;
+package Gui.Controladores.empleado;
 
+import Gui.empleado.SeccionNotificacionesEmpleado;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import tienda.GuardadoTienda;
@@ -9,12 +13,38 @@ import tienda.Tienda;
 import usuarios.Empleado;
 
 /** Controlador de la bandeja de notificaciones del empleado. */
-public class ControladorNotificacionesEmpleado {
+public class ControladorNotificacionesEmpleado implements ActionListener {
+
+    public static final String REFRESCAR = "notificaciones.refrescar";
+    public static final String FILTRAR = "notificaciones.filtrar";
+    public static final String VER_NOTIFICACION = "notificaciones.ver";
+    public static final String MARCAR_TODAS = "notificaciones.marcarTodas";
 
     private final Empleado empleado;
+    private SeccionNotificacionesEmpleado vista;
 
     public ControladorNotificacionesEmpleado(Empleado empleado) {
         this.empleado = empleado;
+    }
+
+    public void setVista(SeccionNotificacionesEmpleado vista) {
+        this.vista = vista;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (vista == null || e == null) {
+            return;
+        }
+
+        String accion = e.getActionCommand();
+        if (REFRESCAR.equals(accion) || FILTRAR.equals(accion)) {
+            vista.cargarNotificaciones();
+        } else if (VER_NOTIFICACION.equals(accion)) {
+            vista.verNotificacionSeleccionada();
+        } else if (MARCAR_TODAS.equals(accion)) {
+            vista.marcarTodasComoVistas();
+        }
     }
 
     public List<Notificacion> getNotificacionesFiltradas(String filtro) {
@@ -29,6 +59,8 @@ public class ControladorNotificacionesEmpleado {
                 resultado.add(notificacion);
             }
         }
+        resultado.sort(Comparator.comparing(Notificacion::getFechaEnvio,
+                Comparator.nullsFirst(Comparator.naturalOrder())).reversed());
         return resultado;
     }
 
@@ -76,7 +108,15 @@ public class ControladorNotificacionesEmpleado {
         String estado = notificacion.isLeida() ? "Vista" : "Nueva";
         String tipo = obtenerTipo(notificacion);
         String fecha = formatearFecha(notificacion);
-        return estado + "   |   " + tipo + "   |   " + fecha;
+        return estado + "   |   " + tipo + "   |   " + fecha + "   |   " + crearResumenMensaje(notificacion);
+    }
+
+    private String crearResumenMensaje(Notificacion notificacion) {
+        if (notificacion == null || notificacion.getMensaje() == null || notificacion.getMensaje().trim().isBlank()) {
+            return "Sin detalle";
+        }
+        String mensaje = notificacion.getMensaje().trim().replaceAll("\\s+", " ");
+        return mensaje.length() > 75 ? mensaje.substring(0, 72) + "..." : mensaje;
     }
 
     public String crearTextoNotificacion(Notificacion notificacion) {

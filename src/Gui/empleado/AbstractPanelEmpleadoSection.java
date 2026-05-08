@@ -1,5 +1,8 @@
-package Gui;
+package Gui.empleado;
 
+
+import Gui.VentanaPrincipal;
+import Gui.AbstractPanelSection;
 import usuarios.Empleado;
 
 /**

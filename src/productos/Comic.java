@@ -67,4 +67,37 @@ public class Comic extends ProductoVenta {
 		return super.toString() + " | Paginas : " + this.numeroPaginas + " | Editorial: " + this.editorial
 				+ " AñoPublicacion: " + this.añoPublicacion + " |";
 	}
+
+	public int getNumeroPaginas() {
+		return numeroPaginas;
+	}
+
+	public void setNumeroPaginas(int numeroPaginas) {
+		if (numeroPaginas <= 0) {
+			throw new ProductoInvalidoException("El número de páginas debe ser mayor que 0.");
+		}
+		this.numeroPaginas = numeroPaginas;
+	}
+
+	public String getEditorial() {
+		return editorial;
+	}
+
+	public void setEditorial(String editorial) {
+		if (editorial == null || editorial.isBlank()) {
+			throw new ProductoInvalidoException("La editorial no puede estar vacía.");
+		}
+		this.editorial = editorial;
+	}
+
+	public int getAñoPublicacion() {
+		return añoPublicacion;
+	}
+
+	public void setAñoPublicacion(int añoPublicacion) {
+		if (añoPublicacion <= 0) {
+			throw new ProductoInvalidoException("El año de publicación no es válido.");
+		}
+		this.añoPublicacion = añoPublicacion;
+	}
 }
