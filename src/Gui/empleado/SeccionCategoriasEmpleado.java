@@ -17,7 +17,7 @@ import usuarios.Empleado;
  * Desde aquí el empleado puede consultar los productos actuales y cambiar sus
  * categorías escribiendo el ID del producto.
  */
-public class SeccionCategoriasEmpleado extends AbstractPanelEmpleadoVentaSection {
+public class SeccionCategoriasEmpleado extends SeccionProductosVentaEmpleadoBase {
 
 	private static final long serialVersionUID = 1L;
 

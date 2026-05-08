@@ -21,7 +21,7 @@ import usuarios.Empleado;
  * escribe el ID, revisa la información o la imagen si quiere, y después pone el
  * precio y el estado.
  */
-public class SeccionTasacionEmpleado extends AbstractPanelEmpleadoSection {
+public class SeccionTasacionEmpleado extends SeccionEmpleadoBase {
 
 	private static final long serialVersionUID = 1L;
 
