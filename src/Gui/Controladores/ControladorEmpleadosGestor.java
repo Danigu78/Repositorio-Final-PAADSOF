@@ -1,83 +1,86 @@
 package Gui.Controladores;
 
-import java.util.List;
+import Gui.Gestor.SubpanelEmpleadosGestor;
+import tienda.GuardadoTienda;
 import tienda.Tienda;
 import usuarios.Empleado;
 import usuarios.Gestor;
 import usuarios.TipoPermisos;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
 
 /**
  * Controlador de la gestión de empleados para el gestor.
- * Maneja dar de alta, baja y gestión de permisos.
+ * Implementa ActionListener según el patrón MVC de los apuntes.
  *
  * @author Antonino
  * @version 1.0
  */
-public class ControladorEmpleadosGestor {
+public class ControladorEmpleadosGestor implements ActionListener {
 
+    private SubpanelEmpleadosGestor vista;
     private Gestor gestor;
     private Tienda tienda;
 
-    /**
-     * Constructor del controlador de empleados.
-     *
-     * @param gestor El gestor logueado
-     */
-    public ControladorEmpleadosGestor(Gestor gestor) {
+    public ControladorEmpleadosGestor(SubpanelEmpleadosGestor vista, Gestor gestor) {
+        this.vista = vista;
         this.gestor = gestor;
         this.tienda = Tienda.getInstancia();
     }
 
-    /**
-     * Da de alta un nuevo empleado con los permisos indicados.
-     *
-     * @param nickname Nickname del empleado
-     * @param password Contraseña del empleado
-     * @param permisos Lista de permisos a asignar
-     * @return true si se creó correctamente
-     */
-    public boolean darDeAlta(String nickname, String password, List<TipoPermisos> permisos) {
-        return gestor.darDeAltaEmpleados_Permisos(nickname, password, permisos);
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String cmd = e.getActionCommand();
+        if (cmd.equals("darDeAlta")) {
+            vista.procesarAlta();
+        } else if (cmd.startsWith("darDeBaja:")) {
+            String id = cmd.substring(10);
+            vista.confirmarBaja(id);
+        } else if (cmd.startsWith("asignarPermiso:")) {
+            String id = cmd.substring(15);
+            vista.procesarAsignarPermiso(id);
+        } else if (cmd.startsWith("retirarPermiso:")) {
+            String id = cmd.substring(15);
+            vista.procesarRetirarPermiso(id);
+        }
     }
 
-    /**
-     * Da de baja a un empleado por su id.
-     *
-     * @param idEmpleado Id del empleado
-     * @return true si se dio de baja correctamente
-     */
+    public boolean darDeAlta(String nickname, String password,
+                              List<TipoPermisos> permisos) {
+        boolean ok = gestor.darDeAltaEmpleados_Permisos(nickname, password, permisos);
+        if (ok) GuardadoTienda.guardar(tienda);
+        return ok;
+    }
+
     public boolean darDeBaja(String idEmpleado) {
-        return gestor.darDeBajaAEmpleado(idEmpleado);
+        boolean ok = gestor.darDeBajaAEmpleado(idEmpleado);
+        if (ok) GuardadoTienda.guardar(tienda);
+        return ok;
     }
 
-    /**
-     * Asigna un permiso a un empleado.
-     *
-     * @param idEmpleado Id del empleado
-     * @param permiso    Permiso a asignar
-     * @return true si se asignó correctamente
-     */
     public boolean asignarPermiso(String idEmpleado, TipoPermisos permiso) {
-        return gestor.asignarPermiso(idEmpleado, permiso);
+        boolean ok = gestor.asignarPermiso(idEmpleado, permiso);
+        if (ok) GuardadoTienda.guardar(tienda);
+        return ok;
     }
 
-    /**
-     * Retira un permiso a un empleado.
-     *
-     * @param idEmpleado Id del empleado
-     * @param permiso    Permiso a retirar
-     * @return true si se retiró correctamente
-     */
     public boolean retirarPermiso(String idEmpleado, TipoPermisos permiso) {
-        return gestor.retirarPermiso(idEmpleado, permiso);
+        boolean ok = gestor.retirarPermiso(idEmpleado, permiso);
+        if (ok) GuardadoTienda.guardar(tienda);
+        return ok;
     }
 
-    /**
-     * Devuelve la lista de empleados de la tienda.
-     *
-     * @return Lista de empleados
-     */
     public List<Empleado> getEmpleados() {
         return tienda.obtenerEmpleadosTienda();
+    }
+    /**
+     * Devuelve el nickname de un empleado por su id.
+     */
+    public String getNicknameEmpleado(String id) {
+        return getEmpleados().stream()
+            .filter(e -> e.getId().equals(id))
+            .map(e -> e.getNickname())
+            .findFirst().orElse(id);
     }
 }

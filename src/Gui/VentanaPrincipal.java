@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 
 import Gui.Controladores.ControladorVentana;
+import Gui.Gestor.PanelGestor;
 import tienda.GuardadoTienda;
 import tienda.Tienda;
 import usuarios.Cliente;
