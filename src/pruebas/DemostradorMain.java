@@ -215,7 +215,8 @@ public class DemostradorMain {
 
 		ArrayList<LineaPack> lineasGamer = construirLineasPack(new LineaPack(catan, 1), new LineaPack(figGoku, 1),
 				new LineaPack(akira, 1));
-		empStock.crearPack("Pack Gamer", "Pack con juego y figura", "pack.jpg", 70.00, 3, lineasGamer);
+		empStock.crearPack("Pack Gamer", "Pack con juego y figura", "pack.jpg", 70.00, 3, lineasGamer,
+				new ArrayList<Categoria>());
 		Pack packGamer = tienda.buscarPackPorNombre("Pack Gamer");
 		packGamer.resumenPrecios();
 		imprimirStockPack(packGamer);
@@ -266,7 +267,8 @@ public class DemostradorMain {
 		ArrayList<LineaPack> lineasPack2 = construirLineasPack(
 				new LineaPack(tienda.buscarproductoPorNombre("Berserk Vol.1").get(0), 1),
 				new LineaPack(tienda.buscarproductoPorNombre("Vagabond Vol.1").get(0), 1));
-		empStock.crearPack("Pack Manga", "Pack con dos mangas de calidad", "pack_manga.jpg", 25.00, 5, lineasPack2);
+		empStock.crearPack("Pack Manga", "Pack con dos mangas de calidad", "pack_manga.jpg", 25.00, 5, lineasPack2,
+				new ArrayList<Categoria>());
 		Pack packManga = tienda.buscarPackPorNombre("Pack Manga");
 		packManga.resumenPrecios();
 		tienda.imprimirCatalogo();
@@ -1357,7 +1359,7 @@ public class DemostradorMain {
 		empStock.reponerStockProducto(watchmen.getId(), 5);
 		empStock.añadirProductoACategoria(watchmen.getId(), "Anime");
 		empStock.crearPack("Pack Ilegal", "No deberia crearse", "img.jpg", 10.0, 1,
-				construirLineasPack(new LineaPack(watchmen, 1), new LineaPack(akira, 1)));
+				construirLineasPack(new LineaPack(watchmen, 1), new LineaPack(akira, 1)), new ArrayList<Categoria>());
 
 		// Logout de empleados activos
 		System.out.println("\n  Logout de empleados activos:");
