@@ -1,7 +1,6 @@
 package Gui.Controladores;
 
 import Gui.VentanaPrincipal;
-import intercambios.Oferta;
 import Gui.PanelCliente;
 import Gui.PanelEmpleado;
 import Gui.PanelGestor;
@@ -12,17 +11,7 @@ import usuarios.Cliente;
 import usuarios.Empleado;
 import usuarios.Gestor;
 import usuarios.TipoPermisos;
-import ventas.EstadoPedido;
-import ventas.Pedido;
-import productos.Comic;
-import productos.EstadoProducto;
-import productos.Figura;
-import productos.JuegoMesa;
 import java.util.List;
-import java.util.ArrayList;
-import productos.LineaPack;
-import productos.Producto2Mano;
-import productos.ProductoVenta;
 
 /**
  * Controlador de la ventana principal de CheckPoint. Gestiona la navegación
@@ -80,16 +69,7 @@ public class ControladorVentana {
 		// GuardadoTienda.cargar() devuelve una tienda nueva si no existe el fichero
 		// Una tienda nueva no tiene stock, así que eso nos sirve para distinguir
 		if (!tiendaCargada.getStockVentas().isEmpty()) {
-			tiendaCargada.getCatalogoIntercambio().clear();
-		    tiendaCargada.getHistorialProductos2Mano().clear();
-		    // Limpiar también las carteras de los clientes
-		    for (usuarios.Cliente c : tiendaCargada.obtenerClientesTienda()) {
-		        c.getCarteraIntercambio().clear();
-		    }
-		    GuardadoTienda.guardar(tiendaCargada);
-		    System.out.println("Segunda mano limpiada.");
-		    return;
-			
+			return;
 		}
 
 		// Primera vez — no hay .dat, inicializamos desde cero

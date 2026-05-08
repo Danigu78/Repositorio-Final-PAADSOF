@@ -8,7 +8,6 @@ import javax.swing.table.JTableHeader;
 import Gui.Controladores.ControladorEntregasEmpleado;
 import Gui.Controladores.ResultadoOperacion;
 import usuarios.Empleado;
-import ventas.EstadoPedido;
 import ventas.Pedido;
 
 /**

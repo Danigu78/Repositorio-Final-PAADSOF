@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import productos.EstadoProducto;
 import productos.Producto2Mano;
+import tienda.GuardadoTienda;
 import tienda.Tienda;
 import usuarios.Empleado;
 
@@ -55,8 +56,10 @@ public class ControladorTasacionEmpleado {
         }
 
         empleado.tasarProducto(idProducto.trim(), precio, estado);
+        boolean ok = buscarProductoPendientePorId(idProducto) == null;
+        guardarSiExito(ok);
 
-        if (buscarProductoPendientePorId(idProducto) == null) {
+        if (ok) {
             if (estado == EstadoProducto.NO_ACEPTADO) {
                 return ResultadoOperacion.ok("Producto rechazado correctamente.");
             }
@@ -64,6 +67,12 @@ public class ControladorTasacionEmpleado {
         }
 
         return ResultadoOperacion.error("No se pudo tasar el producto.");
+    }
+
+    private void guardarSiExito(boolean ok) {
+        if (ok) {
+            GuardadoTienda.guardar(Tienda.getInstancia());
+        }
     }
 
     public String crearTextoProducto(Producto2Mano producto) {

@@ -2,6 +2,8 @@ package Gui.Controladores;
 
 import java.util.List;
 
+import tienda.GuardadoTienda;
+import tienda.Tienda;
 import usuarios.Empleado;
 
 /** Controlador de la sección de categorías. */
@@ -24,6 +26,7 @@ public class ControladorCategoriasEmpleado {
             return validacion;
         }
         boolean ok = empleado.añadirProductoACategoria(idProducto.trim(), categoria.trim());
+        guardarSiExito(ok);
         return ok ? ResultadoOperacion.ok("Categoría añadida correctamente")
                 : ResultadoOperacion.error("No se pudo añadir la categoría");
     }
@@ -34,8 +37,15 @@ public class ControladorCategoriasEmpleado {
             return validacion;
         }
         boolean ok = empleado.eliminarProductoDeCategoria(idProducto.trim(), categoria.trim());
+        guardarSiExito(ok);
         return ok ? ResultadoOperacion.ok("Categoría quitada correctamente")
                 : ResultadoOperacion.error("No se pudo quitar la categoría");
+    }
+
+    private void guardarSiExito(boolean ok) {
+        if (ok) {
+            GuardadoTienda.guardar(Tienda.getInstancia());
+        }
     }
 
     private ResultadoOperacion validar(String idProducto, String categoria) {

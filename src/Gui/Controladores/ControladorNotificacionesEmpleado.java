@@ -3,7 +3,9 @@ package Gui.Controladores;
 import java.util.ArrayList;
 import java.util.List;
 
+import tienda.GuardadoTienda;
 import tienda.Notificacion;
+import tienda.Tienda;
 import usuarios.Empleado;
 
 /** Controlador de la bandeja de notificaciones del empleado. */
@@ -52,6 +54,7 @@ public class ControladorNotificacionesEmpleado {
     public void marcarComoVista(Notificacion notificacion) {
         if (notificacion != null) {
             notificacion.marcarComoLeida();
+            GuardadoTienda.guardar(Tienda.getInstancia());
         }
     }
 
@@ -65,6 +68,7 @@ public class ControladorNotificacionesEmpleado {
                 notificacion.marcarComoLeida();
             }
         }
+        GuardadoTienda.guardar(Tienda.getInstancia());
         return ResultadoOperacion.ok("Todas las notificaciones se han marcado como vistas.");
     }
 

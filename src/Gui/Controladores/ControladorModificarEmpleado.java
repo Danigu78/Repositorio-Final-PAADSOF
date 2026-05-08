@@ -1,6 +1,8 @@
 package Gui.Controladores;
 
 import productos.ProductoVenta;
+import tienda.GuardadoTienda;
+import tienda.Tienda;
 import usuarios.Empleado;
 
 /** Controlador de la sección de modificación de productos. */
@@ -29,6 +31,7 @@ public class ControladorModificarEmpleado {
         }
 
         boolean ok = empleado.modificarDescripcionProducto(idProducto.trim(), descripcion.trim());
+        guardarSiExito(ok);
         return ok ? ResultadoOperacion.ok("Descripción guardada correctamente.")
                 : ResultadoOperacion.error("No se pudo guardar la descripción.");
     }
@@ -45,7 +48,14 @@ public class ControladorModificarEmpleado {
         }
 
         boolean ok = empleado.modificarImagenProducto(idProducto.trim(), imagen.trim());
+        guardarSiExito(ok);
         return ok ? ResultadoOperacion.ok("Imagen guardada correctamente.")
                 : ResultadoOperacion.error("No se pudo guardar la imagen.");
+    }
+
+    private void guardarSiExito(boolean ok) {
+        if (ok) {
+            GuardadoTienda.guardar(Tienda.getInstancia());
+        }
     }
 }

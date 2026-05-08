@@ -7,6 +7,7 @@ import java.util.Locale;
 import intercambios.EstadoOferta;
 import intercambios.Oferta;
 import productos.Producto2Mano;
+import tienda.GuardadoTienda;
 import tienda.Tienda;
 import usuarios.Cliente;
 import usuarios.Empleado;
@@ -86,8 +87,15 @@ public class ControladorIntercambiosEmpleado {
         }
 
         boolean ok = empleado.confirmarIntercambio(oferta);
+        guardarSiExito(ok);
         return ok ? ResultadoOperacion.ok("Intercambio confirmado correctamente.")
                 : ResultadoOperacion.error("No se pudo confirmar el intercambio.");
+    }
+
+    private void guardarSiExito(boolean ok) {
+        if (ok) {
+            GuardadoTienda.guardar(Tienda.getInstancia());
+        }
     }
 
     public String[] crearOpcionesEstado() {

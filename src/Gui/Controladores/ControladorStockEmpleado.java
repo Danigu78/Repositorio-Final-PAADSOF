@@ -1,5 +1,7 @@
 package Gui.Controladores;
 
+import tienda.GuardadoTienda;
+import tienda.Tienda;
 import usuarios.Empleado;
 
 /** Controlador de la sección de stock del empleado. */
@@ -25,6 +27,7 @@ public class ControladorStockEmpleado {
 		}
 
 		boolean ok = empleado.reponerStockProducto(idProducto.trim(), unidades);
+		guardarSiExito(ok);
 		return ok ? ResultadoOperacion.ok("Stock repuesto correctamente")
 				: ResultadoOperacion.error("No se pudo reponer el stock");
 	}
@@ -45,6 +48,7 @@ public class ControladorStockEmpleado {
 		}
 
 		boolean ok = empleado.retirarStockProducto(idProducto.trim(), unidades);
+		guardarSiExito(ok);
 
 		return ok ? ResultadoOperacion.ok("Stock retirado correctamente")
 				: ResultadoOperacion.error("No se pudo retirar el stock. Comprueba que hay unidades suficientes.");
@@ -59,8 +63,15 @@ public class ControladorStockEmpleado {
 		}
 
 		boolean ok = empleado.cargarProductosFicheroTexto(rutaFichero.trim());
+		guardarSiExito(ok);
 		return ok ? ResultadoOperacion.ok("Fichero cargado correcto")
 				: ResultadoOperacion.error("Error al cargar del fichero");
+	}
+
+	private void guardarSiExito(boolean ok) {
+		if (ok) {
+			GuardadoTienda.guardar(Tienda.getInstancia());
+		}
 	}
 
 	private Integer leerEntero(String texto) {

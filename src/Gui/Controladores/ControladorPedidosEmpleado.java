@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Locale;
 
 import productos.ProductoVenta;
+import tienda.GuardadoTienda;
 import tienda.Tienda;
 import usuarios.Empleado;
 import ventas.EstadoPedido;
@@ -61,8 +62,15 @@ public class ControladorPedidosEmpleado {
         }
 
         boolean ok = empleado.prepararPedido(idPedido.trim());
+        guardarSiExito(ok);
         return ok ? ResultadoOperacion.ok("Pedido preparado correctamente.")
                 : ResultadoOperacion.error("No se pudo preparar el pedido. Comprueba que esté pagado.");
+    }
+
+    private void guardarSiExito(boolean ok) {
+        if (ok) {
+            GuardadoTienda.guardar(Tienda.getInstancia());
+        }
     }
 
     public String[] crearOpcionesEstado() {

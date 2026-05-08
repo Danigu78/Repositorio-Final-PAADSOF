@@ -6,6 +6,7 @@ import productos.Categoria;
 import productos.LineaPack;
 import productos.Pack;
 import productos.ProductoVenta;
+import tienda.GuardadoTienda;
 import tienda.Tienda;
 import usuarios.Empleado;
 
@@ -85,6 +86,7 @@ public class ControladorPacksEmpleado {
 
 			boolean ok = empleado.crearPack(nombre.trim(), descripcion.trim(), imagen.trim(), precio, stock, lineas,
 					categorias);
+			guardarSiExito(ok);
 
 			if (ok) {
 				return ResultadoOperacion.ok("Pack creado correctamente.");
@@ -108,6 +110,7 @@ public class ControladorPacksEmpleado {
 
 		try {
 			boolean ok = empleado.añadirProductoaPack(idProducto.trim(), idPack.trim(), unidades);
+			guardarSiExito(ok);
 
 			if (ok) {
 				return ResultadoOperacion.ok("Producto añadido al pack.");
@@ -131,6 +134,7 @@ public class ControladorPacksEmpleado {
 
 		try {
 			boolean ok = empleado.modificarUnidadesProductoEnPack(idProducto.trim(), idPack.trim(), unidades);
+			guardarSiExito(ok);
 
 			if (ok) {
 				return ResultadoOperacion.ok("Unidades modificadas correctamente.");
@@ -158,6 +162,7 @@ public class ControladorPacksEmpleado {
 
 		try {
 			boolean ok = empleado.eliminarProductoDePack(idPack.trim(), idProducto.trim());
+			guardarSiExito(ok);
 
 			if (ok) {
 				return ResultadoOperacion.ok("Producto quitado del pack.");
@@ -187,6 +192,7 @@ public class ControladorPacksEmpleado {
 
 		try {
 			boolean ok = empleado.modificarPrecioPack(idPack.trim(), precio);
+			guardarSiExito(ok);
 
 			if (ok) {
 				return ResultadoOperacion.ok("Precio modificado correctamente.");
@@ -210,6 +216,7 @@ public class ControladorPacksEmpleado {
 
 		try {
 			boolean ok = empleado.eliminarPack(idPack.trim());
+			guardarSiExito(ok);
 
 			if (ok) {
 				return ResultadoOperacion.ok("Pack eliminado correctamente.");
@@ -219,6 +226,12 @@ public class ControladorPacksEmpleado {
 
 		} catch (Exception e) {
 			return ResultadoOperacion.error("No se pudo eliminar el pack: " + e.getMessage());
+		}
+	}
+
+	private void guardarSiExito(boolean ok) {
+		if (ok) {
+			GuardadoTienda.guardar(Tienda.getInstancia());
 		}
 	}
 

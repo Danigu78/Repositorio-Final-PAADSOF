@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Locale;
 
 import productos.ProductoVenta;
+import tienda.GuardadoTienda;
 import tienda.Tienda;
 import usuarios.Empleado;
 import ventas.EstadoPedido;
@@ -62,8 +63,15 @@ public class ControladorEntregasEmpleado {
         }
 
         boolean ok = empleado.entregarPedido(codigo.trim());
+        guardarSiExito(ok);
         return ok ? ResultadoOperacion.ok("Pedido entregado correctamente.")
                 : ResultadoOperacion.error("No se pudo entregar el pedido.");
+    }
+
+    private void guardarSiExito(boolean ok) {
+        if (ok) {
+            GuardadoTienda.guardar(Tienda.getInstancia());
+        }
     }
 
     public String crearTextoPedido(Pedido pedido) {
