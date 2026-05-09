@@ -1,4 +1,4 @@
-package Gui.gestor;
+package Gui.Gestor;
 
 import Gui.AbstractPanelSection;
 import Gui.VentanaPrincipal;

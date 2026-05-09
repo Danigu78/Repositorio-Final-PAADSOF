@@ -1,7 +1,8 @@
-package Gui.gestor;
+package Gui.Gestor;
 
-import Gui.controladores.gestor.ControladorConfiguracionGestor;
 import Gui.VentanaPrincipal;
+import Gui.Controladores.Gestor.ControladorConfiguracionGestor;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;

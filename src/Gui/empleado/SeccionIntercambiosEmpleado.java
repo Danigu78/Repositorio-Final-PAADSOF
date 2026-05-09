@@ -2,14 +2,15 @@ package Gui.empleado;
 
 
 import Gui.VentanaPrincipal;
+import Gui.Controladores.empleado.ControladorIntercambiosEmpleado;
+import Gui.Controladores.empleado.ResultadoOperacion;
+
 import java.awt.*;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.table.*;
 
 import intercambios.Oferta;
-import Gui.controladores.empleado.ControladorIntercambiosEmpleado;
-import Gui.controladores.empleado.ResultadoOperacion;
 import usuarios.Empleado;
 
 /**

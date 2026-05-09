@@ -2,13 +2,14 @@ package Gui.empleado;
 
 
 import Gui.VentanaPrincipal;
+import Gui.Controladores.empleado.ControladorModificarEmpleado;
+import Gui.Controladores.empleado.ResultadoOperacion;
+
 import java.awt.*;
 import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
-import Gui.controladores.empleado.ControladorModificarEmpleado;
-import Gui.controladores.empleado.ResultadoOperacion;
 import productos.Comic;
 import productos.Figura;
 import productos.JuegoMesa;
