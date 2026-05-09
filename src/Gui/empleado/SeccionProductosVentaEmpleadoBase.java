@@ -184,8 +184,8 @@ public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoB
 		campoBuscar.setMaximumSize(new Dimension(VentanaPrincipal.escalar(650), VentanaPrincipal.escalar(34)));
 
 		JComboBox<String> comboOrden = crearCombo(new String[] { "Sin ordenar", "Nombre A-Z", "Nombre Z-A",
-				"Precio: menor a mayor", "Precio: mayor a menor", "Stock: menor a mayor", "Puntuación: menor a mayor",
-				"Puntuación: mayor a menor" });
+				"Precio: menor a mayor", "Precio: mayor a menor", "Stock: menor a mayor", "Stock: mayor a menor",
+				"Puntuación: menor a mayor", "Puntuación: mayor a menor" });
 		comboOrden.setPreferredSize(new Dimension(VentanaPrincipal.escalar(230), VentanaPrincipal.escalar(34)));
 		comboOrden.setMaximumSize(new Dimension(VentanaPrincipal.escalar(230), VentanaPrincipal.escalar(34)));
 
@@ -406,6 +406,9 @@ public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoB
 
 				case "Stock: menor a mayor":
 					return Integer.compare(p1.getStockDisponible(), p2.getStockDisponible());
+
+				case "Stock: mayor a menor":
+					return Integer.compare(p2.getStockDisponible(), p1.getStockDisponible());
 
 				case "Puntuación: menor a mayor":
 					return Double.compare(p1.getMediaPuntuacion(), p2.getMediaPuntuacion());
