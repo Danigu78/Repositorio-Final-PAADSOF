@@ -3,8 +3,7 @@ package Gui.cliente;
 import Gui.AbstractPanelSection;
 
 import Gui.VentanaPrincipal;
-
-import Gui.controladores.cliente.ControladorNotificaciones;
+import Gui.Controladores.cliente.ControladorNotificaciones;
 import tienda.Notificacion;
 import usuarios.Cliente;
 import javax.swing.*;

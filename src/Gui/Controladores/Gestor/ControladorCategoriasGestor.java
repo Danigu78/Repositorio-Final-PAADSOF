@@ -1,6 +1,6 @@
-package Gui.controladores.gestor;
+package Gui.Controladores.Gestor;
 
-import Gui.gestor.SubpanelCategoriasGestor;
+
 import productos.Categoria;
 import productos.ProductoVenta;
 import tienda.GuardadoTienda;
@@ -9,6 +9,8 @@ import usuarios.Gestor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
+
+import Gui.Gestor.*;
 
 /**
  * Controlador de la gestión de categorías para el gestor.

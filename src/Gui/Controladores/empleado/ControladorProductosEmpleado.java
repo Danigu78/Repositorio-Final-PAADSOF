@@ -1,4 +1,4 @@
-package Gui.controladores.empleado;
+package Gui.Controladores.empleado;
 
 import java.util.ArrayList;
 import java.util.Comparator;

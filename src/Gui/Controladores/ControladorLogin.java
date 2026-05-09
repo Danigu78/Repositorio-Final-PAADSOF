@@ -1,4 +1,4 @@
-package Gui.controladores;
+package Gui.Controladores;
 
 import Gui.PantallaLogin;
 import Gui.VentanaPrincipal;

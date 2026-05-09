@@ -1,4 +1,4 @@
-package Gui.controladores.cliente;
+package Gui.Controladores.cliente;
 
 import Gui.cliente.SubpanelIntercambios;
 import intercambios.EstadoOferta;

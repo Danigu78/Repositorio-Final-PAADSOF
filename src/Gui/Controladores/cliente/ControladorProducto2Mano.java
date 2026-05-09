@@ -1,4 +1,4 @@
-package Gui.controladores.cliente;
+package Gui.Controladores.cliente;
 
 import Gui.cliente.SubpanelProducto2Mano;
 import productos.Producto2Mano;

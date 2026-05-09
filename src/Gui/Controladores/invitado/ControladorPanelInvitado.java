@@ -1,4 +1,4 @@
-package Gui.controladores.invitado;
+package Gui.Controladores.invitado;
 
 import javax.swing.JButton;
 

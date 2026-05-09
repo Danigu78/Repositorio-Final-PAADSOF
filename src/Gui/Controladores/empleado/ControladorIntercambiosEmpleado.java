@@ -1,4 +1,4 @@
-package Gui.controladores.empleado;
+package Gui.Controladores.empleado;
 
 import Gui.empleado.SeccionIntercambiosEmpleado;
 import java.awt.event.ActionEvent;

@@ -1,7 +1,7 @@
-package Gui.controladores.gestor;
+package Gui.Controladores.Gestor;
 
-import Gui.gestor.SubpanelConfiguracionGestor;
-import Gui.gestor.SubpanelPerfilGestor;
+import Gui.Gestor.*;
+
 import tienda.GuardadoTienda;
 import tienda.Tienda;
 import usuarios.Gestor;

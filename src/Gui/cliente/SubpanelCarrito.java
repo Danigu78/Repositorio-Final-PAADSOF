@@ -3,9 +3,9 @@ package Gui.cliente;
 import Gui.AbstractPanelSection;
 
 import Gui.VentanaPrincipal;
+import Gui.Controladores.cliente.ControladorCarrito;
+import Gui.Controladores.cliente.ControladorCatalogo;
 
-import Gui.controladores.cliente.ControladorCarrito;
-import Gui.controladores.cliente.ControladorCatalogo;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;

@@ -1,8 +1,8 @@
 package Gui.cliente;
 
 import Gui.VentanaPrincipal;
+import Gui.Controladores.cliente.ControladorPago;
 
-import Gui.controladores.cliente.ControladorPago;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;

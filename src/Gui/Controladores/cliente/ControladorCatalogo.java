@@ -1,4 +1,4 @@
-package Gui.controladores.cliente;
+package Gui.Controladores.cliente;
 
 import java.util.List;
 import java.util.ArrayList;

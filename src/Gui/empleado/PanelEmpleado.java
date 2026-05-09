@@ -2,6 +2,8 @@ package Gui.empleado;
 
 
 import Gui.VentanaPrincipal;
+import Gui.Controladores.empleado.ControladorPanelEmpleado;
+
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -18,7 +20,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.plaf.basic.BasicButtonUI;
 
-import Gui.controladores.empleado.ControladorPanelEmpleado;
+
 import usuarios.Empleado;
 import usuarios.TipoPermisos;
 

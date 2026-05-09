@@ -2,7 +2,9 @@ package Gui.cliente;
 
 import Gui.VentanaPrincipal;
 
-import Gui.controladores.cliente.ControladorSegundaMano;
+import Gui.Controladores.*;
+import Gui.Controladores.cliente.ControladorSegundaMano;
+
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;

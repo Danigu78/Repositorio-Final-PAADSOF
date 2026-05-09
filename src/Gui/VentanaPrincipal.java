@@ -3,9 +3,9 @@ package Gui;
 import javax.swing.*;
 import java.awt.*;
 
-import Gui.controladores.ControladorVentana;
+import Gui.Controladores.ControladorVentana;
 import Gui.cliente.PanelCliente;
-import Gui.gestor.PanelGestor;
+import Gui.Gestor.*;
 import Gui.empleado.PanelEmpleado;
 import Gui.invitado.PanelInvitado;
 import tienda.GuardadoTienda;

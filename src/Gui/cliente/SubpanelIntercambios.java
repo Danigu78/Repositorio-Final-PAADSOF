@@ -3,8 +3,7 @@ package Gui.cliente;
 import Gui.AbstractPanelSection;
 
 import Gui.VentanaPrincipal;
-
-import Gui.controladores.cliente.ControladorIntercambios;
+import Gui.Controladores.cliente.ControladorIntercambios;
 import intercambios.EstadoOferta;
 import intercambios.Oferta;
 import javax.swing.*;

@@ -1,8 +1,7 @@
 package Gui.cliente;
 
 import Gui.VentanaPrincipal;
-
-import Gui.controladores.cliente.ControladorCrearOferta;
+import Gui.Controladores.cliente.ControladorCrearOferta;
 import productos.Producto2Mano;
 import usuarios.Cliente;
 import javax.swing.*;
