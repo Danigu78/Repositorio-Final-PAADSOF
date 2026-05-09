@@ -1,40 +1,54 @@
 package Gui.cliente;
 
-import Gui.VentanaPrincipal;
-import Gui.Controladores.cliente.ControladorCrearOferta;
 import productos.Producto2Mano;
 import usuarios.Cliente;
 import javax.swing.*;
-import javax.swing.border.*;
+
+import Gui.VentanaPrincipal;
+import Gui.Controladores.cliente.ControladorCrearOferta;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Subpanel para crear una oferta de intercambio. Muestra dos columnas: tus
- * productos disponibles y los del propietario. El usuario selecciona con
- * checkboxes qué productos incluir. Sigue el patrón MVC de los apuntes.
+ * Subpanel para crear una oferta de intercambio. Muestra dos columnas: los
+ * productos del cliente y los del propietario. El usuario selecciona con
+ * checkboxes qué productos incluir en la oferta. Extiende AbstractPanelCliente
+ * para reutilizar helpers visuales del cliente. Sigue el patrón MVC de los
+ * apuntes.
  *
  * @author Daniel
  * @version 1.0
  */
-public class SubpanelCrearOferta extends JPanel {
+public class SubpanelCrearOferta extends AbstractPanelCliente {
 
-	private VentanaPrincipal ventana;
+	/** Subpanel de detalle del producto para volver. */
 	private SubpanelProducto2Mano subpanelOrigen;
-	private ControladorCrearOferta controlador;
-	private Producto2Mano productoObjetivo;
-	private Cliente cliente;
 
-	// Botones — atributos para registrar el controlador
+	/** Controlador del subpanel. */
+	private ControladorCrearOferta controlador;
+
+	/** Producto del propietario al que se hace la oferta. */
+	private Producto2Mano productoObjetivo;
+
+	/** Botón volver — atributo para registrar el controlador. */
 	private JButton botonVolver;
+
+	/** Botón enviar oferta — atributo para registrar el controlador. */
 	private JButton botonEnviar;
 
-	// Checkboxes y productos — paralelos para leer selección
+	/** Checkboxes de mis productos — paralelo a misProductos. */
 	private List<JCheckBox> checkboxesMios;
+
+	/** Checkboxes de los productos del propietario — paralelo a susProductos. */
 	private List<JCheckBox> checkboxesSuyos;
+
+	/** Lista de mis productos disponibles para ofertar. */
 	private List<Producto2Mano> misProductos;
+
+	/** Lista de productos del propietario disponibles. */
 	private List<Producto2Mano> susProductos;
 
 	/**
@@ -47,23 +61,31 @@ public class SubpanelCrearOferta extends JPanel {
 	 */
 	public SubpanelCrearOferta(VentanaPrincipal ventana, SubpanelProducto2Mano subpanelOrigen,
 			Producto2Mano productoObjetivo, Cliente cliente) {
-		this.ventana = ventana;
+		super(ventana);
 		this.subpanelOrigen = subpanelOrigen;
 		this.productoObjetivo = productoObjetivo;
 		this.cliente = cliente;
 		this.controlador = new ControladorCrearOferta(this, cliente, productoObjetivo);
-
-		setLayout(new BorderLayout());
-		setBackground(VentanaPrincipal.COLOR_FONDO);
 
 		construirUI();
 		setControlador(controlador);
 	}
 
 	/**
+	 * No se usa en este subpanel — la construcción se hace en el constructor. Se
+	 * implementa por obligación de AbstractPanelCliente.
+	 *
+	 * @param cliente El cliente logueado
+	 */
+	@Override
+	public void actualizar(Cliente cliente) {
+		this.cliente = cliente;
+	}
+
+	/**
 	 * Registra el controlador en los botones — patrón de los apuntes.
 	 *
-	 * @param c El controlador a registrar
+	 * @param c El ActionListener a registrar
 	 */
 	public void setControlador(ActionListener c) {
 		if (botonVolver != null) {
@@ -91,43 +113,23 @@ public class SubpanelCrearOferta extends JPanel {
 	}
 
 	/**
-	 * Crea la barra superior con botón volver.
+	 * Crea la barra superior con botón volver. Usa crearBarraVolver() y
+	 * getBotonVolver() de AbstractPanelSection.
+	 *
+	 * @return Panel de la barra superior
 	 */
 	private JPanel crearBarra() {
-		JPanel barra = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		barra.setBackground(VentanaPrincipal.COLOR_PANEL);
-		barra.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, VentanaPrincipal.COLOR_BORDE));
-
-		botonVolver = new JButton(" Volver al producto");
+		// crearBarraVolver() de AbstractPanelSection
+		JPanel barra = crearBarraVolver("← Volver al producto");
+		botonVolver = getBotonVolver(barra);
 		botonVolver.setActionCommand("volver");
-		botonVolver.setFont(VentanaPrincipal.FUENTE_NORMAL);
-		botonVolver.setForeground(VentanaPrincipal.COLOR_TEXTO);
-		botonVolver.setBackground(VentanaPrincipal.COLOR_PANEL);
-		botonVolver.setOpaque(true);
-		botonVolver.setBorderPainted(true);
-		botonVolver.setFocusPainted(false);
-		botonVolver.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		botonVolver.setBorder(
-				BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_ACENTO),
-						BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(15),
-								VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(15))));
-		botonVolver.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				botonVolver.setForeground(VentanaPrincipal.COLOR_ACENTO);
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				botonVolver.setForeground(VentanaPrincipal.COLOR_TEXTO);
-			}
-		});
-		barra.add(botonVolver);
 		return barra;
 	}
 
 	/**
 	 * Crea el panel central con las dos columnas de productos.
+	 *
+	 * @return Panel con las dos columnas
 	 */
 	private JPanel crearPanelOferta() {
 		JPanel panel = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(20), 0));
@@ -135,13 +137,11 @@ public class SubpanelCrearOferta extends JPanel {
 		panel.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(20),
 				VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(20)));
 
-		// Columna izquierda — mis productos disponibles
 		misProductos = controlador.getMisProductosDisponibles();
 		checkboxesMios = new ArrayList<>();
 		panel.add(crearColumnaProductos("Mis productos para ofrecer", misProductos, checkboxesMios,
 				"No tienes productos tasados y visibles para ofertar."));
 
-		// Columna derecha — productos del propietario
 		susProductos = controlador.getProductosPropietario();
 		checkboxesSuyos = new ArrayList<>();
 		panel.add(crearColumnaProductos("Productos de " + productoObjetivo.getPropietario().getNickname(), susProductos,
@@ -156,11 +156,11 @@ public class SubpanelCrearOferta extends JPanel {
 	 * @param titulo       Título de la columna
 	 * @param productos    Lista de productos a mostrar
 	 * @param checkboxes   Lista donde guardar los checkboxes creados
-	 * @param mensajeVacío Mensaje si no hay productos
+	 * @param mensajeVacio Mensaje si no hay productos
 	 * @return Panel de la columna
 	 */
 	private JPanel crearColumnaProductos(String titulo, List<Producto2Mano> productos, List<JCheckBox> checkboxes,
-			String mensajeVacío) {
+			String mensajeVacio) {
 		JPanel columna = new JPanel(new BorderLayout());
 		columna.setBackground(VentanaPrincipal.COLOR_PANEL);
 		columna.setBorder(
@@ -168,32 +168,29 @@ public class SubpanelCrearOferta extends JPanel {
 						BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15),
 								VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15))));
 
-		// Título de la columna
 		JLabel labelTitulo = new JLabel(titulo);
 		labelTitulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
 		labelTitulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
 		labelTitulo.setBorder(BorderFactory.createEmptyBorder(0, 0, VentanaPrincipal.escalar(10), 0));
 		columna.add(labelTitulo, BorderLayout.NORTH);
 
-		// Lista de productos con checkboxes
 		JPanel panelLista = new JPanel();
 		panelLista.setLayout(new BoxLayout(panelLista, BoxLayout.Y_AXIS));
 		panelLista.setBackground(VentanaPrincipal.COLOR_PANEL);
 
 		if (productos.isEmpty()) {
-			JLabel labelVacío = new JLabel(mensajeVacío);
-			labelVacío.setFont(VentanaPrincipal.FUENTE_PEQUENA);
-			labelVacío.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-			panelLista.add(labelVacío);
+			// crearLabel() de AbstractPanelSection
+			JLabel labelVacio = crearLabel(mensajeVacio);
+			labelVacio.setFont(VentanaPrincipal.FUENTE_PEQUENA);
+			panelLista.add(labelVacio);
 		} else {
 			for (Producto2Mano p : productos) {
-
 				JPanel fila = new JPanel(new BorderLayout(VentanaPrincipal.escalar(10), 0));
 				fila.setBackground(VentanaPrincipal.COLOR_PANEL);
 				fila.setMaximumSize(new Dimension(Integer.MAX_VALUE, VentanaPrincipal.escalar(40)));
 				fila.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, VentanaPrincipal.COLOR_BORDE));
 
-				String info = p.getNombre() + "(" + p.getEstadoProducto() + ")";
+				String info = p.getNombre() + " (" + p.getEstadoProducto() + ")";
 				JCheckBox checkbox = new JCheckBox(info);
 				checkbox.setFont(VentanaPrincipal.FUENTE_NORMAL);
 				checkbox.setForeground(VentanaPrincipal.COLOR_TEXTO);
@@ -201,9 +198,9 @@ public class SubpanelCrearOferta extends JPanel {
 				checkboxes.add(checkbox);
 				fila.add(checkbox, BorderLayout.WEST);
 
-				// Precio tasado a la derecha
 				if (p.getValoracion() != null) {
-					JLabel labelPrecio = new JLabel(String.format("%.2f€", p.getValoracion().getPrecioTasacion()));
+					// crearLabel() de AbstractPanelSection
+					JLabel labelPrecio = crearLabel(String.format("%.2f€", p.getValoracion().getPrecioTasacion()));
 					labelPrecio.setFont(VentanaPrincipal.FUENTE_PEQUENA);
 					labelPrecio.setForeground(VentanaPrincipal.COLOR_ACENTO);
 					fila.add(labelPrecio, BorderLayout.EAST);
@@ -224,7 +221,10 @@ public class SubpanelCrearOferta extends JPanel {
 	}
 
 	/**
-	 * Crea el panel inferior con el botón de enviar oferta.
+	 * Crea el panel inferior con el botón de enviar oferta. Usa crearBotonNaranja()
+	 * de AbstractPanelSection.
+	 *
+	 * @return Panel del botón enviar
 	 */
 	private JPanel crearPanelBotonEnviar() {
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -232,29 +232,13 @@ public class SubpanelCrearOferta extends JPanel {
 		panel.setBorder(
 				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(10), 0, VentanaPrincipal.escalar(20), 0));
 
-		botonEnviar = new JButton("Enviar oferta");
+		// crearBotonNaranja() de AbstractPanelSection
+		botonEnviar = crearBotonNaranja("Enviar oferta");
 		botonEnviar.setActionCommand("enviar");
-		botonEnviar.setFont(VentanaPrincipal.FUENTE_BOTON);
-		botonEnviar.setBackground(VentanaPrincipal.COLOR_ACENTO);
-		botonEnviar.setForeground(Color.WHITE);
-		botonEnviar.setOpaque(true);
-		botonEnviar.setBorderPainted(false);
-		botonEnviar.setFocusPainted(false);
-		botonEnviar.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		botonEnviar.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(12),
 				VentanaPrincipal.escalar(30), VentanaPrincipal.escalar(12), VentanaPrincipal.escalar(30)));
-		botonEnviar.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				botonEnviar.setBackground(VentanaPrincipal.COLOR_ACENTO.darker());
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				botonEnviar.setBackground(VentanaPrincipal.COLOR_ACENTO);
-			}
-		});
 		panel.add(botonEnviar);
+
 		return panel;
 	}
 
@@ -266,11 +250,9 @@ public class SubpanelCrearOferta extends JPanel {
 	 */
 	public List<Producto2Mano> getMisProductosSeleccionados() {
 		List<Producto2Mano> seleccionados = new ArrayList<>();
-		for (int i = 0; i < checkboxesMios.size(); i++) {
-			if (checkboxesMios.get(i).isSelected()) {
+		for (int i = 0; i < checkboxesMios.size(); i++)
+			if (checkboxesMios.get(i).isSelected())
 				seleccionados.add(misProductos.get(i));
-			}
-		}
 		return seleccionados;
 	}
 
@@ -282,11 +264,9 @@ public class SubpanelCrearOferta extends JPanel {
 	 */
 	public List<Producto2Mano> getSusProductosSeleccionados() {
 		List<Producto2Mano> seleccionados = new ArrayList<>();
-		for (int i = 0; i < checkboxesSuyos.size(); i++) {
-			if (checkboxesSuyos.get(i).isSelected()) {
+		for (int i = 0; i < checkboxesSuyos.size(); i++)
+			if (checkboxesSuyos.get(i).isSelected())
 				seleccionados.add(susProductos.get(i));
-			}
-		}
 		return seleccionados;
 	}
 
@@ -298,16 +278,11 @@ public class SubpanelCrearOferta extends JPanel {
 	}
 
 	/**
-	 * Muestra un mensaje de error. Lo llama el controlador.
-	 */
-	public void mostrarError(String mensaje) {
-		JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
-	}
-
-	/**
 	 * Muestra un mensaje de éxito. Lo llama el controlador.
+	 *
+	 * @param mensaje El mensaje de éxito
 	 */
 	public void mostrarExito(String mensaje) {
-		JOptionPane.showMessageDialog(this, mensaje, "Oferta enviada", JOptionPane.INFORMATION_MESSAGE);
+		mostrarMensaje(mensaje);
 	}
 }

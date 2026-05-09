@@ -1,13 +1,11 @@
 package Gui.cliente;
 
-import Gui.AbstractPanelSection;
+import javax.swing.*;
 
 import Gui.VentanaPrincipal;
 import Gui.Controladores.cliente.ControladorCarrito;
 import Gui.Controladores.cliente.ControladorCatalogo;
 
-import javax.swing.*;
-import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
@@ -16,402 +14,468 @@ import usuarios.Cliente;
 import ventas.LineaCarrito;
 
 /**
- * Subpanel del carrito de compra de CheckPoint. Extiende AbstractPanelSection
- * para reutilizar helpers visuales. Sigue el patrón MVC de los apuntes.
+ * Subpanel del carrito de compra de CheckPoint.
+ * Extiende AbstractPanelCliente para reutilizar helpers visuales del cliente.
+ * Sigue el patrón MVC de los apuntes.
  *
  * @author Daniel
  * @version 1.0
  */
-public class SubpanelCarrito extends AbstractPanelSection {
+public class SubpanelCarrito extends AbstractPanelCliente {
 
-	private Cliente cliente;
-	private ControladorCarrito controlador;
-	private JPanel panelProductos;
-	private CardLayout cardLayout;
-	private JPanel panelContenido;
-	private SubpanelProducto subpanelProducto;
-	private JLabel labelSubtotal;
-	private JLabel labelDescuento;
-	private JLabel labelTotal;
-	private JLabel labelTiempo;
-	private CardLayout cardEstado;
-	private JPanel panelEstado;
+    /** Controlador del carrito. */
+    private ControladorCarrito controlador;
 
-	// Botón tramitar — atributo para registrar el controlador
-	private JButton botonTramitar;
+    /** Panel donde se muestran los productos del carrito. */
+    private JPanel panelProductos;
 
-	public SubpanelCarrito(VentanaPrincipal ventana) {
-		super(ventana);
+    /** CardLayout para alternar entre carrito y detalle de producto. */
+    private CardLayout cardLayout;
 
-		cardLayout = new CardLayout();
-		panelContenido = new JPanel(cardLayout);
-		panelContenido.setBackground(VentanaPrincipal.COLOR_FONDO);
+    /** Panel contenedor del CardLayout principal. */
+    private JPanel panelContenido;
 
-		panelContenido.add(crearPanelPrincipal(), "CARRITO");
+    /** Subpanel de detalle de producto. */
+    private SubpanelProducto subpanelProducto;
 
-		subpanelProducto = new SubpanelProducto(ventana, null);
-		panelContenido.add(subpanelProducto, "PRODUCTO");
+    /** Labels del resumen del pedido. */
+    private JLabel labelSubtotal;
+    private JLabel labelDescuento;
+    private JLabel labelTotal;
+    private JLabel labelTiempo;
 
-		add(panelContenido, BorderLayout.CENTER);
-		cardLayout.show(panelContenido, "CARRITO");
-	}
+    /** CardLayout para alternar entre carrito vacío y activo. */
+    private CardLayout cardEstado;
 
-	/**
-	 * Actualiza el carrito con los datos del cliente. Crea el controlador y lo
-	 * registra en los botones.
-	 */
-	public void actualizar(Cliente cliente) {
-		this.cliente = cliente;
-		this.controlador = new ControladorCarrito(this, cliente);
-		setControlador(controlador);
+    /** Panel contenedor del estado del carrito. */
+    private JPanel panelEstado;
 
-		if (!controlador.carritoVacio()) {
-			panelProductos.removeAll();
-			for (LineaCarrito l : controlador.getLineasCarrito()) {
-				JPanel tarjeta = crearTarjetaProducto(l);
-				tarjeta.setAlignmentX(Component.LEFT_ALIGNMENT);
-				panelProductos.add(tarjeta);
-			}
-			panelProductos.revalidate();
-			panelProductos.repaint();
-			cardEstado.show(panelEstado, "ACTIVO");
-			actualizarResumen();
-		} else {
-			cardEstado.show(panelEstado, "VACIO");
-			labelSubtotal.setText("0.00€");
-			labelDescuento.setText("Ninguno");
-			labelTotal.setText("0.00€");
-			labelTiempo.setText("No hay carrito activo");
-			labelTiempo.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-		}
+    /** Botón tramitar — atributo para registrar el controlador. */
+    private JButton botonTramitar;
 
-		cardLayout.show(panelContenido, "CARRITO");
-	}
+    /**
+     * Constructor del subpanel del carrito.
+     *
+     * @param ventana La ventana principal
+     */
+    public SubpanelCarrito(VentanaPrincipal ventana) {
+        super(ventana);
 
-	/**
-	 * Registra el controlador en el botón tramitar — patrón de los apuntes.
-	 */
-	public void setControlador(ActionListener c) {
-		if (botonTramitar != null) {
-			for (ActionListener al : botonTramitar.getActionListeners())
-				botonTramitar.removeActionListener(al);
-			botonTramitar.addActionListener(c);
-		}
-	}
+        cardLayout = new CardLayout();
+        panelContenido = new JPanel(cardLayout);
+        panelContenido.setBackground(VentanaPrincipal.COLOR_FONDO);
 
-	private JPanel crearPanelPrincipal() {
-		JPanel panel = new JPanel(new BorderLayout(VentanaPrincipal.escalar(20), 0));
-		panel.setBackground(VentanaPrincipal.COLOR_FONDO);
-		panel.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(20),
-				VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(20)));
+        panelContenido.add(crearPanelPrincipal(), "CARRITO");
 
-		JPanel panelIzquierdo = new JPanel(new BorderLayout(0, VentanaPrincipal.escalar(30)));
-		panelIzquierdo.setBackground(VentanaPrincipal.COLOR_FONDO);
+        subpanelProducto = new SubpanelProducto(ventana, null);
+        panelContenido.add(subpanelProducto, "PRODUCTO");
 
-		JLabel titulo = new JLabel("Tu Cesta");
-		titulo.setFont(VentanaPrincipal.FUENTE_TITULO);
-		titulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
-		panelIzquierdo.add(titulo, BorderLayout.NORTH);
+        add(panelContenido, BorderLayout.CENTER);
+        cardLayout.show(panelContenido, "CARRITO");
+    }
 
-		cardEstado = new CardLayout();
-		panelEstado = new JPanel(cardEstado);
-		panelEstado.setBackground(VentanaPrincipal.COLOR_FONDO);
-		panelEstado.add(crearPanelVacio(), "VACIO");
-		panelEstado.add(crearPanelProductos(), "ACTIVO");
+    /**
+     * Actualiza el carrito con los datos del cliente.
+     * Crea el controlador y lo registra en los botones.
+     *
+     * @param cliente El cliente logueado
+     */
+    @Override
+    public void actualizar(Cliente cliente) {
+        this.cliente = cliente;
+        this.controlador = new ControladorCarrito(this, cliente);
+        setControlador(controlador);
 
-		panelIzquierdo.add(panelEstado, BorderLayout.CENTER);
-		panel.add(panelIzquierdo, BorderLayout.CENTER);
-		panel.add(crearPanelResumen(), BorderLayout.EAST);
+        if (!controlador.carritoVacio()) {
+            panelProductos.removeAll();
+            for (LineaCarrito l : controlador.getLineasCarrito()) {
+                // añadirTarjetaConSeparacion() de AbstractPanelCliente
+                panelProductos.add(crearTarjetaProducto(l));
+            }
+            panelProductos.revalidate();
+            panelProductos.repaint();
+            cardEstado.show(panelEstado, "ACTIVO");
+            actualizarResumen();
+        } else {
+            cardEstado.show(panelEstado, "VACIO");
+            labelSubtotal.setText("0.00€");
+            labelDescuento.setText("Ninguno");
+            labelTotal.setText("0.00€");
+            labelTiempo.setText("No hay carrito activo");
+            labelTiempo.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+        }
 
-		return panel;
-	}
+        cardLayout.show(panelContenido, "CARRITO");
+    }
 
-	private JPanel crearPanelVacio() {
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.setBackground(VentanaPrincipal.COLOR_FONDO);
-		JLabel labelVacio = new JLabel("Tu carrito está vacío.", SwingConstants.CENTER);
-		labelVacio.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
-		labelVacio.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-		panel.add(labelVacio, BorderLayout.CENTER);
-		return panel;
-	}
+    /**
+     * Registra el controlador en el botón tramitar — patrón de los apuntes.
+     *
+     * @param c El ActionListener a registrar
+     */
+    public void setControlador(ActionListener c) {
+        if (botonTramitar != null) {
+            for (ActionListener al : botonTramitar.getActionListeners())
+                botonTramitar.removeActionListener(al);
+            botonTramitar.addActionListener(c);
+        }
+    }
 
-	private JPanel crearPanelProductos() {
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.setBackground(VentanaPrincipal.COLOR_FONDO);
+    /**
+     * Crea el panel principal con lista de productos y resumen.
+     *
+     * @return Panel principal del carrito
+     */
+    private JPanel crearPanelPrincipal() {
+        JPanel panel = new JPanel(
+            new BorderLayout(VentanaPrincipal.escalar(20), 0));
+        panel.setBackground(VentanaPrincipal.COLOR_FONDO);
+        panel.setBorder(BorderFactory.createEmptyBorder(
+            VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(20),
+            VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(20)));
 
-		panelProductos = new JPanel();
-		panelProductos.setLayout(new BoxLayout(panelProductos, BoxLayout.Y_AXIS));
-		panelProductos.setBackground(VentanaPrincipal.COLOR_FONDO);
+        JPanel panelIzquierdo = new JPanel(
+            new BorderLayout(0, VentanaPrincipal.escalar(30)));
+        panelIzquierdo.setBackground(VentanaPrincipal.COLOR_FONDO);
 
-		JScrollPane scroll = new JScrollPane(panelProductos);
-		scroll.setBorder(null);
-		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		scroll.getViewport().setBackground(VentanaPrincipal.COLOR_FONDO);
-		panel.add(scroll, BorderLayout.CENTER);
+        JLabel titulo = new JLabel("Tu Cesta");
+        titulo.setFont(VentanaPrincipal.FUENTE_TITULO);
+        titulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
+        panelIzquierdo.add(titulo, BorderLayout.NORTH);
 
-		return panel;
-	}
+        cardEstado = new CardLayout();
+        panelEstado = new JPanel(cardEstado);
+        panelEstado.setBackground(VentanaPrincipal.COLOR_FONDO);
+        panelEstado.add(crearPanelVacio(), "VACIO");
+        panelEstado.add(crearPanelProductos(), "ACTIVO");
 
-	private JPanel crearPanelResumen() {
-		JPanel panel = new JPanel(new GridBagLayout());
-		panel.setBackground(VentanaPrincipal.COLOR_PANEL);
-		panel.setPreferredSize(new Dimension(VentanaPrincipal.escalar(260), 0));
-		panel.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE, VentanaPrincipal.escalar(3)),
-				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(20),
-						VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(20))));
+        panelIzquierdo.add(panelEstado, BorderLayout.CENTER);
+        panel.add(panelIzquierdo, BorderLayout.CENTER);
+        panel.add(crearPanelResumen(), BorderLayout.EAST);
 
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridx = 0;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.weightx = 1;
+        return panel;
+    }
 
-		JLabel tituloResumen = new JLabel("Resumen del pedido");
-		tituloResumen.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
-		tituloResumen.setForeground(VentanaPrincipal.COLOR_TEXTO);
-		gbc.gridy = 0;
-		gbc.insets = new Insets(0, 0, VentanaPrincipal.escalar(15), 0);
-		panel.add(tituloResumen, gbc);
+    /**
+     * Crea el panel que se muestra cuando el carrito está vacío.
+     *
+     * @return Panel de carrito vacío
+     */
+    private JPanel crearPanelVacio() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(VentanaPrincipal.COLOR_FONDO);
+        JLabel labelVacio = new JLabel(
+            "Tu carrito está vacío.", SwingConstants.CENTER);
+        labelVacio.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
+        labelVacio.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+        panel.add(labelVacio, BorderLayout.CENTER);
+        return panel;
+    }
 
-		gbc.insets = new Insets(VentanaPrincipal.escalar(4), 0, VentanaPrincipal.escalar(4), 0);
+    /**
+     * Crea el panel con scroll para los productos del carrito.
+     *
+     * @return Panel de productos con scroll
+     */
+    private JPanel crearPanelProductos() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(VentanaPrincipal.COLOR_FONDO);
 
-		gbc.gridy = 1;
-		panel.add(new JSeparator(), gbc);
+        panelProductos = new JPanel();
+        // crearScrollContenido() de AbstractPanelCliente configura BoxLayout y scroll
+        JScrollPane scroll = crearScrollContenido(panelProductos);
+        panel.add(scroll, BorderLayout.CENTER);
 
-		// crearLabel() de AbstractPanelSection
-		gbc.gridy = 2;
-		panel.add(crearLabel("Subtotal:"), gbc);
+        return panel;
+    }
 
-		labelSubtotal = new JLabel("0.00€");
-		labelSubtotal.setFont(VentanaPrincipal.FUENTE_BOTON);
-		labelSubtotal.setForeground(VentanaPrincipal.COLOR_TEXTO);
-		gbc.gridy = 3;
-		panel.add(labelSubtotal, gbc);
+    /**
+     * Crea el panel lateral de resumen del pedido.
+     *
+     * @return Panel de resumen
+     */
+    private JPanel crearPanelResumen() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(VentanaPrincipal.COLOR_PANEL);
+        panel.setPreferredSize(new Dimension(VentanaPrincipal.escalar(260), 0));
+        panel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(
+                VentanaPrincipal.COLOR_BORDE, VentanaPrincipal.escalar(3)),
+            BorderFactory.createEmptyBorder(
+                VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(20),
+                VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(20))));
 
-		gbc.gridy = 4;
-		panel.add(crearLabel("Descuento:"), gbc);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1;
 
-		labelDescuento = new JLabel("Ninguno");
-		labelDescuento.setFont(VentanaPrincipal.FUENTE_NORMAL);
-		labelDescuento.setForeground(VentanaPrincipal.COLOR_ACENTO);
-		gbc.gridy = 5;
-		panel.add(labelDescuento, gbc);
+        JLabel tituloResumen = new JLabel("Resumen del pedido");
+        tituloResumen.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
+        tituloResumen.setForeground(VentanaPrincipal.COLOR_TEXTO);
+        gbc.gridy = 0;
+        gbc.insets = new Insets(0, 0, VentanaPrincipal.escalar(15), 0);
+        panel.add(tituloResumen, gbc);
 
-		gbc.gridy = 6;
-		panel.add(new JSeparator(), gbc);
+        gbc.insets = new Insets(
+            VentanaPrincipal.escalar(4), 0, VentanaPrincipal.escalar(4), 0);
 
-		gbc.gridy = 7;
-		JLabel labelTotalTitulo = new JLabel("Total:");
-		labelTotalTitulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
-		labelTotalTitulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
-		panel.add(labelTotalTitulo, gbc);
+        gbc.gridy = 1;
+        panel.add(new JSeparator(), gbc);
 
-		labelTotal = new JLabel("0.00€");
-		labelTotal.setFont(new Font("Segoe UI", Font.BOLD, VentanaPrincipal.escalar(22)));
-		labelTotal.setForeground(VentanaPrincipal.COLOR_ACENTO);
-		gbc.gridy = 8;
-		panel.add(labelTotal, gbc);
+        // crearLabel() de AbstractPanelSection
+        gbc.gridy = 2;
+        panel.add(crearLabel("Subtotal:"), gbc);
 
-		gbc.gridy = 9;
-		panel.add(new JSeparator(), gbc);
+        labelSubtotal = new JLabel("0.00€");
+        labelSubtotal.setFont(VentanaPrincipal.FUENTE_BOTON);
+        labelSubtotal.setForeground(VentanaPrincipal.COLOR_TEXTO);
+        gbc.gridy = 3;
+        panel.add(labelSubtotal, gbc);
 
-		labelTiempo = new JLabel("No hay carrito activo");
-		labelTiempo.setFont(VentanaPrincipal.FUENTE_PEQUENA);
-		labelTiempo.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-		gbc.gridy = 10;
-		panel.add(labelTiempo, gbc);
+        gbc.gridy = 4;
+        panel.add(crearLabel("Descuento:"), gbc);
 
-		// crearBotonNaranja() de AbstractPanelSection
-		botonTramitar = crearBotonNaranja("Tramitar pedido");
-		botonTramitar.setActionCommand("tramitar");
-		gbc.gridy = 11;
-		gbc.insets = new Insets(VentanaPrincipal.escalar(15), 0, 0, 0);
-		panel.add(botonTramitar, gbc);
+        labelDescuento = new JLabel("Ninguno");
+        labelDescuento.setFont(VentanaPrincipal.FUENTE_NORMAL);
+        labelDescuento.setForeground(VentanaPrincipal.COLOR_ACENTO);
+        gbc.gridy = 5;
+        panel.add(labelDescuento, gbc);
 
-		gbc.gridy = 12;
-		gbc.weighty = 1;
-		panel.add(Box.createVerticalGlue(), gbc);
+        gbc.gridy = 6;
+        panel.add(new JSeparator(), gbc);
 
-		return panel;
-	}
+        JLabel labelTotalTitulo = new JLabel("Total:");
+        labelTotalTitulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
+        labelTotalTitulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
+        gbc.gridy = 7;
+        panel.add(labelTotalTitulo, gbc);
 
-	private JPanel crearTarjetaProducto(LineaCarrito linea) {
-		ProductoVenta producto = linea.getProducto();
+        labelTotal = new JLabel("0.00€");
+        labelTotal.setFont(new Font("Segoe UI", Font.BOLD,
+            VentanaPrincipal.escalar(22)));
+        labelTotal.setForeground(VentanaPrincipal.COLOR_ACENTO);
+        gbc.gridy = 8;
+        panel.add(labelTotal, gbc);
 
-		JPanel tarjeta = new JPanel(new BorderLayout(VentanaPrincipal.escalar(15), 0));
-		tarjeta.setBackground(VentanaPrincipal.COLOR_TARJETA);
-		tarjeta.setMaximumSize(new Dimension(Integer.MAX_VALUE, VentanaPrincipal.escalar(140)));
-		tarjeta.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE, VentanaPrincipal.escalar(2)),
-				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(20),
-						VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(20))));
+        gbc.gridy = 9;
+        panel.add(new JSeparator(), gbc);
 
-		// Imagen — cargarImagen() de AbstractPanelSection
-		JLabel labelImagen = new JLabel();
-		labelImagen.setHorizontalAlignment(SwingConstants.CENTER);
-		labelImagen.setPreferredSize(new Dimension(VentanaPrincipal.escalar(100), VentanaPrincipal.escalar(100)));
-		cargarImagen(labelImagen, producto.getImagenRuta(), VentanaPrincipal.escalar(90), VentanaPrincipal.escalar(90));
-		tarjeta.add(labelImagen, BorderLayout.WEST);
+        labelTiempo = new JLabel("No hay carrito activo");
+        labelTiempo.setFont(VentanaPrincipal.FUENTE_PEQUENA);
+        labelTiempo.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+        gbc.gridy = 10;
+        panel.add(labelTiempo, gbc);
 
-		// Info central
-		JPanel panelInfo = new JPanel(new GridBagLayout());
-		panelInfo.setBackground(VentanaPrincipal.COLOR_TARJETA);
+        // crearBotonNaranja() de AbstractPanelSection
+        botonTramitar = crearBotonNaranja("Tramitar pedido");
+        botonTramitar.setActionCommand("tramitar");
+        gbc.gridy = 11;
+        gbc.insets = new Insets(VentanaPrincipal.escalar(15), 0, 0, 0);
+        panel.add(botonTramitar, gbc);
 
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.insets = new Insets(VentanaPrincipal.escalar(2), 0, VentanaPrincipal.escalar(2),
-				VentanaPrincipal.escalar(10));
+        gbc.gridy = 12;
+        gbc.weighty = 1;
+        panel.add(Box.createVerticalGlue(), gbc);
 
-		JLabel labelNombre = new JLabel(producto.getNombre());
-		labelNombre.setFont(VentanaPrincipal.FUENTE_BOTON);
-		labelNombre.setForeground(VentanaPrincipal.COLOR_TEXTO);
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		gbc.gridwidth = 2;
-		gbc.weightx = 1;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		panelInfo.add(labelNombre, gbc);
+        return panel;
+    }
 
-		String desc = producto.getDescripcion();
-		if (desc.length() > 50)
-			desc = desc.substring(0, 48) + "...";
-		JLabel labelDesc = new JLabel(desc);
-		labelDesc.setFont(VentanaPrincipal.FUENTE_PEQUENA);
-		labelDesc.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-		gbc.gridy = 1;
-		panelInfo.add(labelDesc, gbc);
+    /**
+     * Crea una tarjeta visual para una línea del carrito.
+     * Usa crearTarjetaBase(), crearGbcTarjeta() y crearPanelBotonesTarjeta()
+     * de AbstractPanelCliente.
+     *
+     * @param linea La línea del carrito a mostrar
+     * @return Panel con la tarjeta
+     */
+    private JPanel crearTarjetaProducto(LineaCarrito linea) {
+        ProductoVenta producto = linea.getProducto();
 
-		JLabel labelPrecio = new JLabel(String.format("%.2f€ / ud", producto.getPrecioOficial()));
-		labelPrecio.setFont(VentanaPrincipal.FUENTE_NORMAL);
-		labelPrecio.setForeground(VentanaPrincipal.COLOR_ACENTO);
-		gbc.gridy = 2;
-		gbc.gridwidth = 1;
-		gbc.weightx = 0;
-		gbc.fill = GridBagConstraints.NONE;
-		panelInfo.add(labelPrecio, gbc);
+        // crearTarjetaBase() de AbstractPanelCliente — LineBorder para carrito
+        JPanel tarjeta = new JPanel(
+            new BorderLayout(VentanaPrincipal.escalar(15), 0));
+        tarjeta.setBackground(VentanaPrincipal.COLOR_TARJETA);
+        tarjeta.setMaximumSize(new Dimension(Integer.MAX_VALUE,
+            VentanaPrincipal.escalar(140)));
+        tarjeta.setAlignmentX(Component.LEFT_ALIGNMENT);
+        tarjeta.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(
+                VentanaPrincipal.COLOR_BORDE, VentanaPrincipal.escalar(2)),
+            BorderFactory.createEmptyBorder(
+                VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(20),
+                VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(20))));
 
-		int stockMaximo = linea.getCantidad() + producto.getStockDisponible();
-		JSpinner spinnerCantidad = new JSpinner(new SpinnerNumberModel(linea.getCantidad(), 1, stockMaximo, 1));
-		spinnerCantidad.setFont(VentanaPrincipal.FUENTE_NORMAL);
-		spinnerCantidad.setPreferredSize(new Dimension(VentanaPrincipal.escalar(70), VentanaPrincipal.escalar(28)));
-		// El spinner usa ChangeListener — no es ActionListener
-		// es lógica de presentación pura (cambio inmediato de cantidad)
-		spinnerCantidad.addChangeListener(e -> controlador.cambiarCantidad(producto, (int) spinnerCantidad.getValue()));
-		gbc.gridx = 1;
-		gbc.gridy = 2;
-		panelInfo.add(spinnerCantidad, gbc);
+        // Imagen — cargarImagen() de AbstractPanelSection
+        JLabel labelImagen = new JLabel();
+        labelImagen.setHorizontalAlignment(SwingConstants.CENTER);
+        labelImagen.setPreferredSize(new Dimension(
+            VentanaPrincipal.escalar(100), VentanaPrincipal.escalar(100)));
+        cargarImagen(labelImagen, producto.getImagenRuta(),
+            VentanaPrincipal.escalar(90), VentanaPrincipal.escalar(90));
+        tarjeta.add(labelImagen, BorderLayout.WEST);
 
-		tarjeta.add(panelInfo, BorderLayout.CENTER);
+        // crearPanelInfoTarjeta() de AbstractPanelCliente
+        JPanel panelInfo = crearPanelInfoTarjeta();
 
-		// Botones derecha
-		JPanel panelBotones = new JPanel(new GridBagLayout());
-		panelBotones.setBackground(VentanaPrincipal.COLOR_TARJETA);
+        // crearGbcTarjeta() de AbstractPanelCliente
+        GridBagConstraints gbc = crearGbcTarjeta();
 
-		GridBagConstraints gbcB = new GridBagConstraints();
-		gbcB.gridx = 0;
-		gbcB.fill = GridBagConstraints.HORIZONTAL;
-		gbcB.insets = new Insets(VentanaPrincipal.escalar(3), 0, VentanaPrincipal.escalar(3), 0);
+        JLabel labelNombre = new JLabel(producto.getNombre());
+        labelNombre.setFont(VentanaPrincipal.FUENTE_BOTON);
+        labelNombre.setForeground(VentanaPrincipal.COLOR_TEXTO);
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        panelInfo.add(labelNombre, gbc);
 
-		JLabel labelSubtotalLinea = new JLabel(String.format("%.2f€", linea.getSubtotal()), SwingConstants.RIGHT);
-		labelSubtotalLinea.setFont(VentanaPrincipal.FUENTE_PRECIO);
-		labelSubtotalLinea.setForeground(VentanaPrincipal.COLOR_TEXTO);
-		gbcB.gridy = 0;
-		panelBotones.add(labelSubtotalLinea, gbcB);
+        String desc = producto.getDescripcion();
+        if (desc.length() > 50) desc = desc.substring(0, 48) + "...";
+        JLabel labelDesc = new JLabel(desc);
+        labelDesc.setFont(VentanaPrincipal.FUENTE_PEQUENA);
+        labelDesc.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+        gbc.gridy = 1;
+        panelInfo.add(labelDesc, gbc);
 
-		// crearBotonOutline() de AbstractPanelSection
-		JButton botonVerInfo = crearBotonOutline("Ver información");
-		botonVerInfo.setActionCommand("ver:" + producto.getId());
-		botonVerInfo.addActionListener(controlador);
-		gbcB.gridy = 1;
-		panelBotones.add(botonVerInfo, gbcB);
+        JLabel labelPrecio = new JLabel(
+            String.format("%.2f€ / ud", producto.getPrecioOficial()));
+        labelPrecio.setFont(VentanaPrincipal.FUENTE_NORMAL);
+        labelPrecio.setForeground(VentanaPrincipal.COLOR_ACENTO);
+        gbc.gridy = 2;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0;
+        gbc.fill = GridBagConstraints.NONE;
+        panelInfo.add(labelPrecio, gbc);
 
-		// crearBotonRojo() de AbstractPanelSection
-		JButton botonEliminar = crearBotonRojo("Eliminar");
-		botonEliminar.setActionCommand("eliminar:" + producto.getId());
-		botonEliminar.addActionListener(controlador);
-		gbcB.gridy = 2;
-		panelBotones.add(botonEliminar, gbcB);
+        int stockMaximo = linea.getCantidad() + producto.getStockDisponible();
+        JSpinner spinnerCantidad = new JSpinner(
+            new SpinnerNumberModel(linea.getCantidad(), 1, stockMaximo, 1));
+        spinnerCantidad.setFont(VentanaPrincipal.FUENTE_NORMAL);
+        spinnerCantidad.setPreferredSize(new Dimension(
+            VentanaPrincipal.escalar(70), VentanaPrincipal.escalar(28)));
+        // ChangeListener — lógica de presentación pura
+        spinnerCantidad.addChangeListener(e ->
+            controlador.cambiarCantidad(producto, (int) spinnerCantidad.getValue()));
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        panelInfo.add(spinnerCantidad, gbc);
 
-		tarjeta.add(panelBotones, BorderLayout.EAST);
-		return tarjeta;
-	}
+        tarjeta.add(panelInfo, BorderLayout.CENTER);
 
-	/**
-	 * Navega al detalle del producto. Lo llama el controlador.
-	 */
-	public void verProductoPorId(String id) {
-		for (LineaCarrito l : controlador.getLineasCarrito()) {
-			if (l.getProducto().getId().equals(id)) {
-				ControladorCatalogo cc = new ControladorCatalogo(cliente, null);
-				subpanelProducto.setSubpanelOrigen(this);
-				subpanelProducto.mostrarProducto(l.getProducto(), cliente, cc);
-				cardLayout.show(panelContenido, "PRODUCTO");
-				return;
-			}
-		}
-	}
+        // crearPanelBotonesTarjeta() y crearGbcBotonesTarjeta() de AbstractPanelCliente
+        JPanel panelBotones = crearPanelBotonesTarjeta();
+        GridBagConstraints gbcB = crearGbcBotonesTarjeta();
 
-	public void volverDelProducto() {
-		cardLayout.show(panelContenido, "CARRITO");
-		actualizar(cliente);
-	}
+        JLabel labelSubtotalLinea = new JLabel(
+            String.format("%.2f€", linea.getSubtotal()), SwingConstants.RIGHT);
+        labelSubtotalLinea.setFont(VentanaPrincipal.FUENTE_PRECIO);
+        labelSubtotalLinea.setForeground(VentanaPrincipal.COLOR_TEXTO);
+        gbcB.gridy = 0;
+        panelBotones.add(labelSubtotalLinea, gbcB);
 
-	/**
-	 * Muestra confirmación para tramitar el pedido. Lo llama el controlador.
-	 */
-	public void mostrarConfirmacionTramitar() {
-		int confirm = JOptionPane.showConfirmDialog(this,
-				"¿Confirmas la reserva del pedido por " + String.format("%.2f€", controlador.getTotal()) + "?\n"
-						+ "Tendrás " + controlador.getTiempoMaxPago() + " minutos para pagarlo.",
-				"Confirmar pedido", JOptionPane.YES_NO_OPTION);
-		if (confirm == JOptionPane.YES_OPTION) {
-			controlador.confirmarReserva();
-		}
-	}
+        // crearBotonOutline() de AbstractPanelSection
+        JButton botonVerInfo = crearBotonOutline("Ver información");
+        botonVerInfo.setActionCommand("ver:" + producto.getId());
+        botonVerInfo.addActionListener(controlador);
+        gbcB.gridy = 1;
+        panelBotones.add(botonVerInfo, gbcB);
 
-	/**
-	 * Muestra confirmación para eliminar un producto. Lo llama el controlador.
-	 */
-	public void mostrarConfirmacionEliminar(ProductoVenta producto) {
-		int confirm = JOptionPane.showConfirmDialog(this, "¿Eliminar " + producto.getNombre() + " del carrito?",
-				"Confirmar", JOptionPane.YES_NO_OPTION);
-		if (confirm == JOptionPane.YES_OPTION) {
-			controlador.eliminarProducto(producto);
-		}
-	}
+        // crearBotonRojo() de AbstractPanelSection
+        JButton botonEliminar = crearBotonRojo("Eliminar");
+        botonEliminar.setActionCommand("eliminar:" + producto.getId());
+        botonEliminar.addActionListener(controlador);
+        gbcB.gridy = 2;
+        panelBotones.add(botonEliminar, gbcB);
 
-	public void actualizarResumen() {
-		if (controlador == null)
-			return;
-		labelSubtotal.setText(String.format("%.2f€", controlador.getSubtotal()));
-		String desc = controlador.getDescuento();
-		labelDescuento.setText(desc != null ? desc : "Ninguno");
-		labelTotal.setText(String.format("%.2f€", controlador.getTotal()));
-		long minutos = controlador.getMinutosRestantesCarrito();
-		if (controlador.carritoVacio()) {
-			labelTiempo.setText("No hay carrito activo");
-			labelTiempo.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-		} else if (minutos <= 5) {
-			labelTiempo.setText("Caduca en " + minutos + " min");
-			labelTiempo.setForeground(new Color(200, 50, 50));
-		} else {
-			labelTiempo.setText("Caduca en " + minutos + " min");
-			labelTiempo.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-		}
-	}
+        tarjeta.add(panelBotones, BorderLayout.EAST);
+        return tarjeta;
+    }
 
-	public void mostrarAviso(String mensaje) {
-		JOptionPane.showMessageDialog(this, mensaje, "Aviso", JOptionPane.WARNING_MESSAGE);
-	}
+    /**
+     * Navega al detalle de un producto por su id.
+     * Lo llama el controlador.
+     *
+     * @param id Id del producto a ver
+     */
+    public void verProductoPorId(String id) {
+        for (LineaCarrito l : controlador.getLineasCarrito()) {
+            if (l.getProducto().getId().equals(id)) {
+                ControladorCatalogo cc = new ControladorCatalogo(cliente, null);
+                subpanelProducto.setSubpanelOrigen(this);
+                subpanelProducto.mostrarProducto(l.getProducto(), cliente, cc);
+                cardLayout.show(panelContenido, "PRODUCTO");
+                return;
+            }
+        }
+    }
 
-	@Override
-	public void mostrarError(String mensaje) {
-		JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
-	}
+    /**
+     * Vuelve al carrito desde el detalle del producto.
+     */
+    public void volverDelProducto() {
+        cardLayout.show(panelContenido, "CARRITO");
+        actualizar(cliente);
+    }
 
-	@Override
-	public void mostrarMensaje(String mensaje) {
-		JOptionPane.showMessageDialog(this, mensaje, "Información", JOptionPane.INFORMATION_MESSAGE);
-	}
+    /**
+     * Muestra confirmación para tramitar el pedido.
+     * Lo llama el controlador.
+     */
+    public void mostrarConfirmacionTramitar() {
+        // confirmar() de AbstractPanelCliente
+        if (confirmar(
+                "¿Confirmas la reserva del pedido por "
+                + String.format("%.2f€", controlador.getTotal()) + "?\n"
+                + "Tendrás " + controlador.getTiempoMaxPago()
+                + " minutos para pagarlo.",
+                "Confirmar pedido")) {
+            controlador.confirmarReserva();
+        }
+    }
+
+    /**
+     * Muestra confirmación para eliminar un producto del carrito.
+     * Lo llama el controlador.
+     *
+     * @param producto El producto a eliminar
+     */
+    public void mostrarConfirmacionEliminar(ProductoVenta producto) {
+        // confirmar() de AbstractPanelCliente
+        if (confirmar("¿Eliminar " + producto.getNombre() + " del carrito?",
+                "Confirmar")) {
+            controlador.eliminarProducto(producto);
+        }
+    }
+
+    /**
+     * Actualiza los labels del resumen del pedido.
+     * Lo llama el controlador y el método actualizar.
+     */
+    public void actualizarResumen() {
+        if (controlador == null) return;
+        labelSubtotal.setText(String.format("%.2f€", controlador.getSubtotal()));
+        String desc = controlador.getDescuento();
+        labelDescuento.setText(desc != null ? desc : "Ninguno");
+        labelTotal.setText(String.format("%.2f€", controlador.getTotal()));
+        long minutos = controlador.getMinutosRestantesCarrito();
+        if (controlador.carritoVacio()) {
+            labelTiempo.setText("No hay carrito activo");
+            labelTiempo.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+        } else if (minutos <= 5) {
+            labelTiempo.setText("Caduca en " + minutos + " min");
+            labelTiempo.setForeground(new Color(200, 50, 50));
+        } else {
+            labelTiempo.setText("Caduca en " + minutos + " min");
+            labelTiempo.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+        }
+    }
+
+    /**
+     * Muestra un aviso informativo. Lo llama el controlador.
+     *
+     * @param mensaje El mensaje de aviso
+     */
+    public void mostrarAviso(String mensaje) {
+        JOptionPane.showMessageDialog(this, mensaje, "Aviso",
+            JOptionPane.WARNING_MESSAGE);
+    }
 }

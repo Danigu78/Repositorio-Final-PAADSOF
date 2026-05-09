@@ -1,41 +1,58 @@
 package Gui.cliente;
 
-import Gui.AbstractPanelSection;
-
-import Gui.VentanaPrincipal;
-import Gui.Controladores.cliente.ControladorNotificaciones;
 import tienda.Notificacion;
 import usuarios.Cliente;
 import javax.swing.*;
+
+import Gui.VentanaPrincipal;
+import Gui.Controladores.cliente.ControladorNotificaciones;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Subpanel de notificaciones del cliente. Mismo estilo que
- * SeccionNotificacionesEmpleado de Lucas. Extiende AbstractPanelSection para
- * reutilizar helpers visuales. Sigue el patrón MVC de los apuntes.
+ * Subpanel de notificaciones del cliente. Extiende AbstractPanelCliente para
+ * reutilizar helpers visuales del cliente. Sigue el patrón MVC de los apuntes.
  *
  * @author Daniel
  * @version 1.0
  */
-public class SubpanelNotificaciones extends AbstractPanelSection {
+public class SubpanelNotificaciones extends AbstractPanelCliente {
 
-	private Cliente cliente;
+	/** Controlador del subpanel. */
 	private ControladorNotificaciones controlador;
 
+	/** Modelo de la lista de notificaciones. */
 	private DefaultListModel<String> modeloNotificaciones;
+
+	/** Lista visual de notificaciones. */
 	private JList<String> listaNotificaciones;
+
+	/** Lista paralela de notificaciones mostradas para recuperar el objeto. */
 	private List<Notificacion> notificacionesMostradas;
+
+	/** Combo de filtro por estado de lectura. */
 	private JComboBox<String> comboFiltro;
+
+	/** Label con el resumen de notificaciones mostradas. */
 	private JLabel labelResumen;
 
-	// Botones — atributos para registrar el controlador
+	/** Botón refrescar — atributo para registrar el controlador. */
 	private JButton botonRefrescar;
+
+	/** Botón ver notificación — atributo para registrar el controlador. */
 	private JButton botonVer;
+
+	/** Botón marcar todas vistas — atributo para registrar el controlador. */
 	private JButton botonMarcarTodas;
 
+	/**
+	 * Constructor del subpanel de notificaciones.
+	 *
+	 * @param ventana La ventana principal
+	 */
 	public SubpanelNotificaciones(VentanaPrincipal ventana) {
 		super(ventana);
 		notificacionesMostradas = new ArrayList<>();
@@ -44,12 +61,16 @@ public class SubpanelNotificaciones extends AbstractPanelSection {
 	/**
 	 * Actualiza el subpanel con los datos del cliente. Crea el controlador y lo
 	 * registra en los botones — patrón de los apuntes.
+	 *
+	 * @param cliente El cliente logueado
 	 */
+	@Override
 	public void actualizar(Cliente cliente) {
 		this.cliente = cliente;
 		this.controlador = new ControladorNotificaciones(this, cliente);
 		removeAll();
 
+		// crearPanelBase() y getContenido() de AbstractPanelSection
 		JPanel panelBase = crearPanelBase("");
 		JPanel contenido = getContenido(panelBase);
 
@@ -67,6 +88,8 @@ public class SubpanelNotificaciones extends AbstractPanelSection {
 
 	/**
 	 * Registra el controlador en los botones — patrón de los apuntes.
+	 *
+	 * @param c El ActionListener a registrar
 	 */
 	public void setControlador(ActionListener c) {
 		if (botonRefrescar != null) {
@@ -87,10 +110,13 @@ public class SubpanelNotificaciones extends AbstractPanelSection {
 	}
 
 	/**
-	 * Crea el bloque de la bandeja — mismo estilo que
+	 * Crea el bloque de la bandeja de notificaciones. Mismo estilo que
 	 * SeccionNotificacionesEmpleado.
+	 *
+	 * @return Panel del bloque bandeja
 	 */
 	private JPanel crearBloqueBandeja() {
+		// crearBloque() de AbstractPanelSection
 		JPanel bloque = crearBloque("Bandeja de notificaciones");
 
 		notificacionesMostradas = new ArrayList<>();
@@ -98,12 +124,15 @@ public class SubpanelNotificaciones extends AbstractPanelSection {
 		listaNotificaciones = new JList<>(modeloNotificaciones);
 		estilizarLista();
 
-	
+		// crearCombo() de AbstractPanelSection
 		comboFiltro = crearCombo(new String[] { "Todas", "No vistas", "Vistas" });
 		comboFiltro.addActionListener(e -> cargarNotificaciones());
 
+		// crearBotonSecundario() de AbstractPanelSection
 		botonRefrescar = crearBotonSecundario("Refrescar");
 		botonRefrescar.setActionCommand("refrescar");
+
+		// crearLabel() de AbstractPanelSection
 		labelResumen = crearLabel("");
 
 		JPanel filaFiltro = new JPanel(new BorderLayout(VentanaPrincipal.escalar(12), 0));
@@ -121,11 +150,11 @@ public class SubpanelNotificaciones extends AbstractPanelSection {
 		filaFiltro.add(zonaFiltro, BorderLayout.CENTER);
 		filaFiltro.add(zonaBoton, BorderLayout.EAST);
 
-		// ScrollPane — usa estilizarScroll() de AbstractPanelSection
+		// estilizarScroll() de AbstractPanelSection
 		JScrollPane scrollLista = estilizarScroll(listaNotificaciones);
 		scrollLista.setPreferredSize(new Dimension(VentanaPrincipal.escalar(1050), VentanaPrincipal.escalar(330)));
 
-		// gbcCampo() de AbstractPanelSection — mismo que el empleado
+		// gbcCampo() de AbstractPanelSection
 		bloque.add(labelResumen, gbcCampo(1));
 		bloque.add(filaFiltro, gbcCampo(2));
 		bloque.add(scrollLista, gbcCampo(3));
@@ -134,9 +163,13 @@ public class SubpanelNotificaciones extends AbstractPanelSection {
 	}
 
 	/**
-	 * Crea el bloque de acciones — mismo estilo que SeccionNotificacionesEmpleado.
+	 * Crea el bloque de acciones sobre notificaciones. Mismo estilo que
+	 * SeccionNotificacionesEmpleado.
+	 *
+	 * @return Panel del bloque acciones
 	 */
 	private JPanel crearBloqueAcciones() {
+		// crearBloque() de AbstractPanelSection
 		JPanel bloque = crearBloque("Consultar notificación");
 
 		JPanel panelAcciones = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(30), 0));
@@ -149,12 +182,16 @@ public class SubpanelNotificaciones extends AbstractPanelSection {
 		return bloque;
 	}
 
+	/**
+	 * Crea el panel de ayuda con instrucciones de uso.
+	 *
+	 * @return Panel de ayuda
+	 */
 	private JPanel crearPanelAyuda() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-		
 		panel.add(crearLabel("Cómo funciona"));
 		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 		panel.add(crearLabel("Selecciona una notificación de la bandeja."));
@@ -164,6 +201,11 @@ public class SubpanelNotificaciones extends AbstractPanelSection {
 		return panel;
 	}
 
+	/**
+	 * Crea el panel con los botones de acción sobre notificaciones.
+	 *
+	 * @return Panel de botones
+	 */
 	private JPanel crearPanelBotones() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -193,8 +235,8 @@ public class SubpanelNotificaciones extends AbstractPanelSection {
 	}
 
 	/**
-	 * Carga y muestra las notificaciones según el filtro. Lo llama el controlador y
-	 * el combo al cambiar.
+	 * Carga y muestra las notificaciones según el filtro seleccionado. Lo llama el
+	 * controlador y el combo al cambiar.
 	 */
 	public void cargarNotificaciones() {
 		if (controlador == null)
@@ -235,6 +277,11 @@ public class SubpanelNotificaciones extends AbstractPanelSection {
 		cargarNotificaciones();
 	}
 
+	/**
+	 * Muestra el contenido completo de una notificación en un diálogo.
+	 *
+	 * @param n La notificación a mostrar
+	 */
 	private void mostrarNotificacionEnVentana(Notificacion n) {
 		// crearArea() y estilizarScroll() de AbstractPanelSection
 		JTextArea area = crearArea();
@@ -248,6 +295,12 @@ public class SubpanelNotificaciones extends AbstractPanelSection {
 		JOptionPane.showMessageDialog(this, scroll, "Notificación", JOptionPane.INFORMATION_MESSAGE);
 	}
 
+	/**
+	 * Actualiza el label de resumen con el total y no leídas.
+	 *
+	 * @param totalMostradas Total de notificaciones mostradas
+	 * @param noVistas       Número de notificaciones no leídas
+	 */
 	private void actualizarResumen(int totalMostradas, int noVistas) {
 		if (totalMostradas == 0) {
 			labelResumen.setText("No hay notificaciones para mostrar con este filtro.");
@@ -256,6 +309,12 @@ public class SubpanelNotificaciones extends AbstractPanelSection {
 		labelResumen.setText("Mostrando " + totalMostradas + " notificaciones. No vistas: " + noVistas + ".");
 	}
 
+	/**
+	 * Crea el texto que se muestra en la lista para una notificación.
+	 *
+	 * @param n La notificación
+	 * @return Texto formateado para la lista
+	 */
 	private String crearTextoLista(Notificacion n) {
 		String estado = n.isLeida() ? "Vista" : "Nueva";
 		String tipo = n.getTipo() != null ? n.getTipo().toString() : "General";
@@ -263,6 +322,12 @@ public class SubpanelNotificaciones extends AbstractPanelSection {
 		return estado + "   |   " + tipo + "   |   " + fecha;
 	}
 
+	/**
+	 * Crea el texto completo de una notificación para mostrar en el diálogo.
+	 *
+	 * @param n La notificación
+	 * @return Texto completo de la notificación
+	 */
 	private String crearTextoNotificacion(Notificacion n) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Tipo: ").append(n.getTipo() != null ? n.getTipo() : "General").append("\n");
@@ -272,12 +337,21 @@ public class SubpanelNotificaciones extends AbstractPanelSection {
 		return sb.toString();
 	}
 
+	/**
+	 * Formatea la fecha de envío de una notificación.
+	 *
+	 * @param n La notificación
+	 * @return Fecha formateada como string o "-" si es nula
+	 */
 	private String formatearFecha(Notificacion n) {
 		if (n == null || n.getFechaEnvio() == null)
 			return "-";
 		return n.getFechaEnvio().toLocalDate() + " " + n.getFechaEnvio().toLocalTime().withNano(0);
 	}
 
+	/**
+	 * Aplica el estilo visual a la lista de notificaciones.
+	 */
 	private void estilizarLista() {
 		listaNotificaciones.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		listaNotificaciones.setFixedCellHeight(VentanaPrincipal.escalar(34));
@@ -286,18 +360,5 @@ public class SubpanelNotificaciones extends AbstractPanelSection {
 		listaNotificaciones.setForeground(Color.BLACK);
 		listaNotificaciones.setSelectionBackground(new Color(235, 235, 235));
 		listaNotificaciones.setSelectionForeground(Color.BLACK);
-	}
-
-	/**
-	 * Sobreescribimos mostrarMensaje para que compile ya que AbstractPanelSection
-	 * ya lo tiene — aquí lo exponemos público.
-	 */
-	public void mostrarMensaje(String mensaje) {
-		JOptionPane.showMessageDialog(this, mensaje, "Información", JOptionPane.INFORMATION_MESSAGE);
-	}
-
-	@Override
-	public void mostrarError(String mensaje) {
-		JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
 	}
 }
