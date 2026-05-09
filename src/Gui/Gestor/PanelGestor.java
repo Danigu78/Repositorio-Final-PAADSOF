@@ -2,15 +2,18 @@ package Gui.Gestor;
 
 import Gui.AbstractPanelSection;
 import Gui.VentanaPrincipal;
+import Gui.Controladores.Gestor.ControladorPanelGestor;
+
 import javax.swing.*;
-import javax.swing.border.*;
 import java.awt.*;
-import java.awt.event.*;
 import usuarios.Gestor;
 
 /**
  * Panel principal del gestor en CheckPoint.
- * Extiende AbstractPanelSection para reutilizar helpers visuales.
+ * Extiende AbstractPanelSection para reutilizar helpers visuales
+ * y la barra de navegación común.
+ * Sigue el patrón MVC de los apuntes — delega la navegación en
+ * ControladorPanelGestor.
  *
  * @author Antonino
  * @version 1.0
@@ -24,23 +27,43 @@ public class PanelGestor extends AbstractPanelSection {
     private static final String SEC_CONFIGURACION        = "CONFIGURACION";
     private static final String SEC_PERFIL               = "PERFIL";
 
+    /** Controlador del panel — gestiona la navegación entre secciones. */
+    private ControladorPanelGestor controlador;
+
+    /** Gestor logueado. */
     private Gestor gestor;
+
+    /** CardLayout para alternar entre secciones. */
     private CardLayout cardSecciones;
+
+    /** Panel contenedor de todas las secciones. */
     private JPanel panelSecciones;
-    private JLabel labelGestor;
-    private JButton botonActivo;
 
-    private SubpanelEmpleadosGestor subpanelEmpleados;
-    private SubpanelCategoriasGestor subpanelCategorias;
+    /** Barra de navegación — guardada para marcarBotonBarraActivoPorCmd(). */
+    private JPanel barra;
+
+    /** Subpaneles del gestor. */
+    private SubpanelEmpleadosGestor           subpanelEmpleados;
+    private SubpanelCategoriasGestor          subpanelCategorias;
     private SubpanelProductosDescuentosGestor subpanelProductosDescuentos;
-    private SubpanelEstadisticasGestor subpanelEstadisticas;
-    private SubpanelConfiguracionGestor subpanelConfiguracion;
-    private SubpanelPerfilGestor subpanelPerfil;
+    private SubpanelEstadisticasGestor        subpanelEstadisticas;
+    private SubpanelConfiguracionGestor       subpanelConfiguracion;
+    private SubpanelPerfilGestor              subpanelPerfil;
 
+    /**
+     * Constructor del panel gestor.
+     *
+     * @param ventana La ventana principal
+     */
     public PanelGestor(VentanaPrincipal ventana) {
         super(ventana);
     }
 
+    /**
+     * Actualiza el panel con el gestor logueado y construye la interfaz.
+     *
+     * @param gestor El gestor logueado
+     */
     public void actualizarGestor(Gestor gestor) {
         this.gestor = gestor;
         removeAll();
@@ -49,8 +72,50 @@ public class PanelGestor extends AbstractPanelSection {
         repaint();
     }
 
+    /**
+     * Muestra la sección indicada en el área de contenido principal.
+     * Lo llama el controlador desde actionPerformed.
+     *
+     * @param seccion Identificador de la sección
+     */
+    public void mostrarSeccion(String seccion) {
+        cardSecciones.show(panelSecciones, seccion);
+    }
+
+    /**
+     * Marca la pestaña activa en la barra de navegación.
+     * Lo llama el controlador desde actionPerformed.
+     *
+     * @param cmd ActionCommand de la pestaña a marcar
+     */
+    public void marcarPestaña(String cmd) {
+        // marcarBotonBarraActivoPorCmd() de AbstractPanelSection
+        marcarBotonBarraActivoPorCmd(barra, cmd);
+    }
+
+    /**
+     * Construye la interfaz del panel gestor.
+     * Crea el controlador y lo registra en la barra de navegación.
+     */
     private void inicializarUI() {
-        add(crearBarraNavegacion(), BorderLayout.NORTH);
+        controlador = new ControladorPanelGestor(this);
+
+        String[][] pestañas = {
+            {"Empleados",              SEC_EMPLEADOS},
+            {"Categorías",             SEC_CATEGORIAS},
+            {"Productos y Descuentos", SEC_PRODUCTOS_DESCUENTOS},
+            {"Estadísticas",           SEC_ESTADISTICAS},
+            {"Configuración",          SEC_CONFIGURACION},
+            {"Mi Perfil",              SEC_PERFIL}
+        };
+
+        // crearBarraNavegacion() de AbstractPanelSection
+        barra = crearBarraNavegacion(
+            "🎮 CheckPoint - Gestor",
+            gestor != null ? gestor.getNickname() : "Gestor",
+            pestañas,
+            controlador);
+        add(barra, BorderLayout.NORTH);
 
         cardSecciones = new CardLayout();
         panelSecciones = new JPanel(cardSecciones);
@@ -72,120 +137,6 @@ public class PanelGestor extends AbstractPanelSection {
 
         add(panelSecciones, BorderLayout.CENTER);
         cardSecciones.show(panelSecciones, SEC_EMPLEADOS);
-    }
-
-    private JPanel crearBarraNavegacion() {
-        JPanel barra = new JPanel(new BorderLayout());
-        barra.setBackground(VentanaPrincipal.COLOR_PANEL);
-        barra.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createMatteBorder(0, 0, 2, 0, VentanaPrincipal.COLOR_ACENTO),
-            BorderFactory.createEmptyBorder(0, VentanaPrincipal.escalar(15),
-                0, VentanaPrincipal.escalar(15))));
-        barra.setPreferredSize(new Dimension(0, VentanaPrincipal.escalar(58)));
-
-        // crearLabel() de AbstractPanelSection
-        JLabel labelLogo = new JLabel("🎮 CheckPoint - Gestor");
-        labelLogo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
-        labelLogo.setForeground(VentanaPrincipal.COLOR_ACENTO);
-        barra.add(labelLogo, BorderLayout.WEST);
-
-        JPanel panelPestanas = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 0));
-        panelPestanas.setBackground(VentanaPrincipal.COLOR_PANEL);
-        panelPestanas.setBorder(BorderFactory.createEmptyBorder(
-            VentanaPrincipal.escalar(8), 0, 0, 0));
-
-        botonActivo = null;
-
-        String[][] pestanas = {
-            {"Empleados",              SEC_EMPLEADOS},
-            {"Categorías",             SEC_CATEGORIAS},
-            {"Productos y Descuentos", SEC_PRODUCTOS_DESCUENTOS},
-            {"Estadísticas",           SEC_ESTADISTICAS},
-            {"Configuración",          SEC_CONFIGURACION},
-            {"Mi Perfil",              SEC_PERFIL}
-        };
-
-        for (String[] pestana : pestanas) {
-            agregarPestana(panelPestanas, pestana[0], pestana[1]);
-        }
-
-        barra.add(panelPestanas, BorderLayout.CENTER);
-
-        JPanel panelDerecha = new JPanel(
-            new FlowLayout(FlowLayout.RIGHT, VentanaPrincipal.escalar(10), 0));
-        panelDerecha.setBackground(VentanaPrincipal.COLOR_PANEL);
-        panelDerecha.setBorder(BorderFactory.createEmptyBorder(
-            VentanaPrincipal.escalar(12), 0, 0, 0));
-
-        labelGestor = new JLabel("👤 "
-            + (gestor != null ? gestor.getNickname() : "Gestor"));
-        labelGestor.setFont(VentanaPrincipal.FUENTE_NORMAL);
-        labelGestor.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-        panelDerecha.add(labelGestor);
-
-        // crearBotonRojo() de AbstractPanelSection
-        JButton botonLogout = crearBotonRojo("🚪 Salir");
-        botonLogout.setFont(VentanaPrincipal.FUENTE_PEQUENA);
-        botonLogout.addActionListener(e -> ventana.logout());
-        panelDerecha.add(botonLogout);
-
-        barra.add(panelDerecha, BorderLayout.EAST);
-        return barra;
-    }
-
-    private void agregarPestana(JPanel panel, String texto, String seccion) {
-        JButton boton = new JButton(texto);
-        boton.setFont(new Font("Segoe UI", Font.PLAIN,
-            VentanaPrincipal.escalar(13)));
-        boton.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-        boton.setBackground(VentanaPrincipal.COLOR_PANEL);
-        boton.setBorder(BorderFactory.createEmptyBorder(
-            VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(12),
-            VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(12)));
-        boton.setFocusPainted(false);
-        boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        boton.addMouseListener(new MouseAdapter() {
-            @Override public void mouseEntered(MouseEvent e) {
-                if (boton != botonActivo)
-                    boton.setForeground(VentanaPrincipal.COLOR_TEXTO);
-            }
-            @Override public void mouseExited(MouseEvent e) {
-                if (boton != botonActivo)
-                    boton.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-            }
-        });
-
-        boton.addActionListener(e -> {
-            activarPestana(boton);
-            cardSecciones.show(panelSecciones, seccion);
-        });
-
-        if (botonActivo == null) {
-            botonActivo = boton;
-            marcarActivo(boton);
-        }
-
-        panel.add(boton);
-    }
-
-    private void marcarActivo(JButton boton) {
-        boton.setForeground(VentanaPrincipal.COLOR_ACENTO);
-        boton.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createMatteBorder(0, 0, 2, 0, VentanaPrincipal.COLOR_ACENTO),
-            BorderFactory.createEmptyBorder(
-                VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(12),
-                VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(12))));
-    }
-
-    private void activarPestana(JButton boton) {
-        if (botonActivo != null) {
-            botonActivo.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-            botonActivo.setBorder(BorderFactory.createEmptyBorder(
-                VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(12),
-                VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(12)));
-        }
-        botonActivo = boton;
-        marcarActivo(boton);
+        marcarBotonBarraActivoPorCmd(barra, SEC_EMPLEADOS);
     }
 }

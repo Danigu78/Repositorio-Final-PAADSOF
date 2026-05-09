@@ -616,10 +616,18 @@ public abstract class AbstractPanelSection extends JPanel {
 	    panelDerecha.setBorder(BorderFactory.createEmptyBorder(
 	        VentanaPrincipal.escalar(12), 0, 0, 0));
 
+	
 	    JLabel labelUsuario = new JLabel(" " + nombreUsuario);
 	    labelUsuario.setFont(VentanaPrincipal.FUENTE_NORMAL);
 	    labelUsuario.setForeground(VentanaPrincipal.COLOR_TEXTO2);
 	    panelDerecha.add(labelUsuario);
+
+	    // Separador vertical entre nickname y botón salir
+	    JPanel separador = new JPanel();
+	    separador.setBackground(VentanaPrincipal.COLOR_ACENTO);
+	    separador.setPreferredSize(new Dimension(
+	        VentanaPrincipal.escalar(3), VentanaPrincipal.escalar(25)));
+	    panelDerecha.add(separador);
 
 	    // crearBotonRojo() ya existe en AbstractPanelSection
 	    JButton botonLogout = crearBotonRojo(" Salir");
@@ -628,8 +636,6 @@ public abstract class AbstractPanelSection extends JPanel {
 	    panelDerecha.add(botonLogout);
 
 	    barra.add(panelDerecha, BorderLayout.EAST);
-
-	    // Guardamos el label para poder actualizarlo después con actualizarUsuarioBarra()
 	    barra.putClientProperty("labelUsuario", labelUsuario);
 	    return barra;
 	}
