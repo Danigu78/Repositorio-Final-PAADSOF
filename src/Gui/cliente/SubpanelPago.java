@@ -1,265 +1,231 @@
 package Gui.cliente;
 
+import javax.swing.*;
+
 import Gui.VentanaPrincipal;
 import Gui.Controladores.cliente.ControladorPago;
 
-import javax.swing.*;
-import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
 import usuarios.Cliente;
 import ventas.Pedido;
 
 /**
- * Subpanel de pago de CheckPoint.
- * Muestra el resumen del pedido, campos de tarjeta y botón pagar.
- * Tras pago correcto vuelve a Mis Pedidos.
+ * Subpanel de pago de CheckPoint. Muestra el resumen del pedido, campos de
+ * tarjeta y botón pagar. Tras pago correcto vuelve a Mis Pedidos. Extiende
+ * AbstractPanelCliente para reutilizar helpers visuales del cliente. Sigue el
+ * patrón MVC de los apuntes.
  *
  * @author Daniel
  * @version 1.0
  */
-public class SubpanelPago extends JPanel {
+public class SubpanelPago extends AbstractPanelCliente {
 
-    /** Referencia a la ventana principal */
-    private VentanaPrincipal ventana;
+	/** Referencia al panel cliente para volver a pedidos. */
+	private PanelCliente panelCliente;
 
-    /** Referencia al panel cliente para volver a pedidos */
-    private PanelCliente panelCliente;
+	/** Controlador del pago. */
+	private ControladorPago controlador;
 
-    /** Controlador del pago */
-    private ControladorPago controlador;
+	/** Botón volver — atributo para registrar el controlador. */
+	private JButton botonVolver;
 
-    /**
-     * Constructor del subpanel de pago.
-     *
-     * @param ventana      La ventana principal
-     * @param panelCliente El panel cliente para navegar a pedidos
-     */
-    public SubpanelPago(VentanaPrincipal ventana, PanelCliente panelCliente) {
-        this.ventana = ventana;
-        this.panelCliente = panelCliente;
-        setLayout(new BorderLayout());
-        setBackground(VentanaPrincipal.COLOR_FONDO);
-    }
+	/** Botón pagar — atributo para registrar el controlador. */
+	private JButton botonPagar;
 
-    /**
-     * Carga el pedido y construye la interfaz de pago.
-     *
-     * @param pedido  El pedido a pagar
-     * @param cliente El cliente logueado
-     */
-    public void mostrarPago(Pedido pedido, Cliente cliente) {
-        this.controlador = new ControladorPago(this, cliente, pedido);
-        removeAll();
-        add(crearBarraSuperior(), BorderLayout.NORTH);
-        add(crearPanelPago(), BorderLayout.CENTER);
-        revalidate();
-        repaint();
-    }
+	/** Campo número de tarjeta — atributo para leerlo en procesarPago(). */
+	private JTextField campoTarjeta;
 
-    /**
-     * Crea la barra superior con botón volver a pedidos.
-     *
-     * @return Panel de la barra superior
-     */
-    private JPanel crearBarraSuperior() {
-        JPanel barra = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        barra.setBackground(VentanaPrincipal.COLOR_PANEL);
-        barra.setBorder(BorderFactory.createMatteBorder(
-            0, 0, 1, 0, VentanaPrincipal.COLOR_BORDE));
+	/** Campo CVV — atributo para leerlo en procesarPago(). */
+	private JPasswordField campoCVV;
 
-        JButton botonVolver = new JButton("← Volver a mis pedidos");
-        botonVolver.setFont(VentanaPrincipal.FUENTE_NORMAL);
-        botonVolver.setForeground(VentanaPrincipal.COLOR_TEXTO);
-        botonVolver.setBackground(VentanaPrincipal.COLOR_PANEL);
-        botonVolver.setOpaque(true);
-        botonVolver.setBorderPainted(true);
-        botonVolver.setFocusPainted(false);
-        botonVolver.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        botonVolver.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(VentanaPrincipal.COLOR_ACENTO),
-            BorderFactory.createEmptyBorder(
-                VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(15),
-                VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(15))));
-        botonVolver.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                botonVolver.setForeground(VentanaPrincipal.COLOR_ACENTO);
-            }
-            @Override
-            public void mouseExited(MouseEvent e) {
-                botonVolver.setForeground(VentanaPrincipal.COLOR_TEXTO);
-            }
-        });
-        botonVolver.addActionListener(e -> volverAPedidos());
-        barra.add(botonVolver);
-        return barra;
-    }
+	/**
+	 * Constructor del subpanel de pago.
+	 *
+	 * @param ventana      La ventana principal
+	 * @param panelCliente El panel cliente para navegar a pedidos
+	 */
+	public SubpanelPago(VentanaPrincipal ventana, PanelCliente panelCliente) {
+		super(ventana);
+		this.panelCliente = panelCliente;
+	}
 
-    /**
-     * Crea el panel central con resumen del pedido y formulario de pago.
-     *
-     * @return Panel de pago centrado
-     */
-    private JPanel crearPanelPago() {
-        JPanel panelCentral = new JPanel(new BorderLayout());
-        panelCentral.setBackground(VentanaPrincipal.COLOR_FONDO);
-        panelCentral.setBorder(BorderFactory.createEmptyBorder(
-            VentanaPrincipal.escalar(40), VentanaPrincipal.escalar(200),
-            VentanaPrincipal.escalar(40), VentanaPrincipal.escalar(200)));
+	/**
+	 * No se usa en este subpanel — la construcción se hace en mostrarPago(). Se
+	 * implementa por obligación de AbstractPanelCliente.
+	 *
+	 * @param cliente El cliente logueado
+	 */
+	@Override
+	public void actualizar(Cliente cliente) {
+		this.cliente = cliente;
+	}
 
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBackground(VentanaPrincipal.COLOR_PANEL);
-        panel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
-            BorderFactory.createEmptyBorder(
-                VentanaPrincipal.escalar(30), VentanaPrincipal.escalar(40),
-                VentanaPrincipal.escalar(30), VentanaPrincipal.escalar(40))
-        ));
+	/**
+	 * Carga el pedido y construye la interfaz de pago. Crea el controlador y lo
+	 * registra en los botones.
+	 *
+	 * @param pedido  El pedido a pagar
+	 * @param cliente El cliente logueado
+	 */
+	public void mostrarPago(Pedido pedido, Cliente cliente) {
+		this.cliente = cliente;
+		this.controlador = new ControladorPago(this, cliente, pedido);
+		removeAll();
+		add(crearBarraSuperior(), BorderLayout.NORTH);
+		add(crearPanelPago(), BorderLayout.CENTER);
+		setControlador(controlador);
+		revalidate();
+		repaint();
+	}
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1;
-        gbc.insets = new Insets(VentanaPrincipal.escalar(6), 0, VentanaPrincipal.escalar(6), 0);
+	/**
+	 * Registra el controlador en los botones — patrón de los apuntes.
+	 *
+	 * @param c El ActionListener a registrar
+	 */
+	public void setControlador(ActionListener c) {
+		if (botonVolver != null) {
+			for (ActionListener al : botonVolver.getActionListeners())
+				botonVolver.removeActionListener(al);
+			botonVolver.addActionListener(c);
+		}
+		if (botonPagar != null) {
+			for (ActionListener al : botonPagar.getActionListeners())
+				botonPagar.removeActionListener(al);
+			botonPagar.addActionListener(c);
+		}
+		if (campoCVV != null) {
+			for (ActionListener al : campoCVV.getActionListeners())
+				campoCVV.removeActionListener(al);
+			campoCVV.addActionListener(c);
+		}
+	}
 
-        // Título
-        JLabel titulo = new JLabel("Realizar pago");
-        titulo.setFont(VentanaPrincipal.FUENTE_TITULO);
-        titulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
-        gbc.gridy = 0;
-        gbc.insets = new Insets(0, 0, VentanaPrincipal.escalar(20), 0);
-        panel.add(titulo, gbc);
+	/**
+	 * Crea la barra superior con botón volver a pedidos. Usa crearBarraVolver() y
+	 * getBotonVolver() de AbstractPanelSection.
+	 *
+	 * @return Panel de la barra superior
+	 */
+	private JPanel crearBarraSuperior() {
+		// crearBarraVolver() de AbstractPanelSection
+		JPanel barra = crearBarraVolver("← Volver a mis pedidos");
+		botonVolver = getBotonVolver(barra);
+		botonVolver.setActionCommand("volver");
+		return barra;
+	}
 
-        gbc.insets = new Insets(VentanaPrincipal.escalar(4), 0, VentanaPrincipal.escalar(4), 0);
+	/**
+	 * Crea el panel central con resumen del pedido y formulario de pago.
+	 *
+	 * @return Panel de pago centrado
+	 */
+	private JPanel crearPanelPago() {
+		JPanel panelCentral = new JPanel(new BorderLayout());
+		panelCentral.setBackground(VentanaPrincipal.COLOR_FONDO);
+		panelCentral.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(40),
+				VentanaPrincipal.escalar(200), VentanaPrincipal.escalar(40), VentanaPrincipal.escalar(200)));
 
-        // ID pedido
-        JLabel labelId = new JLabel("Pedido: " + controlador.getIdPedido());
-        labelId.setFont(VentanaPrincipal.FUENTE_NORMAL);
-        labelId.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-        gbc.gridy = 1;
-        panel.add(labelId, gbc);
+		JPanel panel = new JPanel(new GridBagLayout());
+		panel.setBackground(VentanaPrincipal.COLOR_PANEL);
+		panel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
+				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(30), VentanaPrincipal.escalar(40),
+						VentanaPrincipal.escalar(30), VentanaPrincipal.escalar(40))));
 
-        // Total
-        JLabel labelTotal = new JLabel(
-            String.format("Total a pagar: %.2f€", controlador.getTotal()));
-        labelTotal.setFont(new Font("Segoe UI", Font.BOLD, VentanaPrincipal.escalar(22)));
-        labelTotal.setForeground(VentanaPrincipal.COLOR_ACENTO);
-        gbc.gridy = 2;
-        gbc.insets = new Insets(0, 0, VentanaPrincipal.escalar(20), 0);
-        panel.add(labelTotal, gbc);
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.weightx = 1;
+		gbc.insets = new Insets(VentanaPrincipal.escalar(6), 0, VentanaPrincipal.escalar(6), 0);
 
-        gbc.insets = new Insets(VentanaPrincipal.escalar(4), 0, VentanaPrincipal.escalar(4), 0);
-        gbc.gridy = 3;
-        panel.add(new JSeparator(), gbc);
+		JLabel titulo = new JLabel("Realizar pago");
+		titulo.setFont(VentanaPrincipal.FUENTE_TITULO);
+		titulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
+		gbc.gridy = 0;
+		gbc.insets = new Insets(0, 0, VentanaPrincipal.escalar(20), 0);
+		panel.add(titulo, gbc);
 
-        // Número de tarjeta
-        gbc.gridy = 4;
-        panel.add(crearEtiqueta("Número de tarjeta (16 dígitos):"), gbc);
-        JTextField campoTarjeta = crearCampo();
-        gbc.gridy = 5;
-        panel.add(campoTarjeta, gbc);
+		gbc.insets = new Insets(VentanaPrincipal.escalar(4), 0, VentanaPrincipal.escalar(4), 0);
 
-        // CVV
-        gbc.gridy = 6;
-        panel.add(crearEtiqueta("CVV (3 dígitos):"), gbc);
-        JPasswordField campoCVV = new JPasswordField();
-        campoCVV.setFont(VentanaPrincipal.FUENTE_NORMAL);
-        campoCVV.setForeground(Color.BLACK);
-        campoCVV.setBackground(Color.WHITE);
-        campoCVV.setCaretColor(Color.BLACK);
-        campoCVV.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
-            BorderFactory.createEmptyBorder(
-                VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(10),
-                VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(10))));
-        gbc.gridy = 7;
-        panel.add(campoCVV, gbc);
+		// crearLabel() de AbstractPanelSection — sustituye crearEtiqueta()
+		JLabel labelId = crearLabel("Pedido: " + controlador.getIdPedido());
+		gbc.gridy = 1;
+		panel.add(labelId, gbc);
 
-        // Botón pagar
-        JButton botonPagar = new JButton(
-            String.format("Pagar %.2f€", controlador.getTotal()));
-        botonPagar.setFont(VentanaPrincipal.FUENTE_BOTON);
-        botonPagar.setBackground(VentanaPrincipal.COLOR_ACENTO);
-        botonPagar.setForeground(Color.WHITE);
-        botonPagar.setOpaque(true);
-        botonPagar.setBorderPainted(false);
-        botonPagar.setFocusPainted(false);
-        botonPagar.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        botonPagar.setBorder(BorderFactory.createEmptyBorder(
-            VentanaPrincipal.escalar(12), VentanaPrincipal.escalar(20),
-            VentanaPrincipal.escalar(12), VentanaPrincipal.escalar(20)));
-        botonPagar.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                botonPagar.setBackground(VentanaPrincipal.COLOR_ACENTO.darker());
-            }
-            @Override
-            public void mouseExited(MouseEvent e) {
-                botonPagar.setBackground(VentanaPrincipal.COLOR_ACENTO);
-            }
-        });
-        botonPagar.addActionListener(e -> controlador.realizarPago(
-            campoTarjeta.getText().trim(),
-            new String(campoCVV.getPassword()).trim()
-        ));
-        campoCVV.addActionListener(e -> controlador.realizarPago(
-            campoTarjeta.getText().trim(),
-            new String(campoCVV.getPassword()).trim()
-        ));
-        gbc.gridy = 8;
-        gbc.insets = new Insets(VentanaPrincipal.escalar(20), 0, 0, 0);
-        panel.add(botonPagar, gbc);
+		JLabel labelTotal = new JLabel(String.format("Total a pagar: %.2f€", controlador.getTotal()));
+		labelTotal.setFont(new Font("Segoe UI", Font.BOLD, VentanaPrincipal.escalar(22)));
+		labelTotal.setForeground(VentanaPrincipal.COLOR_ACENTO);
+		gbc.gridy = 2;
+		gbc.insets = new Insets(0, 0, VentanaPrincipal.escalar(20), 0);
+		panel.add(labelTotal, gbc);
 
-        panelCentral.add(panel, BorderLayout.CENTER);
-        return panelCentral;
-    }
+		gbc.insets = new Insets(VentanaPrincipal.escalar(4), 0, VentanaPrincipal.escalar(4), 0);
+		gbc.gridy = 3;
+		panel.add(new JSeparator(), gbc);
 
-    /**
-     * Vuelve a Mis Pedidos. Lo llama el controlador tras pago correcto.
-     */
-    public void volverAPedidos() {
-        if (panelCliente != null) {
-            panelCliente.actualizarSeccionPedidos();
-            panelCliente.mostrarSeccion("PEDIDOS");
-        }
-    }
-    /**
-     * Muestra un mensaje de error. Lo llama el controlador.
-     *
-     * @param mensaje El mensaje de error
-     */
-    public void mostrarError(String mensaje) {
-        JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
-    }
+		gbc.gridy = 4;
+		panel.add(crearLabel("Número de tarjeta (16 dígitos):"), gbc);
 
-    /**
-     * Muestra un mensaje de éxito. Lo llama el controlador.
-     *
-     * @param mensaje El mensaje de éxito
-     */
-    public void mostrarExito(String mensaje) {
-        JOptionPane.showMessageDialog(this, mensaje, "Pago realizado", JOptionPane.INFORMATION_MESSAGE);
-    }
+		// crearCampo() de AbstractPanelSection — sustituye crearCampo() propio
+		campoTarjeta = crearCampo();
+		gbc.gridy = 5;
+		panel.add(campoTarjeta, gbc);
 
-    private JLabel crearEtiqueta(String texto) {
-        JLabel label = new JLabel(texto);
-        label.setFont(VentanaPrincipal.FUENTE_NORMAL);
-        label.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-        return label;
-    }
+		gbc.gridy = 6;
+		panel.add(crearLabel("CVV (3 dígitos):"), gbc);
 
-    private JTextField crearCampo() {
-        JTextField campo = new JTextField();
-        campo.setFont(VentanaPrincipal.FUENTE_NORMAL);
-        campo.setForeground(Color.BLACK);
-        campo.setBackground(Color.WHITE);
-        campo.setCaretColor(Color.BLACK);
-        campo.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
-            BorderFactory.createEmptyBorder(
-                VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(10),
-                VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(10))));
-        return campo;
-    }
+		campoCVV = new JPasswordField();
+		campoCVV.setFont(VentanaPrincipal.FUENTE_NORMAL);
+		campoCVV.setForeground(Color.BLACK);
+		campoCVV.setBackground(Color.WHITE);
+		campoCVV.setCaretColor(Color.BLACK);
+		campoCVV.setBorder(
+				BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
+						BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(10),
+								VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(10))));
+		// Enter en CVV también dispara el pago
+		campoCVV.setActionCommand("pagar");
+		gbc.gridy = 7;
+		panel.add(campoCVV, gbc);
+
+		// crearBotonNaranja() de AbstractPanelSection
+		botonPagar = crearBotonNaranja(String.format("Pagar %.2f€", controlador.getTotal()));
+		botonPagar.setActionCommand("pagar");
+		botonPagar.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(12), VentanaPrincipal.escalar(20),
+				VentanaPrincipal.escalar(12), VentanaPrincipal.escalar(20)));
+		gbc.gridy = 8;
+		gbc.insets = new Insets(VentanaPrincipal.escalar(20), 0, 0, 0);
+		panel.add(botonPagar, gbc);
+
+		panelCentral.add(panel, BorderLayout.CENTER);
+		return panelCentral;
+	}
+
+	/**
+	 * Lee los campos de tarjeta y CVV y llama al controlador para pagar. Lo llama
+	 * el controlador desde actionPerformed.
+	 */
+	public void procesarPago() {
+		controlador.realizarPago(campoTarjeta.getText().trim(), new String(campoCVV.getPassword()).trim());
+	}
+
+	/**
+	 * Vuelve a Mis Pedidos. Lo llama el controlador.
+	 */
+	public void volverAPedidos() {
+		if (panelCliente != null) {
+			panelCliente.actualizarSeccionPedidos();
+			panelCliente.mostrarSeccion("PEDIDOS");
+		}
+	}
+
+	/**
+	 * Muestra un mensaje de éxito. Lo llama el controlador.
+	 *
+	 * @param mensaje El mensaje de éxito
+	 */
+	public void mostrarExito(String mensaje) {
+		mostrarMensaje(mensaje);
+	}
 }

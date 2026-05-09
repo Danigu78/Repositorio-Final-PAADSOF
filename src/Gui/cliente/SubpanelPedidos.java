@@ -1,13 +1,11 @@
 package Gui.cliente;
 
-import Gui.AbstractPanelSection;
+import javax.swing.*;
 
 import Gui.VentanaPrincipal;
 import Gui.Controladores.cliente.ControladorCatalogo;
 import Gui.Controladores.cliente.ControladorPedidos;
 
-import javax.swing.*;
-import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
@@ -19,24 +17,43 @@ import ventas.Pedido;
 import tienda.*;
 
 /**
- * Subpanel de mis pedidos de CheckPoint. Extiende AbstractPanelSection para
- * reutilizar helpers visuales. Sigue el patrón MVC de los apuntes.
+ * Subpanel de mis pedidos de CheckPoint. Extiende AbstractPanelCliente para
+ * reutilizar helpers visuales del cliente. Sigue el patrón MVC de los apuntes.
  *
  * @author Daniel
  * @version 1.0
  */
-public class SubpanelPedidos extends AbstractPanelSection {
+public class SubpanelPedidos extends AbstractPanelCliente {
 
-	private Cliente cliente;
+	/** Controlador del subpanel. */
 	private ControladorPedidos controlador;
+
+	/** CardLayout para alternar entre lista, detalle y producto. */
 	private CardLayout cardLayout;
+
+	/** Panel contenedor del CardLayout. */
 	private JPanel panelContenido;
+
+	/** Panel donde se muestran las tarjetas de los pedidos. */
 	private JPanel panelListaPedidos;
+
+	/** Subpanel de detalle de producto. */
 	private SubpanelProducto subpanelProducto;
+
+	/** Panel de detalle de un pedido concreto. */
 	private JPanel panelDetallePedido;
+
+	/** Referencia al panel cliente para navegar al pago. */
 	private PanelCliente panelCliente;
+
+	/** Botón volver del panel de detalle. */
 	private JButton botonVolverDetalle;
 
+	/**
+	 * Constructor del subpanel de pedidos.
+	 *
+	 * @param ventana La ventana principal
+	 */
 	public SubpanelPedidos(VentanaPrincipal ventana) {
 		super(ventana);
 
@@ -57,6 +74,13 @@ public class SubpanelPedidos extends AbstractPanelSection {
 		cardLayout.show(panelContenido, "LISTA");
 	}
 
+	/**
+	 * Actualiza el subpanel con el cliente logueado. Revisa tiempos caducados, crea
+	 * el controlador y rellena la lista.
+	 *
+	 * @param cliente El cliente logueado
+	 */
+	@Override
 	public void actualizar(Cliente cliente) {
 		this.cliente = cliente;
 		Tienda.getInstancia().getComprobadorTiempos().revisarCarritosCaducados();
@@ -66,16 +90,38 @@ public class SubpanelPedidos extends AbstractPanelSection {
 		cardLayout.show(panelContenido, "LISTA");
 	}
 
+	/**
+	 * Muestra la lista de pedidos. Lo llama el controlador al volver.
+	 */
 	public void mostrarLista() {
 		rellenarLista();
 		cardLayout.show(panelContenido, "LISTA");
 	}
 
+	/**
+	 * Navega al pago del pedido. Lo llama el controlador.
+	 *
+	 * @param pedido El pedido a pagar
+	 */
 	public void irAPago(Pedido pedido) {
 		if (panelCliente != null)
 			panelCliente.mostrarPago(pedido, cliente);
 	}
 
+	/**
+	 * Enlaza el panel cliente para poder navegar al pago.
+	 *
+	 * @param panelCliente El panel cliente
+	 */
+	public void setPanelCliente(PanelCliente panelCliente) {
+		this.panelCliente = panelCliente;
+	}
+
+	/**
+	 * Crea el panel de la lista de pedidos con scroll.
+	 *
+	 * @return Panel de la lista
+	 */
 	private JPanel crearPanelLista() {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.setBackground(VentanaPrincipal.COLOR_FONDO);
@@ -89,57 +135,45 @@ public class SubpanelPedidos extends AbstractPanelSection {
 		panel.add(titulo, BorderLayout.NORTH);
 
 		panelListaPedidos = new JPanel();
-		panelListaPedidos.setLayout(new BoxLayout(panelListaPedidos, BoxLayout.Y_AXIS));
-		panelListaPedidos.setBackground(VentanaPrincipal.COLOR_FONDO);
-
-		JScrollPane scroll = new JScrollPane(panelListaPedidos);
-		scroll.setBorder(null);
-		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		scroll.getViewport().setBackground(VentanaPrincipal.COLOR_FONDO);
+		// crearScrollContenido() de AbstractPanelCliente
+		JScrollPane scroll = crearScrollContenido(panelListaPedidos);
 		panel.add(scroll, BorderLayout.CENTER);
 
 		return panel;
 	}
 
+	/**
+	 * Rellena el panel de lista con las tarjetas de los pedidos del cliente.
+	 */
 	private void rellenarLista() {
 		panelListaPedidos.removeAll();
 		List<Pedido> pedidos = controlador.getPedidos();
 		if (pedidos.isEmpty()) {
-			JLabel labelVacio = new JLabel("No tienes pedidos todavía.");
-			labelVacio.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
-			labelVacio.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-			labelVacio.setAlignmentX(Component.LEFT_ALIGNMENT);
-			panelListaPedidos.add(labelVacio);
+			// crearLabelVacio() de AbstractPanelCliente
+			panelListaPedidos.add(crearLabelVacio("No tienes pedidos todavía."));
 		} else {
-			for (Pedido p : pedidos) {
-				JPanel tarjeta = crearTarjetaPedido(p);
-				tarjeta.setAlignmentX(Component.LEFT_ALIGNMENT);
-				panelListaPedidos.add(tarjeta);
-			}
+			for (Pedido p : pedidos)
+				// añadirTarjetaConSeparacion() de AbstractPanelCliente
+				añadirTarjetaConSeparacion(panelListaPedidos, crearTarjetaPedido(p), 0);
 		}
 		panelListaPedidos.revalidate();
 		panelListaPedidos.repaint();
 	}
 
+	/**
+	 * Crea una tarjeta visual para un pedido de la lista. Usa crearTarjetaBase(),
+	 * crearGbcTarjeta() y crearPanelBotonesTarjeta() de AbstractPanelCliente.
+	 *
+	 * @param pedido El pedido a mostrar
+	 * @return Panel con la tarjeta
+	 */
 	private JPanel crearTarjetaPedido(Pedido pedido) {
-		JPanel tarjeta = new JPanel(new BorderLayout(VentanaPrincipal.escalar(15), 0));
-		tarjeta.setBackground(VentanaPrincipal.COLOR_TARJETA);
-		tarjeta.setMaximumSize(new Dimension(Integer.MAX_VALUE, VentanaPrincipal.escalar(120)));
-		tarjeta.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createMatteBorder(0, 0, 1, 0, VentanaPrincipal.COLOR_BORDE),
-				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(12), VentanaPrincipal.escalar(15),
-						VentanaPrincipal.escalar(12), VentanaPrincipal.escalar(15))));
+		// crearTarjetaBase() de AbstractPanelCliente — MatteBorder inferior
+		JPanel tarjeta = crearTarjetaBase(120, true);
 
-		JPanel panelInfo = new JPanel(new GridBagLayout());
-		panelInfo.setBackground(VentanaPrincipal.COLOR_TARJETA);
-
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.insets = new Insets(VentanaPrincipal.escalar(2), 0, VentanaPrincipal.escalar(2),
-				VentanaPrincipal.escalar(10));
-		gbc.weightx = 1;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.gridx = 0;
+		// crearPanelInfoTarjeta() y crearGbcTarjeta() de AbstractPanelCliente
+		JPanel panelInfo = crearPanelInfoTarjeta();
+		GridBagConstraints gbc = crearGbcTarjeta();
 
 		JLabel labelId = new JLabel(pedido.getIdPedido());
 		labelId.setFont(VentanaPrincipal.FUENTE_BOTON);
@@ -171,13 +205,9 @@ public class SubpanelPedidos extends AbstractPanelSection {
 
 		tarjeta.add(panelInfo, BorderLayout.CENTER);
 
-		JPanel panelBotones = new JPanel(new GridBagLayout());
-		panelBotones.setBackground(VentanaPrincipal.COLOR_TARJETA);
-
-		GridBagConstraints gbcB = new GridBagConstraints();
-		gbcB.gridx = 0;
-		gbcB.fill = GridBagConstraints.HORIZONTAL;
-		gbcB.insets = new Insets(VentanaPrincipal.escalar(3), 0, VentanaPrincipal.escalar(3), 0);
+		// crearPanelBotonesTarjeta() y crearGbcBotonesTarjeta() de AbstractPanelCliente
+		JPanel panelBotones = crearPanelBotonesTarjeta();
+		GridBagConstraints gbcB = crearGbcBotonesTarjeta();
 
 		// crearBotonOutline() de AbstractPanelSection
 		JButton botonVer = crearBotonOutline("Ver pedido");
@@ -205,6 +235,12 @@ public class SubpanelPedidos extends AbstractPanelSection {
 		return tarjeta;
 	}
 
+	/**
+	 * Muestra el detalle de un pedido concreto. Lo llama el controlador desde
+	 * actionPerformed.
+	 *
+	 * @param pedido El pedido a mostrar
+	 */
 	public void verDetallePedido(Pedido pedido) {
 		panelDetallePedido.removeAll();
 		panelDetallePedido.setLayout(new BorderLayout());
@@ -256,6 +292,7 @@ public class SubpanelPedidos extends AbstractPanelSection {
 			contenido.add(labelTiempo);
 			contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
+			// crearBotonNaranja() de AbstractPanelSection
 			JButton botonPagar = crearBotonNaranja("Pagar ahora");
 			botonPagar.setAlignmentX(Component.LEFT_ALIGNMENT);
 			botonPagar.setActionCommand("pagar:" + pedido.getIdPedido());
@@ -270,7 +307,6 @@ public class SubpanelPedidos extends AbstractPanelSection {
 		contenido.add(sep);
 		contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
-		// crearLabel() de AbstractPanelSection
 		JLabel labelProductosTitulo = new JLabel("Productos:");
 		labelProductosTitulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
 		labelProductosTitulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
@@ -303,6 +339,15 @@ public class SubpanelPedidos extends AbstractPanelSection {
 		cardLayout.show(panelContenido, "DETALLE");
 	}
 
+	/**
+	 * Crea una fila visual para un producto dentro del detalle del pedido. Usa
+	 * cargarImagen(), crearBotonOutline() y crearBotonNaranja() de
+	 * AbstractPanelSection.
+	 *
+	 * @param linea  La línea del pedido
+	 * @param pedido El pedido al que pertenece la línea
+	 * @return Panel con la fila del producto
+	 */
 	private JPanel crearFilaProducto(LineaPedido linea, Pedido pedido) {
 		ProductoVenta producto = linea.getProducto();
 
@@ -321,16 +366,9 @@ public class SubpanelPedidos extends AbstractPanelSection {
 		cargarImagen(labelImagen, producto.getImagenRuta(), VentanaPrincipal.escalar(70), VentanaPrincipal.escalar(70));
 		fila.add(labelImagen, BorderLayout.WEST);
 
-		JPanel panelInfo = new JPanel(new GridBagLayout());
-		panelInfo.setBackground(VentanaPrincipal.COLOR_TARJETA);
-
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.insets = new Insets(VentanaPrincipal.escalar(2), 0, VentanaPrincipal.escalar(2),
-				VentanaPrincipal.escalar(10));
-		gbc.weightx = 1;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.gridx = 0;
+		// crearPanelInfoTarjeta() y crearGbcTarjeta() de AbstractPanelCliente
+		JPanel panelInfo = crearPanelInfoTarjeta();
+		GridBagConstraints gbc = crearGbcTarjeta();
 
 		JLabel labelNombre = new JLabel(producto.getNombre());
 		labelNombre.setFont(VentanaPrincipal.FUENTE_BOTON);
@@ -353,13 +391,9 @@ public class SubpanelPedidos extends AbstractPanelSection {
 
 		fila.add(panelInfo, BorderLayout.CENTER);
 
-		JPanel panelBotones = new JPanel(new GridBagLayout());
-		panelBotones.setBackground(VentanaPrincipal.COLOR_TARJETA);
-
-		GridBagConstraints gbcB = new GridBagConstraints();
-		gbcB.gridx = 0;
-		gbcB.fill = GridBagConstraints.HORIZONTAL;
-		gbcB.insets = new Insets(VentanaPrincipal.escalar(3), 0, VentanaPrincipal.escalar(3), 0);
+		// crearPanelBotonesTarjeta() y crearGbcBotonesTarjeta() de AbstractPanelCliente
+		JPanel panelBotones = crearPanelBotonesTarjeta();
+		GridBagConstraints gbcB = crearGbcBotonesTarjeta();
 
 		// crearBotonOutline() de AbstractPanelSection
 		JButton botonVerProducto = crearBotonOutline("Ver producto");
@@ -389,6 +423,12 @@ public class SubpanelPedidos extends AbstractPanelSection {
 		return fila;
 	}
 
+	/**
+	 * Muestra un diálogo para introducir el código de recogida. Lo llama el
+	 * controlador desde actionPerformed.
+	 *
+	 * @param pedido El pedido a recoger
+	 */
 	public void mostrarDialogoRecogida(Pedido pedido) {
 		String codigo = JOptionPane.showInputDialog(this,
 				"Introduce el código de recogida para el pedido: " + pedido.getIdPedido(), "Confirmar Recogida",
@@ -404,56 +444,64 @@ public class SubpanelPedidos extends AbstractPanelSection {
 		}
 	}
 
+	/**
+	 * Muestra el formulario para escribir una reseña de un producto. Lo llama el
+	 * controlador desde actionPerformed.
+	 *
+	 * @param producto El producto a reseñar
+	 */
 	public void mostrarFormularioReseña(ProductoVenta producto) {
-	    // SpinnerNumberModel con int — porque Cliente.escribirReseña recibe int
-	    JSpinner spinnerPuntuacion = new JSpinner(
-	        new SpinnerNumberModel(5, 0, 10, 1));
-	    spinnerPuntuacion.setFont(VentanaPrincipal.FUENTE_NORMAL);
+		JSpinner spinnerPuntuacion = new JSpinner(new SpinnerNumberModel(5, 0, 10, 1));
+		spinnerPuntuacion.setFont(VentanaPrincipal.FUENTE_NORMAL);
 
-	    JTextArea areaComentario = crearArea();
-	    areaComentario.setRows(4);
+		// crearArea() de AbstractPanelSection
+		JTextArea areaComentario = crearArea();
+		areaComentario.setRows(4);
 
-	    JPanel panelForm = new JPanel(new GridBagLayout());
-	    GridBagConstraints gbc = new GridBagConstraints();
-	    gbc.gridx = 0;
-	    gbc.fill = GridBagConstraints.HORIZONTAL;
-	    gbc.weightx = 1;
-	    gbc.insets = new Insets(VentanaPrincipal.escalar(5), 0,
-	        VentanaPrincipal.escalar(5), 0);
+		JPanel panelForm = new JPanel(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.weightx = 1;
+		gbc.insets = new Insets(VentanaPrincipal.escalar(5), 0, VentanaPrincipal.escalar(5), 0);
 
-	    gbc.gridy = 0;
-	    panelForm.add(crearLabel("Producto: " + producto.getNombre()), gbc);
-	    gbc.gridy = 1;
-	    panelForm.add(crearLabel("Puntuación (0-10):"), gbc);
-	    gbc.gridy = 2;
-	    panelForm.add(spinnerPuntuacion, gbc);
-	    gbc.gridy = 3;
-	    panelForm.add(crearLabel("Comentario:"), gbc);
-	    gbc.gridy = 4;
-	    panelForm.add(new JScrollPane(areaComentario), gbc);
+		// crearLabel() de AbstractPanelSection
+		gbc.gridy = 0;
+		panelForm.add(crearLabel("Producto: " + producto.getNombre()), gbc);
+		gbc.gridy = 1;
+		panelForm.add(crearLabel("Puntuación (0-10):"), gbc);
+		gbc.gridy = 2;
+		panelForm.add(spinnerPuntuacion, gbc);
+		gbc.gridy = 3;
+		panelForm.add(crearLabel("Comentario:"), gbc);
+		gbc.gridy = 4;
+		panelForm.add(new JScrollPane(areaComentario), gbc);
 
-	    int opcion = JOptionPane.showConfirmDialog(
-	        this, panelForm, "Escribir reseña",
-	        JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+		int opcion = JOptionPane.showConfirmDialog(this, panelForm, "Escribir reseña", JOptionPane.OK_CANCEL_OPTION,
+				JOptionPane.PLAIN_MESSAGE);
 
-	    if (opcion == JOptionPane.OK_OPTION) {
-	        String comentario = areaComentario.getText().trim();
-	        if (comentario.isBlank()) {
-	            mostrarError("El comentario no puede estar vacío.");
-	            return;
-	        }
-	        // Cogemos el valor como int
-	        int puntuacion = (int) spinnerPuntuacion.getValue();
-	        boolean ok = controlador.escribirReseña(producto, puntuacion, comentario);
-	        if (ok) {
-	            mostrarMensaje("¡Reseña publicada correctamente!");
-	            actualizar(cliente);
-	        } else {
-	            mostrarError("No se pudo publicar la reseña.");
-	        }
-	    }
+		if (opcion == JOptionPane.OK_OPTION) {
+			String comentario = areaComentario.getText().trim();
+			if (comentario.isBlank()) {
+				mostrarError("El comentario no puede estar vacío.");
+				return;
+			}
+			int puntuacion = (int) spinnerPuntuacion.getValue();
+			boolean ok = controlador.escribirReseña(producto, puntuacion, comentario);
+			if (ok) {
+				mostrarMensaje("¡Reseña publicada correctamente!");
+				actualizar(cliente);
+			} else {
+				mostrarError("No se pudo publicar la reseña.");
+			}
+		}
 	}
 
+	/**
+	 * Navega al detalle de un producto desde el detalle del pedido.
+	 *
+	 * @param producto El producto a ver
+	 */
 	private void verProducto(ProductoVenta producto) {
 		ControladorCatalogo controladorCatalogo = new ControladorCatalogo(cliente, null);
 		subpanelProducto.setSubpanelOrigen(this);
@@ -461,10 +509,19 @@ public class SubpanelPedidos extends AbstractPanelSection {
 		cardLayout.show(panelContenido, "PRODUCTO");
 	}
 
+	/**
+	 * Vuelve al detalle del pedido desde el detalle del producto.
+	 */
 	public void volverDelProducto() {
 		cardLayout.show(panelContenido, "DETALLE");
 	}
 
+	/**
+	 * Devuelve el color asociado al estado de un pedido.
+	 *
+	 * @param estado El estado del pedido
+	 * @return Color correspondiente al estado
+	 */
 	private Color getColorEstado(EstadoPedido estado) {
 		switch (estado) {
 		case PENDIENTE_PAGO:
@@ -480,14 +537,5 @@ public class SubpanelPedidos extends AbstractPanelSection {
 		default:
 			return VentanaPrincipal.COLOR_TEXTO2;
 		}
-	}
-
-	public void setPanelCliente(PanelCliente panelCliente) {
-		this.panelCliente = panelCliente;
-	}
-	@Override
-	public void mostrarError(String mensaje) {
-	    JOptionPane.showMessageDialog(this, mensaje, "Error",
-	        JOptionPane.ERROR_MESSAGE);
 	}
 }

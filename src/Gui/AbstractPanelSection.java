@@ -1,6 +1,7 @@
 package Gui;
 
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Locale;
@@ -563,5 +564,176 @@ public abstract class AbstractPanelSection extends JPanel {
 	 */
 	protected JComboBox<String> getComboDePanel(JPanel panel) {
 	    return (JComboBox<String>) panel.getClientProperty("combo");
+	}
+	/**
+	 * Crea la barra de navegación superior común a cliente, empleado y gestor.
+	 * Logo a la izquierda, pestañas en el centro, usuario + logout a la derecha.
+	 * Las pestañas se registran en el listener con su actionCommand.
+	 *
+	 * @param textoLogo     Texto del logo ( CheckPoint - Gestor")
+	 * @param nombreUsuario Nickname del usuario logueado
+	 * @param pestanas      Array de {textoBoton, actionCommand} para cada pestaña
+	 * @param listener      ActionListener que gestiona los clicks de las pestañas
+	 * @return Panel de la barra de navegación
+	 */
+	protected JPanel crearBarraNavegacion(String textoLogo,
+	        String nombreUsuario, String[][] pestanas, ActionListener listener) {
+	    JPanel barra = new JPanel(new BorderLayout());
+	    barra.setBackground(VentanaPrincipal.COLOR_PANEL);
+	    barra.setBorder(BorderFactory.createCompoundBorder(
+	        BorderFactory.createMatteBorder(0, 0, 2, 0,
+	            VentanaPrincipal.COLOR_ACENTO),
+	        BorderFactory.createEmptyBorder(0, VentanaPrincipal.escalar(15),
+	            0, VentanaPrincipal.escalar(15))));
+	    barra.setPreferredSize(
+	        new Dimension(0, VentanaPrincipal.escalar(58)));
+
+	    JLabel labelLogo = new JLabel(textoLogo);
+	    labelLogo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
+	    labelLogo.setForeground(VentanaPrincipal.COLOR_ACENTO);
+	    barra.add(labelLogo, BorderLayout.WEST);
+
+	    JPanel panelPestanas = new JPanel(
+	        new FlowLayout(FlowLayout.CENTER, 2, 0));
+	    panelPestanas.setBackground(VentanaPrincipal.COLOR_PANEL);
+	    panelPestanas.setBorder(BorderFactory.createEmptyBorder(
+	        VentanaPrincipal.escalar(8), 0, 0, 0));
+
+	    // Inicializamos sin botón activo
+	    barra.putClientProperty("botonActivo", null);
+	    barra.putClientProperty("panelPestanas", panelPestanas);
+
+	    for (String[] pestana : pestanas) {
+	        JButton boton = crearBotonPestana(
+	            barra, pestana[0], pestana[1], listener);
+	        panelPestanas.add(boton);
+	    }
+	    barra.add(panelPestanas, BorderLayout.CENTER);
+
+	    JPanel panelDerecha = new JPanel(
+	        new FlowLayout(FlowLayout.RIGHT, VentanaPrincipal.escalar(10), 0));
+	    panelDerecha.setBackground(VentanaPrincipal.COLOR_PANEL);
+	    panelDerecha.setBorder(BorderFactory.createEmptyBorder(
+	        VentanaPrincipal.escalar(12), 0, 0, 0));
+
+	    JLabel labelUsuario = new JLabel(" " + nombreUsuario);
+	    labelUsuario.setFont(VentanaPrincipal.FUENTE_NORMAL);
+	    labelUsuario.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+	    panelDerecha.add(labelUsuario);
+
+	    // crearBotonRojo() ya existe en AbstractPanelSection
+	    JButton botonLogout = crearBotonRojo(" Salir");
+	    botonLogout.setFont(VentanaPrincipal.FUENTE_PEQUENA);
+	    botonLogout.addActionListener(e -> ventana.logout());
+	    panelDerecha.add(botonLogout);
+
+	    barra.add(panelDerecha, BorderLayout.EAST);
+
+	    // Guardamos el label para poder actualizarlo después con actualizarUsuarioBarra()
+	    barra.putClientProperty("labelUsuario", labelUsuario);
+	    return barra;
+	}
+
+	/**
+	 * Crea un botón de pestaña para la barra de navegación.
+	 * El primer botón creado queda marcado como activo automáticamente.
+	 *
+	 * @param barra    La barra donde se guardará el estado del botón activo
+	 * @param texto    Texto visible del botón
+	 * @param cmd      ActionCommand del botón
+	 * @param listener ActionListener a registrar en el botón
+	 * @return Botón configurado
+	 */
+	private JButton crearBotonPestana(JPanel barra, String texto,
+	        String cmd, ActionListener listener) {
+	    JButton boton = new JButton(texto);
+	    boton.setFont(new Font("Segoe UI", Font.PLAIN,
+	        VentanaPrincipal.escalar(13)));
+	    boton.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+	    boton.setBackground(VentanaPrincipal.COLOR_PANEL);
+	    boton.setBorder(BorderFactory.createEmptyBorder(
+	        VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(12),
+	        VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(12)));
+	    boton.setFocusPainted(false);
+	    boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+	    boton.setActionCommand(cmd);
+
+	    boton.addMouseListener(new MouseAdapter() {
+	        @Override public void mouseEntered(MouseEvent e) {
+	            if (boton != barra.getClientProperty("botonActivo"))
+	                boton.setForeground(VentanaPrincipal.COLOR_TEXTO);
+	        }
+	        @Override public void mouseExited(MouseEvent e) {
+	            if (boton != barra.getClientProperty("botonActivo"))
+	                boton.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+	        }
+	    });
+
+	    boton.addActionListener(listener);
+
+	    // El primer botón queda activo automáticamente
+	    if (barra.getClientProperty("botonActivo") == null)
+	        marcarBotonBarraActivo(barra, boton);
+
+	    return boton;
+	}
+
+	/**
+	 * Marca un botón de la barra como activo y desmarca el anterior.
+	 * Lo llaman los paneles principales desde su actionPerformed.
+	 *
+	 * @param barra La barra de navegación
+	 * @param boton El botón a marcar como activo
+	 */
+	protected void marcarBotonBarraActivo(JPanel barra, JButton boton) {
+	    JButton anterior = (JButton) barra.getClientProperty("botonActivo");
+	    if (anterior != null) {
+	        anterior.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+	        anterior.setBorder(BorderFactory.createEmptyBorder(
+	            VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(12),
+	            VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(12)));
+	    }
+	    barra.putClientProperty("botonActivo", boton);
+	    boton.setForeground(VentanaPrincipal.COLOR_ACENTO);
+	    boton.setBorder(BorderFactory.createCompoundBorder(
+	        BorderFactory.createMatteBorder(0, 0, 2, 0,
+	            VentanaPrincipal.COLOR_ACENTO),
+	        BorderFactory.createEmptyBorder(
+	            VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(12),
+	            VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(12))));
+	}
+
+	/**
+	 * Busca el botón con el actionCommand indicado en la barra y lo marca activo.
+	 * Método de conveniencia para usar desde actionPerformed.
+	 *
+	 * @param barra La barra de navegación
+	 * @param cmd   El actionCommand del botón a marcar
+	 */
+	protected void marcarBotonBarraActivoPorCmd(JPanel barra, String cmd) {
+	    JPanel panelPestanas = (JPanel) barra.getClientProperty("panelPestanas");
+	    if (panelPestanas == null) return;
+	    for (Component c : panelPestanas.getComponents()) {
+	        if (c instanceof JButton) {
+	            JButton b = (JButton) c;
+	            if (cmd.equals(b.getActionCommand())) {
+	                marcarBotonBarraActivo(barra, b);
+	                return;
+	            }
+	        }
+	    }
+	}
+
+	/**
+	 * Actualiza el nombre de usuario que se muestra en la barra de navegación.
+	 * Lo llaman los subpaneles tras cambiar el nickname en el perfil.
+	 *
+	 * @param barra         La barra de navegación
+	 * @param nuevoNombre   El nuevo nombre a mostrar
+	 */
+	protected void actualizarUsuarioBarra(JPanel barra, String nuevoNombre) {
+	    JLabel label = (JLabel) barra.getClientProperty("labelUsuario");
+	    if (label != null)
+	        label.setText("" + nuevoNombre);
 	}
 }

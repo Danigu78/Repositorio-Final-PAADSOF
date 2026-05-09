@@ -1,50 +1,78 @@
 package Gui.cliente;
 
-import Gui.AbstractPanelSection;
+import javax.swing.*;
 
 import Gui.VentanaPrincipal;
 import Gui.Controladores.cliente.ControladorCatalogo;
 import Gui.Controladores.cliente.ControladorProducto;
 
-import javax.swing.*;
-import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
 import productos.ProductoVenta;
 import productos.Reseña;
-import tienda.Tienda;
 import usuarios.Cliente;
 
 /**
  * Subpanel que muestra la información completa de un producto. Extiende
- * AbstractPanelSection para reutilizar helpers visuales. Sigue el patrón MVC de
- * los apuntes.
+ * AbstractPanelCliente para reutilizar helpers visuales del cliente. Sigue el
+ * patrón MVC de los apuntes.
  *
  * @author Daniel
  * @version 1.0
  */
-public class SubpanelProducto extends AbstractPanelSection {
+public class SubpanelProducto extends AbstractPanelCliente {
 
+	/** Subpanel de carrito para volver si se llegó desde él. */
 	private SubpanelCarrito subpanelCarrito;
-	private SubpanelCatalogo subpanelCatalogo;
-	private SubpanelPedidos subpanelPedidos;
-	private ControladorProducto controlador;
-	private ProductoVenta producto;
-	private Cliente cliente;
 
-	// Botones — atributos para registrar el controlador
+	/** Subpanel de catálogo para volver si se llegó desde él. */
+	private SubpanelCatalogo subpanelCatalogo;
+
+	/** Subpanel de pedidos para volver si se llegó desde él. */
+	private SubpanelPedidos subpanelPedidos;
+
+	/** Controlador del subpanel. */
+	private ControladorProducto controlador;
+
+	/** Producto que se está mostrando. */
+	private ProductoVenta producto;
+
+	/** Botón volver — atributo para registrar el controlador. */
 	private JButton botonVolver;
+
+	/** Botón añadir al carrito — atributo para registrar el controlador. */
 	private JButton botonAñadir;
 
+	/**
+	 * Constructor del subpanel de detalle de producto.
+	 *
+	 * @param ventana          La ventana principal
+	 * @param subpanelCatalogo El subpanel de catálogo para volver
+	 */
 	public SubpanelProducto(VentanaPrincipal ventana, SubpanelCatalogo subpanelCatalogo) {
 		super(ventana);
 		this.subpanelCatalogo = subpanelCatalogo;
 	}
 
 	/**
+	 * No se usa en este subpanel — la construcción se hace en mostrarProducto(). Se
+	 * implementa por obligación de AbstractPanelCliente.
+	 *
+	 * @param cliente El cliente logueado
+	 */
+	@Override
+	public void actualizar(Cliente cliente) {
+		this.cliente = cliente;
+	}
+
+	/**
 	 * Carga el producto y construye la interfaz. Crea el controlador y lo registra
 	 * en los botones.
+	 *
+	 * @param producto            El producto a mostrar
+	 * @param cliente             El cliente logueado o null
+	 * @param controladorCatalogo El controlador del catálogo para añadir al carrito
 	 */
 	public void mostrarProducto(ProductoVenta producto, Cliente cliente, ControladorCatalogo controladorCatalogo) {
 		this.producto = producto;
@@ -73,6 +101,8 @@ public class SubpanelProducto extends AbstractPanelSection {
 
 	/**
 	 * Registra el controlador en los botones — patrón de los apuntes.
+	 *
+	 * @param c El ActionListener a registrar
 	 */
 	public void setControlador(ActionListener c) {
 		if (botonVolver != null) {
@@ -87,9 +117,15 @@ public class SubpanelProducto extends AbstractPanelSection {
 		}
 	}
 
+	/**
+	 * Crea la barra superior con botón volver. El texto varía según el subpanel de
+	 * origen.
+	 *
+	 * @return Panel de la barra superior
+	 */
 	private JPanel crearBarraSuperior() {
 		String textoVolver = subpanelCarrito != null ? "← Volver al carrito"
-				: subpanelPedidos != null ? "← Volver al pedido" : "← Volver al catálogo";
+				: subpanelPedidos != null ? " Volver al pedido" : " Volver al catálogo";
 
 		// crearBarraVolver() de AbstractPanelSection
 		JPanel barra = crearBarraVolver(textoVolver);
@@ -98,6 +134,11 @@ public class SubpanelProducto extends AbstractPanelSection {
 		return barra;
 	}
 
+	/**
+	 * Crea el panel central con imagen e información del producto.
+	 *
+	 * @return Panel central del producto
+	 */
 	private JPanel crearPanelCentral() {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.setBackground(VentanaPrincipal.COLOR_FONDO);
@@ -107,7 +148,7 @@ public class SubpanelProducto extends AbstractPanelSection {
 		JLabel labelImagen = new JLabel();
 		labelImagen.setHorizontalAlignment(SwingConstants.CENTER);
 		labelImagen.setPreferredSize(new Dimension(VentanaPrincipal.escalar(300), VentanaPrincipal.escalar(300)));
-		// cargarImagen() de AbstractPanelSection
+
 		cargarImagen(labelImagen, producto.getImagenRuta(), VentanaPrincipal.escalar(280),
 				VentanaPrincipal.escalar(280));
 		panel.add(labelImagen, BorderLayout.WEST);
@@ -129,7 +170,6 @@ public class SubpanelProducto extends AbstractPanelSection {
 		panelInfo.add(labelPrecio);
 		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
-		// crearLabel() de AbstractPanelSection
 		JLabel labelStock = crearLabel("Stock disponible: " + producto.getStockDisponible());
 		panelInfo.add(labelStock);
 		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
@@ -179,6 +219,11 @@ public class SubpanelProducto extends AbstractPanelSection {
 		return panel;
 	}
 
+	/**
+	 * Crea el panel de reseñas del producto.
+	 *
+	 * @return Panel de reseñas
+	 */
 	private JPanel crearPanelReseñas() {
 		JPanel panelReseñas = new JPanel();
 		panelReseñas.setLayout(new BoxLayout(panelReseñas, BoxLayout.Y_AXIS));
@@ -186,7 +231,6 @@ public class SubpanelProducto extends AbstractPanelSection {
 		panelReseñas.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(15),
 				VentanaPrincipal.escalar(30), VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(30)));
 
-		// Título con número de reseñas
 		JLabel labelTitulo = new JLabel("Reseñas (" + producto.getReseñas().size() + ")");
 		labelTitulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
 		labelTitulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
@@ -194,7 +238,6 @@ public class SubpanelProducto extends AbstractPanelSection {
 		panelReseñas.add(labelTitulo);
 		panelReseñas.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
-		// Lista de reseñas o mensaje vacío
 		if (producto.getReseñas().isEmpty()) {
 			JLabel labelVacio = crearLabel("Este producto no tiene reseñas todavía.");
 			labelVacio.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -209,16 +252,22 @@ public class SubpanelProducto extends AbstractPanelSection {
 		return panelReseñas;
 	}
 
+	/**
+	 * Crea una tarjeta visual para una reseña del producto.
+	 *
+	 * @param reseña La reseña a mostrar
+	 * @return Panel con la tarjeta
+	 */
 	private JPanel crearTarjetaReseña(Reseña reseña) {
 		JPanel tarjeta = new JPanel(new BorderLayout());
 		tarjeta.setBackground(VentanaPrincipal.COLOR_TARJETA);
 		tarjeta.setAlignmentX(Component.LEFT_ALIGNMENT);
-		tarjeta.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
 		tarjeta.setBorder(
 				BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
 						BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(15),
 								VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(15))));
 		tarjeta.setMaximumSize(new Dimension(Integer.MAX_VALUE, VentanaPrincipal.escalar(80)));
+
 		JLabel labelCabecera = new JLabel(String.format(" %.1f/10", reseña.getPuntuacion()) + "  —  "
 				+ (reseña.getAutor() != null ? reseña.getAutor().getNickname() : "Anónimo") + "  —  "
 				+ reseña.getFecha());
@@ -234,11 +283,16 @@ public class SubpanelProducto extends AbstractPanelSection {
 		return tarjeta;
 	}
 
+	/**
+	 * Muestra el diálogo para seleccionar la cantidad a añadir al carrito. Lo llama
+	 * el controlador desde actionPerformed.
+	 */
 	public void seleccionarUnidades() {
 		JSpinner spinnerCantidad = new JSpinner(new SpinnerNumberModel(1, 1, producto.getStockDisponible(), 1));
 		spinnerCantidad.setFont(VentanaPrincipal.FUENTE_NORMAL);
 
 		JPanel panelDialogo = new JPanel(new FlowLayout());
+		// crearLabel() de AbstractPanelSection
 		panelDialogo.add(crearLabel("Cantidad (máx. " + producto.getStockDisponible() + "):"));
 		panelDialogo.add(spinnerCantidad);
 
@@ -251,6 +305,9 @@ public class SubpanelProducto extends AbstractPanelSection {
 		}
 	}
 
+	/**
+	 * Vuelve al subpanel de origen. Lo llama el controlador desde actionPerformed.
+	 */
 	public void volver() {
 		if (subpanelCarrito != null) {
 			subpanelCarrito.volverDelProducto();
@@ -261,15 +318,20 @@ public class SubpanelProducto extends AbstractPanelSection {
 		}
 	}
 
+	/**
+	 * Muestra un mensaje de éxito. Lo llama el controlador.
+	 *
+	 * @param mensaje El mensaje de éxito
+	 */
 	public void mostrarExito(String mensaje) {
 		mostrarMensaje(mensaje);
 	}
 
-	@Override
-	public void mostrarError(String mensaje) {
-		JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
-	}
-
+	/**
+	 * Establece el subpanel de origen para saber a dónde volver.
+	 *
+	 * @param origen El subpanel desde el que se navega al producto
+	 */
 	public void setSubpanelOrigen(JPanel origen) {
 		if (origen instanceof SubpanelCatalogo) {
 			this.subpanelCatalogo = (SubpanelCatalogo) origen;

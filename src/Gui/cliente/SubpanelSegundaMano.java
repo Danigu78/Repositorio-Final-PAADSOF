@@ -1,12 +1,10 @@
 package Gui.cliente;
 
-import Gui.VentanaPrincipal;
+import javax.swing.*;
 
-import Gui.Controladores.*;
+import Gui.VentanaPrincipal;
 import Gui.Controladores.cliente.ControladorSegundaMano;
 
-import javax.swing.*;
-import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -19,32 +17,54 @@ import productos.Producto2Mano;
 import usuarios.Cliente;
 
 /**
- * Subpanel del catálogo de segunda mano. Reutiliza el mismo estilo de tarjetas
- * y filtros que SubpanelCatalogo.
+ * Subpanel del catálogo de segunda mano. Extiende AbstractPanelCliente para
+ * reutilizar helpers visuales del cliente. Sigue el patrón MVC de los apuntes.
  *
  * @author Daniel
  * @version 1.0
  */
-public class SubpanelSegundaMano extends JPanel {
+public class SubpanelSegundaMano extends AbstractPanelCliente {
 
-	private VentanaPrincipal ventana;
-	private Cliente cliente;
+	/** Controlador del subpanel. */
 	private ControladorSegundaMano controlador;
+
+	/** Panel donde se muestran las tarjetas de productos. */
 	private JPanel panelProductos;
+
+	/** Campo de búsqueda por nombre de producto. */
 	private JTextField campoBusqueda;
+
+	/** Campo de búsqueda por nickname de usuario. */
 	private JTextField campoUsuario;
+
+	/** Spinner de precio mínimo. */
 	private JSpinner spinnerPrecioMin;
+
+	/** Spinner de precio máximo. */
 	private JSpinner spinnerPrecioMax;
+
+	/** Combo de filtro por estado mínimo. */
 	private JComboBox<String> comboEstado;
+
+	/** Label con el contador de productos encontrados. */
 	private JLabel labelContador;
+
+	/** CardLayout para alternar entre catálogo y detalle de producto. */
 	private CardLayout cardLayout;
+
+	/** Panel contenedor del CardLayout. */
 	private JPanel panelContenido;
+
+	/** Subpanel de detalle de producto de segunda mano. */
 	private SubpanelProducto2Mano subpanelProducto2Mano;
 
+	/**
+	 * Constructor del subpanel de segunda mano.
+	 *
+	 * @param ventana La ventana principal
+	 */
 	public SubpanelSegundaMano(VentanaPrincipal ventana) {
-		this.ventana = ventana;
-		setLayout(new BorderLayout());
-		setBackground(VentanaPrincipal.COLOR_FONDO);
+		super(ventana);
 
 		cardLayout = new CardLayout();
 		panelContenido = new JPanel(cardLayout);
@@ -56,17 +76,28 @@ public class SubpanelSegundaMano extends JPanel {
 		add(panelContenido, BorderLayout.CENTER);
 	}
 
+	/**
+	 * Actualiza el subpanel con el cliente logueado. Crea el controlador y rellena
+	 * el catálogo.
+	 *
+	 * @param cliente El cliente logueado o null
+	 */
+	@Override
 	public void actualizar(Cliente cliente) {
 		this.cliente = cliente;
 		this.controlador = new ControladorSegundaMano(this, cliente);
 		comboEstado.removeAllItems();
-		for (String s : controlador.getEstados()) {
+		for (String s : controlador.getEstados())
 			comboEstado.addItem(s);
-		}
 		mostrarProductos(controlador.obtenerTodos());
 		cardLayout.show(panelContenido, "CATALOGO");
 	}
 
+	/**
+	 * Crea el panel principal del catálogo con filtros y área de productos.
+	 *
+	 * @return Panel del catálogo
+	 */
 	private JPanel crearPanelCatalogo() {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.setBackground(VentanaPrincipal.COLOR_FONDO);
@@ -79,8 +110,7 @@ public class SubpanelSegundaMano extends JPanel {
 				int ancho = getParent() != null ? getParent().getWidth() : 800;
 				int anchTarjeta = VentanaPrincipal.escalar(300) + VentanaPrincipal.escalar(10);
 				int porFila = Math.max(1, ancho / anchTarjeta);
-				int numTarjetas = getComponentCount();
-				int filas = (int) Math.ceil((double) numTarjetas / porFila);
+				int filas = (int) Math.ceil((double) getComponentCount() / porFila);
 				int altTarjeta = VentanaPrincipal.escalar(350) + VentanaPrincipal.escalar(10);
 				return new Dimension(ancho, filas * altTarjeta + VentanaPrincipal.escalar(30));
 			}
@@ -99,6 +129,11 @@ public class SubpanelSegundaMano extends JPanel {
 		return panel;
 	}
 
+	/**
+	 * Crea la barra de filtros superior.
+	 *
+	 * @return Panel de filtros
+	 */
 	private JPanel crearPanelFiltros() {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.setBackground(VentanaPrincipal.COLOR_PANEL);
@@ -107,18 +142,14 @@ public class SubpanelSegundaMano extends JPanel {
 				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15),
 						VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15))));
 
-		// Fila superior — filtros de producto
 		JPanel filaFiltros = new JPanel(new FlowLayout(FlowLayout.CENTER, VentanaPrincipal.escalar(25), 0));
 		filaFiltros.setBackground(VentanaPrincipal.COLOR_PANEL);
 
-		// Icono lupa
+		// crearIcono() se mantiene — es específico de este panel
 		filaFiltros.add(crearIcono("/fotos/lupa.jpg", VentanaPrincipal.escalar(30)));
 
-		// Nombre
-		JLabel labelNombre = new JLabel("Producto:");
-		labelNombre.setFont(VentanaPrincipal.FUENTE_NORMAL);
-		labelNombre.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-		filaFiltros.add(labelNombre);
+		// crearLabel() de AbstractPanelSection
+		filaFiltros.add(crearLabel("Producto:"));
 
 		campoBusqueda = new JTextField(10);
 		campoBusqueda.setFont(VentanaPrincipal.FUENTE_NORMAL);
@@ -132,11 +163,7 @@ public class SubpanelSegundaMano extends JPanel {
 		campoBusqueda.addActionListener(e -> buscar());
 		filaFiltros.add(campoBusqueda);
 
-		// Precio
-		JLabel labelPrecio = new JLabel("Precio:");
-		labelPrecio.setFont(VentanaPrincipal.FUENTE_NORMAL);
-		labelPrecio.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-		filaFiltros.add(labelPrecio);
+		filaFiltros.add(crearLabel("Precio:"));
 
 		spinnerPrecioMin = new JSpinner(new SpinnerNumberModel(0.0, 0.0, 9999.0, 1.0));
 		spinnerPrecioMin.setFont(VentanaPrincipal.FUENTE_NORMAL);
@@ -152,11 +179,7 @@ public class SubpanelSegundaMano extends JPanel {
 		spinnerPrecioMax.setPreferredSize(new Dimension(VentanaPrincipal.escalar(70), VentanaPrincipal.escalar(30)));
 		filaFiltros.add(spinnerPrecioMax);
 
-		// Estado mínimo
-		JLabel labelEstado = new JLabel("Estado mínimo:");
-		labelEstado.setFont(VentanaPrincipal.FUENTE_NORMAL);
-		labelEstado.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-		filaFiltros.add(labelEstado);
+		filaFiltros.add(crearLabel("Estado mínimo:"));
 
 		comboEstado = new JComboBox<>();
 		comboEstado.setFont(VentanaPrincipal.FUENTE_NORMAL);
@@ -164,25 +187,22 @@ public class SubpanelSegundaMano extends JPanel {
 		comboEstado.setForeground(Color.BLACK);
 		filaFiltros.add(comboEstado);
 
-		JButton botonBuscar = crearBoton("Buscar", true);
+		// crearBotonNaranja() y crearBotonOutline() de AbstractPanelSection
+		JButton botonBuscar = crearBotonNaranja("Buscar");
 		botonBuscar.addActionListener(e -> buscar());
 		filaFiltros.add(botonBuscar);
 
-		JButton botonReset = crearBoton("Ver todos", false);
+		JButton botonReset = crearBotonOutline("Ver todos");
 		botonReset.addActionListener(e -> resetear());
 		filaFiltros.add(botonReset);
 
 		panel.add(filaFiltros, BorderLayout.NORTH);
 
-		// Fila inferior — búsqueda por usuario
 		JPanel filaUsuario = new JPanel(new FlowLayout(FlowLayout.CENTER, VentanaPrincipal.escalar(15), 0));
 		filaUsuario.setBackground(VentanaPrincipal.COLOR_PANEL);
 		filaUsuario.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(8), 0, 0, 0));
 
-		JLabel labelUsuario = new JLabel("Ver cartera de:");
-		labelUsuario.setFont(VentanaPrincipal.FUENTE_NORMAL);
-		labelUsuario.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-		filaUsuario.add(labelUsuario);
+		filaUsuario.add(crearLabel("Ver cartera de:"));
 
 		campoUsuario = new JTextField(12);
 		campoUsuario.setFont(VentanaPrincipal.FUENTE_NORMAL);
@@ -196,11 +216,10 @@ public class SubpanelSegundaMano extends JPanel {
 		campoUsuario.addActionListener(e -> buscarCartera());
 		filaUsuario.add(campoUsuario);
 
-		JButton botonCartera = crearBoton("Ver cartera", true);
+		JButton botonCartera = crearBotonNaranja("Ver cartera");
 		botonCartera.addActionListener(e -> buscarCartera());
 		filaUsuario.add(botonCartera);
 
-		// Contador y fila usuario juntos abajo
 		labelContador = new JLabel("Cargando productos...");
 		labelContador.setFont(VentanaPrincipal.FUENTE_PEQUENA);
 		labelContador.setForeground(VentanaPrincipal.COLOR_TEXTO2);
@@ -215,6 +234,9 @@ public class SubpanelSegundaMano extends JPanel {
 		return panel;
 	}
 
+	/**
+	 * Realiza la búsqueda con los filtros actuales.
+	 */
 	private void buscar() {
 		if (controlador == null)
 			return;
@@ -225,6 +247,9 @@ public class SubpanelSegundaMano extends JPanel {
 		mostrarProductos(controlador.filtrar(nombre, precioMin, precioMax, estado));
 	}
 
+	/**
+	 * Busca y muestra la cartera de un usuario por nickname.
+	 */
 	private void buscarCartera() {
 		if (controlador == null)
 			return;
@@ -248,6 +273,9 @@ public class SubpanelSegundaMano extends JPanel {
 		labelContador.setText("Cartera de " + nickname + ": " + productos.size() + " productos");
 	}
 
+	/**
+	 * Resetea todos los filtros y muestra todos los productos.
+	 */
 	private void resetear() {
 		campoBusqueda.setText("");
 		campoUsuario.setText("");
@@ -257,6 +285,11 @@ public class SubpanelSegundaMano extends JPanel {
 		mostrarProductos(controlador.obtenerTodos());
 	}
 
+	/**
+	 * Muestra los productos en el panel como tarjetas.
+	 *
+	 * @param productos Lista de productos a mostrar
+	 */
 	private void mostrarProductos(List<Producto2Mano> productos) {
 		panelProductos.removeAll();
 
@@ -267,9 +300,8 @@ public class SubpanelSegundaMano extends JPanel {
 			panelProductos.add(labelVacio);
 			labelContador.setText("0 productos encontrados");
 		} else {
-			for (Producto2Mano p : productos) {
+			for (Producto2Mano p : productos)
 				panelProductos.add(crearTarjeta(p));
-			}
 			labelContador.setText(productos.size() + " productos encontrados");
 		}
 
@@ -277,6 +309,13 @@ public class SubpanelSegundaMano extends JPanel {
 		panelProductos.repaint();
 	}
 
+	/**
+	 * Crea una tarjeta visual para un producto de segunda mano. Usa cargarImagen()
+	 * y crearBotonNaranja() de AbstractPanelSection.
+	 *
+	 * @param producto El producto a mostrar
+	 * @return Panel con la tarjeta
+	 */
 	private JPanel crearTarjeta(Producto2Mano producto) {
 		JPanel tarjeta = new JPanel(new BorderLayout(0, VentanaPrincipal.escalar(10)));
 		tarjeta.setBackground(VentanaPrincipal.COLOR_TARJETA);
@@ -306,19 +345,18 @@ public class SubpanelSegundaMano extends JPanel {
 			}
 		});
 
-		// Imagen
 		JLabel labelImagen = new JLabel();
 		labelImagen.setHorizontalAlignment(SwingConstants.CENTER);
 		labelImagen.setPreferredSize(new Dimension(VentanaPrincipal.escalar(160), VentanaPrincipal.escalar(130)));
-		cargarImagen(labelImagen, producto.getImagenRuta());
+		// cargarImagen() de AbstractPanelSection — tamaño de tarjeta catálogo
+		cargarImagen(labelImagen, producto.getImagenRuta(), VentanaPrincipal.escalar(150),
+				VentanaPrincipal.escalar(130));
 		tarjeta.add(labelImagen, BorderLayout.NORTH);
 
-		// Info
 		JPanel panelInfo = new JPanel();
 		panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.Y_AXIS));
 		panelInfo.setBackground(VentanaPrincipal.COLOR_TARJETA);
 
-		// Nombre
 		String nombre = producto.getNombre();
 		if (nombre.length() > 18)
 			nombre = nombre.substring(0, 16) + "...";
@@ -330,7 +368,6 @@ public class SubpanelSegundaMano extends JPanel {
 				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(5), 0, VentanaPrincipal.escalar(3), 0));
 		panelInfo.add(labelNombre);
 
-		// Propietario
 		JLabel labelPropietario = new JLabel("De: " + producto.getPropietario().getNickname());
 		labelPropietario.setFont(VentanaPrincipal.FUENTE_PEQUENA);
 		labelPropietario.setForeground(VentanaPrincipal.COLOR_TEXTO2);
@@ -338,7 +375,6 @@ public class SubpanelSegundaMano extends JPanel {
 		panelInfo.add(labelPropietario);
 		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(3)));
 
-		// Precio y estado
 		if (producto.getValoracion() != null) {
 			JLabel labelPrecio = new JLabel(String.format("%.2f€", producto.getValoracion().getPrecioTasacion()));
 			labelPrecio.setFont(VentanaPrincipal.FUENTE_PRECIO);
@@ -356,8 +392,8 @@ public class SubpanelSegundaMano extends JPanel {
 
 		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(5)));
 
-		// Botón ver información
-		JButton botonVer = crearBoton("Ver información", true);
+		// crearBotonNaranja() de AbstractPanelSection
+		JButton botonVer = crearBotonNaranja("Ver información");
 		botonVer.setAlignmentX(Component.CENTER_ALIGNMENT);
 		botonVer.setActionCommand("ver:" + producto.getId());
 		botonVer.addActionListener(controlador);
@@ -367,29 +403,14 @@ public class SubpanelSegundaMano extends JPanel {
 		return tarjeta;
 	}
 
-	private void cargarImagen(JLabel label, String nombreImagen) {
-		try {
-			URL url = getClass().getResource("/fotos/" + nombreImagen);
-			if (url != null) {
-				BufferedImage img = ImageIO.read(url);
-				if (img != null) {
-					Image imgEscalada = img.getScaledInstance(VentanaPrincipal.escalar(150),
-							VentanaPrincipal.escalar(130), Image.SCALE_SMOOTH);
-					label.setIcon(new ImageIcon(imgEscalada));
-				} else {
-					label.setText("Sin imagen");
-					label.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-				}
-			} else {
-				label.setText("Sin imagen");
-				label.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-			}
-		} catch (IOException e) {
-			label.setText("Sin imagen");
-			label.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-		}
-	}
-
+	/**
+	 * Crea un icono desde la carpeta de recursos. Se mantiene aquí porque es
+	 * específico de este panel (lupa de filtros).
+	 *
+	 * @param ruta   Ruta relativa del icono
+	 * @param tamano Tamaño en píxeles escalados
+	 * @return JLabel con el icono
+	 */
 	private JLabel crearIcono(String ruta, int tamano) {
 		JLabel label = new JLabel();
 		try {
@@ -402,52 +423,25 @@ public class SubpanelSegundaMano extends JPanel {
 				}
 			}
 		} catch (IOException e) {
-			// vacío
+			// sin icono
 		}
 		return label;
 	}
 
-	private JButton crearBoton(String texto, boolean principal) {
-		JButton boton = new JButton(texto);
-		boton.setFont(VentanaPrincipal.FUENTE_BOTON);
-		boton.setFocusPainted(false);
-		boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		if (principal) {
-			Color colorNormal = VentanaPrincipal.COLOR_ACENTO;
-			Color colorHover = VentanaPrincipal.COLOR_ACENTO.darker();
-			boton.setBackground(colorNormal);
-			boton.setForeground(Color.WHITE);
-			boton.setContentAreaFilled(false);
-			boton.setOpaque(true);
-			boton.setBorderPainted(false);
-			boton.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(10),
-					VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(10)));
-			boton.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mouseEntered(MouseEvent e) {
-					boton.setBackground(colorHover);
-				}
-
-				@Override
-				public void mouseExited(MouseEvent e) {
-					boton.setBackground(colorNormal);
-				}
-			});
-		} else {
-			boton.setBackground(VentanaPrincipal.COLOR_PANEL);
-			boton.setForeground(VentanaPrincipal.COLOR_ACENTO);
-			boton.setBorderPainted(false);
-			boton.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(10),
-					VentanaPrincipal.escalar(6), VentanaPrincipal.escalar(10)));
-		}
-		return boton;
-	}
-
+	/**
+	 * Navega al detalle de un producto de segunda mano. Lo llama el controlador
+	 * desde actionPerformed.
+	 *
+	 * @param producto El producto a ver
+	 */
 	public void verProducto2Mano(Producto2Mano producto) {
 		subpanelProducto2Mano.mostrarProducto(producto, cliente);
 		cardLayout.show(panelContenido, "PRODUCTO2MANO");
 	}
 
+	/**
+	 * Vuelve al catálogo desde el detalle del producto.
+	 */
 	public void volverDelProducto2Mano() {
 		cardLayout.show(panelContenido, "CATALOGO");
 	}
