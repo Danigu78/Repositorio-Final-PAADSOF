@@ -5,69 +5,107 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JButton;
-
 import usuarios.Empleado;
 import usuarios.TipoPermisos;
 
 /**
- * Controlador del panel principal del empleado. Centraliza las comprobaciones de
- * acceso, permisos y datos básicos del empleado actual.
+ * Controlador del panel principal del empleado. Centraliza las comprobaciones
+ * de acceso, permisos y datos básicos del empleado actual. Gestiona la
+ * navegación entre secciones. Implementa ActionListener según el patrón MVC de
+ * los apuntes.
+ *
+ * @author Lucas
+ * @version 1.0
  */
 public class ControladorPanelEmpleado implements ActionListener {
 
-    public static final String LOGOUT = "panel.logout";
-    public static final String CAMBIAR_SECCION = "panel.seccion.";
+	public static final String LOGOUT = "panel.logout";
 
-    private final Empleado empleado;
-    private PanelEmpleado vista;
+	/** Empleado logueado. */
+	private final Empleado empleado;
 
-    public ControladorPanelEmpleado(Empleado empleado) {
-        this.empleado = empleado;
-    }
+	/** Vista del panel empleado. */
+	private PanelEmpleado vista;
 
-    public void setVista(PanelEmpleado vista) {
-        this.vista = vista;
-    }
+	/**
+	 * Constructor del controlador del panel empleado.
+	 *
+	 * @param empleado El empleado logueado
+	 */
+	public ControladorPanelEmpleado(Empleado empleado) {
+		this.empleado = empleado;
+	}
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (vista == null || e == null) {
-            return;
-        }
+	/**
+	 * Enlaza la vista al controlador.
+	 *
+	 * @param vista El panel empleado
+	 */
+	public void setVista(PanelEmpleado vista) {
+		this.vista = vista;
+	}
 
-        String accion = e.getActionCommand();
-        if (LOGOUT.equals(accion)) {
-            vista.salir();
-        } else if (accion != null && accion.startsWith(CAMBIAR_SECCION)) {
-            if (e.getSource() instanceof JButton) {
-                vista.activarPestana((JButton) e.getSource());
-            }
-            vista.mostrarSeccion(accion.substring(CAMBIAR_SECCION.length()));
-        }
-    }
+	/**
+	 * Gestiona los clicks de la barra de navegación. Si es logout cierra sesión. Si
+	 * no, navega a la sección indicada.
+	 *
+	 * @param e El evento de acción
+	 */
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (vista == null || e == null)
+			return;
+		String cmd = e.getActionCommand();
+		if (LOGOUT.equals(cmd)) {
+			vista.salir();
+		} else {
+			// cmd es directamente el id de sección — viene de la barra de
+			// AbstractPanelSection
+			vista.mostrarSeccion(cmd);
+			vista.marcarPestaña(cmd);
+		}
+	}
 
-    public boolean empleadoPuedeVerPanel() {
-        return empleado != null && !empleado.isDespedido() && empleado.isSesionIniciada();
-    }
+	/**
+	 * Comprueba si el empleado puede acceder al panel.
+	 *
+	 * @return true si hay empleado, no está despedido y tiene sesión iniciada
+	 */
+	public boolean empleadoPuedeVerPanel() {
+		return empleado != null && !empleado.isDespedido() && empleado.isSesionIniciada();
+	}
 
-    public boolean tienePermiso(TipoPermisos permiso) {
-        return empleado != null && permiso != null && empleado.tienePermiso(permiso);
-    }
+	/**
+	 * Comprueba si el empleado tiene un permiso concreto.
+	 *
+	 * @param permiso El permiso a comprobar
+	 * @return true si tiene el permiso
+	 */
+	public boolean tienePermiso(TipoPermisos permiso) {
+		return empleado != null && permiso != null && empleado.tienePermiso(permiso);
+	}
 
-    public String getNicknameEmpleado() {
-        if (empleado == null || empleado.getNickname() == null) {
-            return "Empleado";
-        }
-        return empleado.getNickname();
-    }
+	/**
+	 * Devuelve el nickname del empleado.
+	 *
+	 * @return Nickname del empleado o "Empleado" si es null
+	 */
+	public String getNicknameEmpleado() {
+		if (empleado == null || empleado.getNickname() == null)
+			return "Empleado";
+		return empleado.getNickname();
+	}
 
-    public List<TipoPermisos> getPermisosOrdenados() {
-        List<TipoPermisos> permisos = new ArrayList<>();
-        if (empleado == null || empleado.getPermisos() == null) {
-            return permisos;
-        }
-        permisos.addAll(empleado.getPermisos());
-        return permisos;
-    }
+	/**
+	 * Devuelve los permisos del empleado en una lista.
+	 *
+	 * @return Lista de permisos del empleado
+	 */
+	public List<TipoPermisos> getPermisosOrdenados() {
+		List<TipoPermisos> permisos = new ArrayList<>();
+		if (empleado == null || empleado.getPermisos() == null)
+			return permisos;
+		permisos.addAll(empleado.getPermisos());
+		return permisos;
+	}
 }
