@@ -426,14 +426,15 @@ public class SubpanelIntercambios extends AbstractPanelSection {
 		gbc.gridy = 3;
 		panelInfo.add(labelSolicita, gbc);
 
-		
-		String tiempoRestante = controlador.getTiempoRestante(oferta);
-		JLabel labelTiempo = crearLabel(tiempoRestante);
-		labelTiempo.setFont(VentanaPrincipal.FUENTE_PEQUENA);
-		labelTiempo.setForeground(oferta.haCaducado() ? new Color(180, 50, 50) : new Color(200, 150, 0));
-		gbc.gridy = 4;
-		panelInfo.add(labelTiempo, gbc);
-		tarjeta.add(panelInfo, BorderLayout.CENTER);
+		// Tiempo restante — solo si está PENDIENTE, no si ya fue aceptada
+		if (oferta.getEstado() == EstadoOferta.PENDIENTE) {
+			String tiempoRestante = controlador.getTiempoRestante(oferta);
+			JLabel labelTiempo = crearLabel(tiempoRestante);
+			labelTiempo.setFont(VentanaPrincipal.FUENTE_PEQUENA);
+			labelTiempo.setForeground(new Color(200, 150, 0));
+			gbc.gridy = 4;
+			panelInfo.add(labelTiempo, gbc);
+		}
 
 		JPanel panelBotones = new JPanel(new GridBagLayout());
 		panelBotones.setBackground(VentanaPrincipal.COLOR_TARJETA);
