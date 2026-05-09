@@ -214,7 +214,22 @@ public class Cliente extends UsuarioRegistrado implements Serializable {
 		}
 		return paraDecidir;
 	}
-
+	/**
+	 * Devuelve las ofertas aceptadas donde este cliente es el destinatario,
+	 * pendientes de confirmación por un empleado.
+	 *
+	 * @return Lista de ofertas aceptadas como destinatario
+	 */
+	public List<Oferta> getOfertasAceptadasComoDestino() {
+	    List<Oferta> resultado = new ArrayList<>();
+	    for (Oferta o : ofertasPendientes) {
+	        if (o.getDestino().equals(this) 
+	                && o.getEstado() == EstadoOferta.ACEPTADA) {
+	            resultado.add(o);
+	        }
+	    }
+	    return resultado;
+	}
 	public List<Oferta> getIntercambiosRealizados() {
 		List<Oferta> realizados = new ArrayList<>();
 		for (Oferta o : historialIntercambios) {

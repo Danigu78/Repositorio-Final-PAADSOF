@@ -109,16 +109,15 @@ public class Oferta implements Serializable {
 	 * @throws OfertaNoDisponibleException si la oferta ya no puede rechazarse
 	 */
 	public void rechazar() throws OfertaNoDisponibleException {
-		if (this.estado != EstadoOferta.PENDIENTE || haCaducado()) {
+		if (this.estado != EstadoOferta.PENDIENTE)
 			throw new OfertaNoDisponibleException(this.id);
-		}
-
 		this.estado = EstadoOferta.RECHAZADA;
 		for (Producto2Mano p : productosOfertados)
 			p.setBloqueado(false);
-		this.origen.getHistorialIntercambios().add(this);
-		this.destino.getHistorialIntercambios().add(this);
-
+		if (!this.origen.getHistorialIntercambios().contains(this))
+			this.origen.getHistorialIntercambios().add(this);
+		if (!this.destino.getHistorialIntercambios().contains(this))
+			this.destino.getHistorialIntercambios().add(this);
 		this.origen.getOfertasPendientes().remove(this);
 		this.destino.getOfertasPendientes().remove(this);
 		this.origen.recibirNotificacionTipo("Tu oferta con ID " + this.getId() + " ha sido RECHAZADA por el cliente "
@@ -131,10 +130,8 @@ public class Oferta implements Serializable {
 	 * @throws OfertaNoDisponibleException si la oferta ya no está disponible
 	 */
 	public void aceptarOferta() throws OfertaNoDisponibleException {
-		// Validamos disponibilidad
-		if (this.estado != EstadoOferta.PENDIENTE || haCaducado()) {
+		if (this.estado != EstadoOferta.PENDIENTE)
 			throw new OfertaNoDisponibleException(this.id);
-		}
 		this.estado = EstadoOferta.ACEPTADA;
 	}
 
@@ -144,32 +141,27 @@ public class Oferta implements Serializable {
 	 * @throws OfertaNoDisponibleException si la oferta ya no puede ejecutarse
 	 */
 	public void aceptarYEjecutar() throws OfertaNoDisponibleException {
-		if (this.estado != EstadoOferta.PENDIENTE && this.estado != EstadoOferta.ACEPTADA) {
+		if (this.estado != EstadoOferta.PENDIENTE && this.estado != EstadoOferta.ACEPTADA)
 			throw new OfertaNoDisponibleException(this.id);
-		}
-		if (haCaducado()) {
-			throw new OfertaNoDisponibleException(this.id);
-		}
-
-		origen.getHistorialIntercambios().add(this);
-		destino.getHistorialIntercambios().add(this);
+		if (!origen.getHistorialIntercambios().contains(this))
+			origen.getHistorialIntercambios().add(this);
+		if (!destino.getHistorialIntercambios().contains(this))
+			destino.getHistorialIntercambios().add(this);
 		origen.getOfertasPendientes().remove(this);
 		destino.getOfertasPendientes().remove(this);
-
 		for (Producto2Mano p : this.productosOfertados) {
 			origen.getCarteraIntercambio().remove(p);
 			p.setBloqueado(false);
-
 		}
-		for (Producto2Mano p : productosSolicitados) {
+		for (Producto2Mano p : productosSolicitados)
 			destino.getCarteraIntercambio().remove(p);
-
-		}
 		Tienda.getInstancia().registrarIntercambioFinalizado(this);
-		origen.recibirNotificacionTipo("¡Intercambio ID " + this.id + " aceptado por el usuario "
-				+ this.getDestino().getNickname() + "! Preparando envío.", TipoNotificacion.INTERCAMBIO_REALIZADO);
-		destino.recibirNotificacionTipo("Has aceptado el intercambio con el usuario " + this.origen.getNickname()
-				+ ". Los productos han salido de tu inventario.", TipoNotificacion.INTERCAMBIO_REALIZADO);
+		origen.recibirNotificacionTipo("¡Intercambio ID " + this.id + " confirmado! Preparando envío.",
+				TipoNotificacion.INTERCAMBIO_REALIZADO);
+		destino.recibirNotificacionTipo(
+				"Intercambio con " + this.origen.getNickname()
+						+ " confirmado. Los productos han salido de tu inventario.",
+				TipoNotificacion.INTERCAMBIO_REALIZADO);
 		this.estado = EstadoOferta.REALIZADA;
 	}
 
@@ -179,19 +171,23 @@ public class Oferta implements Serializable {
 	 * @return true si ha caducado, false si sigue vigente
 	 */
 	public boolean haCaducado() {
+		// Solo puede caducar si está PENDIENTE
+		if (this.estado != EstadoOferta.PENDIENTE)
+			return false;
 		int tiempoMax = Tienda.getInstancia().getTiempoMaxOferta();
 		if (tiempoMax == 0)
 			return false;
 		boolean caducada = LocalDateTime.now().isAfter(fechaOferta.plusMinutes(tiempoMax));
-		if (caducada && this.estado == EstadoOferta.PENDIENTE) {
+		if (caducada) {
 			this.estado = EstadoOferta.CADUCADA;
-			this.origen.getHistorialIntercambios().add(this);
-			this.destino.getHistorialIntercambios().add(this);
+			if (!this.origen.getHistorialIntercambios().contains(this))
+				this.origen.getHistorialIntercambios().add(this);
+			if (!this.destino.getHistorialIntercambios().contains(this))
+				this.destino.getHistorialIntercambios().add(this);
 			this.origen.getOfertasPendientes().remove(this);
 			this.destino.getOfertasPendientes().remove(this);
-			for (Producto2Mano p : productosOfertados) {
+			for (Producto2Mano p : productosOfertados)
 				p.setBloqueado(false);
-			}
 		}
 		return caducada;
 	}

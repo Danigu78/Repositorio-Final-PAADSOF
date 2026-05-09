@@ -11,7 +11,9 @@ import productos.Producto2Mano;
 import usuarios.Cliente;
 
 /**
- * Subpanel de intercambios del cliente. Extiende AbstractPanelSection para
+ * Subpanel de intercambios del cliente. Muestra cinco pestañas: ofertas
+ * enviadas, recibidas, aceptadas pendientes de confirmación por empleado,
+ * historial y rechazadas/caducadas. Extiende AbstractPanelSection para
  * reutilizar helpers visuales. Sigue el patrón MVC de los apuntes.
  *
  * @author Daniel
@@ -19,26 +21,56 @@ import usuarios.Cliente;
  */
 public class SubpanelIntercambios extends AbstractPanelSection {
 
+	/** Cliente logueado. */
 	private Cliente cliente;
+
+	/** Controlador del subpanel. */
 	private ControladorIntercambios controlador;
 
+	/** Panel de contenido de ofertas enviadas. */
 	private JPanel contenidoEnviadas;
+
+	/** Panel de contenido de ofertas recibidas. */
 	private JPanel contenidoRecibidas;
+
+	/** Panel de contenido de historial de intercambios. */
 	private JPanel contenidoHistorial;
+
+	/** Panel de contenido de ofertas rechazadas o caducadas. */
 	private JPanel contenidoRechazadas;
+
+	/** Panel de contenido de ofertas aceptadas pendientes de empleado. */
 	private JPanel contenidoAceptadas;
 
-	// Botones de la barra interna
+	/** Botón de la pestaña de ofertas enviadas. */
 	private JButton botonEnviados;
+
+	/** Botón de la pestaña de ofertas recibidas. */
 	private JButton botonRecibidos;
+
+	/** Botón de la pestaña de historial. */
 	private JButton botonHistorial;
+
+	/** Botón de la pestaña de rechazadas/caducadas. */
 	private JButton botonRechazadas;
+
+	/** Botón de la pestaña de aceptadas pendientes de empleado. */
 	private JButton botonAceptadas;
+
+	/** Botón actualmente marcado como activo en la barra. */
 	private JButton botonActivo;
 
+	/** CardLayout para alternar entre las secciones. */
 	private CardLayout cardSecciones;
+
+	/** Panel que contiene todas las secciones con CardLayout. */
 	private JPanel panelSecciones;
 
+	/**
+	 * Constructor del subpanel de intercambios.
+	 *
+	 * @param ventana La ventana principal
+	 */
 	public SubpanelIntercambios(VentanaPrincipal ventana) {
 		super(ventana);
 
@@ -59,7 +91,10 @@ public class SubpanelIntercambios extends AbstractPanelSection {
 	}
 
 	/**
-	 * Registra el controlador en los botones de la barra — patrón de los apuntes.
+	 * Registra el controlador en los botones de la barra. Patrón MVC de los
+	 * apuntes.
+	 *
+	 * @param c El ActionListener a registrar
 	 */
 	public void setControlador(ActionListener c) {
 		registrarBoton(botonEnviados, c, "enviadas");
@@ -69,6 +104,13 @@ public class SubpanelIntercambios extends AbstractPanelSection {
 		registrarBoton(botonAceptadas, c, "aceptadas");
 	}
 
+	/**
+	 * Registra un ActionListener en un botón con su comando.
+	 *
+	 * @param boton El botón a registrar
+	 * @param c     El listener a añadir
+	 * @param cmd   El ActionCommand a asignar
+	 */
 	private void registrarBoton(JButton boton, ActionListener c, String cmd) {
 		if (boton == null)
 			return;
@@ -78,6 +120,11 @@ public class SubpanelIntercambios extends AbstractPanelSection {
 		boton.addActionListener(c);
 	}
 
+	/**
+	 * Crea la barra superior de navegación con las pestañas del subpanel.
+	 *
+	 * @return Panel con la barra de navegación
+	 */
 	private JPanel crearBarraInterna() {
 		JPanel barra = new JPanel(new BorderLayout());
 		barra.setBackground(VentanaPrincipal.COLOR_PANEL);
@@ -108,6 +155,12 @@ public class SubpanelIntercambios extends AbstractPanelSection {
 		return barra;
 	}
 
+	/**
+	 * Crea un botón de pestaña con el estilo visual de la barra.
+	 *
+	 * @param texto El texto del botón
+	 * @return El botón configurado
+	 */
 	private JButton crearBotonPestaña(String texto) {
 		JButton boton = new JButton(texto);
 		boton.setFont(new Font("Segoe UI", Font.PLAIN, VentanaPrincipal.escalar(13)));
@@ -134,8 +187,11 @@ public class SubpanelIntercambios extends AbstractPanelSection {
 	}
 
 	/**
-	 * Crea un panel con scroll para una sección. Guarda la referencia al contenido
-	 * en clientProperty.
+	 * Crea un panel con scroll para una sección y guarda la referencia al
+	 * contenido.
+	 *
+	 * @param seccion Identificador de la sección
+	 * @return Panel con scroll listo para añadir al CardLayout
 	 */
 	private JPanel crearPanelContenido(String seccion) {
 		JPanel contenido = new JPanel();
@@ -173,6 +229,11 @@ public class SubpanelIntercambios extends AbstractPanelSection {
 		return pan;
 	}
 
+	/**
+	 * Muestra la sección indicada y marca su botón como activo.
+	 *
+	 * @param seccion Identificador de la sección a mostrar
+	 */
 	public void mostrarSeccion(String seccion) {
 		cardSecciones.show(panelSecciones, seccion);
 		switch (seccion) {
@@ -194,6 +255,12 @@ public class SubpanelIntercambios extends AbstractPanelSection {
 		}
 	}
 
+	/**
+	 * Aplica el estilo visual de activo al botón indicado y quita el estilo al
+	 * botón previamente activo.
+	 *
+	 * @param boton El botón a marcar como activo
+	 */
 	private void marcarBotonActivo(JButton boton) {
 		int v = VentanaPrincipal.escalar(8);
 		int h = VentanaPrincipal.escalar(12);
@@ -209,9 +276,14 @@ public class SubpanelIntercambios extends AbstractPanelSection {
 				BorderFactory.createEmptyBorder(v, h, v - linea, h)));
 	}
 
+	/**
+	 * Rellena el panel de ofertas enviadas con las ofertas actuales del cliente.
+	 */
 	private void rellenarEnviadas() {
 		contenidoEnviadas.removeAll();
+		System.out.println("Controlador null: " + (controlador == null));
 		List<Oferta> ofertas = controlador.getOfertasEnviadas();
+		System.out.println("Tamaño lista: " + ofertas.size());
 		if (ofertas.isEmpty()) {
 			contenidoEnviadas.add(crearLabelVacio("No tienes ofertas enviadas pendientes."));
 		} else {
@@ -224,24 +296,32 @@ public class SubpanelIntercambios extends AbstractPanelSection {
 		contenidoEnviadas.repaint();
 	}
 
+	/**
+	 * Rellena el panel de ofertas recibidas. Solo muestra las que están en estado
+	 * PENDIENTE con botones de acción.
+	 */
 	private void rellenarRecibidas() {
 		contenidoRecibidas.removeAll();
 		List<Oferta> ofertas = controlador.getOfertasRecibidas();
-		if (ofertas.isEmpty()) {
-			contenidoRecibidas.add(crearLabelVacio("No tienes ofertas recibidas pendientes."));
-		} else {
-			for (Oferta o : ofertas) {
-				// Solo mostramos las PENDIENTE con botones aceptar/rechazar
-				if (o.getEstado() == EstadoOferta.PENDIENTE) {
-					contenidoRecibidas.add(crearTarjetaOferta(o, true));
-					contenidoRecibidas.add(Box.createVerticalStrut(VentanaPrincipal.escalar(8)));
-				}
+		boolean hayPendientes = false;
+		for (Oferta o : ofertas) {
+			if (o.getEstado() == EstadoOferta.PENDIENTE) {
+				contenidoRecibidas.add(crearTarjetaOferta(o, true));
+				contenidoRecibidas.add(Box.createVerticalStrut(VentanaPrincipal.escalar(8)));
+				hayPendientes = true;
 			}
+		}
+		if (!hayPendientes) {
+			contenidoRecibidas.add(crearLabelVacio("No tienes ofertas recibidas pendientes."));
 		}
 		contenidoRecibidas.revalidate();
 		contenidoRecibidas.repaint();
 	}
 
+	/**
+	 * Rellena el panel de ofertas aceptadas pendientes de confirmación por
+	 * empleado.
+	 */
 	private void rellenarAceptadas() {
 		contenidoAceptadas.removeAll();
 		List<Oferta> ofertas = controlador.getOfertasAceptadasPendientes();
@@ -257,6 +337,9 @@ public class SubpanelIntercambios extends AbstractPanelSection {
 		contenidoAceptadas.repaint();
 	}
 
+	/**
+	 * Rellena el panel del historial de intercambios realizados.
+	 */
 	private void rellenarHistorial() {
 		contenidoHistorial.removeAll();
 		List<Oferta> ofertas = controlador.getHistorial();
@@ -272,6 +355,9 @@ public class SubpanelIntercambios extends AbstractPanelSection {
 		contenidoHistorial.repaint();
 	}
 
+	/**
+	 * Rellena el panel de ofertas rechazadas o caducadas.
+	 */
 	private void rellenarRechazadas() {
 		contenidoRechazadas.removeAll();
 		List<Oferta> ofertas = controlador.getHistorialRechazadasCaducadas();
@@ -287,10 +373,19 @@ public class SubpanelIntercambios extends AbstractPanelSection {
 		contenidoRechazadas.repaint();
 	}
 
+	/**
+	 * Crea una tarjeta visual para una oferta enviada o recibida. Si es recibida
+	 * muestra botones de aceptar y rechazar. Si es enviada muestra el estado
+	 * actual.
+	 *
+	 * @param oferta     La oferta a mostrar
+	 * @param esRecibida true si es recibida, false si es enviada
+	 * @return Panel con la tarjeta
+	 */
 	private JPanel crearTarjetaOferta(Oferta oferta, boolean esRecibida) {
 		JPanel tarjeta = new JPanel(new BorderLayout(VentanaPrincipal.escalar(15), 0));
 		tarjeta.setBackground(VentanaPrincipal.COLOR_TARJETA);
-		tarjeta.setMaximumSize(new Dimension(Integer.MAX_VALUE, VentanaPrincipal.escalar(140)));
+		tarjeta.setMaximumSize(new Dimension(Integer.MAX_VALUE, VentanaPrincipal.escalar(165)));
 		tarjeta.setAlignmentX(Component.LEFT_ALIGNMENT);
 		tarjeta.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createMatteBorder(0, 0, VentanaPrincipal.escalar(2), 0, VentanaPrincipal.COLOR_BORDE),
@@ -316,24 +411,28 @@ public class SubpanelIntercambios extends AbstractPanelSection {
 
 		String conQuien = esRecibida ? "De: " + oferta.getOrigen().getNickname()
 				: "Para: " + oferta.getDestino().getNickname();
-		JLabel labelConQuien = new JLabel(conQuien);
-		labelConQuien.setFont(VentanaPrincipal.FUENTE_NORMAL);
-		labelConQuien.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+		// crearLabel() de AbstractPanelSection
+		JLabel labelConQuien = crearLabel(conQuien);
 		gbc.gridy = 1;
 		panelInfo.add(labelConQuien, gbc);
 
-		JLabel labelOfrece = new JLabel("Ofrece: " + getListaProductos(oferta.getProductosOfertados()));
+		JLabel labelOfrece = crearLabel("Ofrece: " + getListaProductos(oferta.getProductosOfertados()));
 		labelOfrece.setFont(VentanaPrincipal.FUENTE_PEQUENA);
-		labelOfrece.setForeground(VentanaPrincipal.COLOR_TEXTO2);
 		gbc.gridy = 2;
 		panelInfo.add(labelOfrece, gbc);
 
-		JLabel labelSolicita = new JLabel("Solicita: " + getListaProductos(oferta.getProductosSolicitados()));
+		JLabel labelSolicita = crearLabel("Solicita: " + getListaProductos(oferta.getProductosSolicitados()));
 		labelSolicita.setFont(VentanaPrincipal.FUENTE_PEQUENA);
-		labelSolicita.setForeground(VentanaPrincipal.COLOR_TEXTO2);
 		gbc.gridy = 3;
 		panelInfo.add(labelSolicita, gbc);
 
+		
+		String tiempoRestante = controlador.getTiempoRestante(oferta);
+		JLabel labelTiempo = crearLabel(tiempoRestante);
+		labelTiempo.setFont(VentanaPrincipal.FUENTE_PEQUENA);
+		labelTiempo.setForeground(oferta.haCaducado() ? new Color(180, 50, 50) : new Color(200, 150, 0));
+		gbc.gridy = 4;
+		panelInfo.add(labelTiempo, gbc);
 		tarjeta.add(panelInfo, BorderLayout.CENTER);
 
 		JPanel panelBotones = new JPanel(new GridBagLayout());
@@ -358,8 +457,7 @@ public class SubpanelIntercambios extends AbstractPanelSection {
 			gbcB.gridy = 1;
 			panelBotones.add(botonRechazar, gbcB);
 		} else {
-			// crearLabel() de AbstractPanelSection
-			JLabel labelEstado = new JLabel(controlador.getTextoEstado(oferta));
+			JLabel labelEstado = crearLabel(controlador.getTextoEstado(oferta));
 			labelEstado.setFont(VentanaPrincipal.FUENTE_PEQUENA);
 			labelEstado.setForeground(new Color(200, 150, 0));
 			labelEstado.setHorizontalAlignment(SwingConstants.CENTER);
@@ -372,7 +470,11 @@ public class SubpanelIntercambios extends AbstractPanelSection {
 	}
 
 	/**
-	 * Tarjeta para ofertas aceptadas pendientes de confirmación por empleado.
+	 * Crea una tarjeta visual para una oferta aceptada pendiente de confirmación.
+	 * Muestra el estado en azul indicando que espera al empleado, sin botones.
+	 *
+	 * @param oferta La oferta aceptada
+	 * @return Panel con la tarjeta
 	 */
 	private JPanel crearTarjetaAceptada(Oferta oferta) {
 		JPanel tarjeta = new JPanel(new BorderLayout(VentanaPrincipal.escalar(15), 0));
@@ -395,7 +497,7 @@ public class SubpanelIntercambios extends AbstractPanelSection {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 0;
 
-		JLabel labelId = new JLabel(oferta.getId() + "  —  ⏳ Esperando confirmación de empleado");
+		JLabel labelId = new JLabel(oferta.getId() + "  Esperando confirmación de empleado");
 		labelId.setFont(VentanaPrincipal.FUENTE_BOTON);
 		labelId.setForeground(new Color(0, 120, 200));
 		gbc.gridy = 0;
@@ -404,21 +506,17 @@ public class SubpanelIntercambios extends AbstractPanelSection {
 		boolean soyOrigen = oferta.getOrigen().equals(cliente);
 		String conQuien = soyOrigen ? "Con: " + oferta.getDestino().getNickname()
 				: "Con: " + oferta.getOrigen().getNickname();
-		JLabel labelConQuien = new JLabel(conQuien);
-		labelConQuien.setFont(VentanaPrincipal.FUENTE_NORMAL);
-		labelConQuien.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+		JLabel labelConQuien = crearLabel(conQuien);
 		gbc.gridy = 1;
 		panelInfo.add(labelConQuien, gbc);
 
-		JLabel labelOfrece = new JLabel("Ofrece: " + getListaProductos(oferta.getProductosOfertados()));
+		JLabel labelOfrece = crearLabel("Ofrece: " + getListaProductos(oferta.getProductosOfertados()));
 		labelOfrece.setFont(VentanaPrincipal.FUENTE_PEQUENA);
-		labelOfrece.setForeground(VentanaPrincipal.COLOR_TEXTO2);
 		gbc.gridy = 2;
 		panelInfo.add(labelOfrece, gbc);
 
-		JLabel labelSolicita = new JLabel("Solicita: " + getListaProductos(oferta.getProductosSolicitados()));
+		JLabel labelSolicita = crearLabel("Solicita: " + getListaProductos(oferta.getProductosSolicitados()));
 		labelSolicita.setFont(VentanaPrincipal.FUENTE_PEQUENA);
-		labelSolicita.setForeground(VentanaPrincipal.COLOR_TEXTO2);
 		gbc.gridy = 3;
 		panelInfo.add(labelSolicita, gbc);
 
@@ -426,6 +524,13 @@ public class SubpanelIntercambios extends AbstractPanelSection {
 		return tarjeta;
 	}
 
+	/**
+	 * Crea una tarjeta visual para un intercambio del historial. Muestra quién
+	 * entregó y quién recibió según si el cliente es origen o destino.
+	 *
+	 * @param oferta La oferta realizada
+	 * @return Panel con la tarjeta
+	 */
 	private JPanel crearTarjetaHistorial(Oferta oferta) {
 		JPanel tarjeta = new JPanel(new BorderLayout(VentanaPrincipal.escalar(15), 0));
 		tarjeta.setBackground(VentanaPrincipal.COLOR_TARJETA);
@@ -456,24 +561,20 @@ public class SubpanelIntercambios extends AbstractPanelSection {
 		boolean soyOrigen = oferta.getOrigen().equals(cliente);
 		String conQuien = soyOrigen ? "Con: " + oferta.getDestino().getNickname()
 				: "Con: " + oferta.getOrigen().getNickname();
-		JLabel labelConQuien = new JLabel(conQuien);
-		labelConQuien.setFont(VentanaPrincipal.FUENTE_NORMAL);
-		labelConQuien.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+		JLabel labelConQuien = crearLabel(conQuien);
 		gbc.gridy = 1;
 		panelInfo.add(labelConQuien, gbc);
 
 		List<Producto2Mano> entregados = soyOrigen ? oferta.getProductosOfertados() : oferta.getProductosSolicitados();
 		List<Producto2Mano> recibidos = soyOrigen ? oferta.getProductosSolicitados() : oferta.getProductosOfertados();
 
-		JLabel labelEntregados = new JLabel("Entregaste: " + getListaProductos(entregados));
+		JLabel labelEntregados = crearLabel("Entregaste: " + getListaProductos(entregados));
 		labelEntregados.setFont(VentanaPrincipal.FUENTE_PEQUENA);
-		labelEntregados.setForeground(VentanaPrincipal.COLOR_TEXTO2);
 		gbc.gridy = 2;
 		panelInfo.add(labelEntregados, gbc);
 
-		JLabel labelRecibidos = new JLabel("Recibiste: " + getListaProductos(recibidos));
+		JLabel labelRecibidos = crearLabel("Recibiste: " + getListaProductos(recibidos));
 		labelRecibidos.setFont(VentanaPrincipal.FUENTE_PEQUENA);
-		labelRecibidos.setForeground(VentanaPrincipal.COLOR_TEXTO2);
 		gbc.gridy = 3;
 		panelInfo.add(labelRecibidos, gbc);
 
@@ -481,6 +582,13 @@ public class SubpanelIntercambios extends AbstractPanelSection {
 		return tarjeta;
 	}
 
+	/**
+	 * Crea una tarjeta visual para una oferta rechazada o caducada. Muestra el
+	 * motivo en rojo si fue rechazada o en amarillo si caducó.
+	 *
+	 * @param oferta La oferta rechazada o caducada
+	 * @return Panel con la tarjeta
+	 */
 	private JPanel crearTarjetaRechazada(Oferta oferta) {
 		JPanel tarjeta = new JPanel(new BorderLayout(VentanaPrincipal.escalar(15), 0));
 		tarjeta.setBackground(VentanaPrincipal.COLOR_TARJETA);
@@ -515,21 +623,17 @@ public class SubpanelIntercambios extends AbstractPanelSection {
 		boolean soyOrigen = oferta.getOrigen().equals(cliente);
 		String conQuien = soyOrigen ? "Para: " + oferta.getDestino().getNickname()
 				: "De: " + oferta.getOrigen().getNickname();
-		JLabel labelConQuien = new JLabel(conQuien);
-		labelConQuien.setFont(VentanaPrincipal.FUENTE_NORMAL);
-		labelConQuien.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+		JLabel labelConQuien = crearLabel(conQuien);
 		gbc.gridy = 1;
 		panelInfo.add(labelConQuien, gbc);
 
-		JLabel labelOfrece = new JLabel("Ofrecía: " + getListaProductos(oferta.getProductosOfertados()));
+		JLabel labelOfrece = crearLabel("Ofrecía: " + getListaProductos(oferta.getProductosOfertados()));
 		labelOfrece.setFont(VentanaPrincipal.FUENTE_PEQUENA);
-		labelOfrece.setForeground(VentanaPrincipal.COLOR_TEXTO2);
 		gbc.gridy = 2;
 		panelInfo.add(labelOfrece, gbc);
 
-		JLabel labelSolicita = new JLabel("Solicitaba: " + getListaProductos(oferta.getProductosSolicitados()));
+		JLabel labelSolicita = crearLabel("Solicitaba: " + getListaProductos(oferta.getProductosSolicitados()));
 		labelSolicita.setFont(VentanaPrincipal.FUENTE_PEQUENA);
-		labelSolicita.setForeground(VentanaPrincipal.COLOR_TEXTO2);
 		gbc.gridy = 3;
 		panelInfo.add(labelSolicita, gbc);
 
@@ -537,6 +641,12 @@ public class SubpanelIntercambios extends AbstractPanelSection {
 		return tarjeta;
 	}
 
+	/**
+	 * Construye un texto con los nombres de los productos separados por comas.
+	 *
+	 * @param productos Lista de productos de segunda mano
+	 * @return Texto con los nombres o "ninguno" si la lista está vacía
+	 */
 	private String getListaProductos(List<Producto2Mano> productos) {
 		if (productos == null || productos.isEmpty())
 			return "ninguno";
@@ -549,6 +659,12 @@ public class SubpanelIntercambios extends AbstractPanelSection {
 		return sb.toString();
 	}
 
+	/**
+	 * Crea una etiqueta de texto vacío alineada a la izquierda.
+	 *
+	 * @param texto El texto a mostrar
+	 * @return La etiqueta configurada
+	 */
 	private JLabel crearLabelVacio(String texto) {
 		JLabel label = new JLabel(texto);
 		label.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
@@ -558,14 +674,16 @@ public class SubpanelIntercambios extends AbstractPanelSection {
 	}
 
 	/**
-	 * Procesa aceptar una oferta — lo llama el controlador.
+	 * Procesa la aceptación de una oferta. Lo llama el controlador desde
+	 * actionPerformed. Tras aceptar navega a la pestaña de aceptadas.
+	 *
+	 * @param idOferta Id de la oferta a aceptar
 	 */
 	public void procesarAceptarOferta(String idOferta) {
 		boolean ok = controlador.aceptarOferta(idOferta);
 		if (ok) {
 			mostrarMensaje("Oferta aceptada. Un empleado confirmará el intercambio.");
 			actualizar(cliente);
-			// Navegamos a la pestaña de aceptadas para que lo vea
 			mostrarSeccion("ACEPTADAS");
 		} else {
 			mostrarError("No se encontró la oferta.");
@@ -573,7 +691,10 @@ public class SubpanelIntercambios extends AbstractPanelSection {
 	}
 
 	/**
-	 * Procesa rechazar una oferta — lo llama el controlador.
+	 * Procesa el rechazo de una oferta. Lo llama el controlador desde
+	 * actionPerformed.
+	 *
+	 * @param idOferta Id de la oferta a rechazar
 	 */
 	public void procesarRechazarOferta(String idOferta) {
 		boolean ok = controlador.rechazarOferta(idOferta);
@@ -585,11 +706,22 @@ public class SubpanelIntercambios extends AbstractPanelSection {
 		}
 	}
 
+	/**
+	 * Muestra un mensaje de error en un diálogo.
+	 *
+	 * @param mensaje El mensaje de error
+	 */
 	@Override
 	public void mostrarError(String mensaje) {
 		JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
 	}
 
+	/**
+	 * Actualiza el subpanel con el cliente logueado. Crea el controlador, registra
+	 * los botones y rellena todas las secciones.
+	 *
+	 * @param cliente El cliente logueado
+	 */
 	public void actualizar(Cliente cliente) {
 		this.cliente = cliente;
 		this.controlador = new ControladorIntercambios(this, cliente);
