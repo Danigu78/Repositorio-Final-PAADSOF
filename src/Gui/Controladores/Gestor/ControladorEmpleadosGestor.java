@@ -1,6 +1,6 @@
-package Gui.Controladores.Gestor;
+package Gui.controladores.gestor;
 
-import Gui.Gestor.SubpanelEmpleadosGestor;
+import Gui.gestor.SubpanelEmpleadosGestor;
 import tienda.GuardadoTienda;
 import tienda.Tienda;
 import usuarios.Empleado;

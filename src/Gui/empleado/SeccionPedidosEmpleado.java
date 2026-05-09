@@ -8,8 +8,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
-import Gui.Controladores.empleado.ControladorPedidosEmpleado;
-import Gui.Controladores.empleado.ResultadoOperacion;
+import Gui.controladores.empleado.ControladorPedidosEmpleado;
+import Gui.controladores.empleado.ResultadoOperacion;
 import usuarios.Empleado;
 import ventas.Pedido;
 

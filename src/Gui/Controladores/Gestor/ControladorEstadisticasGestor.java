@@ -1,6 +1,6 @@
-package Gui.Controladores.Gestor;
+package Gui.controladores.gestor;
 
-import Gui.Gestor.SubpanelEstadisticasGestor;
+import Gui.gestor.SubpanelEstadisticasGestor;
 import usuarios.Cliente;
 import usuarios.Gestor;
 import excepciones.AñoInvalidoException;

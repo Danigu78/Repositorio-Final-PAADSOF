@@ -1,6 +1,10 @@
-package Gui;
+package Gui.cliente;
 
-import Gui.Controladores.ControladorIntercambios;
+import Gui.AbstractPanelSection;
+
+import Gui.VentanaPrincipal;
+
+import Gui.controladores.cliente.ControladorIntercambios;
 import intercambios.EstadoOferta;
 import intercambios.Oferta;
 import javax.swing.*;

@@ -1,6 +1,6 @@
-package Gui.Controladores;
+package Gui.controladores.cliente;
 
-import Gui.SubpanelNotificaciones;
+import Gui.cliente.SubpanelNotificaciones;
 import tienda.GuardadoTienda;
 import tienda.Notificacion;
 import tienda.Tienda;

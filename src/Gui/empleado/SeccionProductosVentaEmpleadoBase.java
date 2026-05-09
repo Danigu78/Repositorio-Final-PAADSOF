@@ -25,7 +25,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
-import Gui.Controladores.empleado.ControladorProductosEmpleado;
+import Gui.controladores.empleado.ControladorProductosEmpleado;
 import productos.LineaPack;
 import productos.ProductoVenta;
 import usuarios.Empleado;

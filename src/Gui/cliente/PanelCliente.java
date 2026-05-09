@@ -1,4 +1,6 @@
-package Gui;
+package Gui.cliente;
+
+import Gui.VentanaPrincipal;
 
 import javax.swing.*;
 import javax.swing.border.*;

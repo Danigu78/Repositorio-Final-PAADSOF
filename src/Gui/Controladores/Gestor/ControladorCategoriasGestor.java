@@ -1,6 +1,6 @@
-package Gui.Controladores.Gestor;
+package Gui.controladores.gestor;
 
-import Gui.Gestor.SubpanelCategoriasGestor;
+import Gui.gestor.SubpanelCategoriasGestor;
 import productos.Categoria;
 import productos.ProductoVenta;
 import tienda.GuardadoTienda;

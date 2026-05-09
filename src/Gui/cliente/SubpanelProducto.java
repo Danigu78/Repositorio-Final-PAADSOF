@@ -1,7 +1,11 @@
-package Gui;
+package Gui.cliente;
 
-import Gui.Controladores.ControladorCatalogo;
-import Gui.Controladores.ControladorProducto;
+import Gui.AbstractPanelSection;
+
+import Gui.VentanaPrincipal;
+
+import Gui.controladores.cliente.ControladorCatalogo;
+import Gui.controladores.cliente.ControladorProducto;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;

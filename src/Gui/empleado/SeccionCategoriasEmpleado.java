@@ -7,8 +7,8 @@ import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
-import Gui.Controladores.empleado.ControladorCategoriasEmpleado;
-import Gui.Controladores.empleado.ResultadoOperacion;
+import Gui.controladores.empleado.ControladorCategoriasEmpleado;
+import Gui.controladores.empleado.ResultadoOperacion;
 import usuarios.Empleado;
 
 /**

@@ -1,6 +1,6 @@
-package Gui.Controladores;
+package Gui.controladores.cliente;
 
-import Gui.SubpanelPedidos;
+import Gui.cliente.SubpanelPedidos;
 import productos.ProductoVenta;
 import productos.Reseña;
 import tienda.GuardadoTienda;

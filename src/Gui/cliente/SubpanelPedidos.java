@@ -1,7 +1,11 @@
-package Gui;
+package Gui.cliente;
 
-import Gui.Controladores.ControladorCatalogo;
-import Gui.Controladores.ControladorPedidos;
+import Gui.AbstractPanelSection;
+
+import Gui.VentanaPrincipal;
+
+import Gui.controladores.cliente.ControladorCatalogo;
+import Gui.controladores.cliente.ControladorPedidos;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;

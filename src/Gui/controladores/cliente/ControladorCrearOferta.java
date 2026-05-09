@@ -1,6 +1,6 @@
-package Gui.Controladores;
+package Gui.controladores.cliente;
 
-import Gui.SubpanelCrearOferta;
+import Gui.cliente.SubpanelCrearOferta;
 import excepciones.ProductoBloqueadoException;
 import productos.Producto2Mano;
 import tienda.GuardadoTienda;

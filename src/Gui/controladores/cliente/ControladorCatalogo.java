@@ -1,11 +1,11 @@
-package Gui.Controladores;
+package Gui.controladores.cliente;
 
 import java.util.List;
 import java.util.ArrayList;
 import productos.ProductoVenta;
 import tienda.Tienda;
 import usuarios.Cliente;
-import Gui.SubpanelCatalogo;
+import Gui.cliente.SubpanelCatalogo;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 

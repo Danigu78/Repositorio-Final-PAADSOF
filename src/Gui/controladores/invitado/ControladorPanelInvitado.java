@@ -1,8 +1,8 @@
-package Gui.Controladores;
+package Gui.controladores.invitado;
 
 import javax.swing.JButton;
 
-import Gui.PanelInvitado;
+import Gui.invitado.PanelInvitado;
 import Gui.VentanaPrincipal;
 
 public class ControladorPanelInvitado {

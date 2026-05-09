@@ -1,6 +1,8 @@
-package Gui;
+package Gui.cliente;
 
-import Gui.Controladores.ControladorPerfil;
+import Gui.VentanaPrincipal;
+
+import Gui.controladores.cliente.ControladorPerfil;
 
 import javax.sound.midi.VoiceStatus;
 import javax.swing.*;

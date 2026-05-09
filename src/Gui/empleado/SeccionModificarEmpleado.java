@@ -7,8 +7,8 @@ import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
-import Gui.Controladores.empleado.ControladorModificarEmpleado;
-import Gui.Controladores.empleado.ResultadoOperacion;
+import Gui.controladores.empleado.ControladorModificarEmpleado;
+import Gui.controladores.empleado.ResultadoOperacion;
 import productos.Comic;
 import productos.Figura;
 import productos.JuegoMesa;

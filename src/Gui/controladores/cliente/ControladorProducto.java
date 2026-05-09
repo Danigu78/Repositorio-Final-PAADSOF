@@ -1,6 +1,6 @@
-package Gui.Controladores;
+package Gui.controladores.cliente;
 
-import Gui.SubpanelProducto;
+import Gui.cliente.SubpanelProducto;
 import productos.ProductoVenta;
 import usuarios.Cliente;
 import java.awt.event.ActionEvent;

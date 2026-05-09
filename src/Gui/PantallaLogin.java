@@ -1,6 +1,6 @@
 package Gui;
 
-import Gui.Controladores.ControladorLogin;
+import Gui.controladores.ControladorLogin;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;

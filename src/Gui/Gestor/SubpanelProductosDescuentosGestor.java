@@ -1,6 +1,6 @@
-package Gui.Gestor;
+package Gui.gestor;
 
-import Gui.Controladores.Gestor.ControladorProductosDescuentosGestor;
+import Gui.controladores.gestor.ControladorProductosDescuentosGestor;
 import Gui.VentanaPrincipal;
 import javax.swing.*;
 import java.awt.*;

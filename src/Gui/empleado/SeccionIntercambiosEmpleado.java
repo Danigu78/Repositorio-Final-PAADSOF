@@ -8,8 +8,8 @@ import javax.swing.*;
 import javax.swing.table.*;
 
 import intercambios.Oferta;
-import Gui.Controladores.empleado.ControladorIntercambiosEmpleado;
-import Gui.Controladores.empleado.ResultadoOperacion;
+import Gui.controladores.empleado.ControladorIntercambiosEmpleado;
+import Gui.controladores.empleado.ResultadoOperacion;
 import usuarios.Empleado;
 
 /**

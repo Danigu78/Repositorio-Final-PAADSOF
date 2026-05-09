@@ -1,6 +1,8 @@
-package Gui;
+package Gui.cliente;
 
-import Gui.Controladores.ControladorProducto2Mano;
+import Gui.VentanaPrincipal;
+
+import Gui.controladores.cliente.ControladorProducto2Mano;
 import productos.Producto2Mano;
 import usuarios.Cliente;
 import javax.swing.*;

@@ -1,8 +1,8 @@
 package Gui.empleado;
 
 import Gui.VentanaPrincipal;
-import Gui.Controladores.empleado.ControladorNotificacionesEmpleado;
-import Gui.Controladores.empleado.ResultadoOperacion;
+import Gui.controladores.empleado.ControladorNotificacionesEmpleado;
+import Gui.controladores.empleado.ResultadoOperacion;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;

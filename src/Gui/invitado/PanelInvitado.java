@@ -1,10 +1,14 @@
-package Gui;
+package Gui.invitado;
+
+import Gui.VentanaPrincipal;
 
 import javax.swing.*;
 import javax.swing.border.*;
 
 
-import Gui.Controladores.ControladorPanelInvitado;
+import Gui.controladores.invitado.ControladorPanelInvitado;
+import Gui.cliente.SubpanelCatalogo;
+import Gui.cliente.SubpanelSegundaMano;
 
 
 import java.awt.*;

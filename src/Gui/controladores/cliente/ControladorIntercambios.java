@@ -1,6 +1,6 @@
-package Gui.Controladores;
+package Gui.controladores.cliente;
 
-import Gui.SubpanelIntercambios;
+import Gui.cliente.SubpanelIntercambios;
 import intercambios.EstadoOferta;
 import intercambios.Oferta;
 import tienda.GuardadoTienda;

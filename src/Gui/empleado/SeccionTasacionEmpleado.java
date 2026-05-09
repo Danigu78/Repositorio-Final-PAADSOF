@@ -10,8 +10,8 @@ import javax.swing.table.JTableHeader;
 
 import productos.EstadoProducto;
 import productos.Producto2Mano;
-import Gui.Controladores.empleado.ControladorTasacionEmpleado;
-import Gui.Controladores.empleado.ResultadoOperacion;
+import Gui.controladores.empleado.ControladorTasacionEmpleado;
+import Gui.controladores.empleado.ResultadoOperacion;
 import usuarios.Empleado;
 
 /**

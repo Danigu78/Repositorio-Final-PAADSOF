@@ -1,8 +1,8 @@
-package Gui.Controladores;
+package Gui.controladores;
 
 import Gui.VentanaPrincipal;
-import Gui.Gestor.PanelGestor;
-import Gui.PanelCliente;
+import Gui.gestor.PanelGestor;
+import Gui.cliente.PanelCliente;
 import Gui.empleado.PanelEmpleado;
 import Gui.PantallaLogin;
 import tienda.GuardadoTienda;

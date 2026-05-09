@@ -18,7 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.plaf.basic.BasicButtonUI;
 
-import Gui.Controladores.empleado.ControladorPanelEmpleado;
+import Gui.controladores.empleado.ControladorPanelEmpleado;
 import usuarios.Empleado;
 import usuarios.TipoPermisos;
 
