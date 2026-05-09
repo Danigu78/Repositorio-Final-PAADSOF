@@ -1,139 +1,85 @@
 package Gui.cliente;
 
-import Gui.VentanaPrincipal;
-
 import javax.swing.*;
-import javax.swing.border.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.security.PrivateKey;
 
+import Gui.AbstractPanelSection;
+import Gui.VentanaPrincipal;
+import Gui.Controladores.cliente.ControladorPanelCliente;
+
+import java.awt.*;
 import usuarios.Cliente;
 import ventas.Pedido;
 
 /**
- * Panel principal del cliente en CheckPoint.
- * 
- * <p>
- * Contiene una barra de navegación superior con pestañas para acceder a las
- * diferentes secciones:
- * </p>
- * <ul>
- * <li>Catálogo de productos</li>
- * <li>Carrito de compra</li>
- * <li>Mis pedidos</li>
- * <li>Segunda mano</li>
- * <li>Intercambios</li>
- * <li>Notificaciones</li>
- * <li>Mi Perfil</li>
- * </ul>
- * 
- * <p>
- * La barra superior tiene el logo a la izquierda, las pestañas en el centro y
- * el nombre del usuario con el botón de logout a la derecha.
- * </p>
- * 
- * @author CheckPoint
+ * Panel principal del cliente en CheckPoint. Extiende AbstractPanelSection para
+ * reutilizar helpers visuales y la barra de navegación común. Sigue el patrón
+ * MVC de los apuntes — delega la navegación en ControladorPanelCliente.
+ *
+ * @author Daniel
  * @version 1.0
  */
-public class PanelCliente extends JPanel {
+public class PanelCliente extends AbstractPanelSection {
 
-	// ── Constantes de las secciones ───────────────────────────────────────────
-
-	/** Identificador de la sección catálogo */
 	private static final String SEC_CATALOGO = "CATALOGO";
-
-	/** Identificador de la sección carrito */
 	private static final String SEC_CARRITO = "CARRITO";
-
-	/** Identificador de la sección pedidos */
 	private static final String SEC_PEDIDOS = "PEDIDOS";
-
-	/** Identificador de la sección segunda mano */
 	private static final String SEC_SEGUNDA_MANO = "SEGUNDA_MANO";
-
-	/** Identificador de la sección intercambios */
 	private static final String SEC_INTERCAMBIOS = "INTERCAMBIOS";
-
-	/** Identificador de la sección notificaciones */
 	private static final String SEC_NOTIFICACIONES = "NOTIFICACIONES";
-
-	/** Identificador de la sección perfil */
 	private static final String SEC_PERFIL = "PERFIL";
-
 	private static final String SEC_CARTERA = "MI_CARTERA";
 
-	// ── Atributos ─────────────────────────────────────────────────────────────
+	/** Controlador del panel — gestiona la navegación entre secciones. */
+	private ControladorPanelCliente controlador;
 
-	/** Referencia a la ventana principal para navegar */
-	private VentanaPrincipal ventana;
-
-	/** Cliente actualmente logueado */
+	/** Cliente actualmente logueado. */
 	private Cliente cliente;
 
-	/** Layout que gestiona el cambio entre secciones */
+	/** CardLayout para alternar entre secciones. */
 	private CardLayout cardSecciones;
 
-	/** Panel contenedor de todas las secciones */
+	/** Panel contenedor de todas las secciones. */
 	private JPanel panelSecciones;
 
-	/** Etiqueta con el nombre del usuario en la barra superior */
-	private JLabel labelUsuario;
+	/** Barra de navegación — guardada para marcarBotonBarraActivoPorCmd(). */
+	private JPanel barra;
 
-	/** Botón actualmente seleccionado en la barra de navegación */
-	private JButton botonActivo;
-
-	// ── Secciones ─────────────────────────────────────────────────────────────
-
-	/** Panel del catálogo de productos */
+	/** Subpaneles del cliente. */
 	private SubpanelCatalogo subpanelCatalogo;
-	private SubpanelPago subpanelPago;
-
-	/** Panel del carrito de compra */
 	private SubpanelCarrito subpanelCarrito;
-
-	/** Panel de mis pedidos */
 	private SubpanelPedidos subpanelPedidos;
-
-	/** Panel de productos de segunda mano */
 	private SubpanelSegundaMano subpanelSegundaMano;
-
-	/** Panel de intercambios */
 	private SubpanelIntercambios subpanelIntercambios;
-
-	/** Panel de notificaciones */
 	private SubpanelNotificaciones subpanelNotificaciones;
-
-	/** Panel del perfil del usuario */
 	private SubpanelPerfil subpanelPerfil;
-
-	/** Panel de la cartera del cliente */
+	private SubpanelPago subpanelPago;
 	private SubpanelCartera subpanelCartera;
 
-	// ── Constructor ───────────────────────────────────────────────────────────
-
 	/**
-	 * Constructor del panel cliente. Construye la barra superior de navegación y
-	 * crea todas las secciones.
-	 * 
-	 * @param ventana La ventana principal de la aplicación
+	 * Constructor del panel cliente.
+	 *
+	 * @param ventana La ventana principal
 	 */
 	public PanelCliente(VentanaPrincipal ventana) {
-		this.ventana = ventana;
-		setLayout(new BorderLayout());
-		setBackground(VentanaPrincipal.COLOR_FONDO);
+		super(ventana);
 		inicializarUI();
 	}
 
-	// ── Inicialización ────────────────────────────────────────────────────────
-
 	/**
-	 * Construye y organiza todos los componentes del panel cliente. Crea la barra
-	 * superior y el área de contenido con CardLayout.
+	 * Construye y organiza todos los componentes del panel cliente. Crea el
+	 * controlador y lo registra en la barra de navegación.
 	 */
 	private void inicializarUI() {
-		JPanel barraNavegacion = crearBarraNavegacion();
-		add(barraNavegacion, BorderLayout.NORTH);
+		controlador = new ControladorPanelCliente(this);
+
+		String[][] pestañas = { { "Catálogo", SEC_CATALOGO }, { "Carrito", SEC_CARRITO },
+				{ "Mis Pedidos", SEC_PEDIDOS }, { "Segunda Mano", SEC_SEGUNDA_MANO }, { "Mi Cartera", SEC_CARTERA },
+				{ "Intercambios", SEC_INTERCAMBIOS }, { "Notificaciones", SEC_NOTIFICACIONES },
+				{ "Mi Perfil", SEC_PERFIL } };
+
+		// crearBarraNavegacion() de AbstractPanelSection
+		barra = crearBarraNavegacion("🎮 CheckPoint", "Usuario", pestañas, controlador);
+		add(barra, BorderLayout.NORTH);
 
 		cardSecciones = new CardLayout();
 		panelSecciones = new JPanel(cardSecciones);
@@ -152,6 +98,7 @@ public class PanelCliente extends JPanel {
 		subpanelPedidos.setPanelCliente(this);
 		subpanelCartera.setPanelCliente(this);
 		subpanelPerfil.setPanelCliente(this);
+
 		panelSecciones.add(subpanelCatalogo, SEC_CATALOGO);
 		panelSecciones.add(subpanelCarrito, SEC_CARRITO);
 		panelSecciones.add(subpanelPedidos, SEC_PEDIDOS);
@@ -164,207 +111,37 @@ public class PanelCliente extends JPanel {
 
 		add(panelSecciones, BorderLayout.CENTER);
 		mostrarSeccion(SEC_CATALOGO);
+		marcarBotonBarraActivoPorCmd(barra, SEC_CATALOGO);
 	}
 
 	/**
-	 * Crea la barra superior de navegación con el logo, las pestañas y la
-	 * información del usuario.
-	 * 
-	 * <p>
-	 * La barra está dividida en tres zonas:
-	 * </p>
-	 * <ul>
-	 * <li>Izquierda: logo de CheckPoint</li>
-	 * <li>Centro: botones de navegación (pestañas)</li>
-	 * <li>Derecha: nombre de usuario y botón logout</li>
-	 * </ul>
-	 * 
-	 * @return El panel de la barra de navegación configurado
-	 */
-	private JPanel crearBarraNavegacion() {
-		JPanel barra = new JPanel(new BorderLayout());
-		barra.setBackground(VentanaPrincipal.COLOR_PANEL);
-		// Línea naranja en la parte inferior de la barra
-		barra.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createMatteBorder(0, 0, 2, 0, VentanaPrincipal.COLOR_ACENTO),
-				BorderFactory.createEmptyBorder(0, 15, 0, 15)));
-		barra.setPreferredSize(new Dimension(0, VentanaPrincipal.escalar(58)));
-
-		// ── Zona izquierda: logo ──────────────────────────────────────────────
-		JLabel labelLogo = new JLabel("🎮 CheckPoint");
-		labelLogo.setFont(new Font("Segoe UI", Font.BOLD, 18));
-		labelLogo.setForeground(VentanaPrincipal.COLOR_ACENTO);
-		barra.add(labelLogo, BorderLayout.WEST);
-
-		// ── Zona central: pestañas de navegación ──────────────────────────────
-		JPanel panelPestanas = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 0));
-		panelPestanas.setBackground(VentanaPrincipal.COLOR_PANEL);
-		panelPestanas.setBorder(BorderFactory.createEmptyBorder(8, 0, 0, 0));
-
-		// Definir las JLabelpestañas: [texto visible, icono emoji, id de sección]
-		String[][] pestanas = { { "Catálogo", "", SEC_CATALOGO }, { "Carrito", "", SEC_CARRITO },
-				{ "Mis Pedidos", "", SEC_PEDIDOS }, { "Segunda Mano", "", SEC_SEGUNDA_MANO },
-				{ "Mi cartera", " ", SEC_CARTERA }, { "Intercambios", "", SEC_INTERCAMBIOS },
-				{ "Notificaciones", "", SEC_NOTIFICACIONES }, { "Mi Perfil", "", SEC_PERFIL } };
-
-		// Crear un botón por cada pestaña
-		for (String[] pestana : pestanas) {
-			JButton boton = crearBotonPestana(pestana[1] + " " + pestana[0], pestana[2]);
-			panelPestanas.add(boton);
-
-			// El primer botón (Catálogo) empieza activo
-			if (SEC_CATALOGO.equals(pestana[2])) {
-				botonActivo = boton;
-				marcarBotonActivo(boton);
-			}
-		}
-
-		barra.add(panelPestanas, BorderLayout.CENTER);
-
-		// ── Zona derecha: usuario y logout ────────────────────────────────────
-		JPanel panelUsuario = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-		panelUsuario.setBackground(VentanaPrincipal.COLOR_PANEL);
-		panelUsuario.setBorder(BorderFactory.createEmptyBorder(12, 0, 0, 0));
-
-		// Etiqueta con el nombre del usuario (se actualiza al hacer login)
-		labelUsuario = new JLabel("👤 Usuario");
-		labelUsuario.setFont(VentanaPrincipal.FUENTE_NORMAL);
-		labelUsuario.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-		panelUsuario.add(labelUsuario);
-
-//Separador
-		JPanel sep = new JPanel();
-		sep.setBackground(VentanaPrincipal.COLOR_ACENTO);
-
-		int anchoSep = VentanaPrincipal.escalar(3);
-		int altoSep = VentanaPrincipal.escalar(25);
-		sep.setPreferredSize(new Dimension(anchoSep, altoSep));
-
-		panelUsuario.add(sep);
-
-		// Botón de logout
-		JButton botonLogout = new JButton("🚪 Salir");
-		botonLogout.setFont(VentanaPrincipal.FUENTE_PEQUENA);
-		botonLogout.setForeground(new Color(220, 80, 80));
-		botonLogout.setBackground(VentanaPrincipal.COLOR_PANEL);
-		botonLogout.setBorder(BorderFactory.createEmptyBorder(6, 10, 6, 10));
-		botonLogout.setFocusPainted(false);
-		botonLogout.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		botonLogout.addActionListener(e -> ventana.logout());
-		// Efecto hover en el botón logout
-		botonLogout.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				botonLogout.setForeground(new Color(255, 100, 100));
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				botonLogout.setForeground(new Color(220, 80, 80));
-			}
-		});
-		panelUsuario.add(botonLogout);
-
-		barra.add(panelUsuario, BorderLayout.EAST);
-
-		return barra;
-	}
-
-	/**
-	 * Crea un botón de pestaña para la barra de navegación. Al pulsar el botón, se
-	 * navega a la sección correspondiente y se actualiza el estilo para indicar
-	 * cuál está activa.
-	 * 
-	 * @param texto   Texto del botón (con icono emoji)
-	 * @param seccion Identificador de la sección a mostrar al pulsar
-	 * @return El botón de pestaña configurado
-	 */
-	private JButton crearBotonPestana(String texto, String seccion) {
-		JButton boton = new JButton(texto);
-		boton.setFont(new Font("Segoe UI", Font.PLAIN, VentanaPrincipal.escalar(13)));
-		boton.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-		boton.setBackground(VentanaPrincipal.COLOR_PANEL);
-
-		boton.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(12),
-				VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(12)));// espacio entre el texto y el borde dentro
-																			// del boton
-		boton.setFocusPainted(false);
-		boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-		// Al pasar el ratón por encima, iluminar si no está activo
-		boton.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				if (boton != botonActivo) {
-					boton.setForeground(VentanaPrincipal.COLOR_TEXTO);
-				}
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				if (boton != botonActivo) {
-					boton.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-				}
-			}
-		});
-
-		// Al pulsar: activar esta pestaña y mostrar su sección
-		boton.addActionListener(e -> {
-			activarPestana(boton);
-			mostrarSeccion(seccion);
-			actualizarSeccion(seccion);
-		});
-
-		return boton;
-	}
-
-	/**
-	 * Aplica el estilo visual de "activo" a un botón de pestaña: texto en color
-	 * naranja y subrayado naranja en la parte inferior.
-	 * 
-	 * @param boton El botón al que aplicar el estilo activo
-	 */
-	private void marcarBotonActivo(JButton boton) {
-		boton.setForeground(VentanaPrincipal.COLOR_ACENTO);
-		boton.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createMatteBorder(0, 0, 2, 0, VentanaPrincipal.COLOR_ACENTO),
-				BorderFactory.createEmptyBorder(8, 12, 6, 12)));
-	}
-
-	/**
-	 * Marca un botón de pestaña como activo visualmente. Primero desactiva el botón
-	 * anterior y luego activa el nuevo.
-	 * 
-	 * @param boton El botón de pestaña a activar
-	 */
-	private void activarPestana(JButton boton) {
-		// Quitar el estilo activo del botón anterior
-		if (botonActivo != null) {
-			botonActivo.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-			botonActivo.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
-		}
-		// Aplicar el estilo activo al nuevo botón
-		botonActivo = boton;
-		marcarBotonActivo(boton);
-	}
-
-	/**
-	 * Muestra la sección indicada en el área de contenido principal.
-	 * 
-	 * @param seccion Identificador de la sección a mostrar (usar las constantes
-	 *                SEC_*)
+	 * Muestra la sección indicada en el área de contenido principal. Lo llama el
+	 * controlador desde actionPerformed.
+	 *
+	 * @param seccion Identificador de la sección
 	 */
 	public void mostrarSeccion(String seccion) {
 		cardSecciones.show(panelSecciones, seccion);
 	}
 
 	/**
-	 * Actualiza los datos de una sección cuando el usuario navega a ella. De esta
-	 * forma los datos siempre están frescos al entrar en cada sección.
-	 * 
+	 * Marca la pestaña activa en la barra de navegación. Lo llama el controlador
+	 * desde actionPerformed.
+	 *
+	 * @param cmd ActionCommand de la pestaña a marcar
+	 */
+	public void marcarPestaña(String cmd) {
+		// marcarBotonBarraActivoPorCmd() de AbstractPanelSection
+		marcarBotonBarraActivoPorCmd(barra, cmd);
+	}
+
+	/**
+	 * Actualiza los datos de una sección cuando el usuario navega a ella. Lo llama
+	 * el controlador desde actionPerformed.
+	 *
 	 * @param seccion Identificador de la sección a actualizar
 	 */
-	private void actualizarSeccion(String seccion) {
+	public void actualizarSeccion(String seccion) {
 		if (cliente == null)
 			return;
 		switch (seccion) {
@@ -383,7 +160,6 @@ public class PanelCliente extends JPanel {
 		case SEC_CARTERA:
 			subpanelCartera.actualizar(cliente);
 			break;
-
 		case SEC_INTERCAMBIOS:
 			subpanelIntercambios.actualizar(cliente);
 			break;
@@ -396,19 +172,16 @@ public class PanelCliente extends JPanel {
 		}
 	}
 
-	// ── Métodos públicos ──────────────────────────────────────────────────────
-
 	/**
 	 * Actualiza el panel con los datos del cliente que acaba de hacer login.
-	 * Actualiza el nombre en la barra superior y carga todas las secciones.
-	 * 
+	 * Actualiza el nombre en la barra y carga todas las secciones.
+	 *
 	 * @param cliente El cliente que ha iniciado sesión
 	 */
 	public void actualizarCliente(Cliente cliente) {
 		this.cliente = cliente;
-		// Actualizar nombre en la barra superior
-		labelUsuario.setText(cliente.getNickname());
-		// Cargar datos en todas las secciones
+		// actualizarUsuarioBarra() de AbstractPanelSection
+		actualizarUsuarioBarra(barra, cliente.getNickname());
 		subpanelCatalogo.actualizar(cliente);
 		subpanelCarrito.actualizar(cliente);
 		subpanelPedidos.actualizar(cliente);
@@ -417,12 +190,12 @@ public class PanelCliente extends JPanel {
 		subpanelNotificaciones.actualizar(cliente);
 		subpanelPerfil.actualizar(cliente);
 		subpanelCartera.actualizar(cliente);
-		// Mostrar catálogo por defecto al hacer login
 		mostrarSeccion(SEC_CATALOGO);
+		marcarBotonBarraActivoPorCmd(barra, SEC_CATALOGO);
 	}
 
 	/**
-	 * Navega al subpanel de pago con el pedido indicado.
+	 * Navega al subpanel de pago con el pedido indicado. Lo llama SubpanelPedidos.
 	 *
 	 * @param pedido  El pedido a pagar
 	 * @param cliente El cliente logueado
@@ -432,14 +205,31 @@ public class PanelCliente extends JPanel {
 		mostrarSeccion("PAGO");
 	}
 
+	/**
+	 * Actualiza los datos de la sección de pedidos. Lo llama SubpanelPago tras
+	 * pagar correctamente.
+	 */
 	public void actualizarSeccionPedidos() {
 		subpanelPedidos.actualizar(cliente);
 	}
+
+	/**
+	 * Vuelve a la cartera y la actualiza. Lo llama SubpanelPagoTasacion tras pagar
+	 * la tasación.
+	 */
 	public void volverACartera() {
-	    mostrarSeccion(SEC_CARTERA);
-	    subpanelCartera.actualizar(cliente);
+		mostrarSeccion(SEC_CARTERA);
+		subpanelCartera.actualizar(cliente);
 	}
+
+	/**
+	 * Actualiza el nombre de usuario en la barra de navegación. Lo llama
+	 * SubpanelPerfil tras cambiar el nickname.
+	 *
+	 * @param nombre El nuevo nombre a mostrar
+	 */
 	public void actualizarNombreUsuario(String nombre) {
-	    labelUsuario.setText(nombre);
+		// actualizarUsuarioBarra() de AbstractPanelSection
+		actualizarUsuarioBarra(barra, nombre);
 	}
 }
