@@ -730,10 +730,15 @@ public class Tienda implements Serializable {
 	 */
 	// - DESCUENTOS
 	public void agregarDescuento(Descuento d) {
-		if (d.estaActivo()) {
+		if (d == null) {
+			return;
+		}
+		if (d.estaActivo() && !contieneDescuento(this.descuentosActivos, d)) {
 			this.descuentosActivos.add(d);
 		}
-		this.historialDescuentos.add(d);
+		if (!contieneDescuento(this.historialDescuentos, d)) {
+			this.historialDescuentos.add(d);
+		}
 	}
 
 	/**
@@ -747,6 +752,30 @@ public class Tienda implements Serializable {
 			}
 		}
 		this.descuentosActivos.removeAll(descuentos_finalizados);
+	}
+
+	private void actualizarDescuentosActivos() {
+		limpiarDescuentosCaducados();
+		for (Descuento descuento : this.historialDescuentos) {
+			if (descuento != null && descuento.estaActivo() && !contieneDescuento(this.descuentosActivos, descuento)) {
+				this.descuentosActivos.add(descuento);
+			}
+		}
+	}
+
+	private boolean contieneDescuento(List<Descuento> descuentos, Descuento descuento) {
+		if (descuentos == null || descuento == null) {
+			return false;
+		}
+		for (Descuento actual : descuentos) {
+			if (actual == descuento) {
+				return true;
+			}
+			if (actual != null && actual.getId() != null && actual.getId().equals(descuento.getId())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -772,11 +801,16 @@ public class Tienda implements Serializable {
 	 */
 
 	/**
-	 * Aplica al carrito el descuento más conveniente entre los activos
+	 * Aplica al carrito el primer descuento activo que corresponda
 	 *
 	 * @param carrito el carrito sobre el que se revisan los descuentos
 	 */
 	public void aplicarDescuentoPrioritario(Carrito carrito) {
+		if (carrito == null) {
+			return;
+		}
+		actualizarDescuentosActivos();
+
 		for (Descuento descuento : this.descuentosActivos) {
 			if (!descuento.estaActivo()) {
 				continue;
@@ -956,6 +990,7 @@ public class Tienda implements Serializable {
 	 * @return la lista de descuentos activos
 	 */
 	public List<Descuento> getDescuentosActivos() {
+		actualizarDescuentosActivos();
 		return descuentosActivos;
 	}
 
@@ -1351,6 +1386,7 @@ public class Tienda implements Serializable {
 		in.defaultReadObject();
 
 		inicializarCamposNulos();
+		actualizarDescuentosActivos();
 
 		if (this.estadistica == null) {
 			this.estadistica = Estadistica.getInstancia();

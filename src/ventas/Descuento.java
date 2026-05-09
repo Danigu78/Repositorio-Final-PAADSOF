@@ -48,8 +48,11 @@ public abstract class Descuento implements Serializable {
 	 * @return true si está dentro de su periodo de validez, false en caso contrario
 	 */
 	public boolean estaActivo() {
+		if (fechaInicio == null || fechaFin == null) {
+			return false;
+		}
 		LocalDateTime ahora = LocalDateTime.now();
-		return ahora.isAfter(fechaInicio) && ahora.isBefore(fechaFin);
+		return !ahora.isBefore(fechaInicio) && !ahora.isAfter(fechaFin);
 	}
 
 	/**

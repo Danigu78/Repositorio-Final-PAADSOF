@@ -518,8 +518,11 @@ public class Gestor extends UsuarioRegistrado implements Serializable {
 		if (idDescuento == null || idDescuento.isBlank())
 			return false;
 
-		List<Descuento> lista = Tienda.getInstancia().getDescuentosActivos();
-		boolean eliminado = lista.removeIf(d -> d.getId().equals(idDescuento));
+		Tienda tienda = Tienda.getInstancia();
+		boolean eliminado = tienda.getDescuentosActivos()
+				.removeIf(d -> d != null && idDescuento.equals(d.getId()));
+		eliminado = tienda.getHistorialDescuentos()
+				.removeIf(d -> d != null && idDescuento.equals(d.getId())) || eliminado;
 		if (eliminado) {
 			System.out.println("Descuento " + idDescuento + " eliminado correctamente.");
 		} else {

@@ -89,6 +89,7 @@ public class Carrito implements Serializable {
 	 * @return el importe final del carrito
 	 */
 	public double getTotal() {
+		actualizarDescuentoAplicado();
 		if (this.descuentoAplicado == null) {
 			return calcularSubtotal();
 		}
@@ -259,7 +260,12 @@ public class Carrito implements Serializable {
 	 * @return el descuento actual o null si no hay ninguno
 	 */
 	public Descuento getDescuentoAplicado() {
+		actualizarDescuentoAplicado();
 		return this.descuentoAplicado;
+	}
+
+	private void actualizarDescuentoAplicado() {
+		Tienda.getInstancia().aplicarDescuentoPrioritario(this);
 	}
 
 	/**
@@ -302,8 +308,9 @@ public class Carrito implements Serializable {
 			System.out.println("   -> " + l.getProducto().getNombre() + " x" + l.getCantidad() + " | "
 					+ l.getProducto().getPrecioOficial() + "€/ud" + " | subtotal: " + l.getSubtotal() + "€");
 		}
+		Descuento descuento = getDescuentoAplicado();
 		System.out.println("  Subtotal: " + calcularSubtotal() + "€");
-		System.out.println("  Descuento: " + (descuentoAplicado != null ? descuentoAplicado.getNombre() : "ninguno"));
+		System.out.println("  Descuento: " + (descuento != null ? descuento.getNombre() : "ninguno"));
 		System.out.println("  Total: " + getTotal() + "€");
 	}
 }
