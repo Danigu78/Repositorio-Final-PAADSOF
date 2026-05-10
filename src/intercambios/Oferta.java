@@ -125,7 +125,9 @@ public class Oferta implements Serializable {
 	}
 
 	/**
-	 * Marca la oferta como aceptada
+	 * Marca la oferta como aceptada y rechaza automáticamente todas las ofertas
+	 * pendientes recibidas por el destino que soliciten al menos un producto que
+	 * también solicita esta oferta. Envía notificación a los ofertantes afectados.
 	 *
 	 * @throws OfertaNoDisponibleException si la oferta ya no está disponible
 	 */
@@ -133,6 +135,60 @@ public class Oferta implements Serializable {
 		if (this.estado != EstadoOferta.PENDIENTE)
 			throw new OfertaNoDisponibleException(this.id);
 		this.estado = EstadoOferta.ACEPTADA;
+
+		// Los productos que el destino entrega en esta oferta (sus productos)
+		// son los que no pueden estar en otras ofertas recibidas
+		List<Producto2Mano> productosDelDestino = this.productosSolicitados;
+		for (Oferta o : new ArrayList<>(this.destino.getOfertasPendientes())) {
+			if (o == this)
+				continue;
+			// Solo nos interesan las PENDIENTE donde el destino sea el mismo
+			// es decir otras ofertas que el destino ha recibido de otros
+			if (o.getEstado() != EstadoOferta.PENDIENTE)
+				continue;
+			if (!o.getDestino().equals(this.destino))
+				continue;
+
+			// Comprobamos si esta otra oferta solicita algún producto
+			// que también solicita la que acabamos de aceptar
+			boolean hayConflicto = false;
+			List<Producto2Mano> productosConflicto = new ArrayList<>();
+
+			for (Producto2Mano p : productosDelDestino) {
+				if (o.getProductosSolicitados().contains(p)) {
+					hayConflicto = true;
+					productosConflicto.add(p);
+				}
+			}
+			if (!hayConflicto)
+				continue;
+			o.setEstado(EstadoOferta.RECHAZADA);
+			// Desbloqueamos los productos que el origen de esa oferta había bloqueado
+			for (Producto2Mano p : o.getProductosOfertados())
+				p.setBloqueado(false);
+
+			if (!o.getOrigen().getHistorialIntercambios().contains(o))
+				o.getOrigen().getHistorialIntercambios().add(o);
+			if (!o.getDestino().getHistorialIntercambios().contains(o))
+				o.getDestino().getHistorialIntercambios().add(o);
+
+			// Quitamos de pendientes de ambos
+			o.getOrigen().getOfertasPendientes().remove(o);
+			o.getDestino().getOfertasPendientes().remove(o);
+
+			StringBuilder sbProductos = new StringBuilder();
+			for (Producto2Mano p : productosConflicto) {
+				if (sbProductos.length() > 0)
+					sbProductos.append(", ");
+				sbProductos.append(p.getNombre());
+			}
+
+			o.getOrigen().recibirNotificacionTipo(
+					"Tu oferta " + o.getId() + " ha sido rechazada automáticamente. " + "El producto/s (" + sbProductos
+							+ ") que solicitabas " + "ya ha sido intercambiado por " + this.destino.getNickname()
+							+ " con otro usuario. " + "Puedes verla en tus ofertas rechazadas.",
+					TipoNotificacion.OFERTA_RECHAZADA);
+		}
 	}
 
 	/**

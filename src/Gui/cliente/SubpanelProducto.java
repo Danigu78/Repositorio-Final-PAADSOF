@@ -5,16 +5,18 @@ import javax.swing.*;
 import Gui.VentanaPrincipal;
 import Gui.Controladores.cliente.ControladorCatalogo;
 import Gui.Controladores.cliente.ControladorProducto;
-
-import java.awt.*;
-import java.awt.event.*;
-import java.util.List;
+import productos.LineaPack;
+import productos.Pack;
 import productos.ProductoVenta;
 import productos.Reseña;
 import usuarios.Cliente;
 
+import java.awt.*;
+import java.awt.event.*;
+
 /**
- * Subpanel que muestra la información completa de un producto. Extiende
+ * Subpanel que muestra la información completa de un producto. Si el producto
+ * es un Pack muestra además su contenido y el ahorro. Extiende
  * AbstractPanelCliente para reutilizar helpers visuales del cliente. Sigue el
  * patrón MVC de los apuntes.
  *
@@ -68,7 +70,8 @@ public class SubpanelProducto extends AbstractPanelCliente {
 
 	/**
 	 * Carga el producto y construye la interfaz. Crea el controlador y lo registra
-	 * en los botones.
+	 * en los botones. La info del producto queda fija arriba y solo las reseñas
+	 * tienen scroll.
 	 *
 	 * @param producto            El producto a mostrar
 	 * @param cliente             El cliente logueado o null
@@ -82,17 +85,15 @@ public class SubpanelProducto extends AbstractPanelCliente {
 		removeAll();
 		add(crearBarraSuperior(), BorderLayout.NORTH);
 
+		// Panel central fijo arriba — no scrollea
 		JPanel panelCompleto = new JPanel(new BorderLayout());
 		panelCompleto.setBackground(VentanaPrincipal.COLOR_FONDO);
 		panelCompleto.add(crearPanelCentral(), BorderLayout.NORTH);
-		panelCompleto.add(crearPanelReseñas(), BorderLayout.CENTER);
 
-		JScrollPane scrollCompleto = new JScrollPane(panelCompleto);
-		scrollCompleto.setBorder(null);
-		scrollCompleto.getVerticalScrollBar().setUnitIncrement(VentanaPrincipal.escalar(16));
-		scrollCompleto.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollCompleto.getViewport().setBackground(VentanaPrincipal.COLOR_FONDO);
-		add(scrollCompleto, BorderLayout.CENTER);
+		// Solo las reseñas tienen scroll
+		panelCompleto.add(crearScrollReseñas(), BorderLayout.CENTER);
+
+		add(panelCompleto, BorderLayout.CENTER);
 
 		setControlador(controlador);
 		revalidate();
@@ -125,7 +126,7 @@ public class SubpanelProducto extends AbstractPanelCliente {
 	 */
 	private JPanel crearBarraSuperior() {
 		String textoVolver = subpanelCarrito != null ? "← Volver al carrito"
-				: subpanelPedidos != null ? " Volver al pedido" : " Volver al catálogo";
+				: subpanelPedidos != null ? "← Volver al pedido" : "← Volver al catálogo";
 
 		// crearBarraVolver() de AbstractPanelSection
 		JPanel barra = crearBarraVolver(textoVolver);
@@ -135,7 +136,8 @@ public class SubpanelProducto extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Crea el panel central con imagen e información del producto.
+	 * Crea el panel central con imagen e información del producto. Si es un Pack
+	 * muestra además el contenido y el ahorro. Este panel queda fijo — no scrollea.
 	 *
 	 * @return Panel central del producto
 	 */
@@ -148,7 +150,7 @@ public class SubpanelProducto extends AbstractPanelCliente {
 		JLabel labelImagen = new JLabel();
 		labelImagen.setHorizontalAlignment(SwingConstants.CENTER);
 		labelImagen.setPreferredSize(new Dimension(VentanaPrincipal.escalar(300), VentanaPrincipal.escalar(300)));
-
+		// cargarImagen() de AbstractPanelSection
 		cargarImagen(labelImagen, producto.getImagenRuta(), VentanaPrincipal.escalar(280),
 				VentanaPrincipal.escalar(280));
 		panel.add(labelImagen, BorderLayout.WEST);
@@ -157,6 +159,19 @@ public class SubpanelProducto extends AbstractPanelCliente {
 		panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.Y_AXIS));
 		panelInfo.setBackground(VentanaPrincipal.COLOR_FONDO);
 		panelInfo.setBorder(BorderFactory.createEmptyBorder(0, VentanaPrincipal.escalar(30), 0, 0));
+
+		// Badge PACK si es un pack
+		if (producto instanceof Pack) {
+			JLabel labelBadge = new JLabel("📦 PACK");
+			labelBadge.setFont(VentanaPrincipal.FUENTE_BOTON);
+			labelBadge.setForeground(Color.WHITE);
+			labelBadge.setOpaque(true);
+			labelBadge.setBackground(VentanaPrincipal.COLOR_ACENTO);
+			labelBadge.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(3),
+					VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(3), VentanaPrincipal.escalar(8)));
+			panelInfo.add(labelBadge);
+			panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(8)));
+		}
 
 		JLabel labelNombre = new JLabel(producto.getNombre());
 		labelNombre.setFont(VentanaPrincipal.FUENTE_TITULO);
@@ -170,10 +185,65 @@ public class SubpanelProducto extends AbstractPanelCliente {
 		panelInfo.add(labelPrecio);
 		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
+		// Info específica de pack
+		if (producto instanceof Pack) {
+			Pack pack = (Pack) producto;
+			double sumaIndividual = pack.calcularSumaProductos();
+			double ahorro = sumaIndividual - pack.calcularPrecioFinal();
+
+			// Precio suma individual
+			JLabel labelPrecioOriginal = crearLabel(String.format("Precio individual: %.2f€", sumaIndividual));
+			panelInfo.add(labelPrecioOriginal);
+			panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(4)));
+
+			JLabel labelAhorro = new JLabel(String.format(" Ahorras %.2f€ comprando el pack", ahorro));
+			labelAhorro.setFont(VentanaPrincipal.FUENTE_BOTON);// verde
+			labelAhorro.setForeground(new Color(50, 150, 50));
+			panelInfo.add(labelAhorro);
+			panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(15)));
+
+			// Contenido del pack
+			JLabel labelContenidoTitulo = new JLabel("Contenido del pack:");
+			labelContenidoTitulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
+			labelContenidoTitulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
+			panelInfo.add(labelContenidoTitulo);
+			panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(6)));
+
+			for (LineaPack linea : pack.getLineas()) {
+				JPanel filaLinea = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+				filaLinea.setBackground(VentanaPrincipal.COLOR_FONDO);
+				filaLinea.setAlignmentX(Component.LEFT_ALIGNMENT);
+				filaLinea.setMaximumSize(new Dimension(Integer.MAX_VALUE, VentanaPrincipal.escalar(28)));
+
+				JLabel labelLinea = crearLabel("• " + linea.getProducto().getNombre() + "  x" + linea.getUnidades()
+						+ "  —  " + String.format("%.2f€", linea.getSubtotal()));
+				filaLinea.add(labelLinea);
+				panelInfo.add(filaLinea);
+				panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(3)));
+			}
+
+			panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+
+		} else {
+
+			JLabel labelCatTitulo = new JLabel("Categorías:");
+			labelCatTitulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
+			labelCatTitulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
+			panelInfo.add(labelCatTitulo);
+
+			String categorias = producto.getCategorias().stream().map(c -> c.getNombre()).reduce((a, b) -> a + ", " + b)
+					.orElse("Sin categoría");
+			JLabel labelCat = crearLabel(categorias);
+			panelInfo.add(labelCat);
+			panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		}
+
+		// Stock — para todos
 		JLabel labelStock = crearLabel("Stock disponible: " + producto.getStockDisponible());
 		panelInfo.add(labelStock);
 		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
+		// Descripción — para todos
 		JLabel labelDescTitulo = new JLabel("Descripción:");
 		labelDescTitulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
 		labelDescTitulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
@@ -185,19 +255,9 @@ public class SubpanelProducto extends AbstractPanelCliente {
 		panelInfo.add(labelDesc);
 		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
-		JLabel labelCatTitulo = new JLabel("Categorías:");
-		labelCatTitulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
-		labelCatTitulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
-		panelInfo.add(labelCatTitulo);
-
-		String categorias = producto.getCategorias().stream().map(c -> c.getNombre()).reduce((a, b) -> a + ", " + b)
-				.orElse("Sin categoría");
-		JLabel labelCat = crearLabel(categorias);
-		panelInfo.add(labelCat);
-		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
-
+		// Reseñas media — para todos
 		if (!producto.getReseñas().isEmpty()) {
-			JLabel labelMedia = new JLabel(String.format("⭐ %.1f/10 (%d reseñas)", producto.getMediaPuntuacion(),
+			JLabel labelMedia = new JLabel(String.format(" %.1f/10 (%d reseñas)", producto.getMediaPuntuacion(),
 					producto.getReseñas().size()));
 			labelMedia.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
 			labelMedia.setForeground(VentanaPrincipal.COLOR_ACENTO);
@@ -208,6 +268,7 @@ public class SubpanelProducto extends AbstractPanelCliente {
 			panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 		}
 
+		// Botón añadir al carrito
 		if (controlador.hayCliente()) {
 			// crearBotonNaranja() de AbstractPanelSection
 			botonAñadir = crearBotonNaranja("Añadir al carrito");
@@ -220,11 +281,12 @@ public class SubpanelProducto extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Crea el panel de reseñas del producto.
+	 * Crea el scroll que contiene las reseñas del producto. La info del producto
+	 * queda fija arriba y solo las reseñas deslizan.
 	 *
-	 * @return Panel de reseñas
+	 * @return JScrollPane con las reseñas
 	 */
-	private JPanel crearPanelReseñas() {
+	private JScrollPane crearScrollReseñas() {
 		JPanel panelReseñas = new JPanel();
 		panelReseñas.setLayout(new BoxLayout(panelReseñas, BoxLayout.Y_AXIS));
 		panelReseñas.setBackground(VentanaPrincipal.COLOR_PANEL);
@@ -239,17 +301,25 @@ public class SubpanelProducto extends AbstractPanelCliente {
 		panelReseñas.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
 		if (producto.getReseñas().isEmpty()) {
+			// crearLabel() de AbstractPanelSection
 			JLabel labelVacio = crearLabel("Este producto no tiene reseñas todavía.");
 			labelVacio.setAlignmentX(Component.LEFT_ALIGNMENT);
 			panelReseñas.add(labelVacio);
 		} else {
 			for (Reseña r : producto.getReseñas()) {
-				panelReseñas.add(crearTarjetaReseña(r));
+				JPanel tarjeta = crearTarjetaReseña(r);
+				tarjeta.setAlignmentX(Component.LEFT_ALIGNMENT);
+				panelReseñas.add(tarjeta);
 				panelReseñas.add(Box.createVerticalStrut(VentanaPrincipal.escalar(8)));
 			}
 		}
 
-		return panelReseñas;
+		JScrollPane scroll = new JScrollPane(panelReseñas);
+		scroll.setBorder(null);
+		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scroll.getViewport().setBackground(VentanaPrincipal.COLOR_PANEL);
+		scroll.getVerticalScrollBar().setUnitIncrement(VentanaPrincipal.escalar(16));
+		return scroll;
 	}
 
 	/**
