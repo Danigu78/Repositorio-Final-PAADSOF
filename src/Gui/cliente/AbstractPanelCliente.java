@@ -3,7 +3,7 @@ package Gui.cliente;
 import usuarios.Cliente;
 import javax.swing.*;
 
-import Gui.AbstractPanelSection;
+import Gui.PanelAbstractoGeneral;
 import Gui.VentanaPrincipal;
 
 import java.awt.*;
@@ -17,7 +17,7 @@ import java.awt.*;
  * @author Daniel
  * @version 1.0
  */
-public abstract class AbstractPanelCliente extends AbstractPanelSection {
+public abstract class AbstractPanelCliente extends PanelAbstractoGeneral {
 
 	/** Cliente logueado actualmente. */
 	protected Cliente cliente;

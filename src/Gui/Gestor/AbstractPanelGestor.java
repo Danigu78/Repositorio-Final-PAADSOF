@@ -1,6 +1,6 @@
 package Gui.Gestor;
 
-import Gui.AbstractPanelSection;
+import Gui.PanelAbstractoGeneral;
 import Gui.VentanaPrincipal;
 import usuarios.Gestor;
 import javax.swing.*;
@@ -13,7 +13,7 @@ import java.awt.*;
  * @author Antonino
  * @version 1.0
  */
-public abstract class AbstractPanelGestor extends AbstractPanelSection {
+public abstract class AbstractPanelGestor extends PanelAbstractoGeneral {
 
     protected final Gestor gestor;
 

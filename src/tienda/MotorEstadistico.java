@@ -5,7 +5,10 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import excepciones.AñoInvalidoException;
 import excepciones.RangoFechasInvalidoException;
@@ -213,6 +216,44 @@ public class MotorEstadistico implements Serializable {
 		} catch (RangoFechasInvalidoException e) {
 			return 0.0;
 		}
+	}
+
+	/**
+	 * Calcula cuanto ha generado cada producto en pedidos no cancelados.
+	 *
+	 * @return mapa de producto a ingresos acumulados
+	 */
+	public Map<ProductoVenta, Double> calcularIngresosPorProducto() {
+		Map<ProductoVenta, Double> ingresos = new LinkedHashMap<>();
+		Map<String, ProductoVenta> productosPorId = new HashMap<>();
+
+		for (ProductoVenta producto : Tienda.getInstancia().getStockVentas()) {
+			if (producto != null && producto.getId() != null) {
+				productosPorId.put(producto.getId(), producto);
+				ingresos.put(producto, 0.0);
+			}
+		}
+
+		for (Pedido pedido : Tienda.getInstancia().getHistorialVentas()) {
+			if (pedido == null || pedido.getEstado() == EstadoPedido.CANCELADO) {
+				continue;
+			}
+
+			for (LineaPedido linea : pedido.getLineas()) {
+				if (linea == null || linea.getProducto() == null || linea.getProducto().getId() == null) {
+					continue;
+				}
+
+				ProductoVenta producto = productosPorId.get(linea.getProducto().getId());
+				if (producto == null) {
+					producto = linea.getProducto();
+				}
+
+				ingresos.put(producto, ingresos.getOrDefault(producto, 0.0) + linea.getSubtotal());
+			}
+		}
+
+		return ingresos;
 	}
 
 	/**

@@ -1,16 +1,21 @@
 package Gui.Gestor;
 
+import Gui.TablaProductosVenta;
 import Gui.VentanaPrincipal;
 import Gui.Controladores.Gestor.ControladorEstadisticasGestor;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import usuarios.Cliente;
 import usuarios.Gestor;
-import ventas.EstadoPedido;
 
 /**
  * Subpanel de estadísticas para el gestor.
@@ -24,6 +29,10 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
 
     private JSpinner spinnerAño;
     private JPanel panelMesesAño;
+    private JTable tablaIngresosProductos;
+    private DefaultTableModel modeloIngresosProductos;
+    private JComboBox<String> comboOrdenProductos;
+    private TablaProductosVenta tablaIngresosProductosVenta;
 
     private JSpinner spinnerRangoInicio;
     private JSpinner spinnerRangoFin;
@@ -58,7 +67,7 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
 
         panelContenido.add(crearSeccionIngresos());
         panelContenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(20)));
-        panelContenido.add(crearSeccionMesesActual());
+        panelContenido.add(crearSeccionIngresosProductosComun());
         panelContenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(20)));
         panelContenido.add(crearSeccionMesesAño());
         panelContenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(20)));
@@ -75,10 +84,6 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
         panelContenido.add(crearSeccionTop(
             "Top clientes por intercambios",
             controlador.getTopIntercambios(), "intercambios"));
-        panelContenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(20)));
-        panelContenido.add(crearSeccionTop(
-            "Top clientes por pedidos cancelados",
-            controlador.getTopCancelados(), "cancelados"));
 
         JScrollPane scroll = new JScrollPane(panelContenido);
         scroll.setBorder(null);
@@ -117,16 +122,116 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
             new GridLayout(1, 2, VentanaPrincipal.escalar(15), 0));
         panel.setBackground(VentanaPrincipal.COLOR_FONDO);
         panel.add(crearTarjetaEstadistica("Ingresos por ventas",
-            String.format("%.2f€", controlador.getIngresosVentas())));
+            String.format("%.2f EUR", controlador.getIngresosVentas())));
         panel.add(crearTarjetaEstadistica("Ingresos por tasaciones",
-            String.format("%.2f€", controlador.getIngresosTasaciones())));
+            String.format("%.2f EUR", controlador.getIngresosTasaciones())));
         return panel;
     }
 
-    private JPanel crearSeccionMesesActual() {
-        return crearPanelMeses(
-            "Recaudación por mes (año actual)",
-            controlador.getIngresosPorMeses());
+    private JPanel crearSeccionIngresosProductos() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(VentanaPrincipal.COLOR_TARJETA);
+        panel.setBorder(crearBordeTarjeta());
+
+        JPanel cabecera = new JPanel(new FlowLayout(
+            FlowLayout.LEFT, VentanaPrincipal.escalar(10), 0));
+        cabecera.setBackground(VentanaPrincipal.COLOR_TARJETA);
+
+        JLabel titulo = new JLabel("Ingresos por producto");
+        titulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
+        titulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
+        cabecera.add(titulo);
+
+        comboOrdenProductos = crearCombo(new String[] {
+            "Mayor a menor", "Menor a mayor"
+        });
+        comboOrdenProductos.setPreferredSize(new Dimension(
+            VentanaPrincipal.escalar(150), VentanaPrincipal.escalar(30)));
+        comboOrdenProductos.addActionListener(e -> actualizarIngresosProductos());
+        cabecera.add(comboOrdenProductos);
+
+        panel.add(cabecera, BorderLayout.NORTH);
+
+        modeloIngresosProductos = new DefaultTableModel(
+            new String[] { "ID", "Producto", "Ingresos" }, 0) {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public boolean isCellEditable(int fila, int columna) {
+                return false;
+            }
+        };
+        tablaIngresosProductos = new JTable(modeloIngresosProductos);
+        tablaIngresosProductos.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        tablaIngresosProductos.setRowHeight(VentanaPrincipal.escalar(28));
+        tablaIngresosProductos.setBackground(Color.WHITE);
+        tablaIngresosProductos.setForeground(Color.BLACK);
+        tablaIngresosProductos.setGridColor(new Color(225, 225, 225));
+
+        JTableHeader cabeceraTabla = tablaIngresosProductos.getTableHeader();
+        cabeceraTabla.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        cabeceraTabla.setBackground(new Color(235, 235, 235));
+        cabeceraTabla.setForeground(Color.BLACK);
+        cabeceraTabla.setReorderingAllowed(false);
+
+        JScrollPane scroll = estilizarScroll(tablaIngresosProductos);
+        scroll.setPreferredSize(new Dimension(
+            VentanaPrincipal.escalar(900), VentanaPrincipal.escalar(210)));
+        panel.add(scroll, BorderLayout.CENTER);
+
+        actualizarIngresosProductos();
+        return panel;
+    }
+
+    private JPanel crearSeccionIngresosProductosComun() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(VentanaPrincipal.COLOR_TARJETA);
+        panel.setBorder(crearBordeTarjeta());
+
+        JLabel titulo = new JLabel("Ingresos por producto");
+        titulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
+        titulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
+        titulo.setBorder(javax.swing.BorderFactory.createEmptyBorder(
+            0, 0, VentanaPrincipal.escalar(10), 0));
+        panel.add(titulo, BorderLayout.NORTH);
+
+        List<TablaProductosVenta.ColumnaExtra> extras = new ArrayList<>();
+        extras.add(new TablaProductosVenta.ColumnaExtra(
+            "Ingresos",
+            p -> String.format(Locale.US, "%.2f EUR",
+                controlador.getIngresoProducto(p)),
+            "Ingresos: menor a mayor",
+            "Ingresos: mayor a menor",
+            Comparator.comparingDouble(p -> controlador.getIngresoProducto(p))));
+
+        tablaIngresosProductosVenta = new TablaProductosVenta(
+            () -> controlador.getProductosParaTablaIngresos(), extras);
+        panel.add(tablaIngresosProductosVenta, BorderLayout.CENTER);
+
+        return panel;
+    }
+
+    private void actualizarIngresosProductos() {
+        if (modeloIngresosProductos == null) {
+            return;
+        }
+
+        boolean mayorAMenor = comboOrdenProductos == null
+            || !"Menor a mayor".equals(comboOrdenProductos.getSelectedItem());
+        modeloIngresosProductos.setRowCount(0);
+
+        for (ControladorEstadisticasGestor.IngresoProducto ingreso
+                : controlador.getIngresosPorProducto(mayorAMenor)) {
+            if (ingreso.getProducto() == null) {
+                continue;
+            }
+
+            modeloIngresosProductos.addRow(new Object[] {
+                ingreso.getProducto().getId(),
+                ingreso.getProducto().getNombre(),
+                String.format("%.2f EUR", ingreso.getIngresos())
+            });
+        }
     }
 
     private JPanel crearSeccionMesesAño() {
@@ -144,7 +249,7 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
         cabecera.add(titulo);
 
         spinnerAño = new JSpinner(new SpinnerNumberModel(
-            LocalDate.now().getYear(), 2000, 2100, 1));
+            controlador.getAnioActual(), 2000, 2100, 1));
         spinnerAño.setFont(VentanaPrincipal.FUENTE_NORMAL);
         spinnerAño.setPreferredSize(new Dimension(
             VentanaPrincipal.escalar(80), VentanaPrincipal.escalar(30)));
@@ -161,7 +266,8 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
         panelMesesAño.setBackground(VentanaPrincipal.COLOR_TARJETA);
         panelMesesAño.setBorder(javax.swing.BorderFactory.createEmptyBorder(
             VentanaPrincipal.escalar(10), 0, 0, 0));
-        rellenarPanelMeses(panelMesesAño, new double[12]);
+        rellenarPanelMeses(panelMesesAño,
+            controlador.getIngresosPorAño(controlador.getAnioActual()));
         panel.add(panelMesesAño, BorderLayout.CENTER);
 
         return panel;
@@ -298,19 +404,13 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
         } else {
             int pos = 1;
             for (Cliente c : clientes) {
-                String info;
+                String info = pos + ". " + c.getNickname();
                 if (tipo.equals("compras")) {
                     info = pos + ". " + c.getNickname()
                         + " — " + c.contarPedidosCompletados() + " pedidos";
                 } else if (tipo.equals("intercambios")) {
                     info = pos + ". " + c.getNickname()
                         + " — " + c.contarIntercambios() + " intercambios";
-                } else {
-                    long cancelados = c.getHistorialPedidos().stream()
-                        .filter(p -> p.getEstado() == EstadoPedido.CANCELADO)
-                        .count();
-                    info = pos + ". " + c.getNickname()
-                        + " — " + cancelados + " cancelados";
                 }
                 JLabel label = new JLabel(info);
                 label.setFont(VentanaPrincipal.FUENTE_NORMAL);
@@ -364,7 +464,7 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
             tarjeta.add(labelMes, BorderLayout.NORTH);
 
             JLabel labelValor = new JLabel(
-                String.format("%.2f€", ingresos[i]), SwingConstants.CENTER);
+                String.format("%.2f EUR", ingresos[i]), SwingConstants.CENTER);
             labelValor.setFont(VentanaPrincipal.FUENTE_BOTON);
             labelValor.setForeground(ingresos[i] > 0
                 ? VentanaPrincipal.COLOR_ACENTO : VentanaPrincipal.COLOR_TEXTO2);
@@ -421,7 +521,7 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
         double total = controlador.getIngresosRango(inicio, fin);
         labelResultadoRango.setText(
             "Ingresos totales del " + inicio + " al " + fin
-            + ":  " + String.format("%.2f€", total));
+            + ":  " + String.format("%.2f EUR", total));
     }
 
     public void procesarConsultarRangoVentas() {
@@ -434,7 +534,7 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
         double total = controlador.getIngresosVentasRango(inicio, fin);
         labelResultadoVentas.setText(
             "Ingresos por ventas del " + inicio + " al " + fin
-            + ":  " + String.format("%.2f€", total));
+            + ":  " + String.format("%.2f EUR", total));
     }
 
     public void procesarConsultarRangoTasacion() {
@@ -447,7 +547,7 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
         double total = controlador.getIngresosTasacionRango(inicio, fin);
         labelResultadoTasacion.setText(
             "Ingresos por tasación del " + inicio + " al " + fin
-            + ":  " + String.format("%.2f€", total));
+            + ":  " + String.format("%.2f EUR", total));
     }
 
     /**

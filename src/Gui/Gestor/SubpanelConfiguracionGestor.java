@@ -25,6 +25,9 @@ public class SubpanelConfiguracionGestor extends AbstractPanelGestor {
     private JSpinner spinnerOferta;
     private JSpinner spinnerPago;
     private JSpinner spinnerTasacion;
+    private JSpinner spinnerPesoValoracion;
+    private JSpinner spinnerPesoCompras;
+    private JSpinner spinnerPesoCategorias;
 
     // Botón — atributo para registrar el controlador
     private JButton botonGuardar;
@@ -91,10 +94,45 @@ public class SubpanelConfiguracionGestor extends AbstractPanelGestor {
         gbc.gridy = 8;
         panelContenido.add(spinnerTasacion, gbc);
 
+        gbc.gridy = 9;
+        gbc.insets = new Insets(VentanaPrincipal.escalar(20), 0,
+            VentanaPrincipal.escalar(4), 0);
+        JLabel tituloRecomendador = new JLabel("Sistema de recomendación");
+        tituloRecomendador.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
+        tituloRecomendador.setForeground(VentanaPrincipal.COLOR_TEXTO);
+        panelContenido.add(tituloRecomendador, gbc);
+
+        gbc.insets = new Insets(VentanaPrincipal.escalar(8), 0,
+            VentanaPrincipal.escalar(4), 0);
+
+        gbc.gridy = 10;
+        panelContenido.add(crearLabel("Peso de valoración:"), gbc);
+        spinnerPesoValoracion = new JSpinner(new SpinnerNumberModel(
+            controlador.getPesoValoracion(), 0.0, 100.0, 0.1));
+        spinnerPesoValoracion.setFont(VentanaPrincipal.FUENTE_NORMAL);
+        gbc.gridy = 11;
+        panelContenido.add(spinnerPesoValoracion, gbc);
+
+        gbc.gridy = 12;
+        panelContenido.add(crearLabel("Peso de compras similares:"), gbc);
+        spinnerPesoCompras = new JSpinner(new SpinnerNumberModel(
+            controlador.getPesoCompras(), 0.0, 100.0, 0.1));
+        spinnerPesoCompras.setFont(VentanaPrincipal.FUENTE_NORMAL);
+        gbc.gridy = 13;
+        panelContenido.add(spinnerPesoCompras, gbc);
+
+        gbc.gridy = 14;
+        panelContenido.add(crearLabel("Peso de categoría favorita:"), gbc);
+        spinnerPesoCategorias = new JSpinner(new SpinnerNumberModel(
+            controlador.getPesoCategorias(), 0.0, 100.0, 0.1));
+        spinnerPesoCategorias.setFont(VentanaPrincipal.FUENTE_NORMAL);
+        gbc.gridy = 15;
+        panelContenido.add(spinnerPesoCategorias, gbc);
+
         // crearBotonNaranja() de AbstractPanelSection
         botonGuardar = crearBotonNaranja("Guardar configuración");
         botonGuardar.setActionCommand("guardarConfig");
-        gbc.gridy = 9;
+        gbc.gridy = 16;
         gbc.insets = new Insets(VentanaPrincipal.escalar(20), 0, 0, 0);
         panelContenido.add(botonGuardar, gbc);
 
@@ -119,11 +157,16 @@ public class SubpanelConfiguracionGestor extends AbstractPanelGestor {
         int oferta   = (int) spinnerOferta.getValue();
         int pago     = (int) spinnerPago.getValue();
         double tasacion = ((Number) spinnerTasacion.getValue()).doubleValue();
+        double pesoValoracion = ((Number) spinnerPesoValoracion.getValue()).doubleValue();
+        double pesoCompras = ((Number) spinnerPesoCompras.getValue()).doubleValue();
+        double pesoCategorias = ((Number) spinnerPesoCategorias.getValue()).doubleValue();
 
         boolean okTiempos   = controlador.configurarTiempos(oferta, carrito, pago);
         boolean okTasacion  = controlador.setPrecioTasacion(tasacion);
+        boolean okPesos = controlador.setPesosRecomendador(
+            pesoValoracion, pesoCompras, pesoCategorias);
 
-        if (okTiempos && okTasacion) {
+        if (okTiempos && okTasacion && okPesos) {
             mostrarMensaje("Configuración guardada correctamente.");
         } else {
             mostrarError(

@@ -1,9 +1,12 @@
 package Gui.Gestor;
 
+import Gui.TablaProductosVenta;
 import Gui.VentanaPrincipal;
 import Gui.Controladores.Gestor.ControladorCategoriasGestor;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.HashMap;
@@ -27,11 +30,19 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
     private JTextField campoNombre;
     private JTextField campoDesc;
     private JTextField campoBusquedaCategorias;
+    private JTextField campoBusquedaProductos;
+    private JTextField campoIdProductoTabla;
+    private JComboBox<String> comboCategoriaTabla;
+    private JTable tablaProductos;
+    private DefaultTableModel modeloProductos;
+    private TablaProductosVenta tablaProductosVenta;
 
     private Map<String, JPanel> combosProductosPanel = new HashMap<>();
     private Map<String, List<ProductoVenta>> productosMap = new HashMap<>();
 
     private JButton botonCrear;
+    private JButton botonAnadirTabla;
+    private JButton botonQuitarTabla;
 
     public SubpanelCategoriasGestor(VentanaPrincipal ventana, Gestor gestor) {
         super(ventana, gestor);
@@ -40,12 +51,23 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
     }
 
     private void inicializarUI() {
-        add(crearFormularioNuevaCategoria(), BorderLayout.NORTH);
-
         panelLista = new JPanel(new GridBagLayout());
         panelLista.setBackground(VentanaPrincipal.COLOR_FONDO);
 
-        JScrollPane scroll = new JScrollPane(panelLista);
+        JPanel contenido = new JPanel();
+        contenido.setLayout(new BoxLayout(contenido, BoxLayout.Y_AXIS));
+        contenido.setBackground(VentanaPrincipal.COLOR_FONDO);
+        contenido.setBorder(javax.swing.BorderFactory.createEmptyBorder(
+            VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(30),
+            VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(30)));
+
+        contenido.add(crearFormularioNuevaCategoria());
+        contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(18)));
+        contenido.add(crearPanelTablaProductosComun());
+        contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(18)));
+        contenido.add(crearPanelCategorias());
+
+        JScrollPane scroll = new JScrollPane(contenido);
         scroll.setBorder(null);
         scroll.getViewport().setBackground(VentanaPrincipal.COLOR_FONDO);
         scroll.getVerticalScrollBar().setUnitIncrement(VentanaPrincipal.escalar(16));
@@ -60,6 +82,16 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
             for (ActionListener al : botonCrear.getActionListeners())
                 botonCrear.removeActionListener(al);
             botonCrear.addActionListener(c);
+        }
+        if (botonAnadirTabla != null) {
+            for (ActionListener al : botonAnadirTabla.getActionListeners())
+                botonAnadirTabla.removeActionListener(al);
+            botonAnadirTabla.addActionListener(c);
+        }
+        if (botonQuitarTabla != null) {
+            for (ActionListener al : botonQuitarTabla.getActionListeners())
+                botonQuitarTabla.removeActionListener(al);
+            botonQuitarTabla.addActionListener(c);
         }
     }
 
@@ -93,6 +125,189 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
         panel.add(botonCrear);
 
         return panel;
+    }
+
+    private JPanel crearPanelTablaProductosComun() {
+        JPanel panel = crearBloque("Productos de venta");
+
+        tablaProductosVenta = new TablaProductosVenta(
+            () -> controlador.getProductosOrdenados());
+        tablaProductosVenta.setAlSeleccionarId(id -> campoIdProductoTabla.setText(id));
+        panel.add(tablaProductosVenta, gbcCampo(1));
+
+        JPanel acciones = new JPanel(new FlowLayout(
+            FlowLayout.LEFT, VentanaPrincipal.escalar(10), 0));
+        acciones.setOpaque(false);
+
+        acciones.add(crearLabel("ID producto:"));
+        campoIdProductoTabla = crearCampoCompacto();
+        campoIdProductoTabla.setPreferredSize(new Dimension(
+            VentanaPrincipal.escalar(120), VentanaPrincipal.escalar(30)));
+        acciones.add(campoIdProductoTabla);
+
+        acciones.add(crearLabel("Categoria:"));
+        comboCategoriaTabla = crearCombo(obtenerNombresCategorias());
+        comboCategoriaTabla.setPreferredSize(new Dimension(
+            VentanaPrincipal.escalar(190), VentanaPrincipal.escalar(30)));
+        acciones.add(comboCategoriaTabla);
+
+        botonAnadirTabla = crearBotonNaranja("Añadir");
+        botonAnadirTabla.setActionCommand("anadirProductoTabla");
+        acciones.add(botonAnadirTabla);
+
+        botonQuitarTabla = crearBotonNaranja("Quitar");
+        botonQuitarTabla.setActionCommand("quitarProductoTabla");
+        acciones.add(botonQuitarTabla);
+
+        panel.add(acciones, gbcCampo(2));
+        return panel;
+    }
+
+    private JPanel crearPanelCategorias() {
+        JPanel panel = crearBloque("Categorias");
+        panel.add(panelLista, gbcCampo(1));
+        return panel;
+    }
+
+    private JPanel crearPanelTablaProductos() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(VentanaPrincipal.COLOR_FONDO);
+        panel.setBorder(javax.swing.BorderFactory.createEmptyBorder(
+            VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(15),
+            VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(15)));
+
+        JPanel barra = new JPanel(new FlowLayout(
+            FlowLayout.LEFT, VentanaPrincipal.escalar(10), 0));
+        barra.setOpaque(false);
+
+        JLabel titulo = new JLabel("Productos de venta");
+        titulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
+        titulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
+        barra.add(titulo);
+
+        barra.add(crearLabel("Buscar:"));
+        campoBusquedaProductos = crearCampoCompacto();
+        campoBusquedaProductos.setPreferredSize(new Dimension(
+            VentanaPrincipal.escalar(180), VentanaPrincipal.escalar(28)));
+        escucharCambios(campoBusquedaProductos, this::filtrarProductosTabla);
+        barra.add(campoBusquedaProductos);
+
+        barra.add(crearLabel("Categoría:"));
+        comboCategoriaTabla = crearCombo(obtenerNombresCategorias());
+        comboCategoriaTabla.setPreferredSize(new Dimension(
+            VentanaPrincipal.escalar(180), VentanaPrincipal.escalar(28)));
+        barra.add(comboCategoriaTabla);
+
+        campoIdProductoTabla = crearCampoCompacto();
+        campoIdProductoTabla.setEditable(false);
+        campoIdProductoTabla.setPreferredSize(new Dimension(
+            VentanaPrincipal.escalar(100), VentanaPrincipal.escalar(28)));
+        barra.add(crearLabel("Producto:"));
+        barra.add(campoIdProductoTabla);
+
+        botonAnadirTabla = crearBotonNaranja("Añadir");
+        botonAnadirTabla.setActionCommand("anadirProductoTabla");
+        barra.add(botonAnadirTabla);
+
+        botonQuitarTabla = crearBotonNaranja("Quitar");
+        botonQuitarTabla.setActionCommand("quitarProductoTabla");
+        barra.add(botonQuitarTabla);
+
+        panel.add(barra, BorderLayout.NORTH);
+
+        modeloProductos = new DefaultTableModel(
+            new String[] { "ID", "Nombre", "Tipo", "Categorías", "Precio", "Stock", "Puntuación" }, 0) {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public boolean isCellEditable(int fila, int columna) {
+                return false;
+            }
+        };
+        tablaProductos = new JTable(modeloProductos);
+        tablaProductos.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        tablaProductos.setRowHeight(VentanaPrincipal.escalar(28));
+        tablaProductos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tablaProductos.setBackground(Color.WHITE);
+        tablaProductos.setForeground(Color.BLACK);
+        tablaProductos.setGridColor(new Color(225, 225, 225));
+        tablaProductos.setSelectionBackground(VentanaPrincipal.COLOR_ACENTO);
+        tablaProductos.setSelectionForeground(Color.BLACK);
+
+        JTableHeader cabecera = tablaProductos.getTableHeader();
+        cabecera.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        cabecera.setBackground(new Color(235, 235, 235));
+        cabecera.setForeground(Color.BLACK);
+        cabecera.setReorderingAllowed(false);
+
+        tablaProductos.getSelectionModel().addListSelectionListener(e -> {
+            if (e.getValueIsAdjusting()) {
+                return;
+            }
+            int fila = tablaProductos.getSelectedRow();
+            if (fila >= 0) {
+                campoIdProductoTabla.setText(String.valueOf(
+                    tablaProductos.getValueAt(fila, 0)));
+            }
+        });
+
+        JScrollPane scroll = estilizarScroll(tablaProductos);
+        scroll.setPreferredSize(new Dimension(
+            VentanaPrincipal.escalar(1000), VentanaPrincipal.escalar(220)));
+        panel.add(scroll, BorderLayout.CENTER);
+
+        cargarProductosTabla("");
+        return panel;
+    }
+
+    private String[] obtenerNombresCategorias() {
+        List<Categoria> categorias = controlador.getCategorias();
+        String[] nombres = new String[categorias.size()];
+        for (int i = 0; i < categorias.size(); i++) {
+            nombres[i] = categorias.get(i).getNombre();
+        }
+        return nombres;
+    }
+
+    private void actualizarComboCategoriasTabla() {
+        if (comboCategoriaTabla == null) {
+            return;
+        }
+        comboCategoriaTabla.setModel(new DefaultComboBoxModel<>(obtenerNombresCategorias()));
+    }
+
+    private void filtrarProductosTabla() {
+        cargarProductosTabla(campoBusquedaProductos.getText());
+    }
+
+    private void cargarProductosTabla(String filtro) {
+        if (modeloProductos == null) {
+            return;
+        }
+
+        modeloProductos.setRowCount(0);
+        String texto = normalizarTexto(filtro);
+
+        for (ProductoVenta producto : controlador.getProductosOrdenados()) {
+            String id = producto.getId();
+            String nombre = producto.getNombre();
+            String tipo = controlador.obtenerTipoProductoVenta(producto);
+            String categorias = controlador.obtenerTextoCategorias(producto);
+
+            if (!texto.isEmpty() && !contieneTexto(id, texto)
+                    && !contieneTexto(nombre, texto)
+                    && !contieneTexto(tipo, texto)
+                    && !contieneTexto(categorias, texto)) {
+                continue;
+            }
+
+            modeloProductos.addRow(new Object[] {
+                id, nombre, tipo, categorias,
+                controlador.formatearPrecio(producto.getPrecioOficial()),
+                producto.getStockDisponible(),
+                controlador.formatearPuntuacion(producto.getMediaPuntuacion())
+            });
+        }
     }
 
     private void actualizarLista() {
@@ -280,6 +495,7 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
             campoNombre.setText("");
             campoDesc.setText("");
             actualizarLista();
+            actualizarComboCategoriasTabla();
         } else {
             mostrarError("No se pudo crear la categoría.");
         }
@@ -319,6 +535,46 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
         }
     }
 
+    public void procesarAnadirProductoTabla() {
+        String idProducto = campoIdProductoTabla.getText().trim();
+        String nombreCat = comboCategoriaTabla == null || comboCategoriaTabla.getSelectedItem() == null
+            ? "" : String.valueOf(comboCategoriaTabla.getSelectedItem());
+
+        if (idProducto.isEmpty() || nombreCat.isEmpty()) {
+            mostrarError("Selecciona un producto y una categoría.");
+            return;
+        }
+
+        if (controlador.añadirProductoACategoria(idProducto, nombreCat)) {
+            mostrarMensaje("Producto añadido a " + nombreCat);
+            tablaProductosVenta.refrescar();
+            actualizarLista();
+            actualizarComboCategoriasTabla();
+        } else {
+            mostrarError("No se pudo añadir el producto.");
+        }
+    }
+
+    public void procesarQuitarProductoTabla() {
+        String idProducto = campoIdProductoTabla.getText().trim();
+        String nombreCat = comboCategoriaTabla == null || comboCategoriaTabla.getSelectedItem() == null
+            ? "" : String.valueOf(comboCategoriaTabla.getSelectedItem());
+
+        if (idProducto.isEmpty() || nombreCat.isEmpty()) {
+            mostrarError("Selecciona un producto y una categoría.");
+            return;
+        }
+
+        if (controlador.eliminarProductoDeCategoria(idProducto, nombreCat)) {
+            mostrarMensaje("Producto quitado de " + nombreCat);
+            tablaProductosVenta.refrescar();
+            actualizarLista();
+            actualizarComboCategoriasTabla();
+        } else {
+            mostrarError("No se pudo quitar el producto.");
+        }
+    }
+
     private String extraerIdDeNombre(String texto, List<ProductoVenta> productos) {
         for (ProductoVenta p : productos)
             if (texto != null && texto.contains(p.getId())) return p.getId();
@@ -333,6 +589,7 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
             if (controlador.eliminarCategoria(nombreCat)) {
                 mostrarMensaje("Categoría eliminada.");
                 actualizarLista();
+                actualizarComboCategoriasTabla();
             } else {
                 mostrarError("No se pudo eliminar la categoría.");
             }

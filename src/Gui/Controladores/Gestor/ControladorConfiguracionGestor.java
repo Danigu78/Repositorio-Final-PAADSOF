@@ -2,6 +2,7 @@ package Gui.Controladores.Gestor;
 
 import Gui.Gestor.*;
 
+import excepciones.PesosInvalidosException;
 import tienda.GuardadoTienda;
 import tienda.Tienda;
 import usuarios.Gestor;
@@ -57,6 +58,16 @@ public class ControladorConfiguracionGestor implements ActionListener {
         return ok;
     }
 
+    public boolean setPesosRecomendador(double pesoValoracion, double pesoCompras, double pesoCategorias) {
+        try {
+            tienda.getRecomendador().setPesos(pesoValoracion, pesoCompras, pesoCategorias);
+            GuardadoTienda.guardar(tienda);
+            return true;
+        } catch (PesosInvalidosException e) {
+            return false;
+        }
+    }
+
     public boolean modificarPerfil(String nuevoNickname, String nuevaPassword) {
         boolean ok = gestor.modificarPerfil(nuevoNickname, nuevaPassword);
         if (ok) GuardadoTienda.guardar(tienda);
@@ -67,5 +78,8 @@ public class ControladorConfiguracionGestor implements ActionListener {
     public int getTiempoOferta()  { return tienda.getTiempoMaxOferta(); }
     public int getTiempoPago()    { return tienda.getTiempoMaxPago(); }
     public double getPrecioTasacion() { return tienda.getPrecioTasacion(); }
+    public double getPesoValoracion() { return tienda.getRecomendador().getPesoValoracion(); }
+    public double getPesoCompras() { return tienda.getRecomendador().getPesoCompras(); }
+    public double getPesoCategorias() { return tienda.getRecomendador().getPesoCategorias(); }
     public String getNickname()   { return gestor.getNickname(); }
 }

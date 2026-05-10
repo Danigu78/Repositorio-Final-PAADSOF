@@ -1,6 +1,6 @@
 package Gui.empleado;
 
-import Gui.AbstractPanelSection;
+import Gui.PanelAbstractoGeneral;
 import Gui.VentanaPrincipal;
 import Gui.Controladores.empleado.ControladorPanelEmpleado;
 import javax.swing.*;
@@ -18,7 +18,7 @@ import usuarios.TipoPermisos;
  * @author Lucas
  * @version 1.0
  */
-public class PanelEmpleado extends AbstractPanelSection {
+public class PanelEmpleado extends PanelAbstractoGeneral {
 
 	public static final String SEC_STOCK = "STOCK";
 	public static final String SEC_CATEGORIAS = "CATEGORIAS";

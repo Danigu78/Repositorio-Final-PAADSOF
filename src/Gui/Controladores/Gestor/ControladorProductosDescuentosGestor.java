@@ -36,6 +36,8 @@ public class ControladorProductosDescuentosGestor implements ActionListener {
         String cmd = e.getActionCommand();
         if (cmd.startsWith("cambiarPrecio:")) {
             vista.procesarCambiarPrecio(cmd.substring(14));
+        } else if (cmd.equals("cambiarPrecioManual")) {
+            vista.procesarCambiarPrecioManual();
         } else if (cmd.equals("crearDescuento")) {
             vista.procesarCrearDescuento();
         } else if (cmd.startsWith("eliminarDescuento:")) {
@@ -90,6 +92,10 @@ public class ControladorProductosDescuentosGestor implements ActionListener {
 
     public List<Descuento> getDescuentosActivos() {
         return tienda.getDescuentosActivos();
+    }
+
+    public List<Descuento> getDescuentos() {
+        return tienda.getHistorialDescuentos();
     }
 
     public List<ProductoVenta> getProductos() {

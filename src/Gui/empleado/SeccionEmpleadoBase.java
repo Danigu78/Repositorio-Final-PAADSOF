@@ -2,7 +2,7 @@ package Gui.empleado;
 
 
 import Gui.VentanaPrincipal;
-import Gui.AbstractPanelSection;
+import Gui.PanelAbstractoGeneral;
 import usuarios.Empleado;
 
 /**
@@ -11,7 +11,7 @@ import usuarios.Empleado;
  * Hereda todos los métodos visuales comunes de AbstractPanelSection y añade
  * únicamente la referencia al empleado que está usando la interfaz.
  */
-public abstract class SeccionEmpleadoBase extends AbstractPanelSection {
+public abstract class SeccionEmpleadoBase extends PanelAbstractoGeneral {
 
 	private static final long serialVersionUID = 1L;
 

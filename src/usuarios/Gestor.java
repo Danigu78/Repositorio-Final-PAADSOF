@@ -462,7 +462,7 @@ public class Gestor extends UsuarioRegistrado implements Serializable {
 		if (cat == null) {
 			return false;
 		}
-		Descuento descuento = new DescuentoCategoria(nombreCategoria, inicio, fin, cat, porcentaje);
+		Descuento descuento = new DescuentoCategoria(nombre, inicio, fin, cat, porcentaje);
 		Tienda.getInstancia().agregarDescuento(descuento);
 		Tienda.getInstancia().notificarDescuento(descuento);
 		System.out
@@ -697,6 +697,15 @@ public class Gestor extends UsuarioRegistrado implements Serializable {
 	}
 
 	/**
+	 * Consulta los ingresos acumulados por producto.
+	 *
+	 * @return mapa de producto a ingresos generados
+	 */
+	public Map<ProductoVenta, Double> consultarIngresosPorProducto() {
+		return motorEstadistico.calcularIngresosPorProducto();
+	}
+
+	/**
 	 * Consulta los ingresos por meses de un año.
 	 *
 	 * @param año año a consultar
@@ -737,6 +746,11 @@ public class Gestor extends UsuarioRegistrado implements Serializable {
 		double total = motorEstadistico.calcularIngresosVenta();
 		System.out.println("  Ingresos totales ventas: " + String.format("%.2f", total) + "€");
 		return total;
+	}
+
+	public double consultarIngresosVentaRango(LocalDate inicio, LocalDate fin)
+	        throws RangoFechasInvalidoException {
+	    return motorEstadistico.calcularIngresosVentaRango(inicio, fin);
 	}
 
 	/**

@@ -17,12 +17,12 @@ import javax.swing.event.DocumentListener;
  * @author Daniel y Lucas
  * @version 1.0
  */
-public abstract class AbstractPanelSection extends JPanel {
+public abstract class PanelAbstractoGeneral extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	protected final VentanaPrincipal ventana;
 
-	protected AbstractPanelSection(VentanaPrincipal ventana) {
+	protected PanelAbstractoGeneral(VentanaPrincipal ventana) {
 		this.ventana = ventana;
 		setLayout(new BorderLayout());
 		setBackground(VentanaPrincipal.COLOR_FONDO);

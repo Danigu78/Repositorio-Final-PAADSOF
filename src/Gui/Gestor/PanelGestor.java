@@ -1,6 +1,6 @@
 package Gui.Gestor;
 
-import Gui.AbstractPanelSection;
+import Gui.PanelAbstractoGeneral;
 import Gui.VentanaPrincipal;
 import Gui.Controladores.Gestor.ControladorPanelGestor;
 
@@ -18,7 +18,7 @@ import usuarios.Gestor;
  * @author Antonino
  * @version 1.0
  */
-public class PanelGestor extends AbstractPanelSection {
+public class PanelGestor extends PanelAbstractoGeneral {
 
     private static final String SEC_EMPLEADOS            = "EMPLEADOS";
     private static final String SEC_CATEGORIAS           = "CATEGORIAS";

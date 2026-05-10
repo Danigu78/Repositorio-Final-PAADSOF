@@ -6,6 +6,7 @@ import productos.ProductoVenta;
 import tienda.GuardadoTienda;
 import tienda.Tienda;
 import usuarios.Gestor;
+import Gui.Controladores.empleado.ControladorProductosEmpleado;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -23,6 +24,7 @@ public class ControladorCategoriasGestor implements ActionListener {
     private SubpanelCategoriasGestor vista;
     private Gestor gestor;
     private Tienda tienda;
+    private ControladorProductosEmpleado productos = new ControladorProductosEmpleado();
 
     public ControladorCategoriasGestor(SubpanelCategoriasGestor vista, Gestor gestor) {
         this.vista = vista;
@@ -35,6 +37,10 @@ public class ControladorCategoriasGestor implements ActionListener {
         String cmd = e.getActionCommand();
         if (cmd.equals("crearCategoria")) {
             vista.procesarCrearCategoria();
+        } else if (cmd.equals("anadirProductoTabla")) {
+            vista.procesarAnadirProductoTabla();
+        } else if (cmd.equals("quitarProductoTabla")) {
+            vista.procesarQuitarProductoTabla();
         } else if (cmd.startsWith("añadirProducto:")) {
             vista.procesarAñadirProducto(cmd.substring(15));
         } else if (cmd.startsWith("quitarProducto:")) {
@@ -68,6 +74,26 @@ public class ControladorCategoriasGestor implements ActionListener {
 
     public List<ProductoVenta> getProductos() {
         return tienda.getStockVentas();
+    }
+
+    public List<ProductoVenta> getProductosOrdenados() {
+        return productos.obtenerProductosOrdenadosPorStock();
+    }
+
+    public String obtenerTipoProductoVenta(ProductoVenta producto) {
+        return productos.obtenerTipoProductoVenta(producto);
+    }
+
+    public String obtenerTextoCategorias(ProductoVenta producto) {
+        return productos.obtenerTextoCategorias(producto);
+    }
+
+    public String formatearPrecio(double precio) {
+        return productos.formatearPrecio(precio);
+    }
+
+    public String formatearPuntuacion(double puntuacion) {
+        return productos.formatearPuntuacion(puntuacion);
     }
     
     public boolean eliminarCategoria(String nombreCat) {

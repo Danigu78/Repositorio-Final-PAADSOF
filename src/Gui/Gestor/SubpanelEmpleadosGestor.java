@@ -28,6 +28,7 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
     private JTextField campoNick;
     private JPasswordField campoPass;
     private List<JCheckBox> checks;
+    private List<JCheckBox> checksFiltroPermisos;
     private JTextField campoBusquedaEmpleados;
     private Map<String, JPanel> combosPermisosPanel = new HashMap<>();
     private JButton botonAlta;
@@ -147,20 +148,36 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
         panelLista.add(labelTitulo);
 
         // Barra de búsqueda
+        JPanel panelFiltros = new JPanel();
+        panelFiltros.setLayout(new BoxLayout(panelFiltros, BoxLayout.Y_AXIS));
+        panelFiltros.setBackground(VentanaPrincipal.COLOR_FONDO);
+        panelFiltros.setAlignmentX(Component.LEFT_ALIGNMENT);
+
         JPanel barraBusqueda = new JPanel(new FlowLayout(
             FlowLayout.LEFT, VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(8)));
         barraBusqueda.setBackground(VentanaPrincipal.COLOR_FONDO);
-        barraBusqueda.setAlignmentX(Component.LEFT_ALIGNMENT);
-        barraBusqueda.setMaximumSize(new Dimension(
-            VentanaPrincipal.escalar(450), VentanaPrincipal.escalar(50)));
         barraBusqueda.add(crearLabel("Buscar:"));
         campoBusquedaEmpleados = crearCampoCompacto();
         campoBusquedaEmpleados.setPreferredSize(new Dimension(
-            VentanaPrincipal.escalar(200), VentanaPrincipal.escalar(28)));
-        // escucharCambios() de AbstractPanelSection
+            VentanaPrincipal.escalar(260), VentanaPrincipal.escalar(28)));
         escucharCambios(campoBusquedaEmpleados, this::filtrarEmpleados);
         barraBusqueda.add(campoBusquedaEmpleados);
-        panelLista.add(barraBusqueda);
+        panelFiltros.add(barraBusqueda);
+
+        JPanel barraPermisos = new JPanel(new GridLayout(
+            0, 4, VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(4)));
+        barraPermisos.setBackground(VentanaPrincipal.COLOR_FONDO);
+        barraPermisos.setBorder(javax.swing.BorderFactory.createEmptyBorder(
+            0, VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(8), 0));
+        checksFiltroPermisos = new ArrayList<>();
+        for (TipoPermisos permiso : TipoPermisos.values()) {
+            JCheckBox check = crearCheckPermiso(permiso.name(), VentanaPrincipal.COLOR_FONDO);
+            check.addActionListener(e -> filtrarEmpleados());
+            checksFiltroPermisos.add(check);
+            barraPermisos.add(check);
+        }
+        panelFiltros.add(barraPermisos);
+        panelLista.add(panelFiltros);
 
         for (Empleado e : controlador.getEmpleados()) {
             JPanel fila = crearFilaEmpleado(e);
@@ -187,10 +204,20 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
             labelVacio.setAlignmentX(Component.LEFT_ALIGNMENT);
             panelLista.add(labelVacio);
         } else {
+            int visibles = 0;
             for (Empleado e : empleados) {
+                if (!pasaFiltroPermisos(e)) {
+                    continue;
+                }
                 JPanel fila = crearFilaEmpleado(e);
                 fila.setAlignmentX(Component.LEFT_ALIGNMENT);
                 panelLista.add(fila);
+                visibles++;
+            }
+            if (visibles == 0) {
+                JLabel labelVacio = crearLabel("No se encontraron empleados.");
+                labelVacio.setAlignmentX(Component.LEFT_ALIGNMENT);
+                panelLista.add(labelVacio);
             }
         }
         panelLista.revalidate();
@@ -207,7 +234,7 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
                 VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(15),
                 VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(15))));
         fila.setMaximumSize(new Dimension(Integer.MAX_VALUE,
-            VentanaPrincipal.escalar(150)));
+            VentanaPrincipal.escalar(180)));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(VentanaPrincipal.escalar(3), VentanaPrincipal.escalar(8),
@@ -271,10 +298,11 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
             botonBaja.addActionListener(controlador);
             panelBotones.add(botonBaja);
 
-            gbc.gridx = 3; gbc.gridy = 0; gbc.gridheight = 2;
-            gbc.anchor = GridBagConstraints.EAST;
-            gbc.weightx = 1;
-            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.gridx = 0; gbc.gridy = 2; gbc.gridwidth = 3;
+            gbc.gridheight = 1;
+            gbc.anchor = GridBagConstraints.WEST;
+            gbc.weightx = 0;
+            gbc.fill = GridBagConstraints.NONE;
             fila.add(panelBotones, gbc);
         }
 
@@ -301,6 +329,32 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
         } else {
             mostrarError("No se pudo dar de alta. Comprueba los datos.");
         }
+    }
+
+    private JCheckBox crearCheckPermiso(String texto, Color fondo) {
+        JCheckBox cb = new JCheckBox(texto);
+        cb.setFont(VentanaPrincipal.FUENTE_PEQUENA);
+        cb.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+        cb.setBackground(fondo);
+        cb.setFocusPainted(false);
+        return cb;
+    }
+
+    private boolean pasaFiltroPermisos(Empleado empleado) {
+        if (checksFiltroPermisos == null || checksFiltroPermisos.isEmpty()) {
+            return true;
+        }
+
+        for (JCheckBox check : checksFiltroPermisos) {
+            if (check.isSelected()) {
+                TipoPermisos permiso = TipoPermisos.valueOf(check.getText());
+                if (!empleado.getPermisos().contains(permiso)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     public void confirmarBaja(String id) {

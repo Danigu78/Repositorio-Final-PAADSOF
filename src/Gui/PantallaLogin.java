@@ -16,7 +16,7 @@ import java.awt.event.*;
  * @author Daniel
  * @version 1.0
  */
-public class PantallaLogin extends AbstractPanelSection {
+public class PantallaLogin extends PanelAbstractoGeneral {
 
     private static final long serialVersionUID = 1L;
 

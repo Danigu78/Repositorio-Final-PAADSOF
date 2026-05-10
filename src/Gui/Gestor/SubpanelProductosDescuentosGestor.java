@@ -1,5 +1,6 @@
 package Gui.Gestor;
 
+import Gui.TablaProductosVenta;
 import Gui.VentanaPrincipal;
 import Gui.Controladores.Gestor.ControladorProductosDescuentosGestor;
 
@@ -14,6 +15,10 @@ import productos.Categoria;
 import productos.ProductoVenta;
 import usuarios.Gestor;
 import ventas.Descuento;
+import ventas.DescuentoCantidad;
+import ventas.DescuentoCategoria;
+import ventas.DescuentoVolumen;
+import ventas.Regalo;
 
 /**
  * Subpanel de gestión de productos y descuentos para el gestor.
@@ -45,6 +50,10 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 
     private JTextField campoBusquedaProductos;
     private JTextField campoBusquedaDescuentos;
+    private JTextField campoIdPrecio;
+    private JSpinner spinnerPrecioManual;
+    private TablaProductosVenta tablaProductosVenta;
+    private JComboBox<String> comboFiltroTipoDescuentos;
     private Map<String, JSpinner> spinnersPrecio = new HashMap<>();
 
     private JButton botonCrearDescuento;
@@ -56,18 +65,64 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
     }
 
     private void inicializarUI() {
-        JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        split.setResizeWeight(0.5);
-        split.setDividerSize(VentanaPrincipal.escalar(5));
-        split.setBorder(null);
-        split.setLeftComponent(crearPanelProductos());
-        split.setRightComponent(crearPanelDescuentos());
-        add(split, BorderLayout.CENTER);
+        JPanel contenido = new JPanel();
+        contenido.setLayout(new BoxLayout(contenido, BoxLayout.Y_AXIS));
+        contenido.setBackground(VentanaPrincipal.COLOR_FONDO);
+        contenido.setBorder(javax.swing.BorderFactory.createEmptyBorder(
+            VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(30),
+            VentanaPrincipal.escalar(20), VentanaPrincipal.escalar(30)));
+
+        contenido.add(crearPanelProductosTabla());
+        contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(18)));
+        contenido.add(crearPanelDescuentos());
+
+        JScrollPane scroll = new JScrollPane(contenido);
+        scroll.setBorder(null);
+        scroll.getViewport().setBackground(VentanaPrincipal.COLOR_FONDO);
+        scroll.getVerticalScrollBar().setUnitIncrement(VentanaPrincipal.escalar(16));
+        add(scroll, BorderLayout.CENTER);
+    }
+
+    private JPanel crearPanelProductosTabla() {
+        JPanel panel = crearBloque("Productos y precios");
+
+        tablaProductosVenta = new TablaProductosVenta(() -> controlador.getProductos());
+        tablaProductosVenta.setAlSeleccionarId(id -> campoIdPrecio.setText(id));
+        panel.add(tablaProductosVenta, gbcCampo(1));
+
+        JPanel acciones = new JPanel(new FlowLayout(
+            FlowLayout.LEFT, VentanaPrincipal.escalar(10), 0));
+        acciones.setOpaque(false);
+
+        acciones.add(crearLabel("ID producto:"));
+        campoIdPrecio = crearCampoCompacto();
+        campoIdPrecio.setPreferredSize(new Dimension(
+            VentanaPrincipal.escalar(120), VentanaPrincipal.escalar(30)));
+        acciones.add(campoIdPrecio);
+
+        acciones.add(crearLabel("Nuevo precio:"));
+        spinnerPrecioManual = new JSpinner(new SpinnerNumberModel(
+            1.0, 0.01, 9999.0, 0.5));
+        spinnerPrecioManual.setFont(VentanaPrincipal.FUENTE_NORMAL);
+        spinnerPrecioManual.setPreferredSize(new Dimension(
+            VentanaPrincipal.escalar(100), VentanaPrincipal.escalar(30)));
+        acciones.add(spinnerPrecioManual);
+
+        JButton botonCambiar = crearBotonNaranja("Actualizar precio");
+        botonCambiar.setActionCommand("cambiarPrecioManual");
+        botonCambiar.addActionListener(controlador);
+        acciones.add(botonCambiar);
+
+        panel.add(acciones, gbcCampo(2));
+        return panel;
     }
 
     private JPanel crearPanelProductos() {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(VentanaPrincipal.COLOR_FONDO);
+        panel.setBackground(VentanaPrincipal.COLOR_TARJETA);
+        panel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.setMaximumSize(new Dimension(
+            VentanaPrincipal.escalar(1180), Integer.MAX_VALUE));
 
         JPanel panelNorth = new JPanel(new BorderLayout());
         panelNorth.setBackground(VentanaPrincipal.COLOR_FONDO);
@@ -124,7 +179,10 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 
     private JPanel crearPanelDescuentos() {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(VentanaPrincipal.COLOR_FONDO);
+        panel.setBackground(VentanaPrincipal.COLOR_TARJETA);
+        panel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.setMaximumSize(new Dimension(
+            VentanaPrincipal.escalar(1180), Integer.MAX_VALUE));
 
         JLabel titulo = new JLabel("Descuentos");
         titulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
@@ -139,6 +197,8 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
         splitVertical.setResizeWeight(0.2);
         splitVertical.setDividerSize(VentanaPrincipal.escalar(5));
         splitVertical.setBorder(null);
+        splitVertical.setPreferredSize(new Dimension(
+            VentanaPrincipal.escalar(1050), VentanaPrincipal.escalar(560)));
 
         JScrollPane scrollFormulario = new JScrollPane(crearFormularioDescuento());
         scrollFormulario.setBorder(null);
@@ -147,11 +207,11 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 
         // Panel lista con buscador
         JPanel panelListaDescuentos = new JPanel(new BorderLayout());
-        panelListaDescuentos.setBackground(VentanaPrincipal.COLOR_FONDO);
+        panelListaDescuentos.setBackground(VentanaPrincipal.COLOR_TARJETA);
 
         JPanel barraBusquedaDesc = new JPanel(new FlowLayout(
             FlowLayout.LEFT, VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(5)));
-        barraBusquedaDesc.setBackground(VentanaPrincipal.COLOR_FONDO);
+        barraBusquedaDesc.setBackground(VentanaPrincipal.COLOR_TARJETA);
         barraBusquedaDesc.setBorder(javax.swing.BorderFactory.createMatteBorder(
             1, 0, 0, 0, VentanaPrincipal.COLOR_BORDE));
         barraBusquedaDesc.add(crearLabel("Buscar descuento:"));
@@ -160,6 +220,13 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
             VentanaPrincipal.escalar(180), VentanaPrincipal.escalar(28)));
         escucharCambios(campoBusquedaDescuentos, this::filtrarDescuentos);
         barraBusquedaDesc.add(campoBusquedaDescuentos);
+        barraBusquedaDesc.add(crearLabel("Tipo:"));
+        comboFiltroTipoDescuentos = crearCombo(
+            new String[] { "Todos", "Volumen", "Categoría", "Cantidad", "Regalo" });
+        comboFiltroTipoDescuentos.setPreferredSize(new Dimension(
+            VentanaPrincipal.escalar(130), VentanaPrincipal.escalar(28)));
+        comboFiltroTipoDescuentos.addActionListener(e -> filtrarDescuentos());
+        barraBusquedaDesc.add(comboFiltroTipoDescuentos);
         panelListaDescuentos.add(barraBusquedaDesc, BorderLayout.NORTH);
 
         panelDescuentos = new JPanel();
@@ -185,11 +252,17 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 
     private void filtrarDescuentos() {
         String texto = normalizarTexto(campoBusquedaDescuentos.getText());
+        String tipoFiltro = comboFiltroTipoDescuentos == null
+            ? "Todos" : String.valueOf(comboFiltroTipoDescuentos.getSelectedItem());
         panelDescuentos.removeAll();
-        for (Descuento d : controlador.getDescuentosActivos()) {
+        for (Descuento d : controlador.getDescuentos()) {
             if (texto.isEmpty() || contieneTexto(d.getNombre(), texto)
-                    || contieneTexto(d.getId(), texto))
+                    || contieneTexto(d.getId(), texto)) {
+                if (!"Todos".equals(tipoFiltro) && !tipoFiltro.equals(obtenerTipoDescuento(d))) {
+                    continue;
+                }
                 panelDescuentos.add(crearFilaDescuento(d));
+            }
         }
         panelDescuentos.revalidate();
         panelDescuentos.repaint();
@@ -410,7 +483,7 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
     private void actualizarDescuentos() {
         panelDescuentos.removeAll();
 
-        JLabel titulo = new JLabel("Descuentos activos:");
+        JLabel titulo = new JLabel("Descuentos creados:");
         titulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
         titulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
         titulo.setBorder(javax.swing.BorderFactory.createEmptyBorder(
@@ -419,9 +492,9 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
         titulo.setAlignmentX(Component.LEFT_ALIGNMENT);
         panelDescuentos.add(titulo);
 
-        List<Descuento> descuentos = controlador.getDescuentosActivos();
+        List<Descuento> descuentos = controlador.getDescuentos();
         if (descuentos.isEmpty()) {
-            JLabel labelVacio = crearLabel("No hay descuentos activos.");
+            JLabel labelVacio = crearLabel("No hay descuentos creados.");
             labelVacio.setAlignmentX(Component.LEFT_ALIGNMENT);
             panelDescuentos.add(labelVacio);
         } else {
@@ -437,7 +510,7 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
         JPanel fila = new JPanel(new BorderLayout());
         fila.setBackground(VentanaPrincipal.COLOR_TARJETA);
         fila.setMaximumSize(new Dimension(Integer.MAX_VALUE,
-            VentanaPrincipal.escalar(45)));
+            VentanaPrincipal.escalar(70)));
         fila.setBorder(javax.swing.BorderFactory.createCompoundBorder(
             javax.swing.BorderFactory.createMatteBorder(
                 0, 0, 1, 0, VentanaPrincipal.COLOR_BORDE),
@@ -445,11 +518,23 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
                 VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(15),
                 VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(15))));
 
-        JLabel labelDesc = new JLabel(d.getNombre() + " — " + d.getId()
-            + " | hasta: " + d.getFechaFin().toLocalDate());
+        JPanel info = new JPanel();
+        info.setOpaque(false);
+        info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
+
+        JLabel labelDesc = new JLabel(d.getNombre() + " - " + d.getId()
+            + " | " + obtenerTipoDescuento(d) + " | "
+            + (d.estaActivo() ? "Activo" : "Inactivo"));
         labelDesc.setFont(VentanaPrincipal.FUENTE_NORMAL);
         labelDesc.setForeground(VentanaPrincipal.COLOR_TEXTO);
-        fila.add(labelDesc, BorderLayout.CENTER);
+        info.add(labelDesc);
+
+        JLabel labelDetalle = crearLabel(obtenerDetalleDescuento(d)
+            + " | " + d.getFechaInicio().toLocalDate() + " - "
+            + d.getFechaFin().toLocalDate());
+        info.add(labelDetalle);
+
+        fila.add(info, BorderLayout.CENTER);
 
         JButton botonEliminar = crearBotonRojo("Eliminar");
         botonEliminar.setActionCommand("eliminarDescuento:" + d.getId());
@@ -460,6 +545,50 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
         return fila;
     }
 
+    private String obtenerTipoDescuento(Descuento descuento) {
+        if (descuento instanceof DescuentoVolumen) {
+            return "Volumen";
+        }
+        if (descuento instanceof DescuentoCategoria) {
+            return "Categoría";
+        }
+        if (descuento instanceof DescuentoCantidad) {
+            return "Cantidad";
+        }
+        if (descuento instanceof Regalo) {
+            return "Regalo";
+        }
+        return "Otro";
+    }
+
+    private String obtenerDetalleDescuento(Descuento descuento) {
+        if (descuento instanceof DescuentoVolumen) {
+            DescuentoVolumen d = (DescuentoVolumen) descuento;
+            return "Mínimo " + String.format("%.2f EUR", d.getUmbralMinimo())
+                + ", descuento " + String.format("%.0f%%", d.getPorcentaje() * 100);
+        }
+        if (descuento instanceof DescuentoCategoria) {
+            DescuentoCategoria d = (DescuentoCategoria) descuento;
+            String categoria = d.getCategoria() == null ? "-"
+                : d.getCategoria().getNombre();
+            return "Categoría " + categoria + ", descuento "
+                + String.format("%.0f%%", d.getPorcentaje() * 100);
+        }
+        if (descuento instanceof DescuentoCantidad) {
+            DescuentoCantidad d = (DescuentoCantidad) descuento;
+            return "Desde " + d.getCantidadMinima() + " uds., descuento "
+                + String.format("%.0f%%", d.getPorcentaje() * 100);
+        }
+        if (descuento instanceof Regalo) {
+            Regalo d = (Regalo) descuento;
+            String producto = d.getProductoRegalo() == null ? "-"
+                : d.getProductoRegalo().getNombre();
+            return "Regalo " + producto + " desde "
+                + String.format("%.2f EUR", d.getUmbral());
+        }
+        return "Sin detalle";
+    }
+
     public void procesarCambiarPrecio(String idProducto) {
         JSpinner spinner = spinnersPrecio.get(idProducto);
         if (spinner == null) return;
@@ -467,6 +596,26 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
         if (controlador.modificarPrecio(idProducto, nuevo)) {
             mostrarMensaje("Precio actualizado.");
             actualizarProductos();
+            if (tablaProductosVenta != null) {
+                tablaProductosVenta.refrescar();
+            }
+        } else {
+            mostrarError("No se pudo modificar el precio.");
+        }
+    }
+
+    public void procesarCambiarPrecioManual() {
+        String idProducto = campoIdPrecio.getText().trim();
+        double nuevo = ((Number) spinnerPrecioManual.getValue()).doubleValue();
+
+        if (idProducto.isEmpty()) {
+            mostrarError("Introduce el ID del producto.");
+            return;
+        }
+
+        if (controlador.modificarPrecio(idProducto, nuevo)) {
+            mostrarMensaje("Precio actualizado.");
+            tablaProductosVenta.refrescar();
         } else {
             mostrarError("No se pudo modificar el precio.");
         }

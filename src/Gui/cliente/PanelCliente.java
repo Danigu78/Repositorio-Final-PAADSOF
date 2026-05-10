@@ -2,7 +2,7 @@ package Gui.cliente;
 
 import javax.swing.*;
 
-import Gui.AbstractPanelSection;
+import Gui.PanelAbstractoGeneral;
 import Gui.VentanaPrincipal;
 import Gui.Controladores.cliente.ControladorPanelCliente;
 
@@ -18,7 +18,7 @@ import ventas.Pedido;
  * @author Daniel
  * @version 1.0
  */
-public class PanelCliente extends AbstractPanelSection {
+public class PanelCliente extends PanelAbstractoGeneral {
 
 	private static final String SEC_CATALOGO = "CATALOGO";
 	private static final String SEC_CARRITO = "CARRITO";
