@@ -43,13 +43,6 @@ public class ControladorCatalogo implements ActionListener {
 					return;
 				}
 			}
-
-		} else if (cmd.equals("ordenarNombre")) {
-			vista.ordenarYMostrar(obtenerOrdenadosPorNombre());
-		} else if (cmd.equals("ordenarPrecioAsc")) {
-			vista.ordenarYMostrar(obtenerOrdenadosPorPrecioAsc());
-		} else if (cmd.equals("ordenarPrecioDesc")) {
-			vista.ordenarYMostrar(obtenerOrdenadosPorPrecioDesc());
 		}
 	}
 
@@ -111,43 +104,102 @@ public class ControladorCatalogo implements ActionListener {
 	}
 
 	/**
+	 * Ordena una lista por ID ascendente.
+	 */
+	public List<ProductoVenta> ordenarPorId(List<ProductoVenta> productos) {
+		List<ProductoVenta> resultado = new ArrayList<>(productos);
+		resultado.sort((a, b) -> {
+			int idA = extraerNumeroId(a.getId());
+			int idB = extraerNumeroId(b.getId());
+			return Integer.compare(idA, idB);
+		});
+		return resultado;
+	}
+
+	/**
+	 * Ordena una lista por nombre A-Z.
+	 */
+	public List<ProductoVenta> ordenarPorNombreAsc(List<ProductoVenta> productos) {
+		List<ProductoVenta> resultado = new ArrayList<>(productos);
+		resultado.sort((a, b) -> a.getNombre().compareToIgnoreCase(b.getNombre()));
+		return resultado;
+	}
+
+	/**
+	 * Ordena una lista por nombre Z-A.
+	 */
+	public List<ProductoVenta> ordenarPorNombreDesc(List<ProductoVenta> productos) {
+		List<ProductoVenta> resultado = new ArrayList<>(productos);
+		resultado.sort((a, b) -> b.getNombre().compareToIgnoreCase(a.getNombre()));
+		return resultado;
+	}
+
+	/**
+	 * Ordena una lista por precio menor a mayor.
+	 */
+	public List<ProductoVenta> ordenarPorPrecioAsc(List<ProductoVenta> productos) {
+		List<ProductoVenta> resultado = new ArrayList<>(productos);
+		resultado.sort((a, b) -> Double.compare(a.getPrecioOficial(), b.getPrecioOficial()));
+		return resultado;
+	}
+
+	/**
+	 * Ordena una lista por precio mayor a menor.
+	 */
+	public List<ProductoVenta> ordenarPorPrecioDesc(List<ProductoVenta> productos) {
+		List<ProductoVenta> resultado = new ArrayList<>(productos);
+		resultado.sort((a, b) -> Double.compare(b.getPrecioOficial(), a.getPrecioOficial()));
+		return resultado;
+	}
+
+	/**
+	 * Ordena una lista por puntuación menor a mayor.
+	 */
+	public List<ProductoVenta> ordenarPorPuntuacionAsc(List<ProductoVenta> productos) {
+		List<ProductoVenta> resultado = new ArrayList<>(productos);
+		resultado.sort((a, b) -> Double.compare(a.getMediaPuntuacion(), b.getMediaPuntuacion()));
+		return resultado;
+	}
+
+	/**
+	 * Ordena una lista por puntuación mayor a menor.
+	 */
+	public List<ProductoVenta> ordenarPorPuntuacionDesc(List<ProductoVenta> productos) {
+		List<ProductoVenta> resultado = new ArrayList<>(productos);
+		resultado.sort((a, b) -> Double.compare(b.getMediaPuntuacion(), a.getMediaPuntuacion()));
+		return resultado;
+	}
+
+	/**
+	 * Extrae el número del ID de un producto (ej: "PV-3" → 3).
+	 */
+	private int extraerNumeroId(String id) {
+		if (id == null)
+			return 0;
+		try {
+			String[] partes = id.split("-");
+			return Integer.parseInt(partes[partes.length - 1]);
+		} catch (NumberFormatException e) {
+			return 0;
+		}
+	}
+
+	/**
 	 * Devuelve los productos recomendados. Para clientes usa el recomendador
 	 * personalizado. Para invitados devuelve los mejor valorados.
 	 */
 	public List<ProductoVenta> getRecomendados() {
 		if (cliente == null) {
-			// Invitado — el recomendador no acepta null
-			// mostramos los mejor valorados directamente
 			List<ProductoVenta> todos = new ArrayList<>(tienda.getStockVentas());
 			todos.removeIf(p -> p.getStockDisponible() <= 0);
 			todos.sort((a, b) -> Double.compare(b.getMediaPuntuacion(), a.getMediaPuntuacion()));
 			return todos.subList(0, Math.min(5, todos.size()));
 		}
-		// Cliente registrado — recomendador personalizado
-		// si no tiene compras ya devuelve los mejor valorados internamente
 		try {
 			return tienda.getRecomendador().generarSugerencias(cliente);
 		} catch (Exception e) {
 			return new ArrayList<>();
 		}
-	}
-
-	public List<ProductoVenta> obtenerOrdenadosPorNombre() {
-		List<ProductoVenta> productos = new ArrayList<>(obtenerTodosLosProductos());
-		productos.sort((a, b) -> a.getNombre().compareToIgnoreCase(b.getNombre()));
-		return productos;
-	}
-
-	public List<ProductoVenta> obtenerOrdenadosPorPrecioAsc() {
-		List<ProductoVenta> productos = new ArrayList<>(obtenerTodosLosProductos());
-		productos.sort((a, b) -> Double.compare(a.getPrecioOficial(), b.getPrecioOficial()));
-		return productos;
-	}
-
-	public List<ProductoVenta> obtenerOrdenadosPorPrecioDesc() {
-		List<ProductoVenta> productos = new ArrayList<>(obtenerTodosLosProductos());
-		productos.sort((a, b) -> Double.compare(b.getPrecioOficial(), a.getPrecioOficial()));
-		return productos;
 	}
 
 	/**
@@ -157,6 +209,9 @@ public class ControladorCatalogo implements ActionListener {
 		return cliente != null;
 	}
 
+	/**
+	 * Establece el cliente logueado.
+	 */
 	public void setCliente(Cliente cliente) {
 		this.cliente = cliente;
 	}

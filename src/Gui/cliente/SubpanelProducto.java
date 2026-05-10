@@ -162,7 +162,7 @@ public class SubpanelProducto extends AbstractPanelCliente {
 
 		// Badge PACK si es un pack
 		if (producto instanceof Pack) {
-			JLabel labelBadge = new JLabel("📦 PACK");
+			JLabel labelBadge = new JLabel("PACK");
 			labelBadge.setFont(VentanaPrincipal.FUENTE_BOTON);
 			labelBadge.setForeground(Color.WHITE);
 			labelBadge.setOpaque(true);
@@ -215,8 +215,8 @@ public class SubpanelProducto extends AbstractPanelCliente {
 				filaLinea.setAlignmentX(Component.LEFT_ALIGNMENT);
 				filaLinea.setMaximumSize(new Dimension(Integer.MAX_VALUE, VentanaPrincipal.escalar(28)));
 
-				JLabel labelLinea = crearLabel("• " + linea.getProducto().getNombre() + "  x" + linea.getUnidades()
-						+ "  —  " + String.format("%.2f€", linea.getSubtotal()));
+				JLabel labelLinea = crearLabel("- " + linea.getProducto().getNombre() + "  x" + linea.getUnidades()
+						+ "  -  " + String.format("%.2f€", linea.getSubtotal()));
 				filaLinea.add(labelLinea);
 				panelInfo.add(filaLinea);
 				panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(3)));
@@ -255,7 +255,7 @@ public class SubpanelProducto extends AbstractPanelCliente {
 		panelInfo.add(labelDesc);
 		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
-		// Reseñas media — para todos
+		// Reseñas media 
 		if (!producto.getReseñas().isEmpty()) {
 			JLabel labelMedia = new JLabel(String.format(" %.1f/10 (%d reseñas)", producto.getMediaPuntuacion(),
 					producto.getReseñas().size()));
