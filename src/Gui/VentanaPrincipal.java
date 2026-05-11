@@ -74,7 +74,7 @@ public class VentanaPrincipal extends JFrame {
 	public VentanaPrincipal() {
 		GuardadoTienda.cargar();
 
-		limpiarCategoriaHuerfana("Porno infantil");
+		
 		
 		
 
@@ -267,37 +267,6 @@ public class VentanaPrincipal extends JFrame {
 
 			new VentanaPrincipal().setVisible(true);
 		});
-	}
-	private void limpiarCategoriaHuerfana(String nombreCategoria) {
-	    Tienda tienda = Tienda.getInstancia();
-
-	    // De productos de venta
-	    for (productos.ProductoVenta p : tienda.getStockVentas()) {
-	        if (p.getCategorias() != null) {
-	            p.getCategorias().removeIf(
-	                c -> c.getNombre().equalsIgnoreCase(nombreCategoria));
-	        }
-	    }
-
-	    // De carteras de clientes (Producto2Mano)
-	    for (usuarios.UsuarioRegistrado u : tienda.getUsuarios()) {
-	        if (u instanceof usuarios.Cliente) {
-	            usuarios.Cliente cl = (usuarios.Cliente) u;
-	            for (productos.Producto2Mano p : cl.getCarteraIntercambio()) {
-	                if (p.getCategorias() != null) {
-	                    p.getCategorias().removeIf(
-	                        cat -> cat.getNombre().equalsIgnoreCase(nombreCategoria));
-	                }
-	            }
-	        }
-	    }
-
-	    // De la lista de categorías de la tienda
-	    tienda.getCategorias().removeIf(
-	        c -> c.getNombre().equalsIgnoreCase(nombreCategoria));
-
-	    GuardadoTienda.guardar(tienda);
-	    System.out.println("Limpieza de '" + nombreCategoria + "' completada.");
 	}
 	
 }

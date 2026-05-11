@@ -5,8 +5,6 @@ import Gui.VentanaPrincipal;
 import Gui.Controladores.Gestor.ControladorEstadisticasGestor;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.*;
 import java.time.LocalDate;
@@ -25,13 +23,13 @@ import usuarios.Gestor;
  */
 public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
 
-    private ControladorEstadisticasGestor controlador;
+   
+	private static final long serialVersionUID = 1L;
+
+	private ControladorEstadisticasGestor controlador;
 
     private JSpinner spinnerAño;
     private JPanel panelMesesAño;
-    private JTable tablaIngresosProductos;
-    private DefaultTableModel modeloIngresosProductos;
-    private JComboBox<String> comboOrdenProductos;
     private TablaProductosVenta tablaIngresosProductosVenta;
 
     private JSpinner spinnerRangoInicio;
@@ -128,61 +126,7 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
         return panel;
     }
 
-    private JPanel crearSeccionIngresosProductos() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(VentanaPrincipal.COLOR_TARJETA);
-        panel.setBorder(crearBordeTarjeta());
-
-        JPanel cabecera = new JPanel(new FlowLayout(
-            FlowLayout.LEFT, VentanaPrincipal.escalar(10), 0));
-        cabecera.setBackground(VentanaPrincipal.COLOR_TARJETA);
-
-        JLabel titulo = new JLabel("Ingresos por producto");
-        titulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
-        titulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
-        cabecera.add(titulo);
-
-        comboOrdenProductos = crearCombo(new String[] {
-            "Mayor a menor", "Menor a mayor"
-        });
-        comboOrdenProductos.setPreferredSize(new Dimension(
-            VentanaPrincipal.escalar(150), VentanaPrincipal.escalar(30)));
-        comboOrdenProductos.addActionListener(e -> actualizarIngresosProductos());
-        cabecera.add(comboOrdenProductos);
-
-        panel.add(cabecera, BorderLayout.NORTH);
-
-        modeloIngresosProductos = new DefaultTableModel(
-            new String[] { "ID", "Producto", "Ingresos" }, 0) {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public boolean isCellEditable(int fila, int columna) {
-                return false;
-            }
-        };
-        tablaIngresosProductos = new JTable(modeloIngresosProductos);
-        tablaIngresosProductos.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        tablaIngresosProductos.setRowHeight(VentanaPrincipal.escalar(28));
-        tablaIngresosProductos.setBackground(Color.WHITE);
-        tablaIngresosProductos.setForeground(Color.BLACK);
-        tablaIngresosProductos.setGridColor(new Color(225, 225, 225));
-
-        JTableHeader cabeceraTabla = tablaIngresosProductos.getTableHeader();
-        cabeceraTabla.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        cabeceraTabla.setBackground(new Color(235, 235, 235));
-        cabeceraTabla.setForeground(Color.BLACK);
-        cabeceraTabla.setReorderingAllowed(false);
-
-        JScrollPane scroll = estilizarScroll(tablaIngresosProductos);
-        scroll.setPreferredSize(new Dimension(
-            VentanaPrincipal.escalar(900), VentanaPrincipal.escalar(210)));
-        panel.add(scroll, BorderLayout.CENTER);
-
-        actualizarIngresosProductos();
-        return panel;
-    }
-
+   
     private JPanel crearSeccionIngresosProductosComun() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(VentanaPrincipal.COLOR_TARJETA);
@@ -211,28 +155,7 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
         return panel;
     }
 
-    private void actualizarIngresosProductos() {
-        if (modeloIngresosProductos == null) {
-            return;
-        }
-
-        boolean mayorAMenor = comboOrdenProductos == null
-            || !"Menor a mayor".equals(comboOrdenProductos.getSelectedItem());
-        modeloIngresosProductos.setRowCount(0);
-
-        for (ControladorEstadisticasGestor.IngresoProducto ingreso
-                : controlador.getIngresosPorProducto(mayorAMenor)) {
-            if (ingreso.getProducto() == null) {
-                continue;
-            }
-
-            modeloIngresosProductos.addRow(new Object[] {
-                ingreso.getProducto().getId(),
-                ingreso.getProducto().getNombre(),
-                String.format("%.2f EUR", ingreso.getIngresos())
-            });
-        }
-    }
+   
 
     private JPanel crearSeccionMesesAño() {
         JPanel panel = new JPanel(new BorderLayout());
@@ -425,26 +348,7 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
         return panel;
     }
 
-    private JPanel crearPanelMeses(String titulo, double[] ingresos) {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(VentanaPrincipal.COLOR_TARJETA);
-        panel.setBorder(crearBordeTarjeta());
-
-        JLabel labelTitulo = new JLabel(titulo);
-        labelTitulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
-        labelTitulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
-        panel.add(labelTitulo, BorderLayout.NORTH);
-
-        JPanel panelMeses = new JPanel(new GridLayout(
-            3, 4, VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(10)));
-        panelMeses.setBackground(VentanaPrincipal.COLOR_TARJETA);
-        panelMeses.setBorder(javax.swing.BorderFactory.createEmptyBorder(
-            VentanaPrincipal.escalar(10), 0, 0, 0));
-        rellenarPanelMeses(panelMeses, ingresos);
-        panel.add(panelMeses, BorderLayout.CENTER);
-
-        return panel;
-    }
+   
 
     private void rellenarPanelMeses(JPanel panel, double[] ingresos) {
         panel.removeAll();

@@ -17,8 +17,11 @@ import usuarios.Gestor;
  * @version 1.0
  */
 public class SubpanelConfiguracionGestor extends AbstractPanelGestor {
+	
+    
+	private static final long serialVersionUID = 1L;
 
-    private ControladorConfiguracionGestor controlador;
+	private ControladorConfiguracionGestor controlador;
 
     // Spinners — atributos para que el controlador pueda leerlos
     private JSpinner spinnerCarrito;

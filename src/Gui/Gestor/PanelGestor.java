@@ -18,6 +18,10 @@ import usuarios.Gestor;
  */
 public class PanelGestor extends PanelAbstractoGeneral {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final String SEC_EMPLEADOS = "EMPLEADOS";
 	private static final String SEC_CATEGORIAS = "CATEGORIAS";
 	private static final String SEC_PRODUCTOS_DESCUENTOS = "PRODUCTOS_DESCUENTOS";

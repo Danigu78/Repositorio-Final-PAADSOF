@@ -15,7 +15,11 @@ import java.awt.*;
  */
 public abstract class AbstractPanelGestor extends PanelAbstractoGeneral {
 
-    protected final Gestor gestor;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	protected final Gestor gestor;
 
     protected AbstractPanelGestor(VentanaPrincipal ventana, Gestor gestor) {
         super(ventana);

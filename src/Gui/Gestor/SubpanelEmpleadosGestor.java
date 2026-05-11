@@ -22,7 +22,9 @@ import usuarios.TipoPermisos;
  */
 public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
 
-    private ControladorEmpleadosGestor controlador;
+ 
+	private static final long serialVersionUID = 1L;
+	private ControladorEmpleadosGestor controlador;
     private JPanel panelLista;
 
     private JTextField campoNick;

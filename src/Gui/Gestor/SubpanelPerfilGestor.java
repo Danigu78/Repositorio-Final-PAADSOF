@@ -18,7 +18,12 @@ import usuarios.Gestor;
  */
 public class SubpanelPerfilGestor extends AbstractPanelGestor {
 
-    private ControladorConfiguracionGestor controlador;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private ControladorConfiguracionGestor controlador;
 
     // Campos — atributos para que el controlador pueda leerlos
     private JTextField campoNick;
