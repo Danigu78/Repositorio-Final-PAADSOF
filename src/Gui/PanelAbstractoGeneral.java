@@ -127,7 +127,7 @@ public abstract class PanelAbstractoGeneral extends JPanel {
 	}
 
 	/**
-	 * GridBagConstraints para filtros — mismo estilo empleado.
+	 * GridBagConstraints para filtros  mismo estilo empleado.
 	 */
 	protected GridBagConstraints gbcFiltro(int x, int y) {
 		GridBagConstraints gbc = new GridBagConstraints();
