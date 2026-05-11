@@ -36,14 +36,7 @@ public class Gestor extends UsuarioRegistrado implements Serializable {
 		this.sesionIniciada = true;
 	}
 
-	/*
-	 * // @Override public void mostrarPanelPrincipal() {
-	 * System.out.println("--- PANEL DE CONTROL DEL GESTOR ---");
-	 * System.out.println("1. Gestionar Empleados y Permisos");
-	 * System.out.println("2. Configurar Parámetros del Sistema");
-	 * System.out.println("3. Gestión de Descuentos y Precios");
-	 * System.out.println("4. Ver Estadísticas de Rendimiento"); }
-	 */
+	
 	/**
 	 * Busca un empleado por su id.
 	 *
