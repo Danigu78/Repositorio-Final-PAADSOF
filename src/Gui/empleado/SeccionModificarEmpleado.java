@@ -30,7 +30,7 @@ public class SeccionModificarEmpleado extends SeccionProductosVentaEmpleadoBase 
 	private static final String TIPO_FIGURA = "Figura";
 	private static final String TIPO_SIN_ESPECIFICOS = "Sin específicos";
 
-	private SelectorVenta selectorProductos;
+	private TablaVenta tablaProductos;
 
 	private JTextField campoIdProducto;
 	private JTextField campoTipoProducto;
@@ -86,13 +86,13 @@ public class SeccionModificarEmpleado extends SeccionProductosVentaEmpleadoBase 
 
 		inicializarCampos();
 
-		selectorProductos = crearSelectorProductosVenta("Productos actuales",
+		tablaProductos = crearTablaProductosVenta("Productos actuales",
 				"Filtra los productos para consultar sus datos antes de editarlos.", true);
 
-		selectorProductos.tabla.setRowSelectionAllowed(false);
-		selectorProductos.tabla.setCellSelectionEnabled(false);
+		tablaProductos.tabla.setRowSelectionAllowed(false);
+		tablaProductos.tabla.setCellSelectionEnabled(false);
 
-		contenido.add(selectorProductos.bloque);
+		contenido.add(tablaProductos.bloque);
 		contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(18)));
 		contenido.add(crearBloqueEditarProducto());
 
@@ -384,7 +384,7 @@ public class SeccionModificarEmpleado extends SeccionProductosVentaEmpleadoBase 
 				campoLargoFigura.getText(), campoMaterialFigura.getText(), campoMarcaFigura.getText());
 
 		if (resultado.isExito()) {
-			recargarTablaProductos(selectorProductos.tabla);
+			recargarTablaProductos(tablaProductos.tabla);
 			mostrarMensaje(resultado.getMensaje());
 		} else {
 			mostrarError(resultado.getMensaje());

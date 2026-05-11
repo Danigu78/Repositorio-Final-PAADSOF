@@ -4,7 +4,6 @@ import Gui.empleado.SeccionNotificacionesEmpleado;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import tienda.GuardadoTienda;
@@ -12,7 +11,9 @@ import tienda.Notificacion;
 import tienda.Tienda;
 import usuarios.Empleado;
 
-/** Controlador de la bandeja de notificaciones del empleado. */
+/**
+ * Controlador de las notificaciones del empleado.
+ */
 public class ControladorNotificacionesEmpleado implements ActionListener {
 
     public static final String REFRESCAR = "notificaciones.refrescar";
@@ -55,12 +56,25 @@ public class ControladorNotificacionesEmpleado implements ActionListener {
         }
 
         for (Notificacion notificacion : notificaciones) {
-            if (notificacion != null && pasaFiltro(notificacion, filtro)) {
+            if (notificacion != null && cumpleFiltro(notificacion, filtro)) {
                 resultado.add(notificacion);
             }
         }
-        resultado.sort(Comparator.comparing(Notificacion::getFechaEnvio,
-                Comparator.nullsFirst(Comparator.naturalOrder())).reversed());
+        resultado.sort(new java.util.Comparator<Notificacion>() {
+            @Override
+            public int compare(Notificacion n1, Notificacion n2) {
+                if (n1.getFechaEnvio() == null && n2.getFechaEnvio() == null) {
+                    return 0;
+                }
+                if (n1.getFechaEnvio() == null) {
+                    return 1;
+                }
+                if (n2.getFechaEnvio() == null) {
+                    return -1;
+                }
+                return n2.getFechaEnvio().compareTo(n1.getFechaEnvio());
+            }
+        });
         return resultado;
     }
 
@@ -131,12 +145,12 @@ public class ControladorNotificacionesEmpleado implements ActionListener {
         return texto.toString();
     }
 
-    private boolean pasaFiltro(Notificacion notificacion, String filtro) {
-        String f = filtro == null ? "Todas" : filtro;
-        if ("No vistas".equals(f) && notificacion.isLeida()) {
+    private boolean cumpleFiltro(Notificacion notificacion, String filtro) {
+        String filtroElegido = filtro == null ? "Todas" : filtro;
+        if ("No vistas".equals(filtroElegido) && notificacion.isLeida()) {
             return false;
         }
-        if ("Vistas".equals(f) && !notificacion.isLeida()) {
+        if ("Vistas".equals(filtroElegido) && !notificacion.isLeida()) {
             return false;
         }
         return true;

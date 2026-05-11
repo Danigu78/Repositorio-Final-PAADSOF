@@ -6,6 +6,7 @@ import Gui.Controladores.empleado.ControladorStockEmpleado;
 import Gui.Controladores.empleado.ResultadoOperacion;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.*;
@@ -32,7 +33,7 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 	private ControladorStockEmpleado controlador;
 
 	/* La guardamos para poder refrescarla después de cambiar algo */
-	private SelectorVenta tablaProductos;
+	private TablaVenta tablaProductos;
 	private java.util.List<JCheckBox> checksCategoriasProducto;
 	private JPanel panelCamposTipo;
 	private CardLayout cardCamposTipo;
@@ -90,7 +91,7 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 		campoFichero = crearCampo();
 
 		// La tabla es solo para mirar el stock. El ID se escribe a mano abajo.
-		tablaProductos = crearSelectorProductosVenta("Productos actuales",
+		tablaProductos = crearTablaProductosVenta("Productos actuales",
 				"Filtra los productos para consultar el stock disponible.", true);
 
 		// No queremos que al pinchar una fila parezca que hace algo especial.
@@ -386,8 +387,12 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 
 		panel.add(panelCamposTipo);
 
-		comboTipoProducto.addActionListener(
-				e -> cardCamposTipo.show(panelCamposTipo, String.valueOf(comboTipoProducto.getSelectedItem())));
+		comboTipoProducto.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cardCamposTipo.show(panelCamposTipo, String.valueOf(comboTipoProducto.getSelectedItem()));
+			}
+		});
 		cardCamposTipo.show(panelCamposTipo, TIPO_COMIC);
 
 		return panel;

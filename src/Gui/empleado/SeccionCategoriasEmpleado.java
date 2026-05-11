@@ -27,7 +27,7 @@ public class SeccionCategoriasEmpleado extends SeccionProductosVentaEmpleadoBase
 	private ControladorCategoriasEmpleado controlador;
 
 	/* La usamos como tabla de consulta, igual que en stock */
-	private SelectorVenta tablaProductos;
+	private TablaVenta tablaProductos;
 
 	public SeccionCategoriasEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
@@ -60,7 +60,7 @@ public class SeccionCategoriasEmpleado extends SeccionProductosVentaEmpleadoBase
 		cargarCategorias();
 
 		// La tabla es solo para mirar productos y sus categorías.
-		tablaProductos = crearSelectorProductosVenta("Productos actuales",
+		tablaProductos = crearTablaProductosVenta("Productos actuales",
 				"Filtra los productos para consultar sus categorías.", true);
 
 		// No queremos que al pinchar una fila parezca que hace algo especial.

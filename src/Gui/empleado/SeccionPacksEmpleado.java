@@ -25,7 +25,7 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 
 	private static final long serialVersionUID = 1L;
 
-	private SelectorVenta selectorProductos;
+	private TablaVenta tablaProductos;
 
 	private JTextArea areaLineasPack;
 
@@ -78,35 +78,35 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 	}
 
 	private JPanel crearBloquePacksExistentes() {
-		selectorProductos = crearSelectorProductosVenta("Packs existentes",
+		tablaProductos = crearTablaProductosVenta("Packs existentes",
 				"Busca productos igual que en el resto de secciones. Por defecto se muestran los packs.", false);
 
-		selectorProductos.tabla.setRowSelectionAllowed(false);
-		selectorProductos.tabla.setCellSelectionEnabled(false);
+		tablaProductos.tabla.setRowSelectionAllowed(false);
+		tablaProductos.tabla.setCellSelectionEnabled(false);
 
 		JButton botonRefrescar = crearBotonSecundario("Refrescar");
 
 		JPanel filaBoton = crearFilaBotones();
 		filaBoton.add(botonRefrescar);
 
-		selectorProductos.bloque.add(filaBoton, gbcBoton(4));
+		tablaProductos.bloque.add(filaBoton, gbcBoton(4));
 
 		conectar(botonRefrescar, ControladorPacksEmpleado.REFRESCAR_PACKS);
 
 		dejarSoloPacks();
 
-		return selectorProductos.bloque;
+		return tablaProductos.bloque;
 	}
 
 	public void dejarSoloPacks() {
-		if (selectorProductos == null) {
+		if (tablaProductos == null) {
 			return;
 		}
 
-		limpiarCamposDeFiltro(selectorProductos.bloque);
-		desmarcarChecks(selectorProductos.bloque);
+		limpiarCamposDeFiltro(tablaProductos.bloque);
+		desmarcarChecks(tablaProductos.bloque);
 
-		JCheckBox checkPack = buscarCheck(selectorProductos.bloque, "Pack");
+		JCheckBox checkPack = buscarCheck(tablaProductos.bloque, "Pack");
 
 		if (checkPack != null) {
 			checkPack.setSelected(true);
@@ -115,7 +115,7 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		ArrayList<String> tipos = new ArrayList<>();
 		tipos.add("Pack");
 
-		cargarModeloProductosVenta((DefaultTableModel) selectorProductos.tabla.getModel(), "", tipos,
+		cargarModeloProductosVenta((DefaultTableModel) tablaProductos.tabla.getModel(), "", tipos,
 				new ArrayList<>());
 	}
 

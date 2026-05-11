@@ -6,10 +6,9 @@ import Gui.PanelAbstractoGeneral;
 import usuarios.Empleado;
 
 /**
- * Clase base para las secciones del panel de empleado.
- * 
- * Hereda todos los métodos visuales comunes de AbstractPanelSection y añade
- * únicamente la referencia al empleado que está usando la interfaz.
+ * Base de las pantallas del empleado.
+ *
+ * Guarda la ventana y el empleado.
  */
 public abstract class SeccionEmpleadoBase extends PanelAbstractoGeneral {
 

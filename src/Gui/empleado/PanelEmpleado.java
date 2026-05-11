@@ -5,15 +5,17 @@ import Gui.VentanaPrincipal;
 import Gui.Controladores.empleado.ControladorPanelEmpleado;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import usuarios.Empleado;
 import usuarios.TipoPermisos;
 
 /**
- * Panel principal del empleado en CheckPoint. Extiende AbstractPanelSection
- * para reutilizar helpers visuales y la barra de navegación común. Sigue el
- * patrón MVC de los apuntes — delega la navegación en ControladorPanelEmpleado.
+ * Panel principal para los empleados.
+ *
+ * Desde aqui se cargan las partes que puede ver cada empleado.
  *
  * @author Lucas
  * @version 1.0
@@ -33,16 +35,16 @@ public class PanelEmpleado extends PanelAbstractoGeneral {
 	/** Empleado logueado. */
 	private Empleado empleado;
 
-	/** Controlador del panel — gestiona la navegación entre secciones. */
+	/** Controlador del panel. */
 	private ControladorPanelEmpleado controlador;
 
-	/** CardLayout para alternar entre secciones. */
+	/** Layout para cambiar de seccion. */
 	private CardLayout cardSecciones;
 
-	/** Panel contenedor de todas las secciones. */
+	/** Aqui van las secciones. */
 	private JPanel panelSecciones;
 
-	/** Barra de navegación — guardada para marcarPestaña(). */
+	/** Barra de arriba. */
 	private JPanel barra;
 
 	/**
@@ -55,8 +57,7 @@ public class PanelEmpleado extends PanelAbstractoGeneral {
 	}
 
 	/**
-	 * Actualiza el panel con el empleado logueado. Construye la interfaz según sus
-	 * permisos.
+	 * Actualiza el panel con el empleado que ha entrado.
 	 *
 	 * @param empleado El empleado que ha iniciado sesión
 	 */
@@ -80,8 +81,7 @@ public class PanelEmpleado extends PanelAbstractoGeneral {
 	}
 
 	/**
-	 * Muestra la sección indicada en el área de contenido principal. Lo llama el
-	 * controlador desde actionPerformed.
+	 * Muestra una seccion del panel.
 	 *
 	 * @param seccion Identificador de la sección
 	 */
@@ -92,13 +92,11 @@ public class PanelEmpleado extends PanelAbstractoGeneral {
 	}
 
 	/**
-	 * Marca la pestaña activa en la barra de navegación. Lo llama el controlador
-	 * desde actionPerformed.
+	 * Marca la pestaña activa.
 	 *
 	 * @param cmd ActionCommand de la pestaña a marcar
 	 */
 	public void marcarPestaña(String cmd) {
-		// marcarBotonBarraActivoPorCmd() de AbstractPanelSection
 		marcarBotonBarraActivoPorCmd(barra, cmd);
 	}
 
@@ -110,12 +108,10 @@ public class PanelEmpleado extends PanelAbstractoGeneral {
 	}
 
 	/**
-	 * Construye la interfaz del panel empleado. Construye el array de pestañas
-	 * dinámicamente según permisos y registra el controlador en la barra de
-	 * navegación.
+	 * Construye la interfaz segun los permisos.
 	 */
 	private void inicializarUI() {
-		// Construimos el array de pestañas según permisos
+		// Montamos las pestañas segun los permisos del empleado
 		List<String[]> listaPestañas = new ArrayList<>();
 		if (controlador.tienePermiso(TipoPermisos.GESTION_STOCK))
 			listaPestañas.add(new String[] { "Inventario", SEC_STOCK });
@@ -137,7 +133,6 @@ public class PanelEmpleado extends PanelAbstractoGeneral {
 
 		String[][] pestañas = listaPestañas.toArray(new String[0][]);
 
-		// crearBarraNavegacion() de AbstractPanelSection
 		barra = crearBarraNavegacion("🎮 CheckPoint - Empleado", controlador.getNicknameEmpleado(), pestañas,
 				controlador);
 		add(barra, BorderLayout.NORTH);
@@ -156,7 +151,7 @@ public class PanelEmpleado extends PanelAbstractoGeneral {
 	}
 
 	/**
-	 * Añade al CardLayout las secciones permitidas para el empleado.
+	 * Añade las secciones que puede usar el empleado.
 	 *
 	 * @return El identificador de la primera sección disponible
 	 */
@@ -227,9 +222,13 @@ public class PanelEmpleado extends PanelAbstractoGeneral {
 		aviso.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
 		aviso.setForeground(VentanaPrincipal.COLOR_TEXTO);
 
-		// crearBotonNaranja() de AbstractPanelSection
 		JButton botonVolver = crearBotonNaranja("Volver al login");
-		botonVolver.addActionListener(e -> ventana.logout());
+		botonVolver.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ventana.logout();
+			}
+		});
 
 		JPanel panelBoton = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		panelBoton.setBackground(VentanaPrincipal.COLOR_FONDO);

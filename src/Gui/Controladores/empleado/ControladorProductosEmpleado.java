@@ -1,9 +1,9 @@
 package Gui.Controladores.empleado;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.TreeSet;
 
 import productos.Categoria;
 import productos.Comic;
@@ -15,15 +15,27 @@ import productos.ProductoVenta;
 import tienda.Tienda;
 
 /**
- * Controlador común para consultar productos de venta desde las secciones del
- * empleado.
+ * Ayuda a sacar datos de productos para las pantallas del empleado.
  */
-public class ControladorProductosEmpleado {
+public class ControladorProductosEmpleado implements ActionListener {
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        // No tiene botones propios, se usa para consultas de productos.
+    }
 
     public List<ProductoVenta> obtenerProductosOrdenadosPorStock() {
         ArrayList<ProductoVenta> productos = new ArrayList<>(Tienda.getInstancia().getStockVentas());
-        productos.sort(Comparator.comparingInt(ProductoVenta::getStockDisponible)
-                .thenComparing(ProductoVenta::getNombre, String.CASE_INSENSITIVE_ORDER));
+        productos.sort(new java.util.Comparator<ProductoVenta>() {
+            @Override
+            public int compare(ProductoVenta p1, ProductoVenta p2) {
+                int comparaStock = Integer.compare(p1.getStockDisponible(), p2.getStockDisponible());
+                if (comparaStock != 0) {
+                    return comparaStock;
+                }
+                return p1.getNombre().compareToIgnoreCase(p2.getNombre());
+            }
+        });
         return productos;
     }
 
@@ -35,12 +47,22 @@ public class ControladorProductosEmpleado {
     }
 
     public List<String> obtenerNombresCategoriasVenta() {
-        TreeSet<String> nombres = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        ArrayList<String> nombres = new ArrayList<>();
         for (Categoria categoria : Tienda.getInstancia().getCategorias()) {
             if (categoria != null && categoria.getNombre() != null && !categoria.getNombre().isBlank()) {
-                nombres.add(categoria.getNombre().trim());
+                String nombre = categoria.getNombre().trim();
+                if (!estaEnLista(nombres, nombre)) {
+                    nombres.add(nombre);
+                }
             }
         }
+
+        nombres.sort(new java.util.Comparator<String>() {
+            @Override
+            public int compare(String a, String b) {
+                return a.compareToIgnoreCase(b);
+            }
+        });
         return new ArrayList<>(nombres);
     }
 
@@ -56,7 +78,12 @@ public class ControladorProductosEmpleado {
             }
         }
 
-        nombres.sort(String.CASE_INSENSITIVE_ORDER);
+        nombres.sort(new java.util.Comparator<String>() {
+            @Override
+            public int compare(String a, String b) {
+                return a.compareToIgnoreCase(b);
+            }
+        });
         return nombres.isEmpty() ? "-" : String.join(", ", nombres);
     }
 
@@ -82,6 +109,7 @@ public class ControladorProductosEmpleado {
             return lineas;
         }
 
+        // Cada linea del textarea tiene que ser ID;UNIDADES.
         String[] filas = texto.split("\\r?\\n");
         for (String fila : filas) {
             if (fila == null || fila.isBlank()) {
@@ -120,5 +148,14 @@ public class ControladorProductosEmpleado {
 
     public String formatearPuntuacion(double puntuacion) {
         return String.format(java.util.Locale.US, "%.1f", puntuacion).replace('.', ',');
+    }
+
+    private boolean estaEnLista(List<String> textos, String buscado) {
+        for (String texto : textos) {
+            if (texto.equalsIgnoreCase(buscado)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

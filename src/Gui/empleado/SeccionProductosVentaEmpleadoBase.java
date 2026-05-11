@@ -9,6 +9,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -24,6 +26,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
@@ -32,11 +36,9 @@ import productos.ProductoVenta;
 import usuarios.Empleado;
 
 /**
- * Clase base para las secciones del empleado que trabajan con productos de
- * venta.
+ * Base para pantallas que usan productos de venta.
  * 
- * Tiene una tabla común de productos, filtros sencillos, ordenación y métodos
- * auxiliares para trabajar con packs.
+ * Aqui se deja la tabla comun para no repetirla.
  */
 public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoBase {
 
@@ -52,11 +54,11 @@ public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoB
 
 	protected final ControladorProductosEmpleado controladorProductos = new ControladorProductosEmpleado();
 
-	protected static class SelectorVenta {
+	protected static class TablaVenta {
 		JPanel bloque;
 		JTable tabla;
 
-		SelectorVenta(JPanel bloque, JTable tabla) {
+		TablaVenta(JPanel bloque, JTable tabla) {
 			this.bloque = bloque;
 			this.tabla = tabla;
 		}
@@ -66,33 +68,38 @@ public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoB
 		super(ventana, empleado);
 	}
 
-	protected SelectorVenta crearSelectorProductosVenta(String titulo, String ayuda, boolean incluirRefrescar,
-			JTextField... camposIdDestino) {
+	protected TablaVenta crearTablaProductosVenta(String titulo, String ayuda, boolean incluirRefrescar,
+			JTextField... camposId) {
 
 		JPanel bloque = crearBloque(titulo);
 
-		DefaultTableModel modeloTabla = crearModeloTablaVenta();
-		JTable tablaProductos = new JTable(modeloTabla);
+		DefaultTableModel modelo = crearModeloTablaVenta();
+		JTable tabla = new JTable(modelo);
 
-		estilizarTabla(tablaProductos);
-		cargarModeloProductosVenta(modeloTabla);
-		conectarSeleccionId(tablaProductos, camposIdDestino);
+		estilizarTabla(tabla);
+		cargarModeloProductosVenta(modelo);
+		conectarSeleccionId(tabla, camposId);
 
-		JLabel textoAyuda = crearLabel(ayuda);
+		JLabel labelAyuda = crearLabel(ayuda);
 
-		JScrollPane scrollTabla = estilizarScroll(tablaProductos);
-		scrollTabla.setPreferredSize(new Dimension(VentanaPrincipal.escalar(1050), VentanaPrincipal.escalar(240)));
+		JScrollPane scroll = estilizarScroll(tabla);
+		scroll.setPreferredSize(new Dimension(VentanaPrincipal.escalar(1050), VentanaPrincipal.escalar(240)));
 
-		JPanel filtros = crearPanelFiltrosVenta(modeloTabla);
+		JPanel panelFiltros = crearPanelFiltrosVenta(modelo);
 
-		bloque.add(textoAyuda, gbcCampo(1));
-		bloque.add(filtros, gbcCampo(2));
-		bloque.add(scrollTabla, gbcCampo(3));
+		bloque.add(labelAyuda, gbcCampo(1));
+		bloque.add(panelFiltros, gbcCampo(2));
+		bloque.add(scroll, gbcCampo(3));
 
 		if (incluirRefrescar) {
 			JButton botonRefrescar = crearBotonSecundario("Refrescar");
 
-			botonRefrescar.addActionListener(e -> cargarModeloProductosVenta(modeloTabla));
+			botonRefrescar.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					cargarModeloProductosVenta(modelo);
+				}
+			});
 
 			JPanel filaBoton = new JPanel(new BorderLayout());
 			filaBoton.setOpaque(false);
@@ -101,7 +108,7 @@ public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoB
 			bloque.add(filaBoton, gbcBoton(4));
 		}
 
-		return new SelectorVenta(bloque, tablaProductos);
+		return new TablaVenta(bloque, tabla);
 	}
 
 	private DefaultTableModel crearModeloTablaVenta() {
@@ -148,33 +155,36 @@ public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoB
 		tabla.getColumnModel().getColumn(COL_VENTA_PUNTUACION).setPreferredWidth(100);
 	}
 
-	private void conectarSeleccionId(JTable tabla, JTextField... camposDestino) {
-		tabla.getSelectionModel().addListSelectionListener(e -> {
-			if (e.getValueIsAdjusting()) {
-				return;
-			}
+	private void conectarSeleccionId(JTable tabla, JTextField... camposId) {
+		tabla.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				if (e.getValueIsAdjusting()) {
+					return;
+				}
 
-			int fila = tabla.getSelectedRow();
+				int fila = tabla.getSelectedRow();
 
-			if (fila < 0) {
-				return;
-			}
+				if (fila < 0) {
+					return;
+				}
 
-			Object idProducto = tabla.getValueAt(fila, COL_VENTA_ID);
+				Object idProducto = tabla.getValueAt(fila, COL_VENTA_ID);
 
-			if (idProducto == null) {
-				return;
-			}
+				if (idProducto == null) {
+					return;
+				}
 
-			for (JTextField campo : camposDestino) {
-				if (campo != null) {
-					campo.setText(String.valueOf(idProducto));
+				for (JTextField campo : camposId) {
+					if (campo != null) {
+						campo.setText(String.valueOf(idProducto));
+					}
 				}
 			}
 		});
 	}
 
-	private JPanel crearPanelFiltrosVenta(DefaultTableModel modeloTabla) {
+	private JPanel crearPanelFiltrosVenta(DefaultTableModel modelo) {
 		JPanel panelFiltros = new JPanel();
 		panelFiltros.setOpaque(false);
 		panelFiltros.setLayout(new BoxLayout(panelFiltros, BoxLayout.Y_AXIS));
@@ -241,39 +251,52 @@ public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoB
 
 		panelFiltros.add(crearFilaFiltro("Categoría", checksCategoria));
 
-		Runnable aplicarFiltros = () -> {
-			List<String> tiposMarcados = obtenerChecksMarcados(checksTipo);
-			List<String> categoriasMarcadas = obtenerChecksMarcados(checksCategoria);
-			String orden = String.valueOf(comboOrden.getSelectedItem());
+		Runnable refrescarTabla = new Runnable() {
+			@Override
+			public void run() {
+				List<String> tipos = obtenerChecksMarcados(checksTipo);
+				List<String> categorias = obtenerChecksMarcados(checksCategoria);
+				String orden = String.valueOf(comboOrden.getSelectedItem());
 
-			cargarModeloProductosVenta(modeloTabla, campoBuscar.getText(), tiposMarcados, categoriasMarcadas, orden);
+				cargarModeloProductosVenta(modelo, campoBuscar.getText(), tipos, categorias, orden);
+			}
 		};
 
-		escucharCambios(campoBuscar, aplicarFiltros);
+		escucharCambios(campoBuscar, refrescarTabla);
 
-		comboOrden.addActionListener(e -> aplicarFiltros.run());
+		ActionListener actualizarFiltro = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				refrescarTabla.run();
+			}
+		};
+
+		comboOrden.addActionListener(actualizarFiltro);
 
 		for (JCheckBox check : checksTipo) {
-			check.addActionListener(e -> aplicarFiltros.run());
+			check.addActionListener(actualizarFiltro);
 		}
 
 		for (JCheckBox check : checksCategoria) {
-			check.addActionListener(e -> aplicarFiltros.run());
+			check.addActionListener(actualizarFiltro);
 		}
 
-		botonLimpiar.addActionListener(e -> {
-			campoBuscar.setText("");
-			comboOrden.setSelectedIndex(0);
+		botonLimpiar.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				campoBuscar.setText("");
+				comboOrden.setSelectedIndex(0);
 
-			for (JCheckBox check : checksTipo) {
-				check.setSelected(false);
+				for (JCheckBox check : checksTipo) {
+					check.setSelected(false);
+				}
+
+				for (JCheckBox check : checksCategoria) {
+					check.setSelected(false);
+				}
+
+				cargarModeloProductosVenta(modelo);
 			}
-
-			for (JCheckBox check : checksCategoria) {
-				check.setSelected(false);
-			}
-
-			cargarModeloProductosVenta(modeloTabla);
 		});
 
 		return panelFiltros;
@@ -322,20 +345,20 @@ public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoB
 		return marcados;
 	}
 
-	protected void cargarModeloProductosVenta(DefaultTableModel modeloTabla) {
-		cargarModeloProductosVenta(modeloTabla, "", new ArrayList<>(), new ArrayList<>());
+	protected void cargarModeloProductosVenta(DefaultTableModel modelo) {
+		cargarModeloProductosVenta(modelo, "", new ArrayList<>(), new ArrayList<>());
 	}
 
-	protected void cargarModeloProductosVenta(DefaultTableModel modeloTabla, String textoBuscado,
+	protected void cargarModeloProductosVenta(DefaultTableModel modelo, String textoBuscado,
 			List<String> tiposBuscados, List<String> categoriasBuscadas) {
 
-		cargarModeloProductosVenta(modeloTabla, textoBuscado, tiposBuscados, categoriasBuscadas, "Sin ordenar");
+		cargarModeloProductosVenta(modelo, textoBuscado, tiposBuscados, categoriasBuscadas, "Sin ordenar");
 	}
 
-	protected void cargarModeloProductosVenta(DefaultTableModel modeloTabla, String textoBuscado,
+	protected void cargarModeloProductosVenta(DefaultTableModel modelo, String textoBuscado,
 			List<String> tiposBuscados, List<String> categoriasBuscadas, String orden) {
 
-		modeloTabla.setRowCount(0);
+		modelo.setRowCount(0);
 
 		String texto = normalizarTexto(textoBuscado);
 		List<ProductoVenta> productos = new ArrayList<>();
@@ -346,7 +369,7 @@ public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoB
 			String tipo = obtenerTipoProductoVenta(producto);
 			String categorias = obtenerTextoCategorias(producto);
 
-			if (pasaFiltro(id, nombre, tipo, categorias, texto, tiposBuscados, categoriasBuscadas)) {
+			if (productoPasaFiltros(id, nombre, tipo, categorias, texto, tiposBuscados, categoriasBuscadas)) {
 				productos.add(producto);
 			}
 		}
@@ -359,7 +382,7 @@ public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoB
 			String tipo = obtenerTipoProductoVenta(producto);
 			String categorias = obtenerTextoCategorias(producto);
 
-			modeloTabla
+			modelo
 					.addRow(new Object[] { id, nombre, tipo, categorias, formatearPrecio(producto.getPrecioOficial()),
 							producto.getStockDisponible(), formatearPuntuacion(producto.getMediaPuntuacion()) });
 		}
@@ -431,7 +454,7 @@ public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoB
 		return Integer.parseInt(id.substring(3));
 	}
 
-	protected void cargarModeloProductosVenta(DefaultTableModel modeloTabla, String textoBuscado, String tipoBuscado,
+	protected void cargarModeloProductosVenta(DefaultTableModel modelo, String textoBuscado, String tipoBuscado,
 			String categoriaBuscada) {
 
 		List<String> tipos = new ArrayList<>();
@@ -445,47 +468,47 @@ public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoB
 			categorias.add(categoriaBuscada);
 		}
 
-		cargarModeloProductosVenta(modeloTabla, textoBuscado, tipos, categorias);
+		cargarModeloProductosVenta(modelo, textoBuscado, tipos, categorias);
 	}
 
-	private boolean pasaFiltro(String id, String nombre, String tipo, String categorias, String texto,
+	private boolean productoPasaFiltros(String id, String nombre, String tipo, String categorias, String texto,
 			List<String> tiposBuscados, List<String> categoriasBuscadas) {
 
 		if (!texto.isBlank()) {
-			boolean coincideTexto = contieneTexto(id, texto) || contieneTexto(nombre, texto)
+			boolean encontradoPorTexto = contieneTexto(id, texto) || contieneTexto(nombre, texto)
 					|| contieneTexto(tipo, texto) || contieneTexto(categorias, texto);
 
-			if (!coincideTexto) {
+			if (!encontradoPorTexto) {
 				return false;
 			}
 		}
 
 		if (tiposBuscados != null && !tiposBuscados.isEmpty()) {
-			boolean coincideTipo = false;
+			boolean tieneTipo = false;
 
 			for (String tipoBuscado : tiposBuscados) {
 				if (normalizarTexto(tipo).equals(normalizarTexto(tipoBuscado))) {
-					coincideTipo = true;
+					tieneTipo = true;
 					break;
 				}
 			}
 
-			if (!coincideTipo) {
+			if (!tieneTipo) {
 				return false;
 			}
 		}
 
 		if (categoriasBuscadas != null && !categoriasBuscadas.isEmpty()) {
-			boolean coincideCategoria = false;
+			boolean tieneCategoria = false;
 
 			for (String categoriaBuscada : categoriasBuscadas) {
 				if (contieneTexto(categorias, categoriaBuscada)) {
-					coincideCategoria = true;
+					tieneCategoria = true;
 					break;
 				}
 			}
 
-			if (!coincideCategoria) {
+			if (!tieneCategoria) {
 				return false;
 			}
 		}

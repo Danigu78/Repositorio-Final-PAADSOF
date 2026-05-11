@@ -9,26 +9,22 @@ import usuarios.Empleado;
 import usuarios.TipoPermisos;
 
 /**
- * Controlador del panel principal del empleado. Centraliza las comprobaciones
- * de acceso, permisos y datos básicos del empleado actual. Gestiona la
- * navegación entre secciones. Implementa ActionListener según el patrón MVC de
- * los apuntes.
+ * Controlador del panel principal del empleado.
  *
- * @author Lucas
- * @version 1.0
+ * Mira permisos y cambia de seccion.
  */
 public class ControladorPanelEmpleado implements ActionListener {
 
 	public static final String LOGOUT = "panel.logout";
 
-	/** Empleado logueado. */
+	/** Empleado que esta usando el panel. */
 	private final Empleado empleado;
 
-	/** Vista del panel empleado. */
+	/** Vista asociada al controlador. */
 	private PanelEmpleado vista;
 
 	/**
-	 * Constructor del controlador del panel empleado.
+	 * Crea el controlador.
 	 *
 	 * @param empleado El empleado logueado
 	 */
@@ -37,7 +33,7 @@ public class ControladorPanelEmpleado implements ActionListener {
 	}
 
 	/**
-	 * Enlaza la vista al controlador.
+	 * Guarda la vista.
 	 *
 	 * @param vista El panel empleado
 	 */
@@ -46,8 +42,7 @@ public class ControladorPanelEmpleado implements ActionListener {
 	}
 
 	/**
-	 * Gestiona los clicks de la barra de navegación. Si es logout cierra sesión. Si
-	 * no, navega a la sección indicada.
+	 * Gestiona los botones de la barra.
 	 *
 	 * @param e El evento de acción
 	 */
@@ -59,15 +54,14 @@ public class ControladorPanelEmpleado implements ActionListener {
 		if (LOGOUT.equals(cmd)) {
 			vista.salir();
 		} else {
-			// cmd es directamente el id de sección — viene de la barra de
-			// AbstractPanelSection
+			// El comando coincide con el nombre de la seccion.
 			vista.mostrarSeccion(cmd);
 			vista.marcarPestaña(cmd);
 		}
 	}
 
 	/**
-	 * Comprueba si el empleado puede acceder al panel.
+	 * Comprueba si puede entrar al panel.
 	 *
 	 * @return true si hay empleado, no está despedido y tiene sesión iniciada
 	 */
@@ -76,7 +70,7 @@ public class ControladorPanelEmpleado implements ActionListener {
 	}
 
 	/**
-	 * Comprueba si el empleado tiene un permiso concreto.
+	 * Mira si tiene un permiso.
 	 *
 	 * @param permiso El permiso a comprobar
 	 * @return true si tiene el permiso
@@ -86,7 +80,7 @@ public class ControladorPanelEmpleado implements ActionListener {
 	}
 
 	/**
-	 * Devuelve el nickname del empleado.
+	 * Devuelve el nickname.
 	 *
 	 * @return Nickname del empleado o "Empleado" si es null
 	 */
@@ -97,7 +91,7 @@ public class ControladorPanelEmpleado implements ActionListener {
 	}
 
 	/**
-	 * Devuelve los permisos del empleado en una lista.
+	 * Devuelve los permisos en una lista.
 	 *
 	 * @return Lista de permisos del empleado
 	 */
