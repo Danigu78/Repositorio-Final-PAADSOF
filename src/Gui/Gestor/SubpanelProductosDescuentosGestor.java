@@ -440,39 +440,55 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 	}
 
 	private JPanel crearFilaDescuento(Descuento d) {
-		JPanel fila = new JPanel(new BorderLayout());
-		fila.setBackground(VentanaPrincipal.COLOR_TARJETA);
-		fila.setMaximumSize(new Dimension(Integer.MAX_VALUE, VentanaPrincipal.escalar(70)));
-		fila.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createMatteBorder(0, 0, 1, 0, VentanaPrincipal.COLOR_BORDE),
-				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(15),
-						VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(15))));
+	    JPanel fila = new JPanel(new BorderLayout());
+	    fila.setBackground(d.estaActivo()
+	        ? VentanaPrincipal.COLOR_TARJETA
+	        : new Color(245, 245, 245));
+	    fila.setMaximumSize(new Dimension(
+	        Integer.MAX_VALUE, VentanaPrincipal.escalar(70)));
+	    fila.setBorder(BorderFactory.createCompoundBorder(
+	        BorderFactory.createMatteBorder(
+	            0, 0, 1, 0, VentanaPrincipal.COLOR_BORDE),
+	        BorderFactory.createEmptyBorder(
+	            VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(15),
+	            VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(15))));
 
-		JPanel info = new JPanel();
-		info.setOpaque(false);
-		info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
+	    JPanel info = new JPanel();
+	    info.setOpaque(false);
+	    info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
 
-		JLabel labelDesc = new JLabel(d.getNombre() + " - " + d.getId() + " | " + obtenerTipoDescuento(d) + " | "
-				+ (d.estaActivo() ? "Activo" : "Inactivo"));
-		labelDesc.setFont(VentanaPrincipal.FUENTE_NORMAL);
-		labelDesc.setForeground(VentanaPrincipal.COLOR_TEXTO);
-		info.add(labelDesc);
+	    JLabel labelDesc = new JLabel(
+	        d.getNombre() + " - " + d.getId()
+	        + " | " + obtenerTipoDescuento(d)
+	        + " | " + (d.estaActivo() ? "Activo" : "Eliminado/Caducado"));
+	    labelDesc.setFont(VentanaPrincipal.FUENTE_NORMAL);
+	    labelDesc.setForeground(d.estaActivo()
+	        ? VentanaPrincipal.COLOR_TEXTO
+	        : VentanaPrincipal.COLOR_TEXTO2);
+	    info.add(labelDesc);
 
-		JLabel labelDetalle = crearLabel(obtenerDetalleDescuento(d) + " | " + d.getFechaInicio().toLocalDate() + " - "
-				+ d.getFechaFin().toLocalDate());
-		info.add(labelDetalle);
+	    JLabel labelDetalle = crearLabel(
+	        obtenerDetalleDescuento(d)
+	        + " | " + d.getFechaInicio().toLocalDate()
+	        + " - " + d.getFechaFin().toLocalDate());
+	    info.add(labelDetalle);
 
-		fila.add(info, BorderLayout.CENTER);
+	    fila.add(info, BorderLayout.CENTER);
 
-		JButton botonEliminar = crearBotonRojo("Eliminar");
-		botonEliminar.setActionCommand(ControladorProductosDescuentosGestor.ELIMINAR_DESCUENTO + d.getId());
-		botonEliminar.addActionListener(controlador);
-		fila.add(botonEliminar, BorderLayout.EAST);
+	    // Botón eliminar solo si está activo
+	    if (d.estaActivo()) {
+	        JButton botonEliminar = crearBotonRojo("Eliminar");
+	        botonEliminar.setActionCommand(
+	            ControladorProductosDescuentosGestor.ELIMINAR_DESCUENTO
+	            + d.getId());
+	        botonEliminar.addActionListener(controlador);
+	        fila.add(botonEliminar, BorderLayout.EAST);
+	    }
 
-		fila.setAlignmentX(Component.LEFT_ALIGNMENT);
-		return fila;
+	    fila.setAlignmentX(Component.LEFT_ALIGNMENT);
+	    return fila;
 	}
-
+	
 	private String obtenerTipoDescuento(Descuento descuento) {
 		if (descuento instanceof DescuentoVolumen) {
 			return "Volumen";
@@ -617,5 +633,13 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 		}
 
 		return "";
+	}
+	/**
+	 * Refresca los filtros de categorías de la tabla de productos.
+	 * Lo llama PanelGestor cuando se crea o elimina una categoría.
+	 */
+	public void refrescarFiltrosCategorias() {
+	    if (tablaProductosVenta != null)
+	        tablaProductosVenta.refrescarFiltrosCategorias();
 	}
 }

@@ -514,21 +514,31 @@ public class Gestor extends UsuarioRegistrado implements Serializable {
 	 * @param idDescuento id del descuento
 	 * @return true si se elimina correctamente
 	 */
+	
 	public boolean eliminarDescuento(String idDescuento) {
-		if (idDescuento == null || idDescuento.isBlank())
-			return false;
+	    if (idDescuento == null || idDescuento.isBlank()) return false;
 
-		Tienda tienda = Tienda.getInstancia();
-		boolean eliminado = tienda.getDescuentosActivos()
-				.removeIf(d -> d != null && idDescuento.equals(d.getId()));
-		eliminado = tienda.getHistorialDescuentos()
-				.removeIf(d -> d != null && idDescuento.equals(d.getId())) || eliminado;
-		if (eliminado) {
-			System.out.println("Descuento " + idDescuento + " eliminado correctamente.");
-		} else {
-			System.out.println("No se encontró el descuento.");
-		}
-		return eliminado;
+	    Tienda tienda = Tienda.getInstancia();
+
+	    
+	    boolean eliminado = tienda.getDescuentosActivos()
+	        .removeIf(d -> d != null && idDescuento.equals(d.getId()));
+
+	    // Lo marcamos como caducado forzando fechaFin al pasado
+	    for (Descuento d : tienda.getHistorialDescuentos()) {
+	        if (d != null && idDescuento.equals(d.getId())) {
+	            d.setFechaFin(d.getFechaInicio()); // fechaFin = fechaInicio → inactivo
+	            eliminado = true;
+	        }
+	    }
+
+	    if (eliminado) {
+	        GuardadoTienda.guardar(tienda);
+	        System.out.println("Descuento " + idDescuento + " eliminado correctamente.");
+	    } else {
+	        System.out.println("No se encontró el descuento.");
+	    }
+	    return eliminado;
 	}
 
 	// METODOS RELACIONADOS CON LAS CATEGORIAS

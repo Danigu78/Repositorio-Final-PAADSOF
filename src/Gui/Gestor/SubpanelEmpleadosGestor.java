@@ -269,10 +269,10 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
         gbc.gridx = 0; gbc.gridy = 1; gbc.gridwidth = 3;
         fila.add(labelPermisos, gbc);
         gbc.gridwidth = 1;
-
         if (!empleado.isDespedido()) {
-            JPanel panelBotones = new JPanel(new FlowLayout(
-                FlowLayout.RIGHT, VentanaPrincipal.escalar(5), 0));
+            // FlowLayout LEFT con espaciado — todos pegados al margen derecho
+            JPanel panelBotones = new JPanel(
+                new FlowLayout(FlowLayout.RIGHT, VentanaPrincipal.escalar(5), 0));
             panelBotones.setBackground(VentanaPrincipal.COLOR_TARJETA);
 
             String[] nombresPermisos = new String[TipoPermisos.values().length];
@@ -298,14 +298,27 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
             botonBaja.addActionListener(controlador);
             panelBotones.add(botonBaja);
 
+            // weightx=1 y fill HORIZONTAL para que ocupe todo el ancho
             gbc.gridx = 0; gbc.gridy = 2; gbc.gridwidth = 3;
-            gbc.gridheight = 1;
-            gbc.anchor = GridBagConstraints.WEST;
-            gbc.weightx = 0;
-            gbc.fill = GridBagConstraints.NONE;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.weightx = 1;
             fila.add(panelBotones, gbc);
+            // Resetear
+            gbc.fill = GridBagConstraints.NONE;
+            gbc.weightx = 0;
+        }else {
+            //hacer q todo salga bien cuadrado
+            JPanel panelVacio = new JPanel();
+            panelVacio.setOpaque(false);
+            panelVacio.setPreferredSize(new Dimension(0, VentanaPrincipal.escalar(42)));
+            gbc.gridx = 0; gbc.gridy = 2; gbc.gridwidth = 3;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.weightx = 1;
+            fila.add(panelVacio, gbc);
+            gbc.fill = GridBagConstraints.NONE;
+            gbc.weightx = 0;
         }
-
+        
         return fila;
     }
 

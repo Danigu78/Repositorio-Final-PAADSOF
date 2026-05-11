@@ -184,4 +184,9 @@ public class Categoria implements Serializable {
 			this.productos = new ArrayList<>();
 		}
 	}
+
+	public String getDescripcion() {
+		return this.descripcion;
+	}
+
 }

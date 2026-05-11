@@ -112,7 +112,7 @@ public class PanelGestor extends PanelAbstractoGeneral {
 		panelSecciones.setBackground(VentanaPrincipal.COLOR_FONDO);
 
 		subpanelEmpleados = new SubpanelEmpleadosGestor(ventana, gestor);
-		subpanelCategorias = new SubpanelCategoriasGestor(ventana, gestor);
+		subpanelCategorias = new SubpanelCategoriasGestor(ventana, gestor, this);
 		subpanelProductosDescuentos = new SubpanelProductosDescuentosGestor(ventana, gestor);
 		subpanelEstadisticas = new SubpanelEstadisticasGestor(ventana, gestor);
 		subpanelConfiguracion = new SubpanelConfiguracionGestor(ventana, gestor);
@@ -128,5 +128,13 @@ public class PanelGestor extends PanelAbstractoGeneral {
 		add(panelSecciones, BorderLayout.CENTER);
 		cardSecciones.show(panelSecciones, SEC_EMPLEADOS);
 		marcarBotonBarraActivoPorCmd(barra, SEC_EMPLEADOS);
+	}
+	/**
+	 * Refresca los filtros de categorías en el subpanel de productos y descuentos.
+	 * Lo llama SubpanelCategoriasGestor tras crear o eliminar una categoría.
+	 */
+	public void refrescarFiltrosCategorias() {
+	    if (subpanelProductosDescuentos != null)
+	        subpanelProductosDescuentos.refrescarFiltrosCategorias();
 	}
 }
