@@ -1,6 +1,5 @@
 package Gui.Controladores.cliente;
 
-
 import tienda.GuardadoTienda;
 import tienda.Tienda;
 import usuarios.Cliente;
@@ -8,9 +7,7 @@ import ventas.Pedido;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Calendar;
-
 import Gui.cliente.SubpanelPago;
-
 import java.sql.Date;
 
 /**
@@ -81,24 +78,30 @@ public class ControladorPago implements ActionListener {
     /**
      * Realiza el pago usando pagarCarrito del cliente.
      * Valida los campos antes de intentar el pago.
+     * Valida que el mes esté entre 01 y 12.
      * Si tiene éxito guarda y navega de vuelta a pedidos.
      *
      * @param numeroTarjeta Número de la tarjeta (16 dígitos)
      * @param cvvStr        CVV de la tarjeta (3 dígitos)
+     * @param fechaStr      Fecha de caducidad en formato MM/AA
      */
-    public void realizarPago(String numeroTarjeta, String cvvStr) {
-        if (numeroTarjeta.isEmpty() || cvvStr.isEmpty()) {
+    public void realizarPago(String numeroTarjeta, String cvvStr,
+            String fechaStr) {
+        if (numeroTarjeta.isEmpty() || cvvStr.isEmpty()
+                || fechaStr.isEmpty()) {
             vista.mostrarError("Rellena todos los campos.");
             return;
         }
         if (numeroTarjeta.length() != 16) {
-            vista.mostrarError("El número de tarjeta debe tener 16 dígitos.");
+            vista.mostrarError(
+                "El número de tarjeta debe tener 16 dígitos.");
             return;
         }
         if (cvvStr.length() != 3) {
             vista.mostrarError("El CVV debe tener 3 dígitos.");
             return;
         }
+
         int cvv;
         try {
             cvv = Integer.parseInt(cvvStr);
@@ -107,15 +110,41 @@ public class ControladorPago implements ActionListener {
             return;
         }
 
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.YEAR, 1);
-        Date fechaTarjeta = new Date(cal.getTimeInMillis());
+        // Parseamos MM/AA  validamos mes entre 01 y 12
+        Date fechaTarjeta;
+        try {
+            String[] partes = fechaStr.split("/");
+            if (partes.length != 2)
+                throw new Exception("Formato incorrecto");
+            int mes = Integer.parseInt(partes[0].trim());
+            int año = 2000 + Integer.parseInt(partes[1].trim());
 
-        boolean ok = cliente.pagarCarrito(pedido, numeroTarjeta, fechaTarjeta, cvv);
+            if (mes < 1 || mes > 12) {
+                vista.mostrarError(
+                    "El mes debe estar entre 01 y 12.");
+                return;
+            }
+
+            Calendar cal = Calendar.getInstance();
+            cal.set(año, mes - 1, 1);
+            fechaTarjeta = new Date(cal.getTimeInMillis());
+        } catch (NumberFormatException ex) {
+            vista.mostrarError(
+                "La fecha debe contener solo números. Usa MM/AA.");
+            return;
+        } catch (Exception ex) {
+            vista.mostrarError(
+                "Formato de fecha incorrecto. Usa MM/AA.");
+            return;
+        }
+
+        boolean ok = cliente.pagarCarrito(
+            pedido, numeroTarjeta, fechaTarjeta, cvv);
         if (ok) {
             GuardadoTienda.guardar(Tienda.getInstancia());
             vista.mostrarExito(
-                "Pago realizado correctamente. Tu pedido está en preparación.");
+                "Pago realizado correctamente. "
+                + "Tu pedido está en preparación.");
             vista.volverAPedidos();
         } else {
             vista.mostrarError(

@@ -208,12 +208,13 @@ public class Cliente extends UsuarioRegistrado implements Serializable {
 		for (Oferta o : ofertasPendientes) {
 			// Si el destino de la oferta soy yo, es que tengo que contestar por lo que son
 			// ofertas pendientes
-			if (o.getDestino().equals(this)&&o.getEstado()==EstadoOferta.PENDIENTE) {//
+			if (o.getDestino().equals(this) && o.getEstado() == EstadoOferta.PENDIENTE) {//
 				paraDecidir.add(o);
 			}
 		}
 		return paraDecidir;
 	}
+
 	/**
 	 * Devuelve las ofertas aceptadas donde este cliente es el destinatario,
 	 * pendientes de confirmación por un empleado.
@@ -221,15 +222,15 @@ public class Cliente extends UsuarioRegistrado implements Serializable {
 	 * @return Lista de ofertas aceptadas como destinatario
 	 */
 	public List<Oferta> getOfertasAceptadasComoDestino() {
-	    List<Oferta> resultado = new ArrayList<>();
-	    for (Oferta o : ofertasPendientes) {
-	        if (o.getDestino().equals(this) 
-	                && o.getEstado() == EstadoOferta.ACEPTADA) {
-	            resultado.add(o);
-	        }
-	    }
-	    return resultado;
+		List<Oferta> resultado = new ArrayList<>();
+		for (Oferta o : ofertasPendientes) {
+			if (o.getDestino().equals(this) && o.getEstado() == EstadoOferta.ACEPTADA) {
+				resultado.add(o);
+			}
+		}
+		return resultado;
 	}
+
 	public List<Oferta> getIntercambiosRealizados() {
 		List<Oferta> realizados = new ArrayList<>();
 		for (Oferta o : historialIntercambios) {
@@ -768,6 +769,14 @@ public class Cliente extends UsuarioRegistrado implements Serializable {
 			if (ped.getCliente().equals(this) && codigoRecogida.equals(ped.getCodigoRecogida())
 					&& ped.getEstado() == EstadoPedido.LISTO_PARA_RECOGER) {
 				ped.setRecogida_solicitada(true);
+
+				// Notificar a todos los empleados con permiso de entrega
+				for (Empleado empleado : tienda.obtenerEmpleadosTienda()) {
+					if (!empleado.isDespedido() && empleado.tienePermiso(TipoPermisos.ENTREGA_PEDIDOS)) {
+						empleado.recibirNotificacion("El cliente " + this.getNickname()
+								+ " ha solicitado la recogida del pedido " + ped.getIdPedido());
+					}
+				}
 				return true;
 			}
 		}

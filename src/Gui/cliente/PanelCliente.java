@@ -28,6 +28,7 @@ public class PanelCliente extends PanelAbstractoGeneral {
 	private static final String SEC_NOTIFICACIONES = "NOTIFICACIONES";
 	private static final String SEC_PERFIL = "PERFIL";
 	private static final String SEC_CARTERA = "MI_CARTERA";
+	private static final String SEC_DESCUENTOS = "DESCUENTOS";
 
 	/** Controlador del panel — gestiona la navegación entre secciones. */
 	private ControladorPanelCliente controlador;
@@ -54,6 +55,7 @@ public class PanelCliente extends PanelAbstractoGeneral {
 	private SubpanelPerfil subpanelPerfil;
 	private SubpanelPago subpanelPago;
 	private SubpanelCartera subpanelCartera;
+	private SubpanelDescuentos subpanelDescuentos;
 
 	/**
 	 * Constructor del panel cliente.
@@ -75,7 +77,7 @@ public class PanelCliente extends PanelAbstractoGeneral {
 		String[][] pestañas = { { "Catálogo", SEC_CATALOGO }, { "Carrito", SEC_CARRITO },
 				{ "Mis Pedidos", SEC_PEDIDOS }, { "Segunda Mano", SEC_SEGUNDA_MANO }, { "Mi Cartera", SEC_CARTERA },
 				{ "Intercambios", SEC_INTERCAMBIOS }, { "Notificaciones", SEC_NOTIFICACIONES },
-				{ "Mi Perfil", SEC_PERFIL } };
+				{ "Mi Perfil", SEC_PERFIL }, { "Descuentos", SEC_DESCUENTOS } };
 
 		// crearBarraNavegacion() de AbstractPanelSection
 		barra = crearBarraNavegacion("🎮 CheckPoint", "Usuario", pestañas, controlador);
@@ -94,6 +96,7 @@ public class PanelCliente extends PanelAbstractoGeneral {
 		subpanelPerfil = new SubpanelPerfil(ventana);
 		subpanelPago = new SubpanelPago(ventana, this);
 		subpanelCartera = new SubpanelCartera(ventana);
+		subpanelDescuentos = new SubpanelDescuentos(ventana);
 
 		subpanelPedidos.setPanelCliente(this);
 		subpanelCartera.setPanelCliente(this);
@@ -108,6 +111,7 @@ public class PanelCliente extends PanelAbstractoGeneral {
 		panelSecciones.add(subpanelPerfil, SEC_PERFIL);
 		panelSecciones.add(subpanelPago, "PAGO");
 		panelSecciones.add(subpanelCartera, SEC_CARTERA);
+		panelSecciones.add(subpanelDescuentos, SEC_DESCUENTOS);
 
 		add(panelSecciones, BorderLayout.CENTER);
 		mostrarSeccion(SEC_CATALOGO);
@@ -169,6 +173,9 @@ public class PanelCliente extends PanelAbstractoGeneral {
 		case SEC_PERFIL:
 			subpanelPerfil.actualizar(cliente);
 			break;
+		case SEC_DESCUENTOS:
+			subpanelDescuentos.actualizar(cliente);
+			break;
 		}
 	}
 
@@ -190,6 +197,7 @@ public class PanelCliente extends PanelAbstractoGeneral {
 		subpanelNotificaciones.actualizar(cliente);
 		subpanelPerfil.actualizar(cliente);
 		subpanelCartera.actualizar(cliente);
+		subpanelDescuentos.actualizar(cliente);
 		mostrarSeccion(SEC_CATALOGO);
 		marcarBotonBarraActivoPorCmd(barra, SEC_CATALOGO);
 	}
