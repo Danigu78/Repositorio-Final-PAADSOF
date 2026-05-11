@@ -175,78 +175,92 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 	 * Filtra la lista de categorías por nombre o id.
 	 */
 	private void filtrarCategorias() {
-		String texto = campoBusquedaCategorias.getText().trim().toLowerCase();
-		panelListaCategorias.removeAll();
-		List<Categoria> cats = controlador.getCategorias();
-		boolean hayAlguna = false;
-		for (Categoria c : cats) {
-			if (texto.isEmpty() || c.getNombre().toLowerCase().contains(texto)) {
-				panelListaCategorias.add(crearFilaCategoria(c));
-				hayAlguna = true;
-			}
-		}
-		if (!hayAlguna) {
-			JLabel lbl = crearLabel("No se encontraron categorías.");
-			lbl.setAlignmentX(Component.LEFT_ALIGNMENT);
-			panelListaCategorias.add(lbl);
-		}
-		panelListaCategorias.revalidate();
-		panelListaCategorias.repaint();
+	    String texto = campoBusquedaCategorias.getText().trim().toLowerCase();
+	    panelListaCategorias.removeAll();
+	    boolean hayAlguna = false;
+	    for (Categoria c : controlador.getCategorias()) {
+	        if (texto.isEmpty()
+	                || c.getNombre().toLowerCase().contains(texto)) {
+	            panelListaCategorias.add(crearFilaCategoria(c));
+	            hayAlguna = true;
+	        }
+	    }
+	    if (!hayAlguna) {
+	        JLabel lbl = crearLabel("No se encontraron categorías.");
+	        lbl.setAlignmentX(Component.LEFT_ALIGNMENT);
+	        panelListaCategorias.add(lbl);
+	    }
+	    panelListaCategorias.revalidate();
+	    panelListaCategorias.repaint();
 	}
-
 	/**
 	 * Recarga la lista completa de categorías.
 	 */
 	public void actualizarListaCategorias() {
-		panelListaCategorias.removeAll();
-		List<Categoria> cats = controlador.getCategorias();
-		if (cats.isEmpty()) {
-			JLabel lbl = crearLabel("No hay categorías creadas.");
-			lbl.setAlignmentX(Component.LEFT_ALIGNMENT);
-			panelListaCategorias.add(lbl);
-		} else {
-			for (Categoria c : cats)
-				panelListaCategorias.add(crearFilaCategoria(c));
-		}
-		panelListaCategorias.revalidate();
-		panelListaCategorias.repaint();
+	    panelListaCategorias.removeAll();
+	    List<Categoria> cats = controlador.getCategorias();
+	    if (cats.isEmpty()) {
+	        JLabel lbl = crearLabel("No hay categorías creadas.");
+	        lbl.setAlignmentX(Component.LEFT_ALIGNMENT);
+	        panelListaCategorias.add(lbl);
+	    } else {
+	        for (Categoria c : cats)
+	            panelListaCategorias.add(crearFilaCategoria(c));
+	    }
+	    panelListaCategorias.revalidate();
+	    panelListaCategorias.repaint();
 	}
-
 	/**
 	 * Crea una fila para una categoría con id, nombre, descripción y botón
 	 * eliminar.
 	 */
 	private JPanel crearFilaCategoria(Categoria c) {
-		JPanel fila = new JPanel(new BorderLayout());
-		fila.setBackground(VentanaPrincipal.COLOR_TARJETA);
-		fila.setMaximumSize(new Dimension(Integer.MAX_VALUE, VentanaPrincipal.escalar(55)));
-		fila.setAlignmentX(Component.LEFT_ALIGNMENT);
-		fila.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createMatteBorder(0, 0, 1, 0, VentanaPrincipal.COLOR_BORDE),
-				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(15),
-						VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(15))));
+	    boolean eliminada = c.isEliminada();
 
-		JPanel info = new JPanel();
-		info.setOpaque(false);
-		info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
+	    JPanel fila = new JPanel(new BorderLayout());
+	    fila.setBackground(eliminada
+	        ? new Color(245, 245, 245)
+	        : VentanaPrincipal.COLOR_TARJETA);
+	    fila.setMaximumSize(new Dimension(
+	        Integer.MAX_VALUE, VentanaPrincipal.escalar(55)));
+	    fila.setAlignmentX(Component.LEFT_ALIGNMENT);
+	    fila.setBorder(BorderFactory.createCompoundBorder(
+	        BorderFactory.createMatteBorder(
+	            0, 0, 1, 0, VentanaPrincipal.COLOR_BORDE),
+	        BorderFactory.createEmptyBorder(
+	            VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(15),
+	            VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(15))));
 
-		JLabel labelNombre = new JLabel(c.getNombre());
-		labelNombre.setFont(VentanaPrincipal.FUENTE_BOTON);
-		labelNombre.setForeground(VentanaPrincipal.COLOR_TEXTO);
-		info.add(labelNombre);
+	    JPanel info = new JPanel();
+	    info.setOpaque(false);
+	    info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
 
-		JLabel labelDesc = crearLabel(
-				c.getDescripcion() != null && !c.getDescripcion().isBlank() ? c.getDescripcion() : "Sin descripción");
-		info.add(labelDesc);
+	    JLabel labelNombre = new JLabel(
+	        c.getNombre() + (eliminada ? "  —  Eliminada" : ""));
+	    labelNombre.setFont(VentanaPrincipal.FUENTE_BOTON);
+	    labelNombre.setForeground(eliminada
+	        ? VentanaPrincipal.COLOR_TEXTO2
+	        : VentanaPrincipal.COLOR_TEXTO);
+	    info.add(labelNombre);
 
-		fila.add(info, BorderLayout.CENTER);
+	    JLabel labelDesc = crearLabel(
+	        c.getDescripcion() != null && !c.getDescripcion().isBlank()
+	            ? c.getDescripcion() : "Sin descripción");
+	    info.add(labelDesc);
 
-		JButton botonEliminar = crearBotonRojo("Eliminar");
-		botonEliminar.setActionCommand(ControladorCategoriasGestor.ELIMINAR_CATEGORIA + ":" + c.getNombre());
-		botonEliminar.addActionListener(controlador);
-		fila.add(botonEliminar, BorderLayout.EAST);
+	    fila.add(info, BorderLayout.CENTER);
 
-		return fila;
+	    // Botón eliminar solo si no está eliminada
+	    if (!eliminada) {
+	        JButton botonEliminar = crearBotonRojo("Eliminar");
+	        botonEliminar.setActionCommand(
+	            ControladorCategoriasGestor.ELIMINAR_CATEGORIA
+	            + ":" + c.getNombre());
+	        botonEliminar.addActionListener(controlador);
+	        fila.add(botonEliminar, BorderLayout.EAST);
+	    }
+
+	    return fila;
 	}
 
 	// ── Tabla de productos ────────────────────────────────────────────────────
@@ -407,9 +421,9 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 	 * se actualicen sin reiniciar.
 	 */
 	public void cargarCategorias() {
-		comboCategoria.removeAllItems();
-		comboCategoria.addItem("Selecciona una categoría");
-		for (Categoria c : controlador.getCategorias())
-			comboCategoria.addItem(c.getNombre());
+	    comboCategoria.removeAllItems();
+	    comboCategoria.addItem("Selecciona una categoría");
+	    for (Categoria c : controlador.getCategoriasActivas())
+	        comboCategoria.addItem(c.getNombre());
 	}
 }

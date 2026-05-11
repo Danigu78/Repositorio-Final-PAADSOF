@@ -311,14 +311,12 @@ public class Tienda implements Serializable {
 	 * @return la categoría al que pertenece, null en cualquier otro caso
 	 */
 	public Categoria buscarCategoriaPorNombre(String nombre) {
-		if (nombre == null || nombre.isBlank())
-			return null;
-		for (Categoria c : this.categorias) {
-			if (c.getNombre().equalsIgnoreCase(nombre))
-				return c;
-		}
-
-		return null;
+	    if (nombre == null || nombre.isBlank()) return null;
+	    for (Categoria c : this.categorias) {
+	        if (!c.isEliminada() && c.getNombre().equalsIgnoreCase(nombre))
+	            return c;
+	    }
+	    return null;
 	}
 
 	/**
@@ -1474,5 +1472,19 @@ public class Tienda implements Serializable {
 				usuario.setSesionIniciada(false);
 			}
 		}
+	}
+	
+	/**
+	 * Devuelve solo las categorías activas (no eliminadas).
+	 * Lo usan los combos y filtros de la GUI.
+	 *
+	 * @return lista de categorías activas
+	 */
+	public List<Categoria> getCategoriasActivas() {
+	    List<Categoria> activas = new ArrayList<>();
+	    for (Categoria c : categorias) {
+	        if (!c.isEliminada()) activas.add(c);
+	    }
+	    return activas;
 	}
 }

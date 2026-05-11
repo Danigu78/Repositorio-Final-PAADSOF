@@ -85,6 +85,10 @@ public class ControladorCategoriasGestor implements ActionListener {
 	public List<Categoria> getCategorias() {
 		return tienda.getCategorias();
 	}
+	
+	public List<Categoria> getCategoriasActivas() {
+	    return tienda.getCategoriasActivas();
+	}
 
 	public List<ProductoVenta> getProductosOrdenados() {
 		return productos.obtenerProductosOrdenadosPorStock();
@@ -109,15 +113,6 @@ public class ControladorCategoriasGestor implements ActionListener {
 	
 
 	public boolean eliminarCategoria(String nombreCat) {
-	   
-	    Tienda tienda = Tienda.getInstancia();
-	    Categoria cat = tienda.buscarCategoriaPorNombre(nombreCat);
-	    if (cat != null) {
-	        
-	        for (ProductoVenta p : tienda.getStockVentas()) {
-	            p.getCategorias().remove(cat);
-	        }
-	    }
 	    boolean ok = gestor.eliminarCategoria(nombreCat);
 	    if (ok) GuardadoTienda.guardar(tienda);
 	    return ok;

@@ -29,6 +29,9 @@ public class Categoria implements Serializable {
 	 * relación bidireccional con ProductoVenta.
 	 */
 	private ArrayList<ProductoVenta> productos;
+	
+	/** Indica si la categoría ha sido eliminada del sistema. */
+	private boolean eliminada = false;
 
 	/**
 	 * Constructor de la clase categoría
@@ -167,7 +170,6 @@ public class Categoria implements Serializable {
 		inicializarCamposNulos();
 		out.defaultWriteObject();
 	}
-
 	/**
 	 * Método llamado automáticamente cuando se carga una Categoria desde fichero.
 	 */
@@ -187,6 +189,14 @@ public class Categoria implements Serializable {
 
 	public String getDescripcion() {
 		return this.descripcion;
+	}
+	
+	public boolean isEliminada() {
+	    return eliminada;
+	}
+
+	public void setEliminada(boolean eliminada) {
+	    this.eliminada = eliminada;
 	}
 
 }

@@ -842,7 +842,16 @@ public class Gestor extends UsuarioRegistrado implements Serializable {
 	        System.out.println("No existe ninguna categoría con nombre: " + nombreCat);
 	        return false;
 	    }
-	    return tienda.getCategorias().remove(cat);
+	    // Marcamos como eliminada — no la borramos de la lista para que siga
+	    // apareciendo en el historial
+	    cat.setEliminada(true);
+	    // La quitamos de todos los productos
+	    for (ProductoVenta p : tienda.getStockVentas()) {
+	        p.getCategorias().remove(cat);
+	        cat.deleteProducto(p);
+	    }
+	    System.out.println("Categoría '" + nombreCat + "' marcada como eliminada.");
+	    return true;
 	}
 
 }
