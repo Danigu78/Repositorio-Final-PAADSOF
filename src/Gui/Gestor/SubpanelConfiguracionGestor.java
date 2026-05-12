@@ -9,9 +9,7 @@ import java.awt.event.*;
 import usuarios.Gestor;
 
 /**
- * Subpanel de configuración del sistema para el gestor. Extiende
- * AbstractPanelGestor para reutilizar helpers visuales. Sigue el patrón MVC de
- * los apuntes.
+ * Subpanel de configuración del sistema para el gestor.
  *
  * @author Antonino
  * @version 1.0
@@ -20,9 +18,10 @@ public class SubpanelConfiguracionGestor extends AbstractPanelGestor {
 
 	private static final long serialVersionUID = 1L;
 
+	/** Controlador asociado al subpanel. */
 	private ControladorConfiguracionGestor controlador;
 
-	// Spinners — atributos para que el controlador pueda leerlos
+	/** Spinners:  atributos para que el controlador pueda leerlos */
 	private JSpinner spinnerCarrito;
 	private JSpinner spinnerOferta;
 	private JSpinner spinnerPago;
@@ -31,20 +30,32 @@ public class SubpanelConfiguracionGestor extends AbstractPanelGestor {
 	private JSpinner spinnerPesoCompras;
 	private JSpinner spinnerPesoCategorias;
 
-	// Botón — atributo para registrar el controlador
+	/** Botón: atributo para registrar el controlador*/
 	private JButton botonGuardar;
 
+	/**
+	 * Constructor del subpanel de configuración.
+	 *
+	 * @param ventana Ventana principal
+	 * @param gestor  Gestor autenticado
+	 */
 	public SubpanelConfiguracionGestor(VentanaPrincipal ventana, Gestor gestor) {
 		super(ventana, gestor);
 		this.controlador = new ControladorConfiguracionGestor(this, gestor);
 		inicializarUI();
 	}
 
+	/**
+	 * Inicializa toda la interfaz del panel.
+	 */
 	private void inicializarUI() {
 		JPanel panelContenido = new JPanel(new GridBagLayout());
 		panelContenido.setBackground(VentanaPrincipal.COLOR_FONDO);
-		panelContenido.setBorder(javax.swing.BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(30),
-				VentanaPrincipal.escalar(50), VentanaPrincipal.escalar(30), VentanaPrincipal.escalar(50)));
+		panelContenido.setBorder(javax.swing.BorderFactory.createEmptyBorder(
+				VentanaPrincipal.escalar(30),
+				VentanaPrincipal.escalar(50),
+				VentanaPrincipal.escalar(30),
+				VentanaPrincipal.escalar(50)));
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
@@ -120,7 +131,7 @@ public class SubpanelConfiguracionGestor extends AbstractPanelGestor {
 		gbc.gridy = 15;
 		panelContenido.add(spinnerPesoCategorias, gbc);
 
-		// crearBotonNaranja() de PanelBaseInterfaz
+		
 		botonGuardar = crearBotonNaranja("Guardar configuración");
 		botonGuardar.setActionCommand("guardarConfig");
 		gbc.gridy = 16;
@@ -131,6 +142,11 @@ public class SubpanelConfiguracionGestor extends AbstractPanelGestor {
 		setControlador(controlador);
 	}
 
+	/**
+	 * Asigna el controlador al botón de guardado.
+	 *
+	 * @param c Controlador de acciones
+	 */
 	public void setControlador(ActionListener c) {
 		if (botonGuardar != null) {
 			for (ActionListener al : botonGuardar.getActionListeners())
@@ -168,6 +184,9 @@ public class SubpanelConfiguracionGestor extends AbstractPanelGestor {
 		JOptionPane.showMessageDialog(this, msg, "Error", JOptionPane.ERROR_MESSAGE);
 	}
 
+	/**
+	 * Ajusta valores mínimos de tiempo.
+	 */
 	private int valorTiempo(int valor) {
 		if (valor < 1) {
 			return 1;
@@ -175,6 +194,9 @@ public class SubpanelConfiguracionGestor extends AbstractPanelGestor {
 		return valor;
 	}
 
+	/**
+	 * Ajusta el valor mínimo de tasación.
+	 */
 	private double valorTasacion(double valor) {
 		if (valor <= 5.0) {
 			return 5.01;
@@ -182,6 +204,9 @@ public class SubpanelConfiguracionGestor extends AbstractPanelGestor {
 		return valor;
 	}
 
+	/**
+	 * Actualiza los spinners de pesos con los valores actuales del sistema.
+	 */
 	private void actualizarPesos() {
 		spinnerPesoValoracion.setValue(controlador.getPesoValoracion());
 		spinnerPesoCompras.setValue(controlador.getPesoCompras());
