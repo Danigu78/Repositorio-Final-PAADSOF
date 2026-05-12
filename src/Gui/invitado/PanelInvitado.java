@@ -4,22 +4,19 @@ import Gui.VentanaPrincipal;
 import Gui.Controladores.invitado.ControladorPanelInvitado;
 
 import javax.swing.*;
-import javax.swing.border.*;
 
 import Gui.cliente.SubpanelCatalogo;
 import Gui.cliente.SubpanelSegundaMano;
 
-
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.font.ImageGraphicAttribute;
-
-import usuarios.Cliente;
-import usuarios.UsuarioNoRegistrado;
 
 public class PanelInvitado extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private VentanaPrincipal ventana;
-	private UsuarioNoRegistrado invitado;
 	/** Identificador de la sección catálogo */
 	private static final String SEC_CATALOGO = "CATALOGO";
 	/** Identificador de la sección segunda mano */
@@ -75,9 +72,6 @@ public class PanelInvitado extends JPanel {
 		// zona de la izquierda
 
 		int tamañoIcono = VentanaPrincipal.escalar(28);
-		int tamañoFuente = VentanaPrincipal.escalar(18);
-		int gapEscalado = VentanaPrincipal.escalar(10);
-
 		java.net.URL imageURL = getClass().getResource("/fotos/logo.png");
 		ImageIcon iconoescalado = null;
 
@@ -132,7 +126,7 @@ public class PanelInvitado extends JPanel {
 																												// entre
 																												// los
 																												// botones
-		panelDerecho.setForeground(ventana.COLOR_PANEL);
+		panelDerecho.setForeground(VentanaPrincipal.COLOR_PANEL);
 		panelDerecho.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(12), 0, 0, 0));// deja un margen
 																										// arriba de 12
 																										// para que no
@@ -156,24 +150,23 @@ public class PanelInvitado extends JPanel {
 		botonRegistro.setFocusPainted(false);
 		botonRegistro.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		botonRegistro.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(5),
-		        VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(5), VentanaPrincipal.escalar(15)));
+				VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(5), VentanaPrincipal.escalar(15)));
 
 		botonRegistro.setContentAreaFilled(false);
-		botonRegistro.setOpaque(true);            
-		botonRegistro.setBorderPainted(false);    
-	
+		botonRegistro.setOpaque(true);
+		botonRegistro.setBorderPainted(false);
 
 		botonRegistro.addMouseListener(new MouseAdapter() {
-		    @Override
-		    public void mouseEntered(MouseEvent e) {
-		        botonRegistro.setBackground(naranjaHover);
-		        
-		    }
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				botonRegistro.setBackground(naranjaHover);
 
-		    @Override
-		    public void mouseExited(MouseEvent e) {
-		        botonRegistro.setBackground(naranjaNormal);
-		    }
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				botonRegistro.setBackground(naranjaNormal);
+			}
 		});
 		botonRegistro.addActionListener(e -> controlador.irARegistro());
 
@@ -270,25 +263,27 @@ public class PanelInvitado extends JPanel {
 			botonActivo = null;
 		}
 	}
-	
+
 	private JPanel crearSeparador() {
-	    JPanel sep = new JPanel();
-	    sep.setBackground(VentanaPrincipal.COLOR_ACENTO);
-	    sep.setPreferredSize(new Dimension(VentanaPrincipal.escalar(3), VentanaPrincipal.escalar(25)));
-	    return sep;
+		JPanel sep = new JPanel();
+		sep.setBackground(VentanaPrincipal.COLOR_ACENTO);
+		sep.setPreferredSize(new Dimension(VentanaPrincipal.escalar(3), VentanaPrincipal.escalar(25)));
+		return sep;
 	}
+
 	public void mostrarSeccion(String seccion) {
 		cardSecciones.show(panelSecciones, seccion);
 		actualizarSeccion(seccion);
 	}
+
 	private void actualizarSeccion(String seccion) {
-	    switch (seccion) {
-	        case SEC_CATALOGO:     
-	            subpanelCatalogo.actualizar(null); 
-	            break;
-	        case SEC_SEGUNDA_MANO:
-	            subpanelSegundaMano.actualizar(null);
-	            break;
-	    }
+		switch (seccion) {
+		case SEC_CATALOGO:
+			subpanelCatalogo.actualizar(null);
+			break;
+		case SEC_SEGUNDA_MANO:
+			subpanelSegundaMano.actualizar(null);
+			break;
+		}
 	}
 }

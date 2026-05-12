@@ -39,18 +39,39 @@ public class ControladorPedidos implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		revisarTiempos();
 		String cmd = e.getActionCommand();
 		if (cmd.equals("volver")) {
 			vista.mostrarLista();
 		} else if (cmd.startsWith("verPedido:")) {
 			buscarPedidoYEjecutar(cmd.substring(10), p -> vista.verDetallePedido(p));
 		} else if (cmd.startsWith("pagar:")) {
-			buscarPedidoYEjecutar(cmd.substring(6), p -> vista.irAPago(p));
+			buscarPedidoYEjecutar(cmd.substring(6), p -> {
+				if (estaPendientePago(p)) {
+					vista.irAPago(p);
+				} else {
+					vista.mostrarError("Ese pedido ya no esta pendiente de pago.");
+					vista.actualizar(cliente);
+				}
+			});
 		} else if (cmd.startsWith("recoger:")) {
-			buscarPedidoYEjecutar(cmd.substring(8), p -> vista.mostrarDialogoRecogida(p));
+			buscarPedidoYEjecutar(cmd.substring(8), p -> {
+				if (p.getEstado() == EstadoPedido.LISTO_PARA_RECOGER) {
+					vista.mostrarDialogoRecogida(p);
+				} else {
+					vista.mostrarError("Ese pedido no esta listo para recoger.");
+					vista.actualizar(cliente);
+				}
+			});
 		} else if (cmd.startsWith("reseña:")) {
 			buscarProductoYEjecutar(cmd.substring(7), p -> vista.mostrarFormularioReseña(p));
 		}
+	}
+
+	private void revisarTiempos() {
+		tienda.getComprobadorTiempos().revisarCarritosCaducados();
+		tienda.getComprobadorTiempos().revisarPedidosPendientesCaducados();
+		GuardadoTienda.guardar(tienda);
 	}
 
 	private void buscarPedidoYEjecutar(String id, Consumer<Pedido> accion) {
@@ -114,14 +135,13 @@ public class ControladorPedidos implements ActionListener {
 		return exito;
 	}
 
-	
 	public boolean escribirReseña(ProductoVenta producto, int pts, String comentario) {
 		try {
 			boolean ok = cliente.escribirReseña(producto, pts, comentario);
-			
+
 			if (ok) {
 				GuardadoTienda.guardar(tienda);
-				
+
 			}
 			return ok;
 		} catch (ReseñaDuplicadaException e) {
@@ -134,12 +154,12 @@ public class ControladorPedidos implements ActionListener {
 	}
 
 	public boolean yaReseñó(ProductoVenta producto) {
-	    for (Reseña r : producto.getReseñas()) {
-	        if (r.getAutor() != null && r.getAutor().getNickname().equals(cliente.getNickname())) {
-	            return true;
-	        }
-	    }
-	    return false;
+		for (Reseña r : producto.getReseñas()) {
+			if (r.getAutor() != null && r.getAutor().getNickname().equals(cliente.getNickname())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public Cliente getCliente() {

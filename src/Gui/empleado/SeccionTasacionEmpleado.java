@@ -1,6 +1,5 @@
 package Gui.empleado;
 
-
 import Gui.VentanaPrincipal;
 import Gui.Controladores.empleado.ControladorTasacionEmpleado;
 import Gui.Controladores.empleado.ResultadoOperacion;

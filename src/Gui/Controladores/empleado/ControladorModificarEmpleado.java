@@ -78,9 +78,9 @@ public class ControladorModificarEmpleado implements ActionListener {
 	}
 
 	public ResultadoOperacion guardarProducto(String idProducto, String nombre, String descripcion, String imagen,
-			String paginasTexto, String editorial, String anioTexto, String minJugadoresTexto,
-			String maxJugadoresTexto, String minEdadTexto, String maxEdadTexto, String estilo, String alturaTexto,
-			String anchoTexto, String largoTexto, String material, String marca) {
+			String paginasTexto, String editorial, String anioTexto, String minJugadoresTexto, String maxJugadoresTexto,
+			String minEdadTexto, String maxEdadTexto, String estilo, String alturaTexto, String anchoTexto,
+			String largoTexto, String material, String marca) {
 
 		if (empleado == null) {
 			return ResultadoOperacion.error("No hay empleado activo.");

@@ -676,13 +676,17 @@ public class Cliente extends UsuarioRegistrado implements Serializable {
 		}
 		// Comprobamos si hay algún pedido pendiente de pago
 
+		if (this.carritoActual != null && this.carritoActual.estaCaducado()) {
+			this.carritoActual.caducar();
+			Tienda.getInstancia().getComprobadorTiempos().quitarCarrito(this.getId());
+		}
+
 		if (this.carritoActual == null) {
 			this.carritoActual = new Carrito(this);
 			Tienda.getInstancia().getComprobadorTiempos().registrarCarrito(this.getId(), this.carritoActual);
 		}
 
-		this.getCarritoActual().añadirProducto(p, cantidad);
-		return true;
+		return this.getCarritoActual().añadirProducto(p, cantidad);
 	}
 
 	/**
@@ -703,8 +707,8 @@ public class Cliente extends UsuarioRegistrado implements Serializable {
 				return false;
 			}
 			if (carritoActual.estaCaducado()) {
-				carritoActual.vaciarCarrito();
-				this.carritoActual = null;
+				carritoActual.caducar();
+				Tienda.getInstancia().getComprobadorTiempos().quitarCarrito(this.getId());
 				System.out.println("El carrito ha caducado, no se puede reservar");
 				return false;
 			}

@@ -19,143 +19,143 @@ import tienda.Tienda;
  */
 public class ControladorProductosEmpleado implements ActionListener {
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        // No tiene botones propios, se usa para consultas de productos.
-    }
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// No tiene botones propios, se usa para consultas de productos.
+	}
 
-    public List<ProductoVenta> obtenerProductosOrdenadosPorStock() {
-        ArrayList<ProductoVenta> productos = new ArrayList<>(Tienda.getInstancia().getStockVentas());
-        productos.sort(new java.util.Comparator<ProductoVenta>() {
-            @Override
-            public int compare(ProductoVenta p1, ProductoVenta p2) {
-                int comparaStock = Integer.compare(p1.getStockDisponible(), p2.getStockDisponible());
-                if (comparaStock != 0) {
-                    return comparaStock;
-                }
-                return p1.getNombre().compareToIgnoreCase(p2.getNombre());
-            }
-        });
-        return productos;
-    }
+	public List<ProductoVenta> obtenerProductosOrdenadosPorStock() {
+		ArrayList<ProductoVenta> productos = new ArrayList<>(Tienda.getInstancia().getStockVentas());
+		productos.sort(new java.util.Comparator<ProductoVenta>() {
+			@Override
+			public int compare(ProductoVenta p1, ProductoVenta p2) {
+				int comparaStock = Integer.compare(p1.getStockDisponible(), p2.getStockDisponible());
+				if (comparaStock != 0) {
+					return comparaStock;
+				}
+				return p1.getNombre().compareToIgnoreCase(p2.getNombre());
+			}
+		});
+		return productos;
+	}
 
-    public ProductoVenta buscarProductoVentaPorId(String idProducto) {
-        if (idProducto == null || idProducto.trim().isBlank()) {
-            return null;
-        }
-        return Tienda.getInstancia().buscarProductoVentaPorId(idProducto.trim());
-    }
+	public ProductoVenta buscarProductoVentaPorId(String idProducto) {
+		if (idProducto == null || idProducto.trim().isBlank()) {
+			return null;
+		}
+		return Tienda.getInstancia().buscarProductoVentaPorId(idProducto.trim());
+	}
 
-    public List<String> obtenerNombresCategoriasVenta() {
-        ArrayList<String> nombres = new ArrayList<>();
-        for (Categoria categoria : Tienda.getInstancia().getCategorias()) {
-            if (categoria != null && categoria.getNombre() != null && !categoria.getNombre().isBlank()) {
-                String nombre = categoria.getNombre().trim();
-                if (!estaEnLista(nombres, nombre)) {
-                    nombres.add(nombre);
-                }
-            }
-        }
+	public List<String> obtenerNombresCategoriasVenta() {
+		ArrayList<String> nombres = new ArrayList<>();
+		for (Categoria categoria : Tienda.getInstancia().getCategorias()) {
+			if (categoria != null && categoria.getNombre() != null && !categoria.getNombre().isBlank()) {
+				String nombre = categoria.getNombre().trim();
+				if (!estaEnLista(nombres, nombre)) {
+					nombres.add(nombre);
+				}
+			}
+		}
 
-        nombres.sort(new java.util.Comparator<String>() {
-            @Override
-            public int compare(String a, String b) {
-                return a.compareToIgnoreCase(b);
-            }
-        });
-        return new ArrayList<>(nombres);
-    }
+		nombres.sort(new java.util.Comparator<String>() {
+			@Override
+			public int compare(String a, String b) {
+				return a.compareToIgnoreCase(b);
+			}
+		});
+		return new ArrayList<>(nombres);
+	}
 
-    public String obtenerTextoCategorias(ProductoVenta producto) {
-        if (producto == null || producto.getCategorias().isEmpty()) {
-            return "-";
-        }
+	public String obtenerTextoCategorias(ProductoVenta producto) {
+		if (producto == null || producto.getCategorias().isEmpty()) {
+			return "-";
+		}
 
-        List<String> nombres = new ArrayList<>();
-        for (Categoria categoria : producto.getCategorias()) {
-            if (categoria != null && categoria.getNombre() != null && !categoria.getNombre().isBlank()) {
-                nombres.add(categoria.getNombre().trim());
-            }
-        }
+		List<String> nombres = new ArrayList<>();
+		for (Categoria categoria : producto.getCategorias()) {
+			if (categoria != null && categoria.getNombre() != null && !categoria.getNombre().isBlank()) {
+				nombres.add(categoria.getNombre().trim());
+			}
+		}
 
-        nombres.sort(new java.util.Comparator<String>() {
-            @Override
-            public int compare(String a, String b) {
-                return a.compareToIgnoreCase(b);
-            }
-        });
-        return nombres.isEmpty() ? "-" : String.join(", ", nombres);
-    }
+		nombres.sort(new java.util.Comparator<String>() {
+			@Override
+			public int compare(String a, String b) {
+				return a.compareToIgnoreCase(b);
+			}
+		});
+		return nombres.isEmpty() ? "-" : String.join(", ", nombres);
+	}
 
-    public String obtenerTipoProductoVenta(ProductoVenta producto) {
-        if (producto instanceof Comic) {
-            return "Comic";
-        }
-        if (producto instanceof JuegoMesa) {
-            return "Juego";
-        }
-        if (producto instanceof Figura) {
-            return "Figura";
-        }
-        if (producto instanceof Pack) {
-            return "Pack";
-        }
-        return "Producto";
-    }
+	public String obtenerTipoProductoVenta(ProductoVenta producto) {
+		if (producto instanceof Comic) {
+			return "Comic";
+		}
+		if (producto instanceof JuegoMesa) {
+			return "Juego";
+		}
+		if (producto instanceof Figura) {
+			return "Figura";
+		}
+		if (producto instanceof Pack) {
+			return "Pack";
+		}
+		return "Producto";
+	}
 
-    public ArrayList<LineaPack> construirLineasPack(String texto) throws Exception {
-        ArrayList<LineaPack> lineas = new ArrayList<>();
-        if (texto == null || texto.isBlank()) {
-            return lineas;
-        }
+	public ArrayList<LineaPack> construirLineasPack(String texto) throws Exception {
+		ArrayList<LineaPack> lineas = new ArrayList<>();
+		if (texto == null || texto.isBlank()) {
+			return lineas;
+		}
 
-        // Cada linea del textarea tiene que ser ID;UNIDADES.
-        String[] filas = texto.split("\\r?\\n");
-        for (String fila : filas) {
-            if (fila == null || fila.isBlank()) {
-                continue;
-            }
+		// Cada linea del textarea tiene que ser ID;UNIDADES.
+		String[] filas = texto.split("\\r?\\n");
+		for (String fila : filas) {
+			if (fila == null || fila.isBlank()) {
+				continue;
+			}
 
-            String[] partes = fila.split(";");
-            if (partes.length != 2) {
-                throw new IllegalArgumentException("Cada línea debe tener formato ID;UNIDADES");
-            }
+			String[] partes = fila.split(";");
+			if (partes.length != 2) {
+				throw new IllegalArgumentException("Cada línea debe tener formato ID;UNIDADES");
+			}
 
-            String idProducto = partes[0].trim();
-            int unidades;
-            try {
-                unidades = Integer.parseInt(partes[1].trim());
-            } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("Las unidades deben ser un número entero.");
-            }
+			String idProducto = partes[0].trim();
+			int unidades;
+			try {
+				unidades = Integer.parseInt(partes[1].trim());
+			} catch (NumberFormatException e) {
+				throw new IllegalArgumentException("Las unidades deben ser un número entero.");
+			}
 
-            ProductoVenta producto = buscarProductoVentaPorId(idProducto);
-            if (producto == null) {
-                throw new IllegalArgumentException("No existe producto con id " + idProducto);
-            }
-            if (unidades <= 0) {
-                throw new IllegalArgumentException("Las unidades deben ser mayores que 0.");
-            }
+			ProductoVenta producto = buscarProductoVentaPorId(idProducto);
+			if (producto == null) {
+				throw new IllegalArgumentException("No existe producto con id " + idProducto);
+			}
+			if (unidades <= 0) {
+				throw new IllegalArgumentException("Las unidades deben ser mayores que 0.");
+			}
 
-            lineas.add(new LineaPack(producto, unidades));
-        }
-        return lineas;
-    }
+			lineas.add(new LineaPack(producto, unidades));
+		}
+		return lineas;
+	}
 
-    public String formatearPrecio(double precio) {
-        return String.format(java.util.Locale.US, "%.2f €", precio).replace('.', ',');
-    }
+	public String formatearPrecio(double precio) {
+		return String.format(java.util.Locale.US, "%.2f €", precio).replace('.', ',');
+	}
 
-    public String formatearPuntuacion(double puntuacion) {
-        return String.format(java.util.Locale.US, "%.1f", puntuacion).replace('.', ',');
-    }
+	public String formatearPuntuacion(double puntuacion) {
+		return String.format(java.util.Locale.US, "%.1f", puntuacion).replace('.', ',');
+	}
 
-    private boolean estaEnLista(List<String> textos, String buscado) {
-        for (String texto : textos) {
-            if (texto.equalsIgnoreCase(buscado)) {
-                return true;
-            }
-        }
-        return false;
-    }
+	private boolean estaEnLista(List<String> textos, String buscado) {
+		for (String texto : textos) {
+			if (texto.equalsIgnoreCase(buscado)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

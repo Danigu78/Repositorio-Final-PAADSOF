@@ -21,6 +21,11 @@ import usuarios.Cliente;
  */
 public class SubpanelCartera extends AbstractPanelCliente {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/** Controlador de la cartera. */
 	private ControladorCartera controlador;
 
@@ -28,6 +33,7 @@ public class SubpanelCartera extends AbstractPanelCliente {
 	private JPanel panelProductos;
 
 	/** Referencia al panel cliente para navegar. */
+	@SuppressWarnings("unused")
 	private PanelCliente panelCliente;
 
 	/** Subpanel de pago de tasación. */
@@ -122,7 +128,7 @@ public class SubpanelCartera extends AbstractPanelCliente {
 		titulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
 		cabecera.add(titulo, BorderLayout.WEST);
 
-		// crearBotonNaranja() de AbstractPanelSection — sustituye crearBotonPrincipal()
+		// crearBotonNaranja() de PanelBaseInterfaz — sustituye crearBotonPrincipal()
 		botonAñadir = crearBotonNaranja("+ Añadir producto");
 		botonAñadir.setActionCommand("añadir");
 		cabecera.add(botonAñadir, BorderLayout.EAST);
@@ -170,7 +176,7 @@ public class SubpanelCartera extends AbstractPanelCliente {
 		// crearTarjetaBase() de AbstractPanelCliente — MatteBorder inferior
 		JPanel tarjeta = crearTarjetaBase(110, true);
 
-		// Imagen — cargarImagen() de AbstractPanelSection
+		// Imagen — cargarImagen() de PanelBaseInterfaz
 		JLabel labelImagen = new JLabel();
 		labelImagen.setHorizontalAlignment(SwingConstants.CENTER);
 		labelImagen.setPreferredSize(new Dimension(VentanaPrincipal.escalar(80), VentanaPrincipal.escalar(80)));
@@ -208,7 +214,7 @@ public class SubpanelCartera extends AbstractPanelCliente {
 		GridBagConstraints gbcB = crearGbcBotonesTarjeta();
 
 		if (!controlador.estaValorado(producto) && !controlador.tieneTasacionPendiente(producto)) {
-			// crearBotonNaranja() de AbstractPanelSection
+			// crearBotonNaranja() de PanelBaseInterfaz
 			JButton botonTasar = crearBotonNaranja("Solicitar tasación");
 			botonTasar.setActionCommand("tasar:" + producto.getId());
 			botonTasar.addActionListener(controlador);

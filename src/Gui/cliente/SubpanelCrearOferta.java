@@ -24,6 +24,11 @@ import java.util.List;
  */
 public class SubpanelCrearOferta extends AbstractPanelCliente {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/** Subpanel de detalle del producto para volver. */
 	private SubpanelProducto2Mano subpanelOrigen;
 
@@ -114,12 +119,12 @@ public class SubpanelCrearOferta extends AbstractPanelCliente {
 
 	/**
 	 * Crea la barra superior con botón volver. Usa crearBarraVolver() y
-	 * getBotonVolver() de AbstractPanelSection.
+	 * getBotonVolver() de PanelBaseInterfaz.
 	 *
 	 * @return Panel de la barra superior
 	 */
 	private JPanel crearBarra() {
-		// crearBarraVolver() de AbstractPanelSection
+		// crearBarraVolver() de PanelBaseInterfaz
 		JPanel barra = crearBarraVolver("← Volver al producto");
 		botonVolver = getBotonVolver(barra);
 		botonVolver.setActionCommand("volver");
@@ -179,7 +184,7 @@ public class SubpanelCrearOferta extends AbstractPanelCliente {
 		panelLista.setBackground(VentanaPrincipal.COLOR_PANEL);
 
 		if (productos.isEmpty()) {
-			// crearLabel() de AbstractPanelSection
+			// crearLabel() de PanelBaseInterfaz
 			JLabel labelVacio = crearLabel(mensajeVacio);
 			labelVacio.setFont(VentanaPrincipal.FUENTE_PEQUENA);
 			panelLista.add(labelVacio);
@@ -199,7 +204,7 @@ public class SubpanelCrearOferta extends AbstractPanelCliente {
 				fila.add(checkbox, BorderLayout.WEST);
 
 				if (p.getValoracion() != null) {
-					// crearLabel() de AbstractPanelSection
+					// crearLabel() de PanelBaseInterfaz
 					JLabel labelPrecio = crearLabel(String.format("%.2f€", p.getValoracion().getPrecioTasacion()));
 					labelPrecio.setFont(VentanaPrincipal.FUENTE_PEQUENA);
 					labelPrecio.setForeground(VentanaPrincipal.COLOR_ACENTO);
@@ -222,7 +227,7 @@ public class SubpanelCrearOferta extends AbstractPanelCliente {
 
 	/**
 	 * Crea el panel inferior con el botón de enviar oferta. Usa crearBotonNaranja()
-	 * de AbstractPanelSection.
+	 * de PanelBaseInterfaz.
 	 *
 	 * @return Panel del botón enviar
 	 */
@@ -232,7 +237,7 @@ public class SubpanelCrearOferta extends AbstractPanelCliente {
 		panel.setBorder(
 				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(10), 0, VentanaPrincipal.escalar(20), 0));
 
-		// crearBotonNaranja() de AbstractPanelSection
+		// crearBotonNaranja() de PanelBaseInterfaz
 		botonEnviar = crearBotonNaranja("Enviar oferta");
 		botonEnviar.setActionCommand("enviar");
 		botonEnviar.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(12),

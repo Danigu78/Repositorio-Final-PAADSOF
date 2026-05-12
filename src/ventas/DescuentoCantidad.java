@@ -1,6 +1,7 @@
 package ventas;
 
 import java.time.LocalDateTime;
+import productos.ProductoVenta;
 
 /**
  * Clase que aplica una reducción de precio basada en el volumen de unidades de
@@ -23,6 +24,7 @@ public class DescuentoCantidad extends Descuento {
 	 * el mínimo.
 	 */
 	private double porcentaje;
+	private ProductoVenta producto;
 
 	/**
 	 * Constructor de la clase DescuentoCantidad
@@ -35,6 +37,11 @@ public class DescuentoCantidad extends Descuento {
 	 */
 	public DescuentoCantidad(String nombre, LocalDateTime inicio, LocalDateTime fin, int cantidadMinima,
 			double porcentaje) {
+		this(nombre, inicio, fin, cantidadMinima, porcentaje, null);
+	}
+
+	public DescuentoCantidad(String nombre, LocalDateTime inicio, LocalDateTime fin, int cantidadMinima,
+			double porcentaje, ProductoVenta producto) {
 		super(nombre, inicio, fin);
 		this.cantidadMinima = cantidadMinima;
 		if (porcentaje > 1)
@@ -42,6 +49,7 @@ public class DescuentoCantidad extends Descuento {
 		if (porcentaje < 0)
 			porcentaje = 0;
 		this.porcentaje = porcentaje;
+		this.producto = producto;
 	}
 
 	/**
@@ -59,7 +67,7 @@ public class DescuentoCantidad extends Descuento {
 		for (LineaCarrito linea : carrito.getLineas()) {
 			double subtotalLinea = linea.getSubtotal();
 
-			if (linea.getCantidad() >= cantidadMinima) {
+			if ((producto == null || linea.productoPertence(producto)) && linea.getCantidad() >= cantidadMinima) {
 				subtotalLinea = subtotalLinea * (1 - porcentaje);
 			}
 
@@ -84,5 +92,9 @@ public class DescuentoCantidad extends Descuento {
 	 */
 	public double getPorcentaje() {
 		return porcentaje;
+	}
+
+	public ProductoVenta getProducto() {
+		return producto;
 	}
 }

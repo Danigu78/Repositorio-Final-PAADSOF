@@ -20,6 +20,11 @@ import java.awt.event.*;
  */
 public class SubpanelProducto2Mano extends AbstractPanelCliente {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/** Subpanel de segunda mano para volver. */
 	private SubpanelSegundaMano subpanelOrigen;
 
@@ -113,7 +118,7 @@ public class SubpanelProducto2Mano extends AbstractPanelCliente {
 	/**
 	 * Crea el panel de detalle del producto con imagen e información. Usa
 	 * crearBarraVolver(), cargarImagen() y crearBotonNaranja() de
-	 * AbstractPanelSection.
+	 * PanelBaseInterfaz.
 	 *
 	 * @param producto El producto a mostrar
 	 * @return Panel con el detalle
@@ -122,7 +127,7 @@ public class SubpanelProducto2Mano extends AbstractPanelCliente {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.setBackground(VentanaPrincipal.COLOR_FONDO);
 
-		// crearBarraVolver() de AbstractPanelSection
+		// crearBarraVolver() de PanelBaseInterfaz
 		JPanel barra = crearBarraVolver("← Volver a segunda mano");
 		botonVolver = getBotonVolver(barra);
 		botonVolver.setActionCommand("volver");
@@ -136,7 +141,7 @@ public class SubpanelProducto2Mano extends AbstractPanelCliente {
 		JLabel labelImagen = new JLabel();
 		labelImagen.setHorizontalAlignment(SwingConstants.CENTER);
 		labelImagen.setPreferredSize(new Dimension(VentanaPrincipal.escalar(300), VentanaPrincipal.escalar(300)));
-		// cargarImagen() de AbstractPanelSection
+		// cargarImagen() de PanelBaseInterfaz
 		cargarImagen(labelImagen, producto.getImagenRuta(), VentanaPrincipal.escalar(280),
 				VentanaPrincipal.escalar(280));
 		panelCentral.add(labelImagen, BorderLayout.WEST);
@@ -152,7 +157,7 @@ public class SubpanelProducto2Mano extends AbstractPanelCliente {
 		panelInfo.add(labelNombre);
 		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(15)));
 
-		// crearLabel() de AbstractPanelSection
+		// crearLabel() de PanelBaseInterfaz
 		JLabel labelPropietario = crearLabel("Propietario: " + producto.getPropietario().getNickname());
 		panelInfo.add(labelPropietario);
 		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
@@ -182,7 +187,7 @@ public class SubpanelProducto2Mano extends AbstractPanelCliente {
 		}
 
 		if (controlador.puedeOfertar()) {
-			// crearBotonNaranja() de AbstractPanelSection
+			// crearBotonNaranja() de PanelBaseInterfaz
 			botonOfertar = crearBotonNaranja("Hacer oferta");
 			botonOfertar.setActionCommand("ofertar");
 			botonOfertar.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(10),

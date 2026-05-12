@@ -41,13 +41,11 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 
 	private PanelGestor panelGestor;
 
-	
-	public SubpanelCategoriasGestor(VentanaPrincipal ventana,
-	        Gestor gestor, PanelGestor panelGestor) {
-	    super(ventana, gestor);
-	    this.panelGestor = panelGestor;
-	    this.controlador = new ControladorCategoriasGestor(this, gestor);
-	    inicializarUI();
+	public SubpanelCategoriasGestor(VentanaPrincipal ventana, Gestor gestor, PanelGestor panelGestor) {
+		super(ventana, gestor);
+		this.panelGestor = panelGestor;
+		this.controlador = new ControladorCategoriasGestor(this, gestor);
+		inicializarUI();
 	}
 
 	private void inicializarUI() {
@@ -103,11 +101,11 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 	private JPanel crearFormularioNuevaCategoria() {
 		JPanel panel = new JPanel(
 				new FlowLayout(FlowLayout.LEFT, VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(10)));
-		panel.setBackground(VentanaPrincipal.COLOR_PANEL);
-		panel.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createMatteBorder(0, 0, 1, 0, VentanaPrincipal.COLOR_BORDE),
-				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(15),
-						VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(15))));
+		panel.setBackground(VentanaPrincipal.COLOR_TARJETA);
+		panel.setBorder(
+				BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE, 1),
+						BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(15),
+								VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(15))));
 
 		JLabel titulo = new JLabel("Nueva categoría:");
 		titulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
@@ -175,100 +173,89 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 	 * Filtra la lista de categorías por nombre o id.
 	 */
 	private void filtrarCategorias() {
-	    String texto = campoBusquedaCategorias.getText().trim().toLowerCase();
-	    panelListaCategorias.removeAll();
-	    boolean hayAlguna = false;
-	    for (Categoria c : controlador.getCategorias()) {
-	        if (texto.isEmpty()
-	                || c.getNombre().toLowerCase().contains(texto)) {
-	            panelListaCategorias.add(crearFilaCategoria(c));
-	            hayAlguna = true;
-	        }
-	    }
-	    if (!hayAlguna) {
-	        JLabel lbl = crearLabel("No se encontraron categorías.");
-	        lbl.setAlignmentX(Component.LEFT_ALIGNMENT);
-	        panelListaCategorias.add(lbl);
-	    }
-	    panelListaCategorias.revalidate();
-	    panelListaCategorias.repaint();
+		String texto = campoBusquedaCategorias.getText().trim().toLowerCase();
+		panelListaCategorias.removeAll();
+		boolean hayAlguna = false;
+		for (Categoria c : controlador.getCategorias()) {
+			if (texto.isEmpty() || c.getNombre().toLowerCase().contains(texto)) {
+				panelListaCategorias.add(crearFilaCategoria(c));
+				hayAlguna = true;
+			}
+		}
+		if (!hayAlguna) {
+			JLabel lbl = crearLabel("No se encontraron categorías.");
+			lbl.setAlignmentX(Component.LEFT_ALIGNMENT);
+			panelListaCategorias.add(lbl);
+		}
+		panelListaCategorias.revalidate();
+		panelListaCategorias.repaint();
 	}
+
 	/**
 	 * Recarga la lista completa de categorías.
 	 */
 	public void actualizarListaCategorias() {
-	    panelListaCategorias.removeAll();
-	    List<Categoria> cats = controlador.getCategorias();
-	    if (cats.isEmpty()) {
-	        JLabel lbl = crearLabel("No hay categorías creadas.");
-	        lbl.setAlignmentX(Component.LEFT_ALIGNMENT);
-	        panelListaCategorias.add(lbl);
-	    } else {
-	        for (Categoria c : cats)
-	            panelListaCategorias.add(crearFilaCategoria(c));
-	    }
-	    panelListaCategorias.revalidate();
-	    panelListaCategorias.repaint();
+		panelListaCategorias.removeAll();
+		List<Categoria> cats = controlador.getCategorias();
+		if (cats.isEmpty()) {
+			JLabel lbl = crearLabel("No hay categorías creadas.");
+			lbl.setAlignmentX(Component.LEFT_ALIGNMENT);
+			panelListaCategorias.add(lbl);
+		} else {
+			for (Categoria c : cats)
+				panelListaCategorias.add(crearFilaCategoria(c));
+		}
+		panelListaCategorias.revalidate();
+		panelListaCategorias.repaint();
 	}
+
 	/**
 	 * Crea una fila para una categoría con id, nombre, descripción y botón
 	 * eliminar.
 	 */
 	private JPanel crearFilaCategoria(Categoria c) {
-	    boolean eliminada = c.isEliminada();
+		boolean eliminada = c.isEliminada();
 
-	    JPanel fila = new JPanel(new BorderLayout());
-	    fila.setBackground(eliminada
-	        ? new Color(245, 245, 245)
-	        : VentanaPrincipal.COLOR_TARJETA);
-	    fila.setMaximumSize(new Dimension(
-	        Integer.MAX_VALUE, VentanaPrincipal.escalar(55)));
-	    fila.setAlignmentX(Component.LEFT_ALIGNMENT);
-	    fila.setBorder(BorderFactory.createCompoundBorder(
-	        BorderFactory.createMatteBorder(
-	            0, 0, 1, 0, VentanaPrincipal.COLOR_BORDE),
-	        BorderFactory.createEmptyBorder(
-	            VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(15),
-	            VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(15))));
+		JPanel fila = new JPanel(new BorderLayout());
+		fila.setBackground(eliminada ? new Color(245, 245, 245) : VentanaPrincipal.COLOR_TARJETA);
+		fila.setMaximumSize(new Dimension(Integer.MAX_VALUE, VentanaPrincipal.escalar(55)));
+		fila.setAlignmentX(Component.LEFT_ALIGNMENT);
+		fila.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createMatteBorder(0, 0, 1, 0, VentanaPrincipal.COLOR_BORDE),
+				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(15),
+						VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(15))));
 
-	    JPanel info = new JPanel();
-	    info.setOpaque(false);
-	    info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
+		JPanel info = new JPanel();
+		info.setOpaque(false);
+		info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
 
-	    JLabel labelNombre = new JLabel(
-	        c.getNombre() + (eliminada ? "  —  Eliminada" : ""));
-	    labelNombre.setFont(VentanaPrincipal.FUENTE_BOTON);
-	    labelNombre.setForeground(eliminada
-	        ? VentanaPrincipal.COLOR_TEXTO2
-	        : VentanaPrincipal.COLOR_TEXTO);
-	    info.add(labelNombre);
+		JLabel labelNombre = new JLabel(c.getNombre() + (eliminada ? "  —  Eliminada" : ""));
+		labelNombre.setFont(VentanaPrincipal.FUENTE_BOTON);
+		labelNombre.setForeground(eliminada ? VentanaPrincipal.COLOR_TEXTO2 : VentanaPrincipal.COLOR_TEXTO);
+		info.add(labelNombre);
 
-	    JLabel labelDesc = crearLabel(
-	        c.getDescripcion() != null && !c.getDescripcion().isBlank()
-	            ? c.getDescripcion() : "Sin descripción");
-	    info.add(labelDesc);
+		JLabel labelDesc = crearLabel(
+				c.getDescripcion() != null && !c.getDescripcion().isBlank() ? c.getDescripcion() : "Sin descripción");
+		info.add(labelDesc);
 
-	    fila.add(info, BorderLayout.CENTER);
+		fila.add(info, BorderLayout.CENTER);
 
-	    // Botón eliminar solo si no está eliminada
-	    if (!eliminada) {
-	        JButton botonEliminar = crearBotonRojo("Eliminar");
-	        botonEliminar.setActionCommand(
-	            ControladorCategoriasGestor.ELIMINAR_CATEGORIA
-	            + ":" + c.getNombre());
-	        botonEliminar.addActionListener(controlador);
-	        fila.add(botonEliminar, BorderLayout.EAST);
-	    }
+		// Botón eliminar solo si no está eliminada
+		if (!eliminada) {
+			JButton botonEliminar = crearBotonRojo("Eliminar");
+			botonEliminar.setActionCommand(ControladorCategoriasGestor.ELIMINAR_CATEGORIA + ":" + c.getNombre());
+			botonEliminar.addActionListener(controlador);
+			fila.add(botonEliminar, BorderLayout.EAST);
+		}
 
-	    return fila;
+		return fila;
 	}
 
 	// ── Tabla de productos ────────────────────────────────────────────────────
 
 	private JPanel crearPanelTablaProductos() {
 		JPanel panel = crearBloque("Productos de venta");
-		tablaProductosVenta = new TablaProductosVenta(() -> controlador.getProductosOrdenados());
-		tablaProductosVenta.setAlSeleccionarId(id -> campoIdProducto.setText(id));
+		tablaProductosVenta = new TablaProductosVenta(() -> controlador.getProductosOrdenados(), false);
 		panel.add(tablaProductosVenta, gbcCampo(1));
 		return panel;
 	}
@@ -336,14 +323,15 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 			// Actualizar combo y lista
 			cargarCategorias();
 			actualizarListaCategorias();
-			if (tablaProductosVenta != null)
+			if (tablaProductosVenta != null) {
 				tablaProductosVenta.refrescar();
-			tablaProductosVenta.refrescarFiltrosCategorias();
+				tablaProductosVenta.refrescarFiltrosCategorias();
+			}
 		} else {
 			mostrarError("No se pudo crear la categoría.");
 		}
 		if (panelGestor != null)
-		    panelGestor.refrescarFiltrosCategorias();
+			panelGestor.refrescarFiltrosCategorias();
 	}
 
 	public void procesarEliminarCategoria(String nombre) {
@@ -357,14 +345,15 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 			// Actualizar combo, lista y tabla
 			cargarCategorias();
 			actualizarListaCategorias();
-			if (tablaProductosVenta != null)
+			if (tablaProductosVenta != null) {
 				tablaProductosVenta.refrescar();
-			 tablaProductosVenta.refrescarFiltrosCategorias();
+				tablaProductosVenta.refrescarFiltrosCategorias();
+			}
 		} else {
 			mostrarError("No se pudo eliminar la categoría.");
 		}
 		if (panelGestor != null)
-		    panelGestor.refrescarFiltrosCategorias();
+			panelGestor.refrescarFiltrosCategorias();
 	}
 
 	public void procesarAnadirCategoriaProducto() {
@@ -398,6 +387,10 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 			mostrarError("Selecciona una categoría.");
 			return;
 		}
+		if (!controlador.productoTieneCategoria(idProducto, nombreCategoria)) {
+			mostrarError("Ese producto no tiene esa categoría.");
+			return;
+		}
 		if (controlador.eliminarProductoDeCategoria(idProducto, nombreCategoria)) {
 			mostrarMensaje("Categoría quitada correctamente.");
 			if (tablaProductosVenta != null)
@@ -421,9 +414,9 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 	 * se actualicen sin reiniciar.
 	 */
 	public void cargarCategorias() {
-	    comboCategoria.removeAllItems();
-	    comboCategoria.addItem("Selecciona una categoría");
-	    for (Categoria c : controlador.getCategoriasActivas())
-	        comboCategoria.addItem(c.getNombre());
+		comboCategoria.removeAllItems();
+		comboCategoria.addItem("Selecciona una categoría");
+		for (Categoria c : controlador.getCategoriasActivas())
+			comboCategoria.addItem(c.getNombre());
 	}
 }

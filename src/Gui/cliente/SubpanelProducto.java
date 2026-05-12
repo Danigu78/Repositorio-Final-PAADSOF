@@ -25,6 +25,11 @@ import java.awt.event.*;
  */
 public class SubpanelProducto extends AbstractPanelCliente {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/** Subpanel de carrito para volver si se llegó desde él. */
 	private SubpanelCarrito subpanelCarrito;
 
@@ -128,7 +133,7 @@ public class SubpanelProducto extends AbstractPanelCliente {
 		String textoVolver = subpanelCarrito != null ? "← Volver al carrito"
 				: subpanelPedidos != null ? "← Volver al pedido" : "← Volver al catálogo";
 
-		// crearBarraVolver() de AbstractPanelSection
+		// crearBarraVolver() de PanelBaseInterfaz
 		JPanel barra = crearBarraVolver(textoVolver);
 		botonVolver = getBotonVolver(barra);
 		botonVolver.setActionCommand("volver");
@@ -150,7 +155,7 @@ public class SubpanelProducto extends AbstractPanelCliente {
 		JLabel labelImagen = new JLabel();
 		labelImagen.setHorizontalAlignment(SwingConstants.CENTER);
 		labelImagen.setPreferredSize(new Dimension(VentanaPrincipal.escalar(300), VentanaPrincipal.escalar(300)));
-		// cargarImagen() de AbstractPanelSection
+		// cargarImagen() de PanelBaseInterfaz
 		cargarImagen(labelImagen, producto.getImagenRuta(), VentanaPrincipal.escalar(280),
 				VentanaPrincipal.escalar(280));
 		panel.add(labelImagen, BorderLayout.WEST);
@@ -255,7 +260,7 @@ public class SubpanelProducto extends AbstractPanelCliente {
 		panelInfo.add(labelDesc);
 		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
-		// Reseñas media 
+		// Reseñas media
 		if (!producto.getReseñas().isEmpty()) {
 			JLabel labelMedia = new JLabel(String.format(" %.1f/10 (%d reseñas)", producto.getMediaPuntuacion(),
 					producto.getReseñas().size()));
@@ -270,7 +275,7 @@ public class SubpanelProducto extends AbstractPanelCliente {
 
 		// Botón añadir al carrito
 		if (controlador.hayCliente()) {
-			// crearBotonNaranja() de AbstractPanelSection
+			// crearBotonNaranja() de PanelBaseInterfaz
 			botonAñadir = crearBotonNaranja("Añadir al carrito");
 			botonAñadir.setActionCommand("añadirCarrito");
 			panelInfo.add(botonAñadir);
@@ -301,7 +306,7 @@ public class SubpanelProducto extends AbstractPanelCliente {
 		panelReseñas.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
 		if (producto.getReseñas().isEmpty()) {
-			// crearLabel() de AbstractPanelSection
+			// crearLabel() de PanelBaseInterfaz
 			JLabel labelVacio = crearLabel("Este producto no tiene reseñas todavía.");
 			labelVacio.setAlignmentX(Component.LEFT_ALIGNMENT);
 			panelReseñas.add(labelVacio);
@@ -362,7 +367,7 @@ public class SubpanelProducto extends AbstractPanelCliente {
 		spinnerCantidad.setFont(VentanaPrincipal.FUENTE_NORMAL);
 
 		JPanel panelDialogo = new JPanel(new FlowLayout());
-		// crearLabel() de AbstractPanelSection
+		// crearLabel() de PanelBaseInterfaz
 		panelDialogo.add(crearLabel("Cantidad (máx. " + producto.getStockDisponible() + "):"));
 		panelDialogo.add(spinnerCantidad);
 

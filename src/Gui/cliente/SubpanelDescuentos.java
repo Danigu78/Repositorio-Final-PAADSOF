@@ -14,260 +14,248 @@ import java.awt.event.ActionListener;
 import java.util.List;
 
 /**
- * Subpanel de descuentos activos del cliente.
- * Muestra todos los descuentos vigentes con tipo, detalle y período.
- * Informa de que solo se aplica el más ventajoso en el carrito.
- * Extiende AbstractPanelCliente para reutilizar helpers visuales.
- * Sigue el patrón MVC de los apuntes.
+ * Subpanel de descuentos activos del cliente. Muestra todos los descuentos
+ * vigentes con tipo, detalle y período. Informa de que solo se aplica el más
+ * ventajoso en el carrito. Extiende AbstractPanelCliente para reutilizar
+ * helpers visuales. Sigue el patrón MVC de los apuntes.
  *
  * @author Daniel
  * @version 1.0
  */
 public class SubpanelDescuentos extends AbstractPanelCliente {
 
-    /** Controlador del subpanel. */
-    private ControladorDescuentos controlador;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-    /** Botón refrescar — atributo para registrar el controlador. */
-    private JButton botonRefrescar;
+	/** Controlador del subpanel. */
+	private ControladorDescuentos controlador;
 
-    /** Panel donde se insertan las tarjetas de descuentos. */
-    private JPanel panelLista;
+	/** Botón refrescar — atributo para registrar el controlador. */
+	private JButton botonRefrescar;
 
-    /**
-     * Constructor del subpanel de descuentos.
-     *
-     * @param ventana La ventana principal
-     */
-    public SubpanelDescuentos(VentanaPrincipal ventana) {
-        super(ventana);
-    }
+	/** Panel donde se insertan las tarjetas de descuentos. */
+	private JPanel panelLista;
 
-    /**
-     * Actualiza el subpanel con los descuentos activos.
-     * Crea el controlador y lo registra en los botones.
-     *
-     * @param cliente El cliente logueado
-     */
-    @Override
-    public void actualizar(Cliente cliente) {
-        this.cliente = cliente;
-        this.controlador = new ControladorDescuentos(this);
-        removeAll();
+	/**
+	 * Constructor del subpanel de descuentos.
+	 *
+	 * @param ventana La ventana principal
+	 */
+	public SubpanelDescuentos(VentanaPrincipal ventana) {
+		super(ventana);
+	}
 
-        
-        JPanel panelBase = crearPanelBase("Descuentos");
-        JPanel contenido = getContenido(panelBase);
+	/**
+	 * Actualiza el subpanel con los descuentos activos. Crea el controlador y lo
+	 * registra en los botones.
+	 *
+	 * @param cliente El cliente logueado
+	 */
+	@Override
+	public void actualizar(Cliente cliente) {
+		this.cliente = cliente;
+		this.controlador = new ControladorDescuentos(this);
+		removeAll();
 
-        contenido.add(crearBloqueAviso());
-        contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(18)));
-        contenido.add(crearBloqueDescuentos());
+		JPanel panelBase = crearPanelBase("Descuentos");
+		JPanel contenido = getContenido(panelBase);
 
-        add(panelBase, BorderLayout.CENTER);
+		contenido.add(crearBloqueAviso());
+		contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(18)));
+		contenido.add(crearBloqueDescuentos());
 
-        setControlador(controlador);
-        revalidate();
-        repaint();
-    }
+		add(panelBase, BorderLayout.CENTER);
 
-    /**
-     * Registra el controlador en los botones — patrón de los apuntes.
-     *
-     * @param c El ActionListener a registrar
-     */
-    public void setControlador(ActionListener c) {
-        if (botonRefrescar != null) {
-            for (ActionListener al : botonRefrescar.getActionListeners())
-                botonRefrescar.removeActionListener(al);
-            botonRefrescar.setActionCommand("refrescar");
-            botonRefrescar.addActionListener(c);
-        }
-    }
+		setControlador(controlador);
+		revalidate();
+		repaint();
+	}
 
-    /**
-     * Recarga las tarjetas de descuentos.
-     * Lo llama el controlador desde actionPerformed.
-     */
-    public void cargarDescuentos() {
-        if (panelLista == null) return;
-        panelLista.removeAll();
-        rellenarLista();
-        panelLista.revalidate();
-        panelLista.repaint();
-    }
+	/**
+	 * Registra el controlador en los botones — patrón de los apuntes.
+	 *
+	 * @param c El ActionListener a registrar
+	 */
+	public void setControlador(ActionListener c) {
+		if (botonRefrescar != null) {
+			for (ActionListener al : botonRefrescar.getActionListeners())
+				botonRefrescar.removeActionListener(al);
+			botonRefrescar.setActionCommand("refrescar");
+			botonRefrescar.addActionListener(c);
+		}
+	}
 
-    /**
-     * Crea el bloque de aviso sobre cómo se aplican los descuentos.
-     *
-     * @return Panel del bloque aviso
-     */
-    private JPanel crearBloqueAviso() {
-        // crearBloque() de AbstractPanelSection
-        JPanel bloque = crearBloque("¿Cómo funcionan los descuentos?");
+	/**
+	 * Recarga las tarjetas de descuentos. Lo llama el controlador desde
+	 * actionPerformed.
+	 */
+	public void cargarDescuentos() {
+		if (panelLista == null)
+			return;
+		panelLista.removeAll();
+		rellenarLista();
+		panelLista.revalidate();
+		panelLista.repaint();
+	}
 
-        JPanel panelInfo = new JPanel();
-        panelInfo.setOpaque(false);
-        panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.Y_AXIS));
+	/**
+	 * Crea el bloque de aviso sobre cómo se aplican los descuentos.
+	 *
+	 * @return Panel del bloque aviso
+	 */
+	private JPanel crearBloqueAviso() {
+		// crearBloque() de PanelBaseInterfaz
+		JPanel bloque = crearBloque("¿Cómo funcionan los descuentos?");
 
-        // crearLabel() de AbstractPanelSection
-        panelInfo.add(crearLabel(
-            "En CheckPoint se aplica automáticamente el descuento "
-            + "que primero suponga una disminución de precio."));
-        panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(6)));
-        panelInfo.add(crearLabel(
-            "Solo se puede aplicar un descuento por compra  "));
-        panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(6)));
-       
+		JPanel panelInfo = new JPanel();
+		panelInfo.setOpaque(false);
+		panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.Y_AXIS));
 
-      
-        bloque.add(panelInfo, gbcCampo(1));
-        return bloque;
-    }
+		// crearLabel() de PanelBaseInterfaz
+		panelInfo.add(crearLabel("En CheckPoint se aplica automáticamente el descuento "
+				+ "que primero suponga una disminución de precio."));
+		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(6)));
+		panelInfo.add(crearLabel("Solo se puede aplicar un descuento por compra  "));
+		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(6)));
 
-    /**
-     * Crea el bloque con la lista de descuentos activos y el botón refrescar.
-     *
-     * @return Panel del bloque descuentos
-     */
-    private JPanel crearBloqueDescuentos() {
-       
-        JPanel bloque = crearBloque("Descuentos activos");
+		bloque.add(panelInfo, gbcCampo(1));
+		return bloque;
+	}
 
-        botonRefrescar = crearBotonSecundario("Refrescar");
-        botonRefrescar.setActionCommand("refrescar");
+	/**
+	 * Crea el bloque con la lista de descuentos activos y el botón refrescar.
+	 *
+	 * @return Panel del bloque descuentos
+	 */
+	private JPanel crearBloqueDescuentos() {
 
-        JPanel filaBoton = new JPanel(
-            new FlowLayout(FlowLayout.LEFT, 0, 0));
-        filaBoton.setOpaque(false);
-        filaBoton.add(botonRefrescar);
-        bloque.add(filaBoton, gbcCampo(1));
+		JPanel bloque = crearBloque("Descuentos activos");
 
-    
-        panelLista = new JPanel();
-        panelLista.setOpaque(false);
-        panelLista.setLayout(new BoxLayout(panelLista, BoxLayout.Y_AXIS));
+		botonRefrescar = crearBotonSecundario("Refrescar");
+		botonRefrescar.setActionCommand("refrescar");
 
-        rellenarLista();
-        JScrollPane scroll = estilizarScroll(panelLista);
-        scroll.setPreferredSize(new Dimension(
-            VentanaPrincipal.escalar(1050), VentanaPrincipal.escalar(500)));
+		JPanel filaBoton = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		filaBoton.setOpaque(false);
+		filaBoton.add(botonRefrescar);
+		bloque.add(filaBoton, gbcCampo(1));
 
-        bloque.add(scroll, gbcCampo(2));
-        return bloque;
-    }
+		panelLista = new JPanel();
+		panelLista.setOpaque(false);
+		panelLista.setLayout(new BoxLayout(panelLista, BoxLayout.Y_AXIS));
 
-    /**
-     * Rellena el panelLista con las tarjetas de descuentos actuales.
-     */
-    private void rellenarLista() {
-        if (controlador == null) return;
-        panelLista.removeAll();
+		rellenarLista();
+		JScrollPane scroll = estilizarScroll(panelLista);
+		scroll.setPreferredSize(new Dimension(VentanaPrincipal.escalar(1050), VentanaPrincipal.escalar(500)));
 
-        List<Descuento> activos = controlador.getDescuentosActivos();
+		bloque.add(scroll, gbcCampo(2));
+		return bloque;
+	}
 
-        if (activos.isEmpty()) {
+	/**
+	 * Rellena el panelLista con las tarjetas de descuentos actuales.
+	 */
+	private void rellenarLista() {
+		if (controlador == null)
+			return;
+		panelLista.removeAll();
 
-            panelLista.add(crearLabelVacio(
-                "No hay descuentos activos en este momento."));
-            return;
-        }
+		List<Descuento> activos = controlador.getDescuentosActivos();
 
-        for (Descuento d : activos) {
-            panelLista.add(crearTarjetaDescuento(d));
-            panelLista.add(Box.createVerticalStrut(
-                VentanaPrincipal.escalar(10)));
-        }
-    }
+		if (activos.isEmpty()) {
 
-    /**
-     * Crea una tarjeta visual para un descuento.
-     
-     *
-     * @param d El descuento a mostrar
-     * @return Panel con la tarjeta
-     */
-    private JPanel crearTarjetaDescuento(Descuento d) {
-        // crearTarjetaBase() de AbstractPanelCliente
-        JPanel tarjeta = crearTarjetaBase(
-            VentanaPrincipal.escalar(110), true);
-        tarjeta.setLayout(new BorderLayout(
-            VentanaPrincipal.escalar(15), 0));
+			panelLista.add(crearLabelVacio("No hay descuentos activos en este momento."));
+			return;
+		}
 
-      
-        JPanel tipo = new JPanel(new FlowLayout(
-            FlowLayout.LEFT, 0, VentanaPrincipal.escalar(10)));
-        tipo.setOpaque(false);
-        tipo.add(crearBadgeTipo(d));
-        tarjeta.add(tipo, BorderLayout.WEST);
+		for (Descuento d : activos) {
+			panelLista.add(crearTarjetaDescuento(d));
+			panelLista.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		}
+	}
 
-     
-        JPanel panelInfo = crearPanelInfoTarjeta();
-        JLabel labelNombre = new JLabel(d.getNombre());
-        labelNombre.setFont(VentanaPrincipal.FUENTE_BOTON);
-        labelNombre.setForeground(VentanaPrincipal.COLOR_TEXTO);
-        panelInfo.add(labelNombre);
-        panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(6)));
+	/**
+	 * Crea una tarjeta visual para un descuento.
+	 *
+	 * 
+	 * @param d El descuento a mostrar
+	 * @return Panel con la tarjeta
+	 */
+	private JPanel crearTarjetaDescuento(Descuento d) {
+		// crearTarjetaBase() de AbstractPanelCliente
+		JPanel tarjeta = crearTarjetaBase(VentanaPrincipal.escalar(110), true);
+		tarjeta.setLayout(new BorderLayout(VentanaPrincipal.escalar(15), 0));
 
-        JLabel labelDetalle = crearLabel(controlador.getDetalle(d));
-        panelInfo.add(labelDetalle);
-        panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(4)));
+		JPanel tipo = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, VentanaPrincipal.escalar(10)));
+		tipo.setOpaque(false);
+		tipo.add(crearBadgeTipo(d));
+		tarjeta.add(tipo, BorderLayout.WEST);
 
-        JLabel labelPeriodo = crearLabel(controlador.getPeriodo(d));
-        labelPeriodo.setFont(VentanaPrincipal.FUENTE_PEQUENA);
-        labelPeriodo.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-        panelInfo.add(labelPeriodo);
+		JPanel panelInfo = crearPanelInfoTarjeta();
+		JLabel labelNombre = new JLabel(d.getNombre());
+		labelNombre.setFont(VentanaPrincipal.FUENTE_BOTON);
+		labelNombre.setForeground(VentanaPrincipal.COLOR_TEXTO);
+		panelInfo.add(labelNombre);
+		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(6)));
 
-        tarjeta.add(panelInfo, BorderLayout.CENTER);
-        JPanel panelEstado = new JPanel(new FlowLayout(
-            FlowLayout.RIGHT, 0, VentanaPrincipal.escalar(10)));
-        panelEstado.setOpaque(false);
-        JLabel labelActivo = new JLabel(" Activo");
-        labelActivo.setFont(VentanaPrincipal.FUENTE_PEQUENA);
-        labelActivo.setForeground(new Color(50, 150, 50));
-        panelEstado.add(labelActivo);
-        tarjeta.add(panelEstado, BorderLayout.EAST);
+		JLabel labelDetalle = crearLabel(controlador.getDetalle(d));
+		panelInfo.add(labelDetalle);
+		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(4)));
 
-        return tarjeta;
-    }
+		JLabel labelPeriodo = crearLabel(controlador.getPeriodo(d));
+		labelPeriodo.setFont(VentanaPrincipal.FUENTE_PEQUENA);
+		labelPeriodo.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+		panelInfo.add(labelPeriodo);
 
-    /**
-     * Crea el badge del tipo de descuento con color según el tipo.
-     *
-     * @param d El descuento
-     * @return JLabel con el badge
-     */
-    private JLabel crearBadgeTipo(Descuento d) {
-        String texto;
-        Color color;
+		tarjeta.add(panelInfo, BorderLayout.CENTER);
+		JPanel panelEstado = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, VentanaPrincipal.escalar(10)));
+		panelEstado.setOpaque(false);
+		JLabel labelActivo = new JLabel(" Activo");
+		labelActivo.setFont(VentanaPrincipal.FUENTE_PEQUENA);
+		labelActivo.setForeground(new Color(50, 150, 50));
+		panelEstado.add(labelActivo);
+		tarjeta.add(panelEstado, BorderLayout.EAST);
 
-        if (d instanceof DescuentoCategoria) {
-            texto  = " CATEGORÍA";
-            color  = new Color(70, 130, 180);
-        } else if (d instanceof DescuentoVolumen) {
-            texto  = " VOLUMEN";
-            color  = new Color(60, 150, 80);
-        } else if (d instanceof DescuentoCantidad) {
-            texto  = " CANTIDAD";
-            color  = new Color(150, 80, 180);
-        } else if (d instanceof Regalo) {
-            texto  = " REGALO";
-            color  = new Color(200, 80, 80);
-        } else {
-            texto  = " OFERTA";
-            color  = VentanaPrincipal.COLOR_ACENTO;
-        }
+		return tarjeta;
+	}
 
-        JLabel badge = new JLabel(texto);
-        badge.setFont(VentanaPrincipal.FUENTE_PEQUENA);
-        badge.setForeground(Color.WHITE);
-        badge.setOpaque(true);
-        badge.setBackground(color);
-        badge.setHorizontalAlignment(SwingConstants.CENTER);
-        badge.setBorder(BorderFactory.createEmptyBorder(
-            VentanaPrincipal.escalar(4), VentanaPrincipal.escalar(10),
-            VentanaPrincipal.escalar(4), VentanaPrincipal.escalar(10)));
-        badge.setPreferredSize(new Dimension(
-            VentanaPrincipal.escalar(130), VentanaPrincipal.escalar(32)));
-        return badge;
-    }
+	/**
+	 * Crea el badge del tipo de descuento con color según el tipo.
+	 *
+	 * @param d El descuento
+	 * @return JLabel con el badge
+	 */
+	private JLabel crearBadgeTipo(Descuento d) {
+		String texto;
+		Color color;
+
+		if (d instanceof DescuentoCategoria) {
+			texto = " CATEGORÍA";
+			color = new Color(70, 130, 180);
+		} else if (d instanceof DescuentoVolumen) {
+			texto = " VOLUMEN";
+			color = new Color(60, 150, 80);
+		} else if (d instanceof DescuentoCantidad) {
+			texto = " CANTIDAD";
+			color = new Color(150, 80, 180);
+		} else if (d instanceof Regalo) {
+			texto = " REGALO";
+			color = new Color(200, 80, 80);
+		} else {
+			texto = " OFERTA";
+			color = VentanaPrincipal.COLOR_ACENTO;
+		}
+
+		JLabel badge = new JLabel(texto);
+		badge.setFont(VentanaPrincipal.FUENTE_PEQUENA);
+		badge.setForeground(Color.WHITE);
+		badge.setOpaque(true);
+		badge.setBackground(color);
+		badge.setHorizontalAlignment(SwingConstants.CENTER);
+		badge.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(4), VentanaPrincipal.escalar(10),
+				VentanaPrincipal.escalar(4), VentanaPrincipal.escalar(10)));
+		badge.setPreferredSize(new Dimension(VentanaPrincipal.escalar(130), VentanaPrincipal.escalar(32)));
+		return badge;
+	}
 }

@@ -1,6 +1,5 @@
 package Gui.empleado;
 
-
 import Gui.VentanaPrincipal;
 import Gui.Controladores.empleado.ControladorPacksEmpleado;
 import Gui.Controladores.empleado.ResultadoOperacion;
@@ -115,8 +114,7 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		ArrayList<String> tipos = new ArrayList<>();
 		tipos.add("Pack");
 
-		cargarModeloProductosVenta((DefaultTableModel) tablaProductos.tabla.getModel(), "", tipos,
-				new ArrayList<>());
+		cargarModeloProductosVenta((DefaultTableModel) tablaProductos.tabla.getModel(), "", tipos, new ArrayList<>());
 	}
 
 	private JCheckBox buscarCheck(Component componente, String texto) {

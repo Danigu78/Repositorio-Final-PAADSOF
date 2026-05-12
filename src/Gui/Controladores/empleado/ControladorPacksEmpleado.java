@@ -296,8 +296,8 @@ public class ControladorPacksEmpleado implements ActionListener {
 		texto.append("Categorías: ").append(crearTextoCategorias(pack)).append("\n");
 		texto.append("Precio pack: ").append(productos.formatearPrecio(pack.getPrecioOficial())).append("\n");
 		texto.append("Stock pack: ").append(pack.getStockDisponible()).append("\n");
-		texto.append("Productos por separado: ")
-				.append(productos.formatearPrecio(pack.calcularSumaProductos())).append("\n");
+		texto.append("Productos por separado: ").append(productos.formatearPrecio(pack.calcularSumaProductos()))
+				.append("\n");
 
 		double ahorro = pack.calcularSumaProductos() - pack.getPrecioOficial();
 		texto.append("Ahorro: ").append(productos.formatearPrecio(ahorro)).append("\n\n");

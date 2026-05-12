@@ -22,6 +22,11 @@ import java.util.List;
  */
 public class SubpanelNotificaciones extends AbstractPanelCliente {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/** Controlador del subpanel. */
 	private ControladorNotificaciones controlador;
 
@@ -95,7 +100,7 @@ public class SubpanelNotificaciones extends AbstractPanelCliente {
 		this.controlador = new ControladorNotificaciones(this, cliente);
 		removeAll();
 
-		// crearPanelBase() y getContenido() de AbstractPanelSection
+		// crearPanelBase() y getContenido() de PanelBaseInterfaz
 		JPanel panelBase = crearPanelBase("");
 		JPanel contenido = getContenido(panelBase);
 
@@ -153,7 +158,7 @@ public class SubpanelNotificaciones extends AbstractPanelCliente {
 	 * @return Panel del bloque bandeja
 	 */
 	private JPanel crearBloqueBandeja() {
-		// crearBloque() de AbstractPanelSection
+		// crearBloque() de PanelBaseInterfaz
 		JPanel bloque = crearBloque("Bandeja de notificaciones");
 
 		notificacionesMostradas = new ArrayList<>();
@@ -161,15 +166,15 @@ public class SubpanelNotificaciones extends AbstractPanelCliente {
 		listaNotificaciones = new JList<>(modeloNotificaciones);
 		estilizarLista();
 
-		// crearCombo() de AbstractPanelSection
+		// crearCombo() de PanelBaseInterfaz
 		comboFiltro = crearCombo(new String[] { "Todas", "No vistas", "Vistas" });
 		comboFiltro.addActionListener(e -> cargarNotificaciones());
 
-		// crearBotonSecundario() de AbstractPanelSection
+		// crearBotonSecundario() de PanelBaseInterfaz
 		botonRefrescar = crearBotonSecundario("Refrescar");
 		botonRefrescar.setActionCommand("refrescar");
 
-		// crearLabel() de AbstractPanelSection
+		// crearLabel() de PanelBaseInterfaz
 		labelResumen = crearLabel("");
 
 		JPanel filaFiltro = new JPanel(new BorderLayout(VentanaPrincipal.escalar(12), 0));
@@ -187,11 +192,11 @@ public class SubpanelNotificaciones extends AbstractPanelCliente {
 		filaFiltro.add(zonaFiltro, BorderLayout.CENTER);
 		filaFiltro.add(zonaBoton, BorderLayout.EAST);
 
-		// estilizarScroll() de AbstractPanelSection
+		// estilizarScroll() de PanelBaseInterfaz
 		JScrollPane scrollLista = estilizarScroll(listaNotificaciones);
 		scrollLista.setPreferredSize(new Dimension(VentanaPrincipal.escalar(1050), VentanaPrincipal.escalar(330)));
 
-		// gbcCampo() de AbstractPanelSection
+		// gbcCampo() de PanelBaseInterfaz
 		bloque.add(labelResumen, gbcCampo(1));
 		bloque.add(filaFiltro, gbcCampo(2));
 		bloque.add(scrollLista, gbcCampo(3));
@@ -205,7 +210,7 @@ public class SubpanelNotificaciones extends AbstractPanelCliente {
 	 * @return Panel del bloque acciones
 	 */
 	private JPanel crearBloqueAcciones() {
-		// crearBloque() de AbstractPanelSection
+		// crearBloque() de PanelBaseInterfaz
 		JPanel bloque = crearBloque("Consultar notificación");
 
 		JPanel panelAcciones = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(30), 0));
@@ -224,7 +229,7 @@ public class SubpanelNotificaciones extends AbstractPanelCliente {
 	 * @return Panel del bloque preferencias
 	 */
 	private JPanel crearBloquePreferencias() {
-		// crearBloque() de AbstractPanelSection
+		// crearBloque() de PanelBaseInterfaz
 		JPanel bloque = crearBloque("Preferencias de notificación");
 
 		JPanel panelPreferencias = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(30), 0));
@@ -248,7 +253,7 @@ public class SubpanelNotificaciones extends AbstractPanelCliente {
 		panelControles.add(crearLabel("Tipo de notificación:"));
 		panelControles.add(Box.createVerticalStrut(VentanaPrincipal.escalar(6)));
 
-		// crearCombo() de AbstractPanelSection
+		// crearCombo() de PanelBaseInterfaz
 		comboTipos = crearCombo(NOMBRES_TIPOS);
 		comboTipos.setAlignmentX(Component.LEFT_ALIGNMENT);
 		comboTipos.addActionListener(e -> actualizarEstadoCombo());
@@ -268,11 +273,11 @@ public class SubpanelNotificaciones extends AbstractPanelCliente {
 		filaBotones.setPreferredSize(tam);
 		filaBotones.setMaximumSize(tam);
 
-		// crearBotonNaranja() de AbstractPanelSection
+		// crearBotonNaranja() de PanelBaseInterfaz
 		botonActivar = crearBotonNaranja("✔ Activar");
 		botonActivar.setActionCommand("activar");
 
-		// crearBotonRojo() de AbstractPanelSection
+		// crearBotonRojo() de PanelBaseInterfaz
 		botonDesactivar = crearBotonRojo("✖ Desactivar");
 		botonDesactivar.setActionCommand("desactivar");
 

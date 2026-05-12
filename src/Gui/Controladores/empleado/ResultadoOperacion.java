@@ -5,27 +5,27 @@ package Gui.Controladores.empleado;
  */
 public class ResultadoOperacion {
 
-    private final boolean exito;
-    private final String mensaje;
+	private final boolean exito;
+	private final String mensaje;
 
-    private ResultadoOperacion(boolean exito, String mensaje) {
-        this.exito = exito;
-        this.mensaje = mensaje;
-    }
+	private ResultadoOperacion(boolean exito, String mensaje) {
+		this.exito = exito;
+		this.mensaje = mensaje;
+	}
 
-    public static ResultadoOperacion ok(String mensaje) {
-        return new ResultadoOperacion(true, mensaje);
-    }
+	public static ResultadoOperacion ok(String mensaje) {
+		return new ResultadoOperacion(true, mensaje);
+	}
 
-    public static ResultadoOperacion error(String mensaje) {
-        return new ResultadoOperacion(false, mensaje);
-    }
+	public static ResultadoOperacion error(String mensaje) {
+		return new ResultadoOperacion(false, mensaje);
+	}
 
-    public boolean isExito() {
-        return exito;
-    }
+	public boolean isExito() {
+		return exito;
+	}
 
-    public String getMensaje() {
-        return mensaje;
-    }
+	public String getMensaje() {
+		return mensaje;
+	}
 }

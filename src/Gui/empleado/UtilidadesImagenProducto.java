@@ -1,6 +1,5 @@
 package Gui.empleado;
 
-
 import Gui.VentanaPrincipal;
 import java.awt.Component;
 import java.awt.Dimension;

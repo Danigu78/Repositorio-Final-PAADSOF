@@ -1,11 +1,11 @@
 package Gui.empleado;
 
-
 import Gui.VentanaPrincipal;
 import Gui.Controladores.empleado.ControladorProductosEmpleado;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -83,7 +83,11 @@ public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoB
 		JLabel labelAyuda = crearLabel(ayuda);
 
 		JScrollPane scroll = estilizarScroll(tabla);
-		scroll.setPreferredSize(new Dimension(VentanaPrincipal.escalar(1050), VentanaPrincipal.escalar(240)));
+		Dimension tamanoTabla = new Dimension(VentanaPrincipal.escalar(1050), VentanaPrincipal.escalar(240));
+		tabla.setPreferredScrollableViewportSize(tamanoTabla);
+		scroll.setPreferredSize(tamanoTabla);
+		scroll.setMinimumSize(tamanoTabla);
+		scroll.setMaximumSize(new Dimension(Integer.MAX_VALUE, tamanoTabla.height));
 
 		JPanel panelFiltros = crearPanelFiltrosVenta(modelo);
 
@@ -93,6 +97,10 @@ public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoB
 
 		if (incluirRefrescar) {
 			JButton botonRefrescar = crearBotonSecundario("Refrescar");
+			Dimension tamanoBoton = new Dimension(VentanaPrincipal.escalar(220), VentanaPrincipal.escalar(38));
+			botonRefrescar.setPreferredSize(tamanoBoton);
+			botonRefrescar.setMinimumSize(tamanoBoton);
+			botonRefrescar.setMaximumSize(tamanoBoton);
 
 			botonRefrescar.addActionListener(new ActionListener() {
 				@Override
@@ -190,14 +198,18 @@ public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoB
 		panelFiltros.setLayout(new BoxLayout(panelFiltros, BoxLayout.Y_AXIS));
 
 		JTextField campoBuscar = crearCampoCompacto();
-		campoBuscar.setPreferredSize(new Dimension(VentanaPrincipal.escalar(650), VentanaPrincipal.escalar(34)));
-		campoBuscar.setMaximumSize(new Dimension(VentanaPrincipal.escalar(650), VentanaPrincipal.escalar(34)));
+		Dimension tamanoCampoBuscar = new Dimension(VentanaPrincipal.escalar(650), VentanaPrincipal.escalar(34));
+		campoBuscar.setPreferredSize(tamanoCampoBuscar);
+		campoBuscar.setMinimumSize(tamanoCampoBuscar);
+		campoBuscar.setMaximumSize(tamanoCampoBuscar);
 
 		JComboBox<String> comboOrden = crearCombo(new String[] { "Sin ordenar", "Nombre A-Z", "Nombre Z-A",
 				"Precio: menor a mayor", "Precio: mayor a menor", "Stock: menor a mayor", "Stock: mayor a menor",
 				"Puntuación: menor a mayor", "Puntuación: mayor a menor" });
-		comboOrden.setPreferredSize(new Dimension(VentanaPrincipal.escalar(230), VentanaPrincipal.escalar(34)));
-		comboOrden.setMaximumSize(new Dimension(VentanaPrincipal.escalar(230), VentanaPrincipal.escalar(34)));
+		Dimension tamanoComboOrden = new Dimension(VentanaPrincipal.escalar(230), VentanaPrincipal.escalar(34));
+		comboOrden.setPreferredSize(tamanoComboOrden);
+		comboOrden.setMinimumSize(tamanoComboOrden);
+		comboOrden.setMaximumSize(tamanoComboOrden);
 
 		JCheckBox checkComic = crearCheckFiltro("Comic");
 		JCheckBox checkJuego = crearCheckFiltro("Juego");
@@ -214,27 +226,41 @@ public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoB
 		}
 
 		JButton botonLimpiar = crearBotonSecundario("Limpiar");
-		botonLimpiar.setPreferredSize(new Dimension(VentanaPrincipal.escalar(140), VentanaPrincipal.escalar(34)));
-		botonLimpiar.setMaximumSize(new Dimension(VentanaPrincipal.escalar(140), VentanaPrincipal.escalar(34)));
+		Dimension tamanoBotonLimpiar = new Dimension(VentanaPrincipal.escalar(140), VentanaPrincipal.escalar(34));
+		botonLimpiar.setPreferredSize(tamanoBotonLimpiar);
+		botonLimpiar.setMinimumSize(tamanoBotonLimpiar);
+		botonLimpiar.setMaximumSize(tamanoBotonLimpiar);
 
-		JPanel zonaBuscar = new JPanel(new BorderLayout(0, VentanaPrincipal.escalar(4)));
+		int altoZonaFiltro = VentanaPrincipal.escalar(70);
+
+		JPanel zonaBuscar = new JPanel();
 		zonaBuscar.setOpaque(false);
-		zonaBuscar.setPreferredSize(new Dimension(VentanaPrincipal.escalar(650), VentanaPrincipal.escalar(58)));
-		zonaBuscar.setMaximumSize(new Dimension(VentanaPrincipal.escalar(650), VentanaPrincipal.escalar(58)));
-		zonaBuscar.add(crearLabel("Buscar"), BorderLayout.NORTH);
-		zonaBuscar.add(campoBuscar, BorderLayout.CENTER);
+		zonaBuscar.setLayout(new BoxLayout(zonaBuscar, BoxLayout.Y_AXIS));
+		zonaBuscar.setPreferredSize(new Dimension(VentanaPrincipal.escalar(650), altoZonaFiltro));
+		zonaBuscar.setMaximumSize(new Dimension(VentanaPrincipal.escalar(650), altoZonaFiltro));
+		JLabel labelBuscar = crearLabel("Buscar");
+		labelBuscar.setAlignmentX(Component.LEFT_ALIGNMENT);
+		campoBuscar.setAlignmentX(Component.LEFT_ALIGNMENT);
+		zonaBuscar.add(labelBuscar);
+		zonaBuscar.add(Box.createVerticalStrut(VentanaPrincipal.escalar(4)));
+		zonaBuscar.add(campoBuscar);
 
-		JPanel zonaOrden = new JPanel(new BorderLayout(0, VentanaPrincipal.escalar(4)));
+		JPanel zonaOrden = new JPanel();
 		zonaOrden.setOpaque(false);
-		zonaOrden.setPreferredSize(new Dimension(VentanaPrincipal.escalar(230), VentanaPrincipal.escalar(58)));
-		zonaOrden.setMaximumSize(new Dimension(VentanaPrincipal.escalar(230), VentanaPrincipal.escalar(58)));
-		zonaOrden.add(crearLabel("Ordenar por"), BorderLayout.NORTH);
-		zonaOrden.add(comboOrden, BorderLayout.CENTER);
+		zonaOrden.setLayout(new BoxLayout(zonaOrden, BoxLayout.Y_AXIS));
+		zonaOrden.setPreferredSize(new Dimension(VentanaPrincipal.escalar(230), altoZonaFiltro));
+		zonaOrden.setMaximumSize(new Dimension(VentanaPrincipal.escalar(230), altoZonaFiltro));
+		JLabel labelOrden = crearLabel("Ordenar por");
+		labelOrden.setAlignmentX(Component.LEFT_ALIGNMENT);
+		comboOrden.setAlignmentX(Component.LEFT_ALIGNMENT);
+		zonaOrden.add(labelOrden);
+		zonaOrden.add(Box.createVerticalStrut(VentanaPrincipal.escalar(4)));
+		zonaOrden.add(comboOrden);
 
 		JPanel zonaBotonLimpiar = new JPanel();
 		zonaBotonLimpiar.setOpaque(false);
 		zonaBotonLimpiar.setLayout(new BoxLayout(zonaBotonLimpiar, BoxLayout.Y_AXIS));
-		zonaBotonLimpiar.add(Box.createVerticalStrut(VentanaPrincipal.escalar(22)));
+		zonaBotonLimpiar.add(Box.createVerticalStrut(VentanaPrincipal.escalar(24)));
 		zonaBotonLimpiar.add(botonLimpiar);
 
 		JPanel filaSuperior = new JPanel(new FlowLayout(FlowLayout.LEFT, VentanaPrincipal.escalar(18), 0));
@@ -349,14 +375,14 @@ public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoB
 		cargarModeloProductosVenta(modelo, "", new ArrayList<>(), new ArrayList<>());
 	}
 
-	protected void cargarModeloProductosVenta(DefaultTableModel modelo, String textoBuscado,
-			List<String> tiposBuscados, List<String> categoriasBuscadas) {
+	protected void cargarModeloProductosVenta(DefaultTableModel modelo, String textoBuscado, List<String> tiposBuscados,
+			List<String> categoriasBuscadas) {
 
 		cargarModeloProductosVenta(modelo, textoBuscado, tiposBuscados, categoriasBuscadas, "Sin ordenar");
 	}
 
-	protected void cargarModeloProductosVenta(DefaultTableModel modelo, String textoBuscado,
-			List<String> tiposBuscados, List<String> categoriasBuscadas, String orden) {
+	protected void cargarModeloProductosVenta(DefaultTableModel modelo, String textoBuscado, List<String> tiposBuscados,
+			List<String> categoriasBuscadas, String orden) {
 
 		modelo.setRowCount(0);
 
@@ -382,9 +408,8 @@ public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoB
 			String tipo = obtenerTipoProductoVenta(producto);
 			String categorias = obtenerTextoCategorias(producto);
 
-			modelo
-					.addRow(new Object[] { id, nombre, tipo, categorias, formatearPrecio(producto.getPrecioOficial()),
-							producto.getStockDisponible(), formatearPuntuacion(producto.getMediaPuntuacion()) });
+			modelo.addRow(new Object[] { id, nombre, tipo, categorias, formatearPrecio(producto.getPrecioOficial()),
+					producto.getStockDisponible(), formatearPuntuacion(producto.getMediaPuntuacion()) });
 		}
 	}
 

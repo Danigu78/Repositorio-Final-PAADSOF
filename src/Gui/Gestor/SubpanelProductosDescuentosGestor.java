@@ -92,8 +92,7 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 	private JPanel crearPanelProductosTabla() {
 		JPanel panel = crearBloque("Productos de venta");
 
-		tablaProductosVenta = new TablaProductosVenta(() -> controlador.getProductos());
-		tablaProductosVenta.setAlSeleccionarId(id -> campoIdPrecio.setText(id));
+		tablaProductosVenta = new TablaProductosVenta(() -> controlador.getProductos(), false);
 
 		panel.add(tablaProductosVenta, gbcCampo(1));
 
@@ -246,7 +245,7 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 	private JPanel crearPanelVolumen() {
 		JPanel panel = crearPanelCamposTipoDescuento();
 
-		spinnerGastoMin = new JSpinner(new SpinnerNumberModel(21.0, 20.01, 9999.0, 1.0));
+		spinnerGastoMin = new JSpinner(new SpinnerNumberModel(1.0, 0.01, 9999.0, 1.0));
 		spinnerGastoMin.setFont(VentanaPrincipal.FUENTE_NORMAL);
 
 		spinnerPorcentajeVol = new JSpinner(new SpinnerNumberModel(10, 1, 100, 1));
@@ -304,9 +303,9 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 	private JPanel crearPanelRegalo() {
 		JPanel panel = crearPanelCamposTipoDescuento();
 
-		panelComboProdRegalo = crearComboConBuscador(getNombresProductos(), VentanaPrincipal.escalar(220));
+		panelComboProdRegalo = crearComboConBuscador(getNombresProductosSinTodos(), VentanaPrincipal.escalar(220));
 
-		spinnerGastoRegalo = new JSpinner(new SpinnerNumberModel(36.0, 35.01, 9999.0, 1.0));
+		spinnerGastoRegalo = new JSpinner(new SpinnerNumberModel(1.0, 0.01, 9999.0, 1.0));
 		spinnerGastoRegalo.setFont(VentanaPrincipal.FUENTE_NORMAL);
 
 		panel.add(crearCampoFormulario("Producto regalado", panelComboProdRegalo));
@@ -403,6 +402,18 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 
 	private String[] getNombresProductos() {
 		List<ProductoVenta> productos = controlador.getProductos();
+		String[] nombres = new String[productos.size() + 1];
+
+		nombres[0] = "Todos los productos";
+		for (int i = 0; i < productos.size(); i++) {
+			nombres[i + 1] = productos.get(i).getNombre() + " (" + productos.get(i).getId() + ")";
+		}
+
+		return nombres;
+	}
+
+	private String[] getNombresProductosSinTodos() {
+		List<ProductoVenta> productos = controlador.getProductos();
 		String[] nombres = new String[productos.size()];
 
 		for (int i = 0; i < productos.size(); i++) {
@@ -440,55 +451,42 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 	}
 
 	private JPanel crearFilaDescuento(Descuento d) {
-	    JPanel fila = new JPanel(new BorderLayout());
-	    fila.setBackground(d.estaActivo()
-	        ? VentanaPrincipal.COLOR_TARJETA
-	        : new Color(245, 245, 245));
-	    fila.setMaximumSize(new Dimension(
-	        Integer.MAX_VALUE, VentanaPrincipal.escalar(70)));
-	    fila.setBorder(BorderFactory.createCompoundBorder(
-	        BorderFactory.createMatteBorder(
-	            0, 0, 1, 0, VentanaPrincipal.COLOR_BORDE),
-	        BorderFactory.createEmptyBorder(
-	            VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(15),
-	            VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(15))));
+		JPanel fila = new JPanel(new BorderLayout());
+		fila.setBackground(d.estaActivo() ? VentanaPrincipal.COLOR_TARJETA : new Color(245, 245, 245));
+		fila.setMaximumSize(new Dimension(Integer.MAX_VALUE, VentanaPrincipal.escalar(70)));
+		fila.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createMatteBorder(0, 0, 1, 0, VentanaPrincipal.COLOR_BORDE),
+				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(15),
+						VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(15))));
 
-	    JPanel info = new JPanel();
-	    info.setOpaque(false);
-	    info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
+		JPanel info = new JPanel();
+		info.setOpaque(false);
+		info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
 
-	    JLabel labelDesc = new JLabel(
-	        d.getNombre() + " - " + d.getId()
-	        + " | " + obtenerTipoDescuento(d)
-	        + " | " + (d.estaActivo() ? "Activo" : "Eliminado/Caducado"));
-	    labelDesc.setFont(VentanaPrincipal.FUENTE_NORMAL);
-	    labelDesc.setForeground(d.estaActivo()
-	        ? VentanaPrincipal.COLOR_TEXTO
-	        : VentanaPrincipal.COLOR_TEXTO2);
-	    info.add(labelDesc);
+		JLabel labelDesc = new JLabel(d.getNombre() + " - " + d.getId() + " | " + obtenerTipoDescuento(d) + " | "
+				+ (d.estaActivo() ? "Activo" : "Eliminado/Caducado"));
+		labelDesc.setFont(VentanaPrincipal.FUENTE_NORMAL);
+		labelDesc.setForeground(d.estaActivo() ? VentanaPrincipal.COLOR_TEXTO : VentanaPrincipal.COLOR_TEXTO2);
+		info.add(labelDesc);
 
-	    JLabel labelDetalle = crearLabel(
-	        obtenerDetalleDescuento(d)
-	        + " | " + d.getFechaInicio().toLocalDate()
-	        + " - " + d.getFechaFin().toLocalDate());
-	    info.add(labelDetalle);
+		JLabel labelDetalle = crearLabel(obtenerDetalleDescuento(d) + " | " + d.getFechaInicio().toLocalDate() + " - "
+				+ d.getFechaFin().toLocalDate());
+		info.add(labelDetalle);
 
-	    fila.add(info, BorderLayout.CENTER);
+		fila.add(info, BorderLayout.CENTER);
 
-	    // Botón eliminar solo si está activo
-	    if (d.estaActivo()) {
-	        JButton botonEliminar = crearBotonRojo("Eliminar");
-	        botonEliminar.setActionCommand(
-	            ControladorProductosDescuentosGestor.ELIMINAR_DESCUENTO
-	            + d.getId());
-	        botonEliminar.addActionListener(controlador);
-	        fila.add(botonEliminar, BorderLayout.EAST);
-	    }
+		// Botón eliminar solo si está activo
+		if (d.estaActivo()) {
+			JButton botonEliminar = crearBotonRojo("Eliminar");
+			botonEliminar.setActionCommand(ControladorProductosDescuentosGestor.ELIMINAR_DESCUENTO + d.getId());
+			botonEliminar.addActionListener(controlador);
+			fila.add(botonEliminar, BorderLayout.EAST);
+		}
 
-	    fila.setAlignmentX(Component.LEFT_ALIGNMENT);
-	    return fila;
+		fila.setAlignmentX(Component.LEFT_ALIGNMENT);
+		return fila;
 	}
-	
+
 	private String obtenerTipoDescuento(Descuento descuento) {
 		if (descuento instanceof DescuentoVolumen) {
 			return "Volumen";
@@ -520,7 +518,8 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 
 		if (descuento instanceof DescuentoCantidad) {
 			DescuentoCantidad d = (DescuentoCantidad) descuento;
-			return "Desde " + d.getCantidadMinima() + " uds., descuento "
+			String producto = d.getProducto() == null ? "todos los productos" : d.getProducto().getNombre();
+			return "Producto: " + producto + ". Desde " + d.getCantidadMinima() + " uds., descuento "
 					+ String.format("%.0f%%", d.getPorcentaje() * 100);
 		}
 
@@ -597,6 +596,10 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 			JComboBox<String> comboRegalo = getComboDePanel(panelComboProdRegalo);
 			String selRegalo = comboRegalo != null ? String.valueOf(comboRegalo.getSelectedItem()) : "";
 			String idRegalo = extraerIdDeTexto(selRegalo, productos);
+			if (idRegalo.isEmpty()) {
+				mostrarError("Selecciona el producto que se va a regalar.");
+				return;
+			}
 
 			ok = controlador.crearDescuentoRegalo(nombre, idRegalo,
 					((Number) spinnerGastoRegalo.getValue()).doubleValue(), inicio, fin);
@@ -626,20 +629,43 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 			return "";
 		}
 
+		String idSeleccionado = extraerIdEntreParentesis(texto);
+		if (!idSeleccionado.isEmpty()) {
+			for (ProductoVenta p : productos) {
+				if (p != null && p.getId() != null && p.getId().equalsIgnoreCase(idSeleccionado)) {
+					return p.getId();
+				}
+			}
+			return "";
+		}
+
 		for (ProductoVenta p : productos) {
-			if (texto.contains(p.getId())) {
+			if (p != null && p.getId() != null && texto.trim().equalsIgnoreCase(p.getId())) {
 				return p.getId();
 			}
 		}
 
 		return "";
 	}
+
+	private String extraerIdEntreParentesis(String texto) {
+		String limpio = texto.trim();
+		int abre = limpio.lastIndexOf('(');
+		int cierra = limpio.lastIndexOf(')');
+
+		if (abre < 0 || cierra <= abre) {
+			return "";
+		}
+
+		return limpio.substring(abre + 1, cierra).trim();
+	}
+
 	/**
-	 * Refresca los filtros de categorías de la tabla de productos.
-	 * Lo llama PanelGestor cuando se crea o elimina una categoría.
+	 * Refresca los filtros de categorías de la tabla de productos. Lo llama
+	 * PanelGestor cuando se crea o elimina una categoría.
 	 */
 	public void refrescarFiltrosCategorias() {
-	    if (tablaProductosVenta != null)
-	        tablaProductosVenta.refrescarFiltrosCategorias();
+		if (tablaProductosVenta != null)
+			tablaProductosVenta.refrescarFiltrosCategorias();
 	}
 }

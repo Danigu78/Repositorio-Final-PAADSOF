@@ -15,6 +15,11 @@ import ventas.*;
 public class CarritoYRegaloTest {
 
 	private static class ProductoPrueba extends ProductoVenta {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public ProductoPrueba(String nombre, String descripcion, String imagenRuta, double precio, int stock) {
 			super(nombre, descripcion, imagenRuta, precio, stock);
 		}

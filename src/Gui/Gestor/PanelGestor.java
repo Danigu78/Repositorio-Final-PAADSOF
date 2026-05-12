@@ -1,6 +1,6 @@
 package Gui.Gestor;
 
-import Gui.PanelAbstractoGeneral;
+import Gui.PanelBaseInterfaz;
 import Gui.VentanaPrincipal;
 import Gui.Controladores.Gestor.ControladorPanelGestor;
 
@@ -9,14 +9,14 @@ import java.awt.*;
 import usuarios.Gestor;
 
 /**
- * Panel principal del gestor en CheckPoint. Extiende AbstractPanelSection para
+ * Panel principal del gestor en CheckPoint. Extiende PanelBaseInterfaz para
  * reutilizar helpers visuales y la barra de navegación común. Sigue el patrón
  * MVC de los apuntes — delega la navegación en ControladorPanelGestor.
  *
  * @author Antonino
  * @version 1.0
  */
-public class PanelGestor extends PanelAbstractoGeneral {
+public class PanelGestor extends PanelBaseInterfaz {
 
 	/**
 	 * 
@@ -91,7 +91,7 @@ public class PanelGestor extends PanelAbstractoGeneral {
 	 * @param cmd ActionCommand de la pestaña a marcar
 	 */
 	public void marcarPestaña(String cmd) {
-		// marcarBotonBarraActivoPorCmd() de AbstractPanelSection
+		// marcarBotonBarraActivoPorCmd() de PanelBaseInterfaz
 		marcarBotonBarraActivoPorCmd(barra, cmd);
 	}
 
@@ -106,7 +106,7 @@ public class PanelGestor extends PanelAbstractoGeneral {
 				{ "Productos y Descuentos", SEC_PRODUCTOS_DESCUENTOS }, { "Estadísticas", SEC_ESTADISTICAS },
 				{ "Configuración", SEC_CONFIGURACION }, { "Mi Perfil", SEC_PERFIL } };
 
-		// crearBarraNavegacion() de AbstractPanelSection
+		// crearBarraNavegacion() de PanelBaseInterfaz
 		barra = crearBarraNavegacion("🎮 CheckPoint - Gestor", gestor != null ? gestor.getNickname() : "Gestor",
 				pestañas, controlador);
 		add(barra, BorderLayout.NORTH);
@@ -133,12 +133,13 @@ public class PanelGestor extends PanelAbstractoGeneral {
 		cardSecciones.show(panelSecciones, SEC_EMPLEADOS);
 		marcarBotonBarraActivoPorCmd(barra, SEC_EMPLEADOS);
 	}
+
 	/**
 	 * Refresca los filtros de categorías en el subpanel de productos y descuentos.
 	 * Lo llama SubpanelCategoriasGestor tras crear o eliminar una categoría.
 	 */
 	public void refrescarFiltrosCategorias() {
-	    if (subpanelProductosDescuentos != null)
-	        subpanelProductosDescuentos.refrescarFiltrosCategorias();
+		if (subpanelProductosDescuentos != null)
+			subpanelProductosDescuentos.refrescarFiltrosCategorias();
 	}
 }

@@ -2,7 +2,7 @@ package Gui.cliente;
 
 import javax.swing.*;
 
-import Gui.PanelAbstractoGeneral;
+import Gui.PanelBaseInterfaz;
 import Gui.VentanaPrincipal;
 import Gui.Controladores.cliente.ControladorPanelCliente;
 
@@ -11,15 +11,19 @@ import usuarios.Cliente;
 import ventas.Pedido;
 
 /**
- * Panel principal del cliente en CheckPoint. Extiende AbstractPanelSection para
+ * Panel principal del cliente en CheckPoint. Extiende PanelBaseInterfaz para
  * reutilizar helpers visuales y la barra de navegación común. Sigue el patrón
  * MVC de los apuntes — delega la navegación en ControladorPanelCliente.
  *
  * @author Daniel
  * @version 1.0
  */
-public class PanelCliente extends PanelAbstractoGeneral {
+public class PanelCliente extends PanelBaseInterfaz {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final String SEC_CATALOGO = "CATALOGO";
 	private static final String SEC_CARRITO = "CARRITO";
 	private static final String SEC_PEDIDOS = "PEDIDOS";
@@ -79,7 +83,7 @@ public class PanelCliente extends PanelAbstractoGeneral {
 				{ "Intercambios", SEC_INTERCAMBIOS }, { "Notificaciones", SEC_NOTIFICACIONES },
 				{ "Mi Perfil", SEC_PERFIL }, { "Descuentos", SEC_DESCUENTOS } };
 
-		// crearBarraNavegacion() de AbstractPanelSection
+		// crearBarraNavegacion() de PanelBaseInterfaz
 		barra = crearBarraNavegacion("🎮 CheckPoint", "Usuario", pestañas, controlador);
 		add(barra, BorderLayout.NORTH);
 
@@ -135,7 +139,7 @@ public class PanelCliente extends PanelAbstractoGeneral {
 	 * @param cmd ActionCommand de la pestaña a marcar
 	 */
 	public void marcarPestaña(String cmd) {
-		// marcarBotonBarraActivoPorCmd() de AbstractPanelSection
+		// marcarBotonBarraActivoPorCmd() de PanelBaseInterfaz
 		marcarBotonBarraActivoPorCmd(barra, cmd);
 	}
 
@@ -187,7 +191,7 @@ public class PanelCliente extends PanelAbstractoGeneral {
 	 */
 	public void actualizarCliente(Cliente cliente) {
 		this.cliente = cliente;
-		// actualizarUsuarioBarra() de AbstractPanelSection
+		// actualizarUsuarioBarra() de PanelBaseInterfaz
 		actualizarUsuarioBarra(barra, cliente.getNickname());
 		subpanelCatalogo.actualizar(cliente);
 		subpanelCarrito.actualizar(cliente);
@@ -237,7 +241,7 @@ public class PanelCliente extends PanelAbstractoGeneral {
 	 * @param nombre El nuevo nombre a mostrar
 	 */
 	public void actualizarNombreUsuario(String nombre) {
-		// actualizarUsuarioBarra() de AbstractPanelSection
+		// actualizarUsuarioBarra() de PanelBaseInterfaz
 		actualizarUsuarioBarra(barra, nombre);
 	}
 }

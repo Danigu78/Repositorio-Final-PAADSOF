@@ -1,6 +1,5 @@
 package Gui.empleado;
 
-
 import Gui.VentanaPrincipal;
 import Gui.Controladores.empleado.ControladorModificarEmpleado;
 import Gui.Controladores.empleado.ResultadoOperacion;
@@ -355,7 +354,8 @@ public class SeccionModificarEmpleado extends SeccionProductosVentaEmpleadoBase 
 		int opcion = selectorImagen.showOpenDialog(this);
 
 		if (opcion == JFileChooser.APPROVE_OPTION && selectorImagen.getSelectedFile() != null) {
-			campoImagen.setText(UtilidadesImagenProducto.normalizarRutaImagen(selectorImagen.getSelectedFile().getPath()));
+			campoImagen
+					.setText(UtilidadesImagenProducto.normalizarRutaImagen(selectorImagen.getSelectedFile().getPath()));
 		}
 	}
 
@@ -379,9 +379,9 @@ public class SeccionModificarEmpleado extends SeccionProductosVentaEmpleadoBase 
 		ResultadoOperacion resultado = controlador.guardarProducto(campoIdProducto.getText(), campoNombre.getText(),
 				areaDescripcion.getText(), campoImagen.getText(), campoPaginasComic.getText(),
 				campoEditorialComic.getText(), campoAnioComic.getText(), campoMinJugadores.getText(),
-				campoMaxJugadores.getText(), campoMinEdad.getText(), campoMaxEdad.getText(),
-				campoEstiloJuego.getText(), campoAlturaFigura.getText(), campoAnchoFigura.getText(),
-				campoLargoFigura.getText(), campoMaterialFigura.getText(), campoMarcaFigura.getText());
+				campoMaxJugadores.getText(), campoMinEdad.getText(), campoMaxEdad.getText(), campoEstiloJuego.getText(),
+				campoAlturaFigura.getText(), campoAnchoFigura.getText(), campoLargoFigura.getText(),
+				campoMaterialFigura.getText(), campoMarcaFigura.getText());
 
 		if (resultado.isExito()) {
 			recargarTablaProductos(tablaProductos.tabla);

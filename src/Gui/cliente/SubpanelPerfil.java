@@ -19,6 +19,11 @@ import usuarios.Cliente;
  */
 public class SubpanelPerfil extends AbstractPanelCliente {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/** Controlador del subpanel. */
 	private ControladorPerfil controlador;
 
@@ -107,7 +112,7 @@ public class SubpanelPerfil extends AbstractPanelCliente {
 
 		gbc.insets = new Insets(VentanaPrincipal.escalar(4), 0, VentanaPrincipal.escalar(4), 0);
 
-		// crearLabel() de AbstractPanelSection
+		// crearLabel() de PanelBaseInterfaz
 		labelNicknameActual = crearLabel("Nickname actual: " + cliente.getNickname());
 		gbc.gridy = 1;
 		panel.add(labelNicknameActual, gbc);
@@ -116,10 +121,10 @@ public class SubpanelPerfil extends AbstractPanelCliente {
 		panel.add(new JSeparator(), gbc);
 
 		gbc.gridy = 3;
-		// crearLabel() de AbstractPanelSection — sustituye crearEtiqueta()
+		// crearLabel() de PanelBaseInterfaz — sustituye crearEtiqueta()
 		panel.add(crearLabel("Nuevo nickname (déjalo vacío para no cambiar):"), gbc);
 
-		// crearCampo() de AbstractPanelSection — sustituye crearCampo() propio
+		// crearCampo() de PanelBaseInterfaz — sustituye crearCampo() propio
 		campoNickname = crearCampo();
 		gbc.gridy = 4;
 		panel.add(campoNickname, gbc);
@@ -146,7 +151,7 @@ public class SubpanelPerfil extends AbstractPanelCliente {
 		gbc.gridy = 7;
 		panel.add(labelInfo, gbc);
 
-		// crearBotonNaranja() de AbstractPanelSection — sustituye el botón manual
+		// crearBotonNaranja() de PanelBaseInterfaz — sustituye el botón manual
 		botonGuardar = crearBotonNaranja("Guardar cambios");
 		botonGuardar.setActionCommand("guardar");
 		botonGuardar.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(12),

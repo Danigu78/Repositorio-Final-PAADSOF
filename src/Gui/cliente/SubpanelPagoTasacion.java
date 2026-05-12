@@ -20,6 +20,11 @@ import usuarios.Cliente;
  */
 public class SubpanelPagoTasacion extends AbstractPanelCliente {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/** Referencia al panel cliente para navegar. */
 	private PanelCliente panelCliente;
 
@@ -131,12 +136,12 @@ public class SubpanelPagoTasacion extends AbstractPanelCliente {
 
 	/**
 	 * Crea la barra superior con botón volver a la cartera. Usa crearBarraVolver()
-	 * y getBotonVolver() de AbstractPanelSection.
+	 * y getBotonVolver() de PanelBaseInterfaz.
 	 *
 	 * @return Panel de la barra superior
 	 */
 	private JPanel crearBarraSuperior() {
-		// crearBarraVolver() de AbstractPanelSection
+		// crearBarraVolver() de PanelBaseInterfaz
 		JPanel barra = crearBarraVolver("← Volver a mi cartera");
 		botonVolver = getBotonVolver(barra);
 		botonVolver.setActionCommand("volver");
@@ -175,7 +180,7 @@ public class SubpanelPagoTasacion extends AbstractPanelCliente {
 
 		gbc.insets = new Insets(VentanaPrincipal.escalar(4), 0, VentanaPrincipal.escalar(4), 0);
 
-		// crearLabel() de AbstractPanelSection — sustituye crearEtiqueta()
+		// crearLabel() de PanelBaseInterfaz — sustituye crearEtiqueta()
 		JLabel labelProducto = crearLabel("Producto: " + controlador.getNombreProducto());
 		gbc.gridy = 1;
 		panel.add(labelProducto, gbc);
@@ -194,7 +199,7 @@ public class SubpanelPagoTasacion extends AbstractPanelCliente {
 		gbc.gridy = 4;
 		panel.add(crearLabel("Número de tarjeta (16 dígitos):"), gbc);
 
-		// crearCampo() de AbstractPanelSection — sustituye crearCampo() propio
+		// crearCampo() de PanelBaseInterfaz — sustituye crearCampo() propio
 		campoTarjeta = crearCampo();
 		gbc.gridy = 5;
 		panel.add(campoTarjeta, gbc);
@@ -221,7 +226,7 @@ public class SubpanelPagoTasacion extends AbstractPanelCliente {
 		gbc.gridy = 9;
 		panel.add(campoFecha, gbc);
 
-		// crearBotonNaranja() de AbstractPanelSection
+		// crearBotonNaranja() de PanelBaseInterfaz
 		botonPagar = crearBotonNaranja(String.format("Pagar %.2f€", controlador.getPrecioTasacion()));
 		botonPagar.setActionCommand("pagar");
 		botonPagar.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(12), VentanaPrincipal.escalar(20),

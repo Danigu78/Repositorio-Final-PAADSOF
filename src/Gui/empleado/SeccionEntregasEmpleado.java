@@ -1,6 +1,5 @@
 package Gui.empleado;
 
-
 import Gui.VentanaPrincipal;
 import Gui.Controladores.empleado.ControladorEntregasEmpleado;
 import Gui.Controladores.empleado.ResultadoOperacion;
@@ -10,7 +9,6 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
-
 
 import usuarios.Empleado;
 import ventas.Pedido;

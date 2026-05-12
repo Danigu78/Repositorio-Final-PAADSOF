@@ -1,6 +1,6 @@
 package Gui.empleado;
 
-import Gui.PanelAbstractoGeneral;
+import Gui.PanelBaseInterfaz;
 import Gui.VentanaPrincipal;
 import Gui.Controladores.empleado.ControladorPanelEmpleado;
 import javax.swing.*;
@@ -20,8 +20,12 @@ import usuarios.TipoPermisos;
  * @author Lucas
  * @version 1.0
  */
-public class PanelEmpleado extends PanelAbstractoGeneral {
+public class PanelEmpleado extends PanelBaseInterfaz {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static final String SEC_STOCK = "STOCK";
 	public static final String SEC_CATEGORIAS = "CATEGORIAS";
 	public static final String SEC_PACKS = "PACKS";

@@ -3,22 +3,26 @@ package Gui.cliente;
 import usuarios.Cliente;
 import javax.swing.*;
 
-import Gui.PanelAbstractoGeneral;
+import Gui.PanelBaseInterfaz;
 import Gui.VentanaPrincipal;
 
 import java.awt.*;
 
 /**
  * Clase base para los subpaneles del cliente en CheckPoint. Extiende
- * AbstractPanelSection para reutilizar todos sus helpers visuales. Añade
- * helpers específicos del cliente: tarjetas, paneles con scroll y gestión del
- * cliente logueado.
+ * PanelBaseInterfaz para reutilizar todos sus helpers visuales. Añade helpers
+ * específicos del cliente: tarjetas, paneles con scroll y gestión del cliente
+ * logueado.
  *
  * @author Daniel
  * @version 1.0
  */
-public abstract class AbstractPanelCliente extends PanelAbstractoGeneral {
+public abstract class AbstractPanelCliente extends PanelBaseInterfaz {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	/** Cliente logueado actualmente. */
 	protected Cliente cliente;
 

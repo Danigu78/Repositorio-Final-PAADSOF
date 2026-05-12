@@ -106,6 +106,10 @@ public class Gestor extends UsuarioRegistrado implements Serializable {
 			System.out.println("Error en la creacion del empleado. Los parametros son null.");
 			return false;
 		}
+		if (!UsuarioRegistrado.validarPassword(password)) {
+			System.out.println("Error. La contraseña no es segura.");
+			return false;
+		}
 		Tienda tienda = Tienda.getInstancia();
 		if (tienda.existeUsuarioConNickname(nickname)) {
 			System.out.println("Error: El nickname '" + nickname + "' ya está en uso.");
@@ -147,6 +151,14 @@ public class Gestor extends UsuarioRegistrado implements Serializable {
 		}
 		if (nickname.isBlank() || password.isBlank()) {
 			System.out.println("Error. La contraseña o el nickname no pueden estar vacios");
+			return false;
+		}
+		if (!UsuarioRegistrado.validarPassword(password)) {
+			System.out.println("Error. La contraseña no es segura.");
+			return false;
+		}
+		if (permisos == null || permisos.isEmpty()) {
+			System.out.println("Error. El empleado debe tener al menos un permiso.");
 			return false;
 		}
 		Tienda tienda = Tienda.getInstancia();
@@ -255,6 +267,7 @@ public class Gestor extends UsuarioRegistrado implements Serializable {
 		Tienda.getInstancia().setTiempoMaxCarrito(tCarrito);
 		Tienda.getInstancia().setTiempoMaxOferta(tOferta);
 		Tienda.getInstancia().setTiempoMaxPago(tPago);
+		Tienda.getInstancia().reiniciarComprobadorTiempos();
 		return true;
 	}
 
@@ -270,6 +283,7 @@ public class Gestor extends UsuarioRegistrado implements Serializable {
 			return false;
 		}
 		Tienda.getInstancia().setTiempoMaxOferta(tiempo);
+		Tienda.getInstancia().reiniciarComprobadorTiempos();
 		return true;
 	}
 
@@ -285,6 +299,7 @@ public class Gestor extends UsuarioRegistrado implements Serializable {
 			return false;
 		}
 		Tienda.getInstancia().setTiempoMaxCarrito(tiempo);
+		Tienda.getInstancia().reiniciarComprobadorTiempos();
 		return true;
 	}
 
@@ -300,6 +315,7 @@ public class Gestor extends UsuarioRegistrado implements Serializable {
 			return false;
 		}
 		Tienda.getInstancia().setTiempoMaxPago(tiempo);
+		Tienda.getInstancia().reiniciarComprobadorTiempos();
 		return true;
 	}
 
@@ -383,15 +399,18 @@ public class Gestor extends UsuarioRegistrado implements Serializable {
 			System.out.println("La cantidad minima para poder crear un descuento es de dos unidades");
 			return false;
 		}
-		if (Tienda.getInstancia().buscarProductoVentaPorId(idProducto) == null) {
-			return false;
+		ProductoVenta producto = null;
+		if (idProducto != null && !idProducto.isBlank()) {
+			producto = Tienda.getInstancia().buscarProductoVentaPorId(idProducto);
+			if (producto == null) {
+				return false;
+			}
 		}
 
-		Descuento d = new DescuentoCantidad(nombre, inicio, fin, cantidadMinima, porcentaje);
+		Descuento d = new DescuentoCantidad(nombre, inicio, fin, cantidadMinima, porcentaje, producto);
 		Tienda.getInstancia().agregarDescuento(d);
 		Tienda.getInstancia().notificarDescuento(d);
-		System.out
-				.println("Descuento por cantidad agregado correctamente sobre el producto con id:" + idProducto + ". ");
+		System.out.println("Descuento por cantidad agregado correctamente.");
 		return true;
 	}
 
@@ -415,9 +434,8 @@ public class Gestor extends UsuarioRegistrado implements Serializable {
 			System.out.println("El nombre del descuento no puede estar vacio");
 			return false;
 		}
-		if (precioMinimo <= 20) {// Ponemos minimo 20 euros
-			System.out.println(
-					"Para crear un descuento por volumen de gasto el precio total de la compra debe ser al menos de 20 euros");
+		if (precioMinimo <= 0) {
+			System.out.println("El gasto minimo debe ser mayor que 0.");
 			return false;
 		}
 		Descuento desc = new DescuentoVolumen(nombre, inicio, fin, precioMinimo, porcentaje);
@@ -483,14 +501,18 @@ public class Gestor extends UsuarioRegistrado implements Serializable {
 			return false;
 		}
 
-		if (gastoNecesario <= 35) {
-			System.out.println("El gasto necesario debe ser mayor que 35.");
+		if (gastoNecesario <= 0) {
+			System.out.println("El gasto necesario debe ser mayor que 0.");
 			return false;
 		}
 
 		ProductoVenta productoRegalado = Tienda.getInstancia().buscarProductoVentaPorId(idProductoRegalado);
 		if (productoRegalado == null) {
 			System.out.println("Error: El producto con ID " + idProductoRegalado + " no existe.");
+			return false;
+		}
+		if (productoRegalado.getStockDisponible() <= 0) {
+			System.out.println("Error: No hay stock del producto que se quiere regalar.");
 			return false;
 		}
 

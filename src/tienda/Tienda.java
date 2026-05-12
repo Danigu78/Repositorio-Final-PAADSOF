@@ -1338,6 +1338,9 @@ public class Tienda implements Serializable {
 	 * Crea de nuevo el comprobador de tiempos
 	 */
 	public void reiniciarComprobadorTiempos() {
+		if (this.comprobadorTiempos != null) {
+			this.comprobadorTiempos.cerrarGestorTiempo();
+		}
 		this.comprobadorTiempos = new ComprobadorTiempos();
 	}
 

@@ -74,10 +74,6 @@ public class VentanaPrincipal extends JFrame {
 	public VentanaPrincipal() {
 		GuardadoTienda.cargar();
 
-		
-		
-		
-
 		this.controlador = new ControladorVentana(this);
 
 		if (tiendaNecesitaDatosIniciales()) {
@@ -268,5 +264,5 @@ public class VentanaPrincipal extends JFrame {
 			new VentanaPrincipal().setVisible(true);
 		});
 	}
-	
+
 }

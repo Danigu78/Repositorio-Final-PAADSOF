@@ -1,8 +1,7 @@
 package Gui.empleado;
 
-
 import Gui.VentanaPrincipal;
-import Gui.PanelAbstractoGeneral;
+import Gui.PanelBaseInterfaz;
 import usuarios.Empleado;
 
 /**
@@ -10,7 +9,7 @@ import usuarios.Empleado;
  *
  * Guarda la ventana y el empleado.
  */
-public abstract class SeccionEmpleadoBase extends PanelAbstractoGeneral {
+public abstract class SeccionEmpleadoBase extends PanelBaseInterfaz {
 
 	private static final long serialVersionUID = 1L;
 

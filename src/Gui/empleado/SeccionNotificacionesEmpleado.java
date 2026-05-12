@@ -30,239 +30,239 @@ import usuarios.Empleado;
 /** Pantalla de notificaciones del empleado. */
 public class SeccionNotificacionesEmpleado extends SeccionEmpleadoBase {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private ControladorNotificacionesEmpleado controlador;
-    private DefaultListModel<String> modeloNotificaciones;
-    private JList<String> listaNotificaciones;
-    private List<Notificacion> notificacionesMostradas;
-    private JComboBox<String> comboFiltro;
-    private JLabel labelResumen;
+	private ControladorNotificacionesEmpleado controlador;
+	private DefaultListModel<String> modeloNotificaciones;
+	private JList<String> listaNotificaciones;
+	private List<Notificacion> notificacionesMostradas;
+	private JComboBox<String> comboFiltro;
+	private JLabel labelResumen;
 
-    public SeccionNotificacionesEmpleado(VentanaPrincipal ventana, Empleado empleado) {
-        super(ventana, empleado);
-        this.controlador = new ControladorNotificacionesEmpleado(empleado);
-        this.controlador.setVista(this);
-        setControlador(this.controlador);
-        construirUI();
-    }
+	public SeccionNotificacionesEmpleado(VentanaPrincipal ventana, Empleado empleado) {
+		super(ventana, empleado);
+		this.controlador = new ControladorNotificacionesEmpleado(empleado);
+		this.controlador.setVista(this);
+		setControlador(this.controlador);
+		construirUI();
+	}
 
-    public void setControlador(ActionListener controlador) {
-        if (controlador instanceof ControladorNotificacionesEmpleado) {
-            this.controlador = (ControladorNotificacionesEmpleado) controlador;
-        }
-    }
+	public void setControlador(ActionListener controlador) {
+		if (controlador instanceof ControladorNotificacionesEmpleado) {
+			this.controlador = (ControladorNotificacionesEmpleado) controlador;
+		}
+	}
 
-    private void conectar(JButton boton, String accion) {
-        boton.setActionCommand(accion);
-        boton.addActionListener(controlador);
-    }
+	private void conectar(JButton boton, String accion) {
+		boton.setActionCommand(accion);
+		boton.addActionListener(controlador);
+	}
 
-    private void construirUI() {
-        setLayout(new BorderLayout());
+	private void construirUI() {
+		setLayout(new BorderLayout());
 
-        JPanel panelBase = crearPanelBase("Notificaciones");
-        JPanel contenido = getContenido(panelBase);
+		JPanel panelBase = crearPanelBase("Notificaciones");
+		JPanel contenido = getContenido(panelBase);
 
-        contenido.add(crearBloqueBandeja());
-        contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(18)));
-        contenido.add(crearBloqueAcciones());
+		contenido.add(crearBloqueBandeja());
+		contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(18)));
+		contenido.add(crearBloqueAcciones());
 
-        add(panelBase, BorderLayout.CENTER);
-    }
+		add(panelBase, BorderLayout.CENTER);
+	}
 
-    private JPanel crearBloqueBandeja() {
-        JPanel bloque = crearBloque("Bandeja de notificaciones");
+	private JPanel crearBloqueBandeja() {
+		JPanel bloque = crearBloque("Bandeja de notificaciones");
 
-        notificacionesMostradas = new ArrayList<>();
+		notificacionesMostradas = new ArrayList<>();
 
-        modeloNotificaciones = new DefaultListModel<>();
-        listaNotificaciones = new JList<>(modeloNotificaciones);
-        estilizarLista();
+		modeloNotificaciones = new DefaultListModel<>();
+		listaNotificaciones = new JList<>(modeloNotificaciones);
+		estilizarLista();
 
-        comboFiltro = crearCombo(new String[] { "Todas", "No vistas", "Vistas" });
-        comboFiltro.setActionCommand(ControladorNotificacionesEmpleado.FILTRAR);
-        comboFiltro.addActionListener(controlador);
+		comboFiltro = crearCombo(new String[] { "Todas", "No vistas", "Vistas" });
+		comboFiltro.setActionCommand(ControladorNotificacionesEmpleado.FILTRAR);
+		comboFiltro.addActionListener(controlador);
 
-        JButton botonRefrescar = crearBotonSecundario("Refrescar");
-        conectar(botonRefrescar, ControladorNotificacionesEmpleado.REFRESCAR);
+		JButton botonRefrescar = crearBotonSecundario("Refrescar");
+		conectar(botonRefrescar, ControladorNotificacionesEmpleado.REFRESCAR);
 
-        labelResumen = crearLabel("");
+		labelResumen = crearLabel("");
 
-        JPanel filaFiltro = new JPanel(new BorderLayout(VentanaPrincipal.escalar(12), 0));
-        filaFiltro.setOpaque(false);
+		JPanel filaFiltro = new JPanel(new BorderLayout(VentanaPrincipal.escalar(12), 0));
+		filaFiltro.setOpaque(false);
 
-        JPanel zonaFiltro = new JPanel(new BorderLayout(0, VentanaPrincipal.escalar(4)));
-        zonaFiltro.setOpaque(false);
-        zonaFiltro.add(crearLabel("Mostrar"), BorderLayout.NORTH);
-        zonaFiltro.add(comboFiltro, BorderLayout.CENTER);
+		JPanel zonaFiltro = new JPanel(new BorderLayout(0, VentanaPrincipal.escalar(4)));
+		zonaFiltro.setOpaque(false);
+		zonaFiltro.add(crearLabel("Mostrar"), BorderLayout.NORTH);
+		zonaFiltro.add(comboFiltro, BorderLayout.CENTER);
 
-        JPanel zonaBoton = new JPanel(new BorderLayout());
-        zonaBoton.setOpaque(false);
-        zonaBoton.add(botonRefrescar, BorderLayout.SOUTH);
+		JPanel zonaBoton = new JPanel(new BorderLayout());
+		zonaBoton.setOpaque(false);
+		zonaBoton.add(botonRefrescar, BorderLayout.SOUTH);
 
-        filaFiltro.add(zonaFiltro, BorderLayout.CENTER);
-        filaFiltro.add(zonaBoton, BorderLayout.EAST);
+		filaFiltro.add(zonaFiltro, BorderLayout.CENTER);
+		filaFiltro.add(zonaBoton, BorderLayout.EAST);
 
-        JScrollPane scrollLista = estilizarScroll(listaNotificaciones);
-        scrollLista.setPreferredSize(new Dimension(VentanaPrincipal.escalar(1050), VentanaPrincipal.escalar(330)));
+		JScrollPane scrollLista = estilizarScroll(listaNotificaciones);
+		scrollLista.setPreferredSize(new Dimension(VentanaPrincipal.escalar(1050), VentanaPrincipal.escalar(330)));
 
-        bloque.add(labelResumen, gbcCampo(1));
-        bloque.add(filaFiltro, gbcCampo(2));
-        bloque.add(scrollLista, gbcCampo(3));
+		bloque.add(labelResumen, gbcCampo(1));
+		bloque.add(filaFiltro, gbcCampo(2));
+		bloque.add(scrollLista, gbcCampo(3));
 
-        cargarNotificaciones();
+		cargarNotificaciones();
 
-        return bloque;
-    }
+		return bloque;
+	}
 
-    private JPanel crearBloqueAcciones() {
-        JPanel bloque = crearBloque("Consultar notificacion");
+	private JPanel crearBloqueAcciones() {
+		JPanel bloque = crearBloque("Consultar notificacion");
 
-        JPanel panelAcciones = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(30), 0));
-        panelAcciones.setOpaque(false);
+		JPanel panelAcciones = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(30), 0));
+		panelAcciones.setOpaque(false);
 
-        panelAcciones.add(crearPanelAyuda());
-        panelAcciones.add(crearPanelBotones());
+		panelAcciones.add(crearPanelAyuda());
+		panelAcciones.add(crearPanelBotones());
 
-        bloque.add(panelAcciones, gbcCampo(1));
+		bloque.add(panelAcciones, gbcCampo(1));
 
-        return bloque;
-    }
+		return bloque;
+	}
 
-    private JPanel crearPanelAyuda() {
-        JPanel panel = new JPanel();
-        panel.setOpaque(false);
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+	private JPanel crearPanelAyuda() {
+		JPanel panel = new JPanel();
+		panel.setOpaque(false);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        JLabel titulo = crearLabel("Como funciona");
-        panel.add(titulo);
-        panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		JLabel titulo = crearLabel("Como funciona");
+		panel.add(titulo);
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
-        panel.add(crearLabel("Selecciona una notificacion de la bandeja."));
-        panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(8)));
-        panel.add(crearLabel("Al abrirla, pasa automaticamente a vista."));
+		panel.add(crearLabel("Selecciona una notificacion de la bandeja."));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(8)));
+		panel.add(crearLabel("Al abrirla, pasa automaticamente a vista."));
 
-        return panel;
-    }
+		return panel;
+	}
 
-    private JPanel crearPanelBotones() {
-        JPanel panel = new JPanel();
-        panel.setOpaque(false);
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+	private JPanel crearPanelBotones() {
+		JPanel panel = new JPanel();
+		panel.setOpaque(false);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        panel.add(crearLabel("Acciones"));
-        panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
+		panel.add(crearLabel("Acciones"));
+		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
-        JButton botonVer = crearBotonAccion("Ver notificacion");
-        JButton botonMarcarTodas = crearBotonSecundario("Marcar todas vistas");
+		JButton botonVer = crearBotonAccion("Ver notificacion");
+		JButton botonMarcarTodas = crearBotonSecundario("Marcar todas vistas");
 
-        JPanel filaBotones = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(10), 0));
-        filaBotones.setOpaque(false);
+		JPanel filaBotones = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(10), 0));
+		filaBotones.setOpaque(false);
 
-        filaBotones.add(botonVer);
-        filaBotones.add(botonMarcarTodas);
+		filaBotones.add(botonVer);
+		filaBotones.add(botonMarcarTodas);
 
-        Dimension tamanoFila = new Dimension(VentanaPrincipal.escalar(460), VentanaPrincipal.escalar(42));
-        filaBotones.setPreferredSize(tamanoFila);
-        filaBotones.setMaximumSize(tamanoFila);
+		Dimension tamanoFila = new Dimension(VentanaPrincipal.escalar(460), VentanaPrincipal.escalar(42));
+		filaBotones.setPreferredSize(tamanoFila);
+		filaBotones.setMaximumSize(tamanoFila);
 
-        panel.add(filaBotones);
+		panel.add(filaBotones);
 
-        conectar(botonVer, ControladorNotificacionesEmpleado.VER_NOTIFICACION);
-        conectar(botonMarcarTodas, ControladorNotificacionesEmpleado.MARCAR_TODAS);
+		conectar(botonVer, ControladorNotificacionesEmpleado.VER_NOTIFICACION);
+		conectar(botonMarcarTodas, ControladorNotificacionesEmpleado.MARCAR_TODAS);
 
-        return panel;
-    }
+		return panel;
+	}
 
-    public void cargarNotificaciones() {
-        modeloNotificaciones.clear();
-        notificacionesMostradas.clear();
+	public void cargarNotificaciones() {
+		modeloNotificaciones.clear();
+		notificacionesMostradas.clear();
 
-        if (!controlador.tieneNotificaciones()) {
-            labelResumen.setText("No tienes notificaciones.");
-            listaNotificaciones.clearSelection();
-            return;
-        }
+		if (!controlador.tieneNotificaciones()) {
+			labelResumen.setText("No tienes notificaciones.");
+			listaNotificaciones.clearSelection();
+			return;
+		}
 
-        List<Notificacion> notificaciones = controlador.getNotificacionesFiltradas(obtenerFiltroActual());
+		List<Notificacion> notificaciones = controlador.getNotificacionesFiltradas(obtenerFiltroActual());
 
-        for (Notificacion notificacion : notificaciones) {
-            notificacionesMostradas.add(notificacion);
-            modeloNotificaciones.addElement(controlador.crearTextoLista(notificacion));
-        }
+		for (Notificacion notificacion : notificaciones) {
+			notificacionesMostradas.add(notificacion);
+			modeloNotificaciones.addElement(controlador.crearTextoLista(notificacion));
+		}
 
-        actualizarResumen(notificaciones.size(), controlador.contarNoVistas());
-        listaNotificaciones.clearSelection();
-    }
+		actualizarResumen(notificaciones.size(), controlador.contarNoVistas());
+		listaNotificaciones.clearSelection();
+	}
 
-    private String obtenerFiltroActual() {
-        if (comboFiltro == null || comboFiltro.getSelectedItem() == null) {
-            return "Todas";
-        }
-        return String.valueOf(comboFiltro.getSelectedItem());
-    }
+	private String obtenerFiltroActual() {
+		if (comboFiltro == null || comboFiltro.getSelectedItem() == null) {
+			return "Todas";
+		}
+		return String.valueOf(comboFiltro.getSelectedItem());
+	}
 
-    private void actualizarResumen(int totalMostradas, int noVistas) {
-        if (totalMostradas == 0) {
-            labelResumen.setText("No hay notificaciones para mostrar con este filtro.");
-            return;
-        }
-        labelResumen.setText("Mostrando " + totalMostradas + " notificaciones. No vistas: " + noVistas + ".");
-    }
+	private void actualizarResumen(int totalMostradas, int noVistas) {
+		if (totalMostradas == 0) {
+			labelResumen.setText("No hay notificaciones para mostrar con este filtro.");
+			return;
+		}
+		labelResumen.setText("Mostrando " + totalMostradas + " notificaciones. No vistas: " + noVistas + ".");
+	}
 
-    public void verNotificacionSeleccionada() {
-        int posicion = listaNotificaciones.getSelectedIndex();
+	public void verNotificacionSeleccionada() {
+		int posicion = listaNotificaciones.getSelectedIndex();
 
-        if (posicion < 0) {
-            mostrarError("Selecciona una notificacion de la bandeja.");
-            return;
-        }
+		if (posicion < 0) {
+			mostrarError("Selecciona una notificacion de la bandeja.");
+			return;
+		}
 
-        Notificacion notificacion = notificacionesMostradas.get(posicion);
+		Notificacion notificacion = notificacionesMostradas.get(posicion);
 
-        if (notificacion == null) {
-            mostrarError("No se pudo abrir la notificacion.");
-            return;
-        }
+		if (notificacion == null) {
+			mostrarError("No se pudo abrir la notificacion.");
+			return;
+		}
 
-        controlador.marcarComoVista(notificacion);
-        mostrarNotificacionEnVentana(notificacion);
-        cargarNotificaciones();
-    }
+		controlador.marcarComoVista(notificacion);
+		mostrarNotificacionEnVentana(notificacion);
+		cargarNotificaciones();
+	}
 
-    public void marcarTodasComoVistas() {
-        ResultadoOperacion resultado = controlador.marcarTodasComoVistas();
-        if (!resultado.isExito()) {
-            mostrarError(resultado.getMensaje());
-            return;
-        }
+	public void marcarTodasComoVistas() {
+		ResultadoOperacion resultado = controlador.marcarTodasComoVistas();
+		if (!resultado.isExito()) {
+			mostrarError(resultado.getMensaje());
+			return;
+		}
 
-        cargarNotificaciones();
-        mostrarMensaje(resultado.getMensaje());
-    }
+		cargarNotificaciones();
+		mostrarMensaje(resultado.getMensaje());
+	}
 
-    private void mostrarNotificacionEnVentana(Notificacion notificacion) {
-        JTextArea areaNotificacion = crearArea();
-        areaNotificacion.setEditable(false);
-        areaNotificacion.setText(controlador.crearTextoNotificacion(notificacion));
-        areaNotificacion.setCaretPosition(0);
+	private void mostrarNotificacionEnVentana(Notificacion notificacion) {
+		JTextArea areaNotificacion = crearArea();
+		areaNotificacion.setEditable(false);
+		areaNotificacion.setText(controlador.crearTextoNotificacion(notificacion));
+		areaNotificacion.setCaretPosition(0);
 
-        JScrollPane scroll = estilizarScroll(areaNotificacion);
-        scroll.setPreferredSize(new Dimension(VentanaPrincipal.escalar(640), VentanaPrincipal.escalar(260)));
+		JScrollPane scroll = estilizarScroll(areaNotificacion);
+		scroll.setPreferredSize(new Dimension(VentanaPrincipal.escalar(640), VentanaPrincipal.escalar(260)));
 
-        JOptionPane.showMessageDialog(this, scroll, "Notificacion", JOptionPane.INFORMATION_MESSAGE);
-    }
+		JOptionPane.showMessageDialog(this, scroll, "Notificacion", JOptionPane.INFORMATION_MESSAGE);
+	}
 
-    private void estilizarLista() {
-        listaNotificaciones.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        listaNotificaciones.setFixedCellHeight(VentanaPrincipal.escalar(34));
+	private void estilizarLista() {
+		listaNotificaciones.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		listaNotificaciones.setFixedCellHeight(VentanaPrincipal.escalar(34));
 
-        listaNotificaciones.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        listaNotificaciones.setBackground(Color.WHITE);
-        listaNotificaciones.setForeground(Color.BLACK);
+		listaNotificaciones.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		listaNotificaciones.setBackground(Color.WHITE);
+		listaNotificaciones.setForeground(Color.BLACK);
 
-        listaNotificaciones.setSelectionBackground(new Color(235, 235, 235));
-        listaNotificaciones.setSelectionForeground(Color.BLACK);
-    }
+		listaNotificaciones.setSelectionBackground(new Color(235, 235, 235));
+		listaNotificaciones.setSelectionForeground(Color.BLACK);
+	}
 }

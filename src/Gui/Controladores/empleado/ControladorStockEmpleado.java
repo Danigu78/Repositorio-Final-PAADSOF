@@ -180,8 +180,8 @@ public class ControladorStockEmpleado implements ActionListener {
 				minEdad = leerEntero(minEdadTexto);
 				maxEdad = leerEntero(maxEdadTexto);
 				if (minJugadores == null || minJugadores <= 0 || maxJugadores == null || maxJugadores <= 0
-						|| minEdad == null || minEdad <= 0 || maxEdad == null || maxEdad <= 0
-						|| estilo == null || estilo.trim().isBlank()) {
+						|| minEdad == null || minEdad <= 0 || maxEdad == null || maxEdad <= 0 || estilo == null
+						|| estilo.trim().isBlank()) {
 					return ResultadoOperacion.error("Completa jugadores, edades y estilo del juego.");
 				}
 			} else if ("F".equals(letra)) {
@@ -189,8 +189,7 @@ public class ControladorStockEmpleado implements ActionListener {
 				ancho = leerDouble(anchoTexto);
 				largo = leerDouble(largoTexto);
 				if (altura == null || altura <= 0 || ancho == null || ancho <= 0 || largo == null || largo <= 0
-						|| material == null || material.trim().isBlank()
-						|| marca == null || marca.trim().isBlank()) {
+						|| material == null || material.trim().isBlank() || marca == null || marca.trim().isBlank()) {
 					return ResultadoOperacion.error("Completa dimensiones, material y marca de la figura.");
 				}
 			} else {

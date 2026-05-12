@@ -1,6 +1,5 @@
 package Gui.empleado;
 
-
 import Gui.VentanaPrincipal;
 import Gui.Controladores.empleado.ControladorPedidosEmpleado;
 import Gui.Controladores.empleado.ResultadoOperacion;
@@ -198,9 +197,10 @@ public class SeccionPedidosEmpleado extends SeccionEmpleadoBase {
 		}
 
 		for (Pedido pedido : controlador.getPedidos(estadoElegido)) {
-			modeloPedidos.addRow(new Object[] { pedido.getIdPedido(), pedido.getCliente().getNickname(),
-					pedido.getEstado(), controlador.formatearPrecio(pedido.getTotal()), controlador.obtenerCodigoRecogida(pedido),
-					controlador.obtenerTextoRecogidaSolicitada(pedido), pedido.getLineas().size() });
+			modeloPedidos
+					.addRow(new Object[] { pedido.getIdPedido(), pedido.getCliente().getNickname(), pedido.getEstado(),
+							controlador.formatearPrecio(pedido.getTotal()), controlador.obtenerCodigoRecogida(pedido),
+							controlador.obtenerTextoRecogidaSolicitada(pedido), pedido.getLineas().size() });
 		}
 	}
 

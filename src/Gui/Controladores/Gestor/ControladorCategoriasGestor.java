@@ -47,8 +47,7 @@ public class ControladorCategoriasGestor implements ActionListener {
 		} else if (cmd.equals(QUITAR_CATEGORIA_PRODUCTO)) {
 			vista.procesarQuitarCategoriaProducto();
 		} else if (cmd.startsWith(ELIMINAR_CATEGORIA + ":")) {
-		    vista.procesarEliminarCategoria(
-		        cmd.substring(ELIMINAR_CATEGORIA.length() + 1));
+			vista.procesarEliminarCategoria(cmd.substring(ELIMINAR_CATEGORIA.length() + 1));
 		}
 	}
 
@@ -85,9 +84,9 @@ public class ControladorCategoriasGestor implements ActionListener {
 	public List<Categoria> getCategorias() {
 		return tienda.getCategorias();
 	}
-	
+
 	public List<Categoria> getCategoriasActivas() {
-	    return tienda.getCategoriasActivas();
+		return tienda.getCategoriasActivas();
 	}
 
 	public List<ProductoVenta> getProductosOrdenados() {
@@ -102,6 +101,17 @@ public class ControladorCategoriasGestor implements ActionListener {
 		return productos.obtenerTextoCategorias(producto);
 	}
 
+	public boolean productoTieneCategoria(String idProducto, String nombreCategoria) {
+		if (idProducto == null || nombreCategoria == null) {
+			return false;
+		}
+
+		ProductoVenta producto = tienda.buscarProductoVentaPorId(idProducto.trim());
+		Categoria categoria = tienda.buscarCategoriaPorNombre(nombreCategoria.trim());
+
+		return producto != null && categoria != null && producto.getCategorias().contains(categoria);
+	}
+
 	public String formatearPrecio(double precio) {
 		return productos.formatearPrecio(precio);
 	}
@@ -109,12 +119,11 @@ public class ControladorCategoriasGestor implements ActionListener {
 	public String formatearPuntuacion(double puntuacion) {
 		return productos.formatearPuntuacion(puntuacion);
 	}
-	
-	
 
 	public boolean eliminarCategoria(String nombreCat) {
-	    boolean ok = gestor.eliminarCategoria(nombreCat);
-	    if (ok) GuardadoTienda.guardar(tienda);
-	    return ok;
+		boolean ok = gestor.eliminarCategoria(nombreCat);
+		if (ok)
+			GuardadoTienda.guardar(tienda);
+		return ok;
 	}
 }

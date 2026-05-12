@@ -59,6 +59,12 @@ public class ControladorDescuentos implements ActionListener {
 	public List<Descuento> getDescuentosActivos() {
 		List<Descuento> activos = new ArrayList<>();
 		for (Descuento d : tienda.getDescuentosActivos()) {
+			if (d instanceof Regalo) {
+				Regalo regalo = (Regalo) d;
+				if (regalo.getProductoRegalo() == null || regalo.getProductoRegalo().getStockDisponible() <= 0) {
+					continue;
+				}
+			}
 			if (d != null && d.estaActivo())
 				activos.add(d);
 		}
@@ -106,8 +112,9 @@ public class ControladorDescuentos implements ActionListener {
 		}
 		if (d instanceof DescuentoCantidad) {
 			DescuentoCantidad dc = (DescuentoCantidad) d;
-			return String.format("%d%% de descuento al comprar %d o más unidades", (int) (dc.getPorcentaje() * 100),
-					dc.getCantidadMinima());
+			String producto = dc.getProducto() == null ? "un mismo producto" : dc.getProducto().getNombre();
+			return String.format("%d%% de descuento al comprar %d o más unidades de %s",
+					(int) (dc.getPorcentaje() * 100), dc.getCantidadMinima(), producto);
 		}
 		if (d instanceof Regalo) {
 			Regalo r = (Regalo) d;

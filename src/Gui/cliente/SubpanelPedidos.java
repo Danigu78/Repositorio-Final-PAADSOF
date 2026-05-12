@@ -7,7 +7,6 @@ import Gui.Controladores.cliente.ControladorCatalogo;
 import Gui.Controladores.cliente.ControladorPedidos;
 
 import java.awt.*;
-import java.awt.event.*;
 import java.util.List;
 import productos.ProductoVenta;
 import usuarios.Cliente;
@@ -24,6 +23,11 @@ import tienda.*;
  * @version 1.0
  */
 public class SubpanelPedidos extends AbstractPanelCliente {
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
 	/** Controlador del subpanel. */
 	private ControladorPedidos controlador;
@@ -85,6 +89,7 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 		this.cliente = cliente;
 		Tienda.getInstancia().getComprobadorTiempos().revisarCarritosCaducados();
 		Tienda.getInstancia().getComprobadorTiempos().revisarPedidosPendientesCaducados();
+		GuardadoTienda.guardar(Tienda.getInstancia());
 		this.controlador = new ControladorPedidos(this, cliente);
 		rellenarLista();
 		cardLayout.show(panelContenido, "LISTA");
@@ -209,7 +214,7 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 		JPanel panelBotones = crearPanelBotonesTarjeta();
 		GridBagConstraints gbcB = crearGbcBotonesTarjeta();
 
-		// crearBotonOutline() de AbstractPanelSection
+		// crearBotonOutline() de PanelBaseInterfaz
 		JButton botonVer = crearBotonOutline("Ver pedido");
 		botonVer.setActionCommand("verPedido:" + pedido.getIdPedido());
 		botonVer.addActionListener(controlador);
@@ -217,7 +222,7 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 		panelBotones.add(botonVer, gbcB);
 
 		if (controlador.estaPendientePago(pedido)) {
-			// crearBotonNaranja() de AbstractPanelSection
+			// crearBotonNaranja() de PanelBaseInterfaz
 			JButton botonPagar = crearBotonNaranja("Pagar ahora");
 			botonPagar.setActionCommand("pagar:" + pedido.getIdPedido());
 			botonPagar.addActionListener(controlador);
@@ -246,7 +251,7 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 		panelDetallePedido.setLayout(new BorderLayout());
 		panelDetallePedido.setBackground(VentanaPrincipal.COLOR_FONDO);
 
-		// crearBarraVolver() de AbstractPanelSection
+		// crearBarraVolver() de PanelBaseInterfaz
 		JPanel barra = crearBarraVolver("← Volver a mis pedidos");
 		botonVolverDetalle = getBotonVolver(barra);
 		botonVolverDetalle.setActionCommand("volver");
@@ -292,7 +297,7 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 			contenido.add(labelTiempo);
 			contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
-			// crearBotonNaranja() de AbstractPanelSection
+			// crearBotonNaranja() de PanelBaseInterfaz
 			JButton botonPagar = crearBotonNaranja("Pagar ahora");
 			botonPagar.setAlignmentX(Component.LEFT_ALIGNMENT);
 			botonPagar.setActionCommand("pagar:" + pedido.getIdPedido());
@@ -342,7 +347,7 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 	/**
 	 * Crea una fila visual para un producto dentro del detalle del pedido. Usa
 	 * cargarImagen(), crearBotonOutline() y crearBotonNaranja() de
-	 * AbstractPanelSection.
+	 * PanelBaseInterfaz.
 	 *
 	 * @param linea  La línea del pedido
 	 * @param pedido El pedido al que pertenece la línea
@@ -362,7 +367,7 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 		JLabel labelImagen = new JLabel();
 		labelImagen.setHorizontalAlignment(SwingConstants.CENTER);
 		labelImagen.setPreferredSize(new Dimension(VentanaPrincipal.escalar(80), VentanaPrincipal.escalar(80)));
-		// cargarImagen() de AbstractPanelSection
+		// cargarImagen() de PanelBaseInterfaz
 		cargarImagen(labelImagen, producto.getImagenRuta(), VentanaPrincipal.escalar(70), VentanaPrincipal.escalar(70));
 		fila.add(labelImagen, BorderLayout.WEST);
 
@@ -395,7 +400,7 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 		JPanel panelBotones = crearPanelBotonesTarjeta();
 		GridBagConstraints gbcB = crearGbcBotonesTarjeta();
 
-		// crearBotonOutline() de AbstractPanelSection
+		// crearBotonOutline() de PanelBaseInterfaz
 		JButton botonVerProducto = crearBotonOutline("Ver producto");
 		botonVerProducto.addActionListener(e -> verProducto(producto));
 		gbcB.gridy = 0;
@@ -403,7 +408,7 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 
 		if (pedido.getEstado() == EstadoPedido.ENTREGADO) {
 			if (!controlador.yaReseñó(producto)) {
-				// crearBotonNaranja() de AbstractPanelSection
+				// crearBotonNaranja() de PanelBaseInterfaz
 				JButton botonReseña = crearBotonNaranja("Escribir reseña");
 				botonReseña.setActionCommand("reseña:" + producto.getId());
 				botonReseña.addActionListener(controlador);
@@ -454,7 +459,7 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 		JSpinner spinnerPuntuacion = new JSpinner(new SpinnerNumberModel(5, 0, 10, 1));
 		spinnerPuntuacion.setFont(VentanaPrincipal.FUENTE_NORMAL);
 
-		// crearArea() de AbstractPanelSection
+		// crearArea() de PanelBaseInterfaz
 		JTextArea areaComentario = crearArea();
 		areaComentario.setRows(4);
 
@@ -465,7 +470,7 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 		gbc.weightx = 1;
 		gbc.insets = new Insets(VentanaPrincipal.escalar(5), 0, VentanaPrincipal.escalar(5), 0);
 
-		// crearLabel() de AbstractPanelSection
+		// crearLabel() de PanelBaseInterfaz
 		gbc.gridy = 0;
 		panelForm.add(crearLabel("Producto: " + producto.getNombre()), gbc);
 		gbc.gridy = 1;

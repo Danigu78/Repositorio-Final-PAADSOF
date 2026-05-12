@@ -1,6 +1,5 @@
 package Gui.empleado;
 
-
 import Gui.VentanaPrincipal;
 import Gui.Controladores.empleado.ControladorCategoriasEmpleado;
 import Gui.Controladores.empleado.ResultadoOperacion;
@@ -131,7 +130,8 @@ public class SeccionCategoriasEmpleado extends SeccionProductosVentaEmpleadoBase
 	}
 
 	public void anadirCategoria() {
-		ResultadoOperacion resultado = controlador.anadirCategoria(campoIdProducto.getText(), obtenerCategoriaSeleccionada());
+		ResultadoOperacion resultado = controlador.anadirCategoria(campoIdProducto.getText(),
+				obtenerCategoriaSeleccionada());
 
 		if (resultado.isExito()) {
 			recargarTablaProductos(tablaProductos.tabla);
@@ -142,7 +142,8 @@ public class SeccionCategoriasEmpleado extends SeccionProductosVentaEmpleadoBase
 	}
 
 	public void quitarCategoria() {
-		ResultadoOperacion resultado = controlador.quitarCategoria(campoIdProducto.getText(), obtenerCategoriaSeleccionada());
+		ResultadoOperacion resultado = controlador.quitarCategoria(campoIdProducto.getText(),
+				obtenerCategoriaSeleccionada());
 
 		if (resultado.isExito()) {
 			recargarTablaProductos(tablaProductos.tabla);

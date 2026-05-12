@@ -3,7 +3,6 @@ package intercambios;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import excepciones.*;

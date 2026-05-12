@@ -93,14 +93,15 @@ public class ControladorIntercambios implements ActionListener {
 	 * @return Lista de ofertas aceptadas pendientes de confirmación
 	 */
 	public List<Oferta> getOfertasAceptadasPendientes() {
-	    List<Oferta> resultado = new ArrayList<>();
-	    // Las que envié yo y fueron aceptadas
-	    for (Oferta o : cliente.getOfertasEnEspera()) {
-	        if (o.getEstado() == EstadoOferta.ACEPTADA) resultado.add(o);
-	    }
-	    // Las que recibí yo y acepté
-	    resultado.addAll(cliente.getOfertasAceptadasComoDestino());
-	    return resultado;
+		List<Oferta> resultado = new ArrayList<>();
+		// Las que envié yo y fueron aceptadas
+		for (Oferta o : cliente.getOfertasEnEspera()) {
+			if (o.getEstado() == EstadoOferta.ACEPTADA)
+				resultado.add(o);
+		}
+		// Las que recibí yo y acepté
+		resultado.addAll(cliente.getOfertasAceptadasComoDestino());
+		return resultado;
 	}
 
 	/**
