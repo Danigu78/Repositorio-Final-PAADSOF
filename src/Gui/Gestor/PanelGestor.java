@@ -9,32 +9,24 @@ import java.awt.*;
 import usuarios.Gestor;
 
 /**
- * Panel principal del gestor 
+ * Panel principal del gestor en CheckPoint. Extiende PanelBaseInterfaz para
+ * reutilizar helpers visuales y la barra de navegación común. Sigue el patrón
+ * MVC de los apuntes — delega la navegación en ControladorPanelGestor.
  *
  * @author Antonino
  * @version 1.0
  */
 public class PanelGestor extends PanelBaseInterfaz {
 
-	/** Serial UID de la clase. */
+	/**
+	 * 
+	 */
 	private static final long serialVersionUID = 1L;
-
-	/** Identificador de la sección empleados. */
 	private static final String SEC_EMPLEADOS = "EMPLEADOS";
-
-	/** Identificador de la sección categorías. */
 	private static final String SEC_CATEGORIAS = "CATEGORIAS";
-
-	/** Identificador de la sección productos y descuentos. */
 	private static final String SEC_PRODUCTOS_DESCUENTOS = "PRODUCTOS_DESCUENTOS";
-
-	/** Identificador de la sección estadísticas. */
 	private static final String SEC_ESTADISTICAS = "ESTADISTICAS";
-
-	/** Identificador de la sección configuración. */
 	private static final String SEC_CONFIGURACION = "CONFIGURACION";
-
-	/** Identificador de la sección perfil. */
 	private static final String SEC_PERFIL = "PERFIL";
 
 	/** Controlador del panel — gestiona la navegación entre secciones. */
@@ -52,22 +44,12 @@ public class PanelGestor extends PanelBaseInterfaz {
 	/** Barra de navegación — guardada para marcarBotonBarraActivoPorCmd(). */
 	private JPanel barra;
 
-	/** Subpanel de empleados. */
+	/** Subpaneles del gestor. */
 	private SubpanelEmpleadosGestor subpanelEmpleados;
-
-	/** Subpanel de categorías. */
 	private SubpanelCategoriasGestor subpanelCategorias;
-
-	/** Subpanel de productos y descuentos. */
 	private SubpanelProductosDescuentosGestor subpanelProductosDescuentos;
-
-	/** Subpanel de estadísticas. */
 	private SubpanelEstadisticasGestor subpanelEstadisticas;
-
-	/** Subpanel de configuración. */
 	private SubpanelConfiguracionGestor subpanelConfiguracion;
-
-	/** Subpanel de perfil. */
 	private SubpanelPerfilGestor subpanelPerfil;
 
 	/**
@@ -82,7 +64,7 @@ public class PanelGestor extends PanelBaseInterfaz {
 	/**
 	 * Actualiza el panel con el gestor logueado y construye la interfaz.
 	 *
-	 * @param gestor Gestor autenticado
+	 * @param gestor El gestor logueado
 	 */
 	public void actualizarGestor(Gestor gestor) {
 		this.gestor = gestor;
@@ -93,7 +75,8 @@ public class PanelGestor extends PanelBaseInterfaz {
 	}
 
 	/**
-	 * Muestra la sección indicada en el área de contenido principal.
+	 * Muestra la sección indicada en el área de contenido principal. Lo llama el
+	 * controlador desde actionPerformed.
 	 *
 	 * @param seccion Identificador de la sección
 	 */
@@ -102,36 +85,30 @@ public class PanelGestor extends PanelBaseInterfaz {
 	}
 
 	/**
-	 * Marca la pestaña activa en la barra de navegación.
+	 * Marca la pestaña activa en la barra de navegación. Lo llama el controlador
+	 * desde actionPerformed.
 	 *
 	 * @param cmd ActionCommand de la pestaña a marcar
 	 */
 	public void marcarPestaña(String cmd) {
+		// marcarBotonBarraActivoPorCmd() de PanelBaseInterfaz
 		marcarBotonBarraActivoPorCmd(barra, cmd);
 	}
 
 	/**
-	 * Construye la interfaz del panel gestor.
+	 * Construye la interfaz del panel gestor. Crea el controlador y lo registra en
+	 * la barra de navegación.
 	 */
 	private void inicializarUI() {
 		controlador = new ControladorPanelGestor(this);
 
-		String[][] pestañas = {
-			{ "Empleados", SEC_EMPLEADOS },
-			{ "Categorías", SEC_CATEGORIAS },
-			{ "Productos y Descuentos", SEC_PRODUCTOS_DESCUENTOS },
-			{ "Estadísticas", SEC_ESTADISTICAS },
-			{ "Configuración", SEC_CONFIGURACION },
-			{ "Mi Perfil", SEC_PERFIL }
-		};
-		
-		barra = crearBarraNavegacion(
-				" CheckPoint - Gestor",
-				gestor != null ? gestor.getNickname() : "Gestor",
-				pestañas,
-				controlador
-		);
-		
+		String[][] pestañas = { { "Empleados", SEC_EMPLEADOS }, { "Categorías", SEC_CATEGORIAS },
+				{ "Productos y Descuentos", SEC_PRODUCTOS_DESCUENTOS }, { "Estadísticas", SEC_ESTADISTICAS },
+				{ "Configuración", SEC_CONFIGURACION }, { "Mi Perfil", SEC_PERFIL } };
+
+		// crearBarraNavegacion() de PanelBaseInterfaz
+		barra = crearBarraNavegacion("🎮 CheckPoint - Gestor", gestor != null ? gestor.getNickname() : "Gestor",
+				pestañas, controlador);
 		add(barra, BorderLayout.NORTH);
 
 		cardSecciones = new CardLayout();
@@ -153,7 +130,6 @@ public class PanelGestor extends PanelBaseInterfaz {
 		panelSecciones.add(subpanelPerfil, SEC_PERFIL);
 
 		add(panelSecciones, BorderLayout.CENTER);
-
 		cardSecciones.show(panelSecciones, SEC_EMPLEADOS);
 		marcarBotonBarraActivoPorCmd(barra, SEC_EMPLEADOS);
 	}

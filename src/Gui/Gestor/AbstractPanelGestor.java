@@ -7,35 +7,27 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Clase base para las secciones del panel del gestor.
- * 
+ * Clase base para las secciones del panel del gestor. Extiende
+ * PanelBaseInterfaz para reutilizar helpers visuales.
+ *
  * @author Antonino
  * @version 1.0
  */
 public abstract class AbstractPanelGestor extends PanelBaseInterfaz {
 
-	/** Serial UID de la clase. */
+	/**
+	 * 
+	 */
 	private static final long serialVersionUID = 1L;
-
-	/** Gestor autenticado asociado al panel. */
 	protected final Gestor gestor;
 
-	/**
-	 * Constructor del panel base del gestor.
-	 *
-	 * @param ventana Ventana principal
-	 * @param gestor  Gestor autenticado
-	 */
 	protected AbstractPanelGestor(VentanaPrincipal ventana, Gestor gestor) {
 		super(ventana);
 		this.gestor = gestor;
 	}
 
 	/**
-	 * Crea un campo de texto estilizado con un número de columnas determinado.
-	 *
-	 * @param columnas Número de columnas del campo
-	 * @return Campo de texto configurado
+	 * Crea un campo de texto con columnas — útil en formularios del gestor.
 	 */
 	protected JTextField crearCampoColumnas(int columnas) {
 		JTextField campo = new JTextField(columnas);
@@ -52,9 +44,7 @@ public abstract class AbstractPanelGestor extends PanelBaseInterfaz {
 	}
 
 	/**
-	 * Crea un campo de contraseña estilizado para el gestor.
-	 *
-	 * @return Campo de contraseña configurado
+	 * Crea un campo de contraseña estilizado.
 	 */
 	protected JPasswordField crearCampoPasswordGestor() {
 		JPasswordField campo = new JPasswordField(15);
@@ -70,21 +60,11 @@ public abstract class AbstractPanelGestor extends PanelBaseInterfaz {
 		return campo;
 	}
 
-	/**
-	 * Muestra un mensaje de error en pantalla.
-	 *
-	 * @param msg Mensaje de error
-	 */
 	@Override
 	public void mostrarError(String msg) {
 		JOptionPane.showMessageDialog(this, msg, "Error", JOptionPane.ERROR_MESSAGE);
 	}
 
-	/**
-	 * Muestra un mensaje de éxito en pantalla.
-	 *
-	 * @param msg Mensaje de éxito
-	 */
 	public void mostrarExito(String msg) {
 		mostrarMensaje(msg);
 	}

@@ -1,4 +1,3 @@
-
 package Gui.Gestor;
 
 import Gui.VentanaPrincipal;
@@ -10,7 +9,8 @@ import java.awt.event.*;
 import usuarios.Gestor;
 
 /**
- * Subpanel de perfil del gestor.
+ * Subpanel de perfil del gestor. Extiende AbstractPanelGestor para reutilizar
+ * helpers visuales. Sigue el patrón MVC de los apuntes.
  *
  * @author Antonino
  * @version 1.0
@@ -18,40 +18,26 @@ import usuarios.Gestor;
 public class SubpanelPerfilGestor extends AbstractPanelGestor {
 
 	/**
-	 * Identificador de serialización de la clase.
+	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	/** Controlador encargado de la lógica de actualización del perfil */
 	private ControladorConfiguracionGestor controlador;
 
-	/** Campo para introducir el nuevo nickname */
+	// Campos — atributos para que el controlador pueda leerlos
 	private JTextField campoNick;
-
-	/** Campo para introducir la nueva contraseña */
 	private JPasswordField campoPass;
-
-	/** Etiqueta que muestra el nickname actual del gestor */
 	private JLabel labelNickActual;
 
-	/** Botón de guardado de cambios */
+	// Botón — atributo para registrar el controlador
 	private JButton botonGuardar;
 
-	/**
-	 * Constructor del subpanel de perfil.
-	 *
-	 * @param ventana ventana principal de la aplicación
-	 * @param gestor  usuario gestor autenticado
-	 */
 	public SubpanelPerfilGestor(VentanaPrincipal ventana, Gestor gestor) {
 		super(ventana, gestor);
 		this.controlador = new ControladorConfiguracionGestor(this, gestor);
 		inicializarUI();
 	}
 
-	/**
-	 * Inicializa la interfaz del panel de perfil.
-	 */
 	private void inicializarUI() {
 		JPanel panelContenido = new JPanel(new GridBagLayout());
 		panelContenido.setBackground(VentanaPrincipal.COLOR_FONDO);
@@ -72,13 +58,14 @@ public class SubpanelPerfilGestor extends AbstractPanelGestor {
 
 		gbc.insets = new Insets(VentanaPrincipal.escalar(8), 0, VentanaPrincipal.escalar(4), 0);
 
+		// crearLabel() de PanelBaseInterfaz
 		labelNickActual = crearLabel("Nickname actual: " + controlador.getNickname());
 		gbc.gridy = 1;
 		panelContenido.add(labelNickActual, gbc);
 
 		gbc.gridy = 2;
 		panelContenido.add(crearLabel("Nuevo nickname:"), gbc);
-
+		// crearCampo() de PanelBaseInterfaz
 		campoNick = crearCampo();
 		campoNick.setText(controlador.getNickname());
 		gbc.gridy = 3;
@@ -86,7 +73,7 @@ public class SubpanelPerfilGestor extends AbstractPanelGestor {
 
 		gbc.gridy = 4;
 		panelContenido.add(crearLabel("Nueva contraseña:"), gbc);
-
+		// crearCampoPasswordGestor() de AbstractPanelGestor
 		campoPass = crearCampoPasswordGestor();
 		gbc.gridy = 5;
 		panelContenido.add(campoPass, gbc);
@@ -96,6 +83,7 @@ public class SubpanelPerfilGestor extends AbstractPanelGestor {
 		gbc.gridy = 6;
 		panelContenido.add(labelInfo, gbc);
 
+		// crearBotonNaranja() de PanelBaseInterfaz
 		botonGuardar = crearBotonNaranja("Guardar cambios");
 		botonGuardar.setActionCommand("guardarPerfil");
 		gbc.gridy = 7;
@@ -106,11 +94,6 @@ public class SubpanelPerfilGestor extends AbstractPanelGestor {
 		setControlador(controlador);
 	}
 
-	/**
-	 * Asigna el controlador de eventos al botón de guardado.
-	 *
-	 * @param c controlador de acciones
-	 */
 	public void setControlador(ActionListener c) {
 		if (botonGuardar != null) {
 			for (ActionListener al : botonGuardar.getActionListeners())
@@ -120,8 +103,7 @@ public class SubpanelPerfilGestor extends AbstractPanelGestor {
 	}
 
 	/**
-	 * Procesa la actualización del perfil del gestor.
-	 *
+	 * Lee los campos y guarda el perfil. Lo llama el controlador.
 	 */
 	public void procesarGuardar() {
 		String nuevoNick = campoNick.getText().trim();
@@ -135,11 +117,6 @@ public class SubpanelPerfilGestor extends AbstractPanelGestor {
 		}
 	}
 
-	/**
-	 * Muestra un mensaje de error en un cuadro de diálogo.
-	 *
-	 * @param msg mensaje de error
-	 */
 	@Override
 	public void mostrarError(String msg) {
 		JOptionPane.showMessageDialog(this, msg, "Error", JOptionPane.ERROR_MESSAGE);

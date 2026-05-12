@@ -5,8 +5,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Controlador del panel principal del gestor.
- * Gestiona la navegación entre secciones de la barra de navegación.
+ * Controlador del panel principal del gestor. Gestiona la navegación entre
+ * secciones de la barra de navegación. Implementa ActionListener según el
+ * patrón MVC de los apuntes.
  *
  * @author Antonino
  * @version 1.0
@@ -26,10 +27,10 @@ public class ControladorPanelGestor implements ActionListener {
 	}
 
 	/**
-	 * Gestiona los eventos de navegación de la barra lateral.
-	 * Muestra la sección seleccionada y marca la pestaña activa.
+	 * Gestiona los clicks de las pestañas de la barra de navegación. Muestra la
+	 * sección y marca la pestaña activa.
 	 *
-	 * @param e Evento de acción
+	 * @param e El evento de acción
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
