@@ -754,4 +754,13 @@ public class SubpanelCatalogo extends AbstractPanelCliente {
 		}
 		return label;
 	}
+	/**
+	 * Recarga el combo de categorías con las activas actuales.
+	 * Lo llama PanelGestor tras crear o eliminar una categoría.
+	 */
+	public void refrescarComboCategorias() {
+	    if (controlador == null) return;
+	    comboCategoria.removeAllItems();
+	    controlador.obtenerNombresCategorias().forEach(comboCategoria::addItem);
+	}
 }

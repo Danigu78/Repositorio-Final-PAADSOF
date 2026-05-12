@@ -195,6 +195,9 @@ public class MotorEstadistico implements Serializable {
 
 		double total = 0.0;
 		for (Pedido p : tienda.getHistorialVentas()) {
+			if (p.getEstado() != EstadoPedido.PAGADO && p.getEstado() != EstadoPedido.LISTO_PARA_RECOGER
+					&& p.getEstado() != EstadoPedido.ENTREGADO)
+				continue;
 			if (p.getEstado() == EstadoPedido.CANCELADO)
 				continue;// confirmamos q el pedido se realizo
 			LocalDate fechaPedido = p.getFechaCreacion().toLocalDate();
@@ -235,9 +238,9 @@ public class MotorEstadistico implements Serializable {
 		}
 
 		for (Pedido pedido : Tienda.getInstancia().getHistorialVentas()) {
-			if (pedido == null || pedido.getEstado() == EstadoPedido.CANCELADO) {
+			if (pedido.getEstado() != EstadoPedido.PAGADO && pedido.getEstado() != EstadoPedido.LISTO_PARA_RECOGER
+					&& pedido.getEstado() != EstadoPedido.ENTREGADO)
 				continue;
-			}
 
 			for (LineaPedido linea : pedido.getLineas()) {
 				if (linea == null || linea.getProducto() == null || linea.getProducto().getId() == null) {

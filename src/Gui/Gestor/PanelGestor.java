@@ -141,5 +141,6 @@ public class PanelGestor extends PanelBaseInterfaz {
 	public void refrescarFiltrosCategorias() {
 		if (subpanelProductosDescuentos != null)
 			subpanelProductosDescuentos.refrescarFiltrosCategorias();
+		ventana.refrescarCategoriasCatalogo();
 	}
 }

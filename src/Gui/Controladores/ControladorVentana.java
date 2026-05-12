@@ -184,4 +184,11 @@ public class ControladorVentana {
 	public Empleado getEmpleadoActual() {
 		return empleadoActual;
 	}
+	/**
+	 * Refresca el combo de categorías del catálogo del cliente.
+	 */
+	public void refrescarCategoriasCatalogo() {
+	    if (panelCliente != null)
+	        panelCliente.refrescarCategoriasCatalogo();
+	}
 }

@@ -134,7 +134,7 @@ public class ControladorNotificaciones implements ActionListener {
 	 */
 	public List<String> getCategoriasTienda() {
 		List<String> nombres = new ArrayList<>();
-		for (Categoria c : Tienda.getInstancia().getCategorias())
+		for (Categoria c : Tienda.getInstancia().getCategoriasActivas())
 			nombres.add(c.getNombre());
 		return nombres;
 	}
@@ -147,7 +147,10 @@ public class ControladorNotificaciones implements ActionListener {
 	public List<String> getCategoriasInteres() {
 		List<String> nombres = new ArrayList<>();
 		for (Categoria c : cliente.getPreferencias().getCategoriasInteres())
-			nombres.add(c.getNombre());
+			if (!c.isEliminada()) {
+				nombres.add(c.getNombre());
+			}
+
 		return nombres;
 	}
 

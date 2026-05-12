@@ -527,15 +527,14 @@ public class TablaProductosVenta extends JPanel {
 	 * Se llama desde SubpanelCategoriasGestor tras crear o eliminar una categoría.
 	 */
 	public void refrescarFiltrosCategorias() {
-		// Reconstruimos checksCategoria con las categorías actuales
+		
 		List<String> nombres = obtenerNombresCategoriasVenta();
 		checksCategoria = new JCheckBox[nombres.size()];
 		for (int i = 0; i < nombres.size(); i++) {
 			checksCategoria[i] = crearCheckFiltro(nombres.get(i));
 			checksCategoria[i].addActionListener(e -> cargarModelo());
 		}
-		// Necesitamos reconstruir el panel de filtros — lo más limpio es
-		// reconstruir el panel norte entero
+		
 		removeAll();
 		construir();
 		revalidate();

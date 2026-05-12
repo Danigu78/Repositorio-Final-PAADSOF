@@ -241,7 +241,13 @@ public class PanelCliente extends PanelBaseInterfaz {
 	 * @param nombre El nuevo nombre a mostrar
 	 */
 	public void actualizarNombreUsuario(String nombre) {
-		// actualizarUsuarioBarra() de PanelBaseInterfaz
+		
 		actualizarUsuarioBarra(barra, nombre);
+	}
+	/**
+	 * Refresca el combo de categorías del subpanel catálogo.
+	 */
+	public void refrescarCategoriasCatalogo() {
+	    subpanelCatalogo.refrescarComboCategorias();
 	}
 }

@@ -81,20 +81,25 @@ public class SubpanelProducto2Mano extends AbstractPanelCliente {
 	 * @param cliente  El cliente logueado o null
 	 */
 	public void mostrarProducto(Producto2Mano producto, Cliente cliente) {
-		this.cliente = cliente;
-		this.controlador = new ControladorProducto2Mano(this, producto, cliente);
+	    this.cliente = cliente;
+	    this.controlador = new ControladorProducto2Mano(this, producto, cliente);
 
-		// SubpanelCrearOferta ya extiende AbstractPanelCliente
-		subpanelCrearOferta = new SubpanelCrearOferta(ventana, this, producto, cliente);
+	    subpanelCrearOferta = null;
 
-		panelContenido.removeAll();
-		panelContenido.add(crearPanelDetalle(producto), "DETALLE");
-		panelContenido.add(subpanelCrearOferta, "OFERTA");
+	    panelContenido.removeAll();
+	    panelContenido.add(crearPanelDetalle(producto), "DETALLE");
 
-		setControlador(controlador);
-		cardLayout.show(panelContenido, "DETALLE");
-		revalidate();
-		repaint();
+	    	
+	    if (cliente != null) {
+	        subpanelCrearOferta = new SubpanelCrearOferta(
+	            ventana, this, producto, cliente);
+	        panelContenido.add(subpanelCrearOferta, "OFERTA");
+	    }
+
+	    setControlador(controlador);
+	    cardLayout.show(panelContenido, "DETALLE");
+	    revalidate();
+	    repaint();
 	}
 
 	/**
@@ -210,8 +215,10 @@ public class SubpanelProducto2Mano extends AbstractPanelCliente {
 	/**
 	 * Navega al subpanel de crear oferta. Lo llama el controlador.
 	 */
+	
 	public void navegarACrearOferta() {
-		cardLayout.show(panelContenido, "OFERTA");
+	    if (subpanelCrearOferta == null) return;
+	    cardLayout.show(panelContenido, "OFERTA");
 	}
 
 	/**

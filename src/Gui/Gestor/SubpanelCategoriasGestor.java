@@ -96,8 +96,7 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 		}
 	}
 
-	// ── Formulario nueva categoría ────────────────────────────────────────────
-
+	
 	private JPanel crearFormularioNuevaCategoria() {
 		JPanel panel = new JPanel(
 				new FlowLayout(FlowLayout.LEFT, VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(10)));
@@ -127,7 +126,6 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 		return panel;
 	}
 
-	// ── Lista de categorías con búsqueda y eliminar ───────────────────────────
 
 	private JPanel crearBloqueListaCategorias() {
 		JPanel bloque = crearBloque("Categorías creadas");
@@ -229,7 +227,7 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 		info.setOpaque(false);
 		info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
 
-		JLabel labelNombre = new JLabel(c.getNombre() + (eliminada ? "  —  Eliminada" : ""));
+		JLabel labelNombre = new JLabel(c.getNombre() + (eliminada ? "  -  Eliminada" : ""));
 		labelNombre.setFont(VentanaPrincipal.FUENTE_BOTON);
 		labelNombre.setForeground(eliminada ? VentanaPrincipal.COLOR_TEXTO2 : VentanaPrincipal.COLOR_TEXTO);
 		info.add(labelNombre);
@@ -251,7 +249,6 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 		return fila;
 	}
 
-	// ── Tabla de productos ────────────────────────────────────────────────────
 
 	private JPanel crearPanelTablaProductos() {
 		JPanel panel = crearBloque("Productos de venta");
@@ -259,8 +256,6 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 		panel.add(tablaProductosVenta, gbcCampo(1));
 		return panel;
 	}
-
-	// ── Cambiar categoría de producto ─────────────────────────────────────────
 
 	private JPanel crearBloqueCambiarCategoriaProducto() {
 		JPanel bloque = crearBloque("Cambiar categoría de un producto");
@@ -307,8 +302,6 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 		return panel;
 	}
 
-	// ── Procesado de acciones ─────────────────────────────────────────────────
-
 	public void procesarCrearCategoria() {
 		String nombre = campoNombre.getText().trim();
 		String desc = campoDesc.getText().trim();
@@ -320,7 +313,6 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 			mostrarMensaje("Categoría '" + nombre + "' creada.");
 			campoNombre.setText("");
 			campoDesc.setText("");
-			// Actualizar combo y lista
 			cargarCategorias();
 			actualizarListaCategorias();
 			if (tablaProductosVenta != null) {

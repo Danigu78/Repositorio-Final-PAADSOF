@@ -264,5 +264,11 @@ public class VentanaPrincipal extends JFrame {
 			new VentanaPrincipal().setVisible(true);
 		});
 	}
+	/**
+	 * Refresca el combo de categorías del catálogo cliente tras cambios del gestor.
+	 */
+	public void refrescarCategoriasCatalogo() {
+	    controlador.refrescarCategoriasCatalogo();
+	}
 
 }

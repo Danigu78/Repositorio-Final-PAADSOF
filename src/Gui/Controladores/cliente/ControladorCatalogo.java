@@ -90,7 +90,7 @@ public class ControladorCatalogo implements ActionListener {
 	public List<String> obtenerNombresCategorias() {
 		List<String> nombres = new ArrayList<>();
 		nombres.add("Todas");
-		tienda.getCategorias().forEach(c -> nombres.add(c.getNombre()));
+		tienda.getCategoriasActivas().forEach(c -> nombres.add(c.getNombre()));
 		return nombres;
 	}
 
@@ -171,7 +171,7 @@ public class ControladorCatalogo implements ActionListener {
 	}
 
 	/**
-	 * Extrae el número del ID de un producto (ej: "PV-3" → 3).
+	 * Extrae el número del ID de un producto ("PV3"  3).
 	 */
 	private int extraerNumeroId(String id) {
 		if (id == null)

@@ -48,7 +48,7 @@ public class ControladorProductosEmpleado implements ActionListener {
 
 	public List<String> obtenerNombresCategoriasVenta() {
 		ArrayList<String> nombres = new ArrayList<>();
-		for (Categoria categoria : Tienda.getInstancia().getCategorias()) {
+		for (Categoria categoria : Tienda.getInstancia().getCategoriasActivas()) {
 			if (categoria != null && categoria.getNombre() != null && !categoria.getNombre().isBlank()) {
 				String nombre = categoria.getNombre().trim();
 				if (!estaEnLista(nombres, nombre)) {
