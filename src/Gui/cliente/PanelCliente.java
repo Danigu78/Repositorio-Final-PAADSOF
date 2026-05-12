@@ -34,7 +34,7 @@ public class PanelCliente extends PanelBaseInterfaz {
 	private static final String SEC_CARTERA = "MI_CARTERA";
 	private static final String SEC_DESCUENTOS = "DESCUENTOS";
 
-	/** Controlador del panel — gestiona la navegación entre secciones. */
+	/** Controlador del panel   gestiona la navegación entre secciones. */
 	private ControladorPanelCliente controlador;
 
 	/** Cliente actualmente logueado. */
@@ -84,9 +84,9 @@ public class PanelCliente extends PanelBaseInterfaz {
 				{ "Mi Perfil", SEC_PERFIL }, { "Descuentos", SEC_DESCUENTOS } };
 
 		// crearBarraNavegacion() de PanelBaseInterfaz
-		barra = crearBarraNavegacion("🎮 CheckPoint", "Usuario", pestañas, controlador);
+		barra = crearBarraNavegacion(" CheckPoint", "Usuario", pestañas, controlador);
 		add(barra, BorderLayout.NORTH);
-
+		
 		cardSecciones = new CardLayout();
 		panelSecciones = new JPanel(cardSecciones);
 		panelSecciones.setBackground(VentanaPrincipal.COLOR_FONDO);
