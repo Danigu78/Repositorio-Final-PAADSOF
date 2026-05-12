@@ -2,6 +2,8 @@ package Gui.Controladores.cliente;
 
 import java.util.List;
 import java.util.ArrayList;
+
+import productos.Categoria;
 import productos.ProductoVenta;
 import tienda.Tienda;
 import usuarios.Cliente;
@@ -49,8 +51,9 @@ public class ControladorCatalogo implements ActionListener {
 	/**
 	 * Devuelve todos los productos con stock disponible.
 	 */
+
 	public List<ProductoVenta> obtenerTodosLosProductos() {
-		return tienda.buscarProductoVenta();
+		return tienda.getStockVentas();
 	}
 
 	/**
@@ -60,15 +63,14 @@ public class ControladorCatalogo implements ActionListener {
 			double precioMax) {
 		List<ProductoVenta> resultado = new ArrayList<>();
 		for (ProductoVenta p : tienda.getStockVentas()) {
-			if (p.getStockDisponible() <= 0)
-				continue;
+
 			if (texto != null && !texto.isBlank()) {
 				if (!p.getNombre().toLowerCase().contains(texto.toLowerCase()))
 					continue;
 			}
 			if (nombreCategoria != null && !nombreCategoria.equals("Todas")) {
 				boolean tieneCategoria = false;
-				for (productos.Categoria c : p.getCategorias()) {
+				for (Categoria c : p.getCategorias()) {
 					if (c.getNombre().equals(nombreCategoria)) {
 						tieneCategoria = true;
 						break;
@@ -171,7 +173,7 @@ public class ControladorCatalogo implements ActionListener {
 	}
 
 	/**
-	 * Extrae el número del ID de un producto ("PV3"  3).
+	 * Extrae el número del ID de un producto ("PV3" 3).
 	 */
 	private int extraerNumeroId(String id) {
 		if (id == null)

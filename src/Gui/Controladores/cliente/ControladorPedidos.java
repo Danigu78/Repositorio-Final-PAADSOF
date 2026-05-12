@@ -45,6 +45,9 @@ public class ControladorPedidos implements ActionListener {
 			vista.mostrarLista();
 		} else if (cmd.startsWith("verPedido:")) {
 			buscarPedidoYEjecutar(cmd.substring(10), p -> vista.verDetallePedido(p));
+		}else if (cmd.startsWith("verProducto")) {
+			 String idProducto = cmd.substring(12);
+			    vista.verProducto(idProducto);
 		} else if (cmd.startsWith("pagar:")) {
 			buscarPedidoYEjecutar(cmd.substring(6), p -> {
 				if (estaPendientePago(p)) {
@@ -164,5 +167,8 @@ public class ControladorPedidos implements ActionListener {
 
 	public Cliente getCliente() {
 		return cliente;
+	}
+	public ProductoVenta getProductoPorId(String idProducto) {
+	    return Tienda.getInstancia().buscarProductoVentaPorId(idProducto);
 	}
 }

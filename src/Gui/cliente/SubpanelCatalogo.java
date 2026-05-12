@@ -609,19 +609,40 @@ public class SubpanelCatalogo extends AbstractPanelCliente {
 		labelPrecio.setBorder(BorderFactory.createEmptyBorder(0, 0, VentanaPrincipal.escalar(4), 0));
 		panelInfo.add(labelPrecio);
 
-		JLabel labelNota = producto.getReseñas().isEmpty() ? new JLabel("Sin reseñas")
-				: new JLabel(String.format("%.1f/10", producto.getMediaPuntuacion()));
+		
+		if (producto.getStockDisponible() <= 0) {
+		    JLabel badgeAgotado = new JLabel("AGOTADO");
+		    badgeAgotado.setFont(VentanaPrincipal.FUENTE_PEQUENA);
+		    badgeAgotado.setForeground(Color.WHITE);
+		    badgeAgotado.setOpaque(true);
+		    badgeAgotado.setBackground(new Color(180, 50, 50));
+		    badgeAgotado.setBorder(BorderFactory.createEmptyBorder(
+		        VentanaPrincipal.escalar(2), VentanaPrincipal.escalar(6),
+		        VentanaPrincipal.escalar(2), VentanaPrincipal.escalar(6)));
+		    badgeAgotado.setAlignmentX(Component.CENTER_ALIGNMENT);
+		    panelInfo.add(badgeAgotado);
+		    panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(3)));
+		}
+
+		JLabel labelNota = producto.getReseñas().isEmpty()
+		    ? new JLabel("Sin reseñas")
+		    : new JLabel(String.format("%.1f/10", producto.getMediaPuntuacion()));
 		labelNota.setFont(VentanaPrincipal.FUENTE_PEQUENA);
 		labelNota.setForeground(VentanaPrincipal.COLOR_TEXTO2);
 		labelNota.setAlignmentX(Component.CENTER_ALIGNMENT);
-		labelNota.setBorder(BorderFactory.createEmptyBorder(0, 0, VentanaPrincipal.escalar(6), 0));
+		labelNota.setBorder(BorderFactory.createEmptyBorder(
+		    0, 0, VentanaPrincipal.escalar(6), 0));
 		panelInfo.add(labelNota);
 
-		// crearBotonNaranja() de PanelBaseInterfaz
 		JButton botonVer = crearBotonNaranja("Ver información");
 		botonVer.setAlignmentX(Component.CENTER_ALIGNMENT);
 		botonVer.setActionCommand("ver:" + producto.getId());
 		botonVer.addActionListener(controlador);
+		// Si está agotado deshabilitamos el botón
+		if (producto.getStockDisponible() <= 0) {
+		    botonVer.setEnabled(false);
+		    botonVer.setToolTipText("Producto agotado");
+		}
 		panelInfo.add(botonVer);
 
 		tarjeta.add(panelInfo, BorderLayout.CENTER);

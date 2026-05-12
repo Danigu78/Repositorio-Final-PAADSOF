@@ -367,11 +367,10 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 		JLabel labelImagen = new JLabel();
 		labelImagen.setHorizontalAlignment(SwingConstants.CENTER);
 		labelImagen.setPreferredSize(new Dimension(VentanaPrincipal.escalar(80), VentanaPrincipal.escalar(80)));
-		// cargarImagen() de PanelBaseInterfaz
+
 		cargarImagen(labelImagen, producto.getImagenRuta(), VentanaPrincipal.escalar(70), VentanaPrincipal.escalar(70));
 		fila.add(labelImagen, BorderLayout.WEST);
 
-		// crearPanelInfoTarjeta() y crearGbcTarjeta() de AbstractPanelCliente
 		JPanel panelInfo = crearPanelInfoTarjeta();
 		GridBagConstraints gbc = crearGbcTarjeta();
 
@@ -382,7 +381,7 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 		panelInfo.add(labelNombre, gbc);
 
 		JLabel labelCantidad = new JLabel(
-				"x" + linea.getCantidad() + "  —  " + String.format("%.2f€ / ud", linea.getPrecioVenta()));
+				"x" + linea.getCantidad() + "  -  " + String.format("%.2f€ / ud", linea.getPrecioVenta()));
 		labelCantidad.setFont(VentanaPrincipal.FUENTE_PEQUENA);
 		labelCantidad.setForeground(VentanaPrincipal.COLOR_TEXTO2);
 		gbc.gridy = 1;
@@ -396,28 +395,26 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 
 		fila.add(panelInfo, BorderLayout.CENTER);
 
-		// crearPanelBotonesTarjeta() y crearGbcBotonesTarjeta() de AbstractPanelCliente
 		JPanel panelBotones = crearPanelBotonesTarjeta();
 		GridBagConstraints gbcB = crearGbcBotonesTarjeta();
 
-		// crearBotonOutline() de PanelBaseInterfaz
 		JButton botonVerProducto = crearBotonOutline("Ver producto");
-		botonVerProducto.addActionListener(e -> verProducto(producto));
+		botonVerProducto.setActionCommand("verProducto:" + producto.getId());
+		botonVerProducto.addActionListener(controlador);
 		gbcB.gridy = 0;
 		panelBotones.add(botonVerProducto, gbcB);
 
 		if (pedido.getEstado() == EstadoPedido.ENTREGADO) {
 			if (!controlador.yaReseñó(producto)) {
-				// crearBotonNaranja() de PanelBaseInterfaz
 				JButton botonReseña = crearBotonNaranja("Escribir reseña");
 				botonReseña.setActionCommand("reseña:" + producto.getId());
 				botonReseña.addActionListener(controlador);
 				gbcB.gridy = 1;
 				panelBotones.add(botonReseña, gbcB);
 			} else {
-				JLabel labelYa = new JLabel("✓ Reseñado");
+				JLabel labelYa = new JLabel(" Reseñado");
 				labelYa.setFont(VentanaPrincipal.FUENTE_PEQUENA);
-				labelYa.setForeground(new Color(50, 150, 50));
+				labelYa.setForeground(new Color(50, 150, 50));// color verde
 				labelYa.setHorizontalAlignment(SwingConstants.CENTER);
 				gbcB.gridy = 1;
 				panelBotones.add(labelYa, gbcB);
@@ -507,7 +504,11 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 	 *
 	 * @param producto El producto a ver
 	 */
-	private void verProducto(ProductoVenta producto) {
+
+	public void verProducto(String idProducto) {
+		ProductoVenta producto = controlador.getProductoPorId(idProducto);
+		if (producto == null)
+			return;
 		ControladorCatalogo controladorCatalogo = new ControladorCatalogo(cliente, null);
 		subpanelProducto.setSubpanelOrigen(this);
 		subpanelProducto.mostrarProducto(producto, cliente, controladorCatalogo);
