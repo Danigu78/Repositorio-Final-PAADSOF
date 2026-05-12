@@ -20,25 +20,76 @@ import usuarios.TipoPermisos;
  */
 public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
 
+	/**
+	 * Serial version UID de la clase para serialización de Swing.
+	 */
 	private static final long serialVersionUID = 1L;
+
+	/**
+	 * Controlador encargado de la lógica de gestión de empleados.
+	 */
 	private ControladorEmpleadosGestor controlador;
+
+	/**
+	 * Panel principal que contiene la lista dinámica de empleados.
+	 */
 	private JPanel panelLista;
 
+	/**
+	 * Campo de texto para introducir el nickname del nuevo empleado.
+	 */
 	private JTextField campoNick;
+
+	/**
+	 * Campo de contraseña para el nuevo empleado.
+	 */
 	private JPasswordField campoPass;
+
+	/**
+	 * Lista de checkboxes para seleccionar permisos al dar de alta un empleado.
+	 */
 	private List<JCheckBox> checks;
+
+	/**
+	 * Lista de checkboxes utilizados para filtrar empleados por permisos.
+	 */
 	private List<JCheckBox> checksFiltroPermisos;
+
+	/**
+	 * Campo de búsqueda de empleados por texto.
+	 */
 	private JTextField campoBusquedaEmpleados;
+
+	/**
+	 * Lista de combos asociados a cada empleado para selección de permisos.
+	 */
 	private List<JComboBox<String>> combosPermisos = new ArrayList<>();
+
+	/**
+	 * Lista de IDs de empleados asociados a cada JComboBox de permisos.
+	 */
 	private List<String> idsCombosPermisos = new ArrayList<>();
+
+	/**
+	 * Botón para dar de alta un nuevo empleado.
+	 */
 	private JButton botonAlta;
 
+	/**
+	 * Constructor del subpanel de empleados del gestor.
+	 *
+	 * @param ventana ventana principal de la aplicación
+	 * @param gestor  gestor autenticado
+	 */
 	public SubpanelEmpleadosGestor(VentanaPrincipal ventana, Gestor gestor) {
 		super(ventana, gestor);
 		this.controlador = new ControladorEmpleadosGestor(this, gestor);
 		inicializarUI();
 	}
 
+	/**
+	 * Inicializa la interfaz del panel, creando formulario de alta y lista de empleados.
+	 */
 	private void inicializarUI() {
 		add(crearFormularioAlta(), BorderLayout.NORTH);
 
@@ -62,6 +113,11 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
 		actualizarLista();
 	}
 
+	/**
+	 * Asigna el controlador como listener del botón de alta.
+	 *
+	 * @param c controlador a asignar
+	 */
 	public void setControlador(ActionListener c) {
 		if (botonAlta != null) {
 			for (ActionListener al : botonAlta.getActionListeners())
@@ -70,6 +126,11 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
 		}
 	}
 
+	/**
+	 * Crea el formulario de alta de empleados con campos de nickname, contraseña y permisos.
+	 *
+	 * @return panel con el formulario de alta
+	 */
 	private JPanel crearFormularioAlta() {
 		JPanel panel = new JPanel(new GridBagLayout());
 		panel.setBackground(VentanaPrincipal.COLOR_TARJETA);
@@ -144,6 +205,9 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
 		return panel;
 	}
 
+	/**
+	 * Actualiza la lista de empleados visibles en el panel.
+	 */
 	private void actualizarLista() {
 		panelLista.removeAll();
 		combosPermisos.clear();
@@ -200,8 +264,7 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
 	}
 
 	/**
-	 * Filtra empleados usando gestor.buscarEmpleadoPorNombre() a través del
-	 * controlador.
+	 * Filtra empleados usando el texto de búsqueda y permisos seleccionados.
 	 */
 	private void filtrarEmpleados() {
 		String texto = campoBusquedaEmpleados.getText().trim();
@@ -237,6 +300,12 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
 		panelLista.repaint();
 	}
 
+	/**
+	 * Crea una fila visual que representa un empleado con sus datos y acciones.
+	 *
+	 * @param empleado empleado a representar
+	 * @return panel con la fila del empleado
+	 */
 	private JPanel crearFilaEmpleado(Empleado empleado) {
 		JPanel fila = new JPanel(new GridBagLayout());
 		fila.setBackground(VentanaPrincipal.COLOR_TARJETA);
@@ -343,6 +412,9 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
 		return fila;
 	}
 
+	/**
+	 * Procesa el alta de un nuevo empleado validando datos y permisos seleccionados.
+	 */
 	public void procesarAlta() {
 		String nick = campoNick.getText().trim();
 		String pass = new String(campoPass.getPassword());
@@ -374,6 +446,13 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
 		}
 	}
 
+	/**
+	 * Crea un JCheckBox configurado para un permiso.
+	 *
+	 * @param texto texto del permiso
+	 * @param fondo color de fondo
+	 * @return checkbox configurado
+	 */
 	private JCheckBox crearCheckPermiso(String texto, Color fondo) {
 		JCheckBox cb = new JCheckBox(texto);
 		cb.setFont(VentanaPrincipal.FUENTE_PEQUENA);
@@ -383,6 +462,12 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
 		return cb;
 	}
 
+	/**
+	 * Comprueba si un empleado pasa el filtro de permisos seleccionado.
+	 *
+	 * @param empleado empleado a comprobar
+	 * @return true si pasa el filtro
+	 */
 	private boolean pasaFiltroPermisos(Empleado empleado) {
 		if (checksFiltroPermisos == null || checksFiltroPermisos.isEmpty()) {
 			return true;
@@ -400,6 +485,11 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
 		return true;
 	}
 
+	/**
+	 * Confirma la baja de un empleado antes de ejecutarla.
+	 *
+	 * @param id identificador del empleado
+	 */
 	public void confirmarBaja(String id) {
 		String nick = controlador.getNicknameEmpleado(id);
 		int confirm = JOptionPane.showConfirmDialog(this, "¿Seguro que quieres dar de baja a " + nick + "?",
@@ -414,6 +504,11 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
 		}
 	}
 
+	/**
+	 * Asigna un permiso seleccionado a un empleado.
+	 *
+	 * @param id identificador del empleado
+	 */
 	public void procesarAsignarPermiso(String id) {
 		JComboBox<String> combo = getComboPermiso(id);
 		if (combo == null || combo.getSelectedItem() == null)
@@ -427,6 +522,11 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
 		}
 	}
 
+	/**
+	 * Retira un permiso seleccionado a un empleado.
+	 *
+	 * @param id identificador del empleado
+	 */
 	public void procesarRetirarPermiso(String id) {
 		JComboBox<String> combo = getComboPermiso(id);
 		if (combo == null || combo.getSelectedItem() == null)
@@ -440,6 +540,12 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
 		}
 	}
 
+	/**
+	 * Obtiene el JComboBox de permisos asociado a un empleado.
+	 *
+	 * @param id identificador del empleado
+	 * @return combo de permisos o null si no existe
+	 */
 	private JComboBox<String> getComboPermiso(String id) {
 		for (int i = 0; i < idsCombosPermisos.size(); i++) {
 			if (idsCombosPermisos.get(i).equals(id)) {
@@ -449,6 +555,11 @@ public class SubpanelEmpleadosGestor extends AbstractPanelGestor {
 		return null;
 	}
 
+	/**
+	 * Ajusta el tamaño visual de los botones de acción de empleado.
+	 *
+	 * @param boton botón a ajustar
+	 */
 	private void ajustarBotonEmpleado(JButton boton) {
 		boton.setPreferredSize(new Dimension(VentanaPrincipal.escalar(125), VentanaPrincipal.escalar(34)));
 	}
