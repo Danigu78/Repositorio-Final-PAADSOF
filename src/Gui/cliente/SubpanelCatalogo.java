@@ -525,128 +525,137 @@ public class SubpanelCatalogo extends AbstractPanelCliente {
 	 * @return Panel con la tarjeta
 	 */
 	private JPanel crearTarjeta(ProductoVenta producto) {
-		JPanel tarjeta = new JPanel(new BorderLayout(0, VentanaPrincipal.escalar(10)));
-		tarjeta.setBackground(VentanaPrincipal.COLOR_TARJETA);
-		tarjeta.setPreferredSize(new Dimension(VentanaPrincipal.escalar(300), VentanaPrincipal.escalar(350)));
-		tarjeta.setBorder(
-				BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
-						BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(35), VentanaPrincipal.escalar(8),
-								VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(8))));
+	    JPanel tarjeta = new JPanel(
+	        new BorderLayout(0, VentanaPrincipal.escalar(10)));
+	    tarjeta.setBackground(VentanaPrincipal.COLOR_TARJETA);
+	    tarjeta.setPreferredSize(new Dimension(
+	        VentanaPrincipal.escalar(300), VentanaPrincipal.escalar(350)));
+	    tarjeta.setBorder(BorderFactory.createCompoundBorder(
+	        BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
+	        BorderFactory.createEmptyBorder(
+	            VentanaPrincipal.escalar(35), VentanaPrincipal.escalar(8),
+	            VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(8))));
 
-		tarjeta.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				tarjeta.setBorder(BorderFactory
-						.createCompoundBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_ACENTO),
-								BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(45),
-										VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(8),
-										VentanaPrincipal.escalar(8))));
-			}
+	    tarjeta.addMouseListener(new MouseAdapter() {
+	        @Override public void mouseEntered(MouseEvent e) {
+	            tarjeta.setBorder(BorderFactory.createCompoundBorder(
+	                BorderFactory.createLineBorder(VentanaPrincipal.COLOR_ACENTO),
+	                BorderFactory.createEmptyBorder(
+	                    VentanaPrincipal.escalar(45), VentanaPrincipal.escalar(8),
+	                    VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(8))));
+	        }
+	        @Override public void mouseExited(MouseEvent e) {
+	            tarjeta.setBorder(BorderFactory.createCompoundBorder(
+	                BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
+	                BorderFactory.createEmptyBorder(
+	                    VentanaPrincipal.escalar(35), VentanaPrincipal.escalar(8),
+	                    VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(8))));
+	        }
+	    });
 
-			@Override
-			public void mouseExited(MouseEvent e) {
-				tarjeta.setBorder(
-						BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE),
-								BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(35),
-										VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(8),
-										VentanaPrincipal.escalar(8))));
-			}
-		});
+	    JLabel labelImagen = new JLabel();
+	    labelImagen.setHorizontalAlignment(SwingConstants.CENTER);
+	    labelImagen.setPreferredSize(new Dimension(
+	        VentanaPrincipal.escalar(160), VentanaPrincipal.escalar(130)));
+	    cargarImagen(labelImagen, producto.getImagenRuta(),
+	        VentanaPrincipal.escalar(150), VentanaPrincipal.escalar(130));
+	    tarjeta.add(labelImagen, BorderLayout.NORTH);
 
-		JLabel labelImagen = new JLabel();
-		labelImagen.setHorizontalAlignment(SwingConstants.CENTER);
-		labelImagen.setPreferredSize(new Dimension(VentanaPrincipal.escalar(160), VentanaPrincipal.escalar(130)));
-		// cargarImagen() de PanelBaseInterfaz
-		cargarImagen(labelImagen, producto.getImagenRuta(), VentanaPrincipal.escalar(150),
-				VentanaPrincipal.escalar(130));
-		tarjeta.add(labelImagen, BorderLayout.NORTH);
+	    JPanel panelInfo = new JPanel();
+	    panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.Y_AXIS));
+	    panelInfo.setBackground(VentanaPrincipal.COLOR_TARJETA);
 
-		JPanel panelInfo = new JPanel();
-		panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.Y_AXIS));
-		panelInfo.setBackground(VentanaPrincipal.COLOR_TARJETA);
+	    // etiquetas PACK y AGOTADO en la misma fila horizontal
+	    JPanel panelBadges = new JPanel(new FlowLayout(
+	        FlowLayout.CENTER, VentanaPrincipal.escalar(4), 0));
+	    panelBadges.setOpaque(false);
+	    panelBadges.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-		// Badge PACK
-		if (producto instanceof Pack) {
-			JLabel badge = new JLabel("PACK");
-			badge.setFont(VentanaPrincipal.FUENTE_PEQUENA);
-			badge.setForeground(Color.WHITE);
-			badge.setOpaque(true);
-			badge.setBackground(VentanaPrincipal.COLOR_ACENTO);
-			badge.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(2), VentanaPrincipal.escalar(6),
-					VentanaPrincipal.escalar(2), VentanaPrincipal.escalar(6)));
-			badge.setAlignmentX(Component.CENTER_ALIGNMENT);
-			panelInfo.add(badge);
-			panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(3)));
-		}
+	    if (producto instanceof Pack) {
+	        JLabel badgePack = new JLabel("PACK");
+	        badgePack.setFont(VentanaPrincipal.FUENTE_PEQUENA);
+	        badgePack.setForeground(Color.WHITE);
+	        badgePack.setOpaque(true);
+	        badgePack.setBackground(VentanaPrincipal.COLOR_ACENTO);
+	        badgePack.setBorder(BorderFactory.createEmptyBorder(
+	            VentanaPrincipal.escalar(2), VentanaPrincipal.escalar(5),
+	            VentanaPrincipal.escalar(2), VentanaPrincipal.escalar(5)));
+	        panelBadges.add(badgePack);
+	    }
 
-		String nombre = producto.getNombre();
-		if (nombre.length() > 18)
-			nombre = nombre.substring(0, 16) + "...";
-		JLabel labelNombre = new JLabel(nombre);
-		labelNombre.setFont(VentanaPrincipal.FUENTE_BOTON);
-		labelNombre.setForeground(VentanaPrincipal.COLOR_TEXTO);
-		labelNombre.setAlignmentX(Component.CENTER_ALIGNMENT);
-		labelNombre.setBorder(
-				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(5), 0, VentanaPrincipal.escalar(5), 0));
-		panelInfo.add(labelNombre);
+	    if (producto.getStockDisponible() <= 0) {
+	        JLabel badgeAgotado = new JLabel("AGOTADO");
+	        badgeAgotado.setFont(VentanaPrincipal.FUENTE_PEQUENA);
+	        badgeAgotado.setForeground(Color.WHITE);
+	        badgeAgotado.setOpaque(true);
+	        badgeAgotado.setBackground(new Color(180, 50, 50));
+	        badgeAgotado.setBorder(BorderFactory.createEmptyBorder(
+	            VentanaPrincipal.escalar(2), VentanaPrincipal.escalar(5),
+	            VentanaPrincipal.escalar(2), VentanaPrincipal.escalar(5)));
+	        panelBadges.add(badgeAgotado);
+	    }
 
-		String desc = producto.getDescripcion();
-		if (desc.length() > 30)
-			desc = desc.substring(0, 28) + "...";
-		JLabel labelDesc = new JLabel(desc);
-		labelDesc.setFont(VentanaPrincipal.FUENTE_PEQUENA);
-		labelDesc.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-		labelDesc.setAlignmentX(Component.CENTER_ALIGNMENT);
-		labelDesc.setBorder(
-				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(5), 0, VentanaPrincipal.escalar(8), 0));
-		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(3)));
-		panelInfo.add(labelDesc);
+	    if (panelBadges.getComponentCount() > 0) {
+	        panelInfo.add(panelBadges);
+	        panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(3)));
+	    }
 
-		JLabel labelPrecio = new JLabel(String.format("%.2f€", producto.getPrecioOficial()));
-		labelPrecio.setFont(VentanaPrincipal.FUENTE_PRECIO);
-		labelPrecio.setForeground(VentanaPrincipal.COLOR_ACENTO);
-		labelPrecio.setAlignmentX(Component.CENTER_ALIGNMENT);
-		labelPrecio.setBorder(BorderFactory.createEmptyBorder(0, 0, VentanaPrincipal.escalar(4), 0));
-		panelInfo.add(labelPrecio);
+	    String nombre = producto.getNombre();
+	    if (nombre.length() > 18) nombre = nombre.substring(0, 16) + "...";
+	    JLabel labelNombre = new JLabel(nombre);
+	    labelNombre.setFont(VentanaPrincipal.FUENTE_BOTON);
+	    labelNombre.setForeground(VentanaPrincipal.COLOR_TEXTO);
+	    labelNombre.setAlignmentX(Component.CENTER_ALIGNMENT);
+	    labelNombre.setBorder(BorderFactory.createEmptyBorder(
+	        VentanaPrincipal.escalar(5), 0, VentanaPrincipal.escalar(5), 0));
+	    panelInfo.add(labelNombre);
 
-		
-		if (producto.getStockDisponible() <= 0) {
-		    JLabel badgeAgotado = new JLabel("AGOTADO");
-		    badgeAgotado.setFont(VentanaPrincipal.FUENTE_PEQUENA);
-		    badgeAgotado.setForeground(Color.WHITE);
-		    badgeAgotado.setOpaque(true);
-		    badgeAgotado.setBackground(new Color(180, 50, 50));
-		    badgeAgotado.setBorder(BorderFactory.createEmptyBorder(
-		        VentanaPrincipal.escalar(2), VentanaPrincipal.escalar(6),
-		        VentanaPrincipal.escalar(2), VentanaPrincipal.escalar(6)));
-		    badgeAgotado.setAlignmentX(Component.CENTER_ALIGNMENT);
-		    panelInfo.add(badgeAgotado);
-		    panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(3)));
-		}
+	    String desc = producto.getDescripcion();
+	    if (desc.length() > 30) desc = desc.substring(0, 28) + "...";
+	    JLabel labelDesc = new JLabel(desc);
+	    labelDesc.setFont(VentanaPrincipal.FUENTE_PEQUENA);
+	    labelDesc.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+	    labelDesc.setAlignmentX(Component.CENTER_ALIGNMENT);
+	    labelDesc.setBorder(BorderFactory.createEmptyBorder(
+	        VentanaPrincipal.escalar(5), 0, VentanaPrincipal.escalar(8), 0));
+	    panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(3)));
+	    panelInfo.add(labelDesc);
 
-		JLabel labelNota = producto.getReseñas().isEmpty()
-		    ? new JLabel("Sin reseñas")
-		    : new JLabel(String.format("%.1f/10", producto.getMediaPuntuacion()));
-		labelNota.setFont(VentanaPrincipal.FUENTE_PEQUENA);
-		labelNota.setForeground(VentanaPrincipal.COLOR_TEXTO2);
-		labelNota.setAlignmentX(Component.CENTER_ALIGNMENT);
-		labelNota.setBorder(BorderFactory.createEmptyBorder(
-		    0, 0, VentanaPrincipal.escalar(6), 0));
-		panelInfo.add(labelNota);
+	    JLabel labelPrecio = new JLabel(
+	        String.format("%.2f€", producto.getPrecioOficial()));
+	    labelPrecio.setFont(VentanaPrincipal.FUENTE_PRECIO);
+	    labelPrecio.setForeground(VentanaPrincipal.COLOR_ACENTO);
+	    labelPrecio.setAlignmentX(Component.CENTER_ALIGNMENT);
+	    labelPrecio.setBorder(BorderFactory.createEmptyBorder(
+	        0, 0, VentanaPrincipal.escalar(4), 0));
+	    panelInfo.add(labelPrecio);
 
-		JButton botonVer = crearBotonNaranja("Ver información");
-		botonVer.setAlignmentX(Component.CENTER_ALIGNMENT);
-		botonVer.setActionCommand("ver:" + producto.getId());
-		botonVer.addActionListener(controlador);
-		// Si está agotado deshabilitamos el botón
-		if (producto.getStockDisponible() <= 0) {
-		    botonVer.setEnabled(false);
-		    botonVer.setToolTipText("Producto agotado");
-		}
-		panelInfo.add(botonVer);
+	   
+	 
 
-		tarjeta.add(panelInfo, BorderLayout.CENTER);
-		return tarjeta;
+	    JLabel labelNota = producto.getReseñas().isEmpty()
+	        ? new JLabel("Sin reseñas")
+	        : new JLabel(String.format("%.1f/10",
+	            producto.getMediaPuntuacion()));
+	    labelNota.setFont(VentanaPrincipal.FUENTE_PEQUENA);
+	    labelNota.setForeground(VentanaPrincipal.COLOR_TEXTO2);
+	    labelNota.setAlignmentX(Component.CENTER_ALIGNMENT);
+	    labelNota.setBorder(BorderFactory.createEmptyBorder(
+	        0, 0, VentanaPrincipal.escalar(6), 0));
+	    panelInfo.add(labelNota);
+
+	    JButton botonVer = crearBotonNaranja("Ver información");
+	    botonVer.setAlignmentX(Component.CENTER_ALIGNMENT);
+	    botonVer.setActionCommand("ver:" + producto.getId());
+	    botonVer.addActionListener(controlador);
+	    if (producto.getStockDisponible() <= 0) {
+	        botonVer.setEnabled(false);
+	        botonVer.setToolTipText("Producto agotado");
+	    }
+	    panelInfo.add(botonVer);
+
+	    tarjeta.add(panelInfo, BorderLayout.CENTER);
+	    return tarjeta;
 	}
 
 	/**

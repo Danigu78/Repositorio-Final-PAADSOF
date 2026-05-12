@@ -193,7 +193,7 @@ public class SubpanelDescuentos extends AbstractPanelCliente {
 		tarjeta.add(tipo, BorderLayout.WEST);
 
 		JPanel panelInfo = crearPanelInfoTarjeta();
-		JLabel labelNombre = new JLabel(d.getNombre());
+		JLabel labelNombre = new JLabel(d.getNombre()+ " ");
 		labelNombre.setFont(VentanaPrincipal.FUENTE_BOTON);
 		labelNombre.setForeground(VentanaPrincipal.COLOR_TEXTO);
 		panelInfo.add(labelNombre);
