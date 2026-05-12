@@ -621,7 +621,13 @@ public class Tienda implements Serializable {
 	 * @return el cliente creado o null si no se pudo registrar
 	 */
 	public Cliente registrarNuevoCliente(String nickname, String password, String dni) {
-		if (!dni.matches("\\d{8}[A-Za-z]")) {
+		if (nickname == null || nickname.isBlank() || password == null || password.isBlank() || dni == null
+				|| dni.isBlank()) {
+			return null;
+		}
+		nickname = nickname.trim();
+		dni = dni.trim();
+		if (!dniTieneFormatoValido(dni)) {
 			System.out.println("El DNI no tiene el formato correcto (8 dígitos y 1 letra).");
 			return null;
 		}
@@ -643,6 +649,18 @@ public class Tienda implements Serializable {
 						+ "! Te has registrado correctamente, ahora podrás consultar nuestra tienda.",
 				TipoNotificacion.CONFIRMACION_RESERVA_CARRITO);
 		return nuevo;
+	}
+
+	private boolean dniTieneFormatoValido(String dni) {
+		if (dni.length() != 9) {
+			return false;
+		}
+		for (int i = 0; i < 8; i++) {
+			if (!Character.isDigit(dni.charAt(i))) {
+				return false;
+			}
+		}
+		return Character.isLetter(dni.charAt(8));
 	}
 
 	/**
@@ -1346,6 +1364,10 @@ public class Tienda implements Serializable {
 
 	public Empleado registrarNuevoEmpleado(String nickname, String password) {
 		if (nickname == null || nickname.isBlank() || password == null || password.isBlank()) {
+			return null;
+		}
+		nickname = nickname.trim();
+		if (!UsuarioRegistrado.validarPassword(password)) {
 			return null;
 		}
 

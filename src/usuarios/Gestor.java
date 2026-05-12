@@ -85,11 +85,9 @@ public class Gestor extends UsuarioRegistrado implements Serializable {
 			System.out.println("El nombre de la categoria no puede estar vacio");
 			return null;
 		}
-		for (Categoria cat : Tienda.getInstancia().getCategorias()) {
-			if (cat.getNombre().equals(name)) {
-				return cat;
-			}
-		}
+		Categoria cat = Tienda.getInstancia().buscarCategoriaPorNombre(name.trim());
+		if (cat != null)
+			return cat;
 		System.out.println("No hay ninguna categoria de productos con ese nombre");
 		return null;
 	}
@@ -573,7 +571,15 @@ public class Gestor extends UsuarioRegistrado implements Serializable {
 			System.out.println("La descripcion no puede estar vacia");
 			return false;
 		}
-		Categoria c = new Categoria(nombre, descripcion);
+		String nombreLimpio = nombre.trim();
+		for (Categoria categoria : Tienda.getInstancia().getCategorias()) {
+			if (categoria != null && categoria.getNombre() != null
+					&& categoria.getNombre().equalsIgnoreCase(nombreLimpio)) {
+				System.out.println("Ya existe una categoria con ese nombre");
+				return false;
+			}
+		}
+		Categoria c = new Categoria(nombreLimpio, descripcion.trim());
 		Tienda.getInstancia().getCategorias().add(c);
 		System.out.println("La categoria " + nombre + " ha sido creada y añadida correctamente.");
 		return true;

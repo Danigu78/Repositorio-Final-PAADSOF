@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import tienda.GuardadoTienda;
 import tienda.Tienda;
 import usuarios.Cliente;
 
@@ -85,26 +86,75 @@ public class ComprobadorTiempos {
 	 * Revisa los carritos guardados y elimina los que ya han caducado
 	 */
 	public void revisarCarritosCaducados() {
+		boolean cambios = false;
 		Iterator<Map.Entry<String, Carrito>> it = carritosPorUsuario.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry<String, Carrito> entry = it.next();
 			Carrito carrito = entry.getValue();
-			if (carrito != null && carrito.estaCaducado()) {
+			if (carrito == null) {
+				it.remove();
+				cambios = true;
+				continue;
+			}
+			if (carrito.getPropietario() != null && carrito.getPropietario().getCarritoActual() != carrito) {
+				it.remove();
+				cambios = true;
+				continue;
+			}
+			if (carrito.estaCaducado()) {
 				carrito.caducar();
 				it.remove();
+				cambios = true;
 			}
 		}
+		if (revisarCarritosDeClientes()) {
+			cambios = true;
+		}
+		if (cambios) {
+			GuardadoTienda.guardar(Tienda.getInstancia());
+		}
+	}
+
+	private boolean revisarCarritosDeClientes() {
+		boolean cambios = false;
+		for (Cliente cliente : Tienda.getInstancia().obtenerClientesTienda()) {
+			if (cliente == null) {
+				continue;
+			}
+			Carrito carrito = cliente.getCarritoActual();
+			if (carrito == null) {
+				if (carritosPorUsuario.remove(cliente.getId()) != null) {
+					cambios = true;
+				}
+				continue;
+			}
+			if (carrito.estaCaducado()) {
+				carrito.caducar();
+				carritosPorUsuario.remove(cliente.getId());
+				cambios = true;
+			} else if (carritosPorUsuario.get(cliente.getId()) != carrito) {
+				carritosPorUsuario.put(cliente.getId(), carrito);
+				cambios = true;
+			}
+		}
+		return cambios;
 	}
 
 	/**
 	 * Revisa los pedidos pendientes y cancela los que han caducado
 	 */
 	public void revisarPedidosPendientesCaducados() {
-		revisarPedidosRegistrados();
-		revisarPedidosDelHistorial();
+		boolean cambios = revisarPedidosRegistrados();
+		if (revisarPedidosDelHistorial()) {
+			cambios = true;
+		}
+		if (cambios) {
+			GuardadoTienda.guardar(Tienda.getInstancia());
+		}
 	}
 
-	private void revisarPedidosRegistrados() {
+	private boolean revisarPedidosRegistrados() {
+		boolean cambios = false;
 		Iterator<Map.Entry<String, List<Pedido>>> itMapa = pedidosPendientesPorUsuario.entrySet().iterator();
 
 		while (itMapa.hasNext()) {
@@ -113,6 +163,7 @@ public class ComprobadorTiempos {
 
 			if (pedidos == null) {
 				itMapa.remove();
+				cambios = true;
 				continue;
 			}
 
@@ -123,27 +174,35 @@ public class ComprobadorTiempos {
 
 				if (pedido == null) {
 					it.remove();
+					cambios = true;
 					continue;
 				}
 
 				if (pedido.isCaducado()) {
 					pedido.cancelarPedido();
 					it.remove();
+					cambios = true;
 				}
 			}
 
 			if (pedidos.isEmpty()) {
 				itMapa.remove();
+				cambios = true;
 			}
 		}
+		return cambios;
 	}
 
-	private void revisarPedidosDelHistorial() {
+	private boolean revisarPedidosDelHistorial() {
+		boolean cambios = false;
 		for (Pedido pedido : Tienda.getInstancia().getHistorialVentas()) {
 			if (pedido != null && pedido.isCaducado()) {
-				pedido.cancelarPedido();
+				if (pedido.cancelarPedido()) {
+					cambios = true;
+				}
 			}
 		}
+		return cambios;
 	}
 
 	/**
@@ -190,6 +249,9 @@ public class ComprobadorTiempos {
 	 * @param pedido    el pedido que se quiere guardar
 	 */
 	public void registrarPedido(String idUsuario, Pedido pedido) {
+		if (idUsuario == null || pedido == null) {
+			return;
+		}
 
 		List<Pedido> lista = pedidosPendientesPorUsuario.get(idUsuario);
 

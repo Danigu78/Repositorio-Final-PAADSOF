@@ -715,6 +715,7 @@ public class Cliente extends UsuarioRegistrado implements Serializable {
 			Pedido pedido = new Pedido(this, this.carritoActual);
 			this.getHistorialPedidos().add(pedido);
 			Tienda.getInstancia().registrarVenta(pedido);
+			Tienda.getInstancia().getComprobadorTiempos().quitarCarrito(this.getId());
 			Tienda.getInstancia().getComprobadorTiempos().registrarPedido(this.getId(), pedido);
 			this.carritoActual = null;
 			System.out.println("El cliente " + this.getNickname()
