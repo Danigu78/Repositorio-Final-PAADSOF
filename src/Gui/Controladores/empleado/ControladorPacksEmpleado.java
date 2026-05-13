@@ -23,6 +23,8 @@ public class ControladorPacksEmpleado implements ActionListener {
 	public static final String VER_CONTENIDO = "packs.verContenido";
 	public static final String LIMPIAR_CREAR = "packs.limpiarCrear";
 	public static final String CREAR_PACK = "packs.crear";
+	public static final String SELECCIONAR_IMAGEN = "packs.seleccionarImagen";
+	public static final String VER_IMAGEN = "packs.verImagen";
 	public static final String VER_PACK = "packs.ver";
 	public static final String ANADIR_PRODUCTO = "packs.anadirProducto";
 	public static final String CAMBIAR_UNIDADES = "packs.cambiarUnidades";
@@ -57,6 +59,10 @@ public class ControladorPacksEmpleado implements ActionListener {
 			vista.limpiarFormularioCrear();
 		} else if (CREAR_PACK.equals(accion)) {
 			vista.crearPack();
+		} else if (SELECCIONAR_IMAGEN.equals(accion)) {
+			vista.seleccionarImagenPack();
+		} else if (VER_IMAGEN.equals(accion)) {
+			vista.verImagenPack();
 		} else if (VER_PACK.equals(accion)) {
 			vista.verPack();
 		} else if (ANADIR_PRODUCTO.equals(accion)) {

@@ -179,6 +179,12 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		areaDescripcionPack.setPreferredSize(new Dimension(VentanaPrincipal.escalar(360), VentanaPrincipal.escalar(70)));
 		areaDescripcionPack.setMaximumSize(new Dimension(Integer.MAX_VALUE, VentanaPrincipal.escalar(70)));
 		campoImagenPack = crearCampo();
+		campoImagenPack.addFocusListener(new java.awt.event.FocusAdapter() {
+			@Override
+			public void focusLost(java.awt.event.FocusEvent e) {
+				normalizarCampoImagenPack();
+			}
+		});
 		campoPrecioPack = crearCampo();
 		campoStockPack = crearCampo();
 
@@ -248,7 +254,7 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		panel.add(crearCampoFormulario("Descripción", estilizarScroll(areaDescripcion)));
 		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
-		panel.add(crearCampoPack("Imagen", campoImagen, 40));
+		panel.add(crearCampoFormulario("Imagen", crearSelectorImagenPack()));
 		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
 		panel.add(crearCampoPack("Precio", campoPrecio, 40));
@@ -272,6 +278,39 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		JPanel panelCampo = crearCampoFormulario(etiqueta, campo);
 		panelCampo.setMaximumSize(new Dimension(Integer.MAX_VALUE, VentanaPrincipal.escalar(altoCampo + 24)));
 		return panelCampo;
+	}
+
+	private JPanel crearSelectorImagenPack() {
+		JButton botonSeleccionarImagen = crearBotonSecundario("Abrir...");
+		JButton botonVerImagen = crearBotonSecundario("Ver imagen");
+
+		ajustarBotonImagenPack(botonSeleccionarImagen);
+		ajustarBotonImagenPack(botonVerImagen);
+
+		conectar(botonSeleccionarImagen, ControladorPacksEmpleado.SELECCIONAR_IMAGEN);
+		conectar(botonVerImagen, ControladorPacksEmpleado.VER_IMAGEN);
+
+		JPanel selector = new JPanel();
+		selector.setOpaque(false);
+		selector.setLayout(new BoxLayout(selector, BoxLayout.Y_AXIS));
+		selector.add(campoImagenPack);
+		selector.add(Box.createVerticalStrut(VentanaPrincipal.escalar(6)));
+
+		JPanel botones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+		botones.setOpaque(false);
+		botones.add(botonSeleccionarImagen);
+		botones.add(Box.createHorizontalStrut(VentanaPrincipal.escalar(8)));
+		botones.add(botonVerImagen);
+		selector.add(botones);
+
+		return selector;
+	}
+
+	private void ajustarBotonImagenPack(JButton boton) {
+		Dimension tamano = new Dimension(VentanaPrincipal.escalar(115), VentanaPrincipal.escalar(36));
+		boton.setPreferredSize(tamano);
+		boton.setMaximumSize(tamano);
+		boton.setMinimumSize(tamano);
 	}
 
 	private JPanel crearPanelCategoriasPack() {
@@ -417,6 +456,27 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		return fila;
 	}
 
+	public void seleccionarImagenPack() {
+		JFileChooser selectorImagen = new JFileChooser();
+		int opcion = selectorImagen.showOpenDialog(this);
+
+		if (opcion == JFileChooser.APPROVE_OPTION && selectorImagen.getSelectedFile() != null) {
+			campoImagenPack.setText(UtilidadesImagenProducto.normalizarRutaImagen(selectorImagen.getSelectedFile().getPath()));
+		}
+	}
+
+	public void verImagenPack() {
+		normalizarCampoImagenPack();
+		String rutaImagen = campoImagenPack.getText().trim();
+
+		if (rutaImagen.isBlank()) {
+			mostrarError("Selecciona o escribe la imagen del pack.");
+			return;
+		}
+
+		UtilidadesImagenProducto.mostrarImagenProducto(this, rutaImagen);
+	}
+
 	public void verPack() {
 		String idPack = campoIdPack.getText().trim();
 
@@ -453,6 +513,7 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 	}
 
 	public void crearPack() {
+		normalizarCampoImagenPack();
 		crearPack(campoNombrePack, areaDescripcionPack, campoImagenPack, campoPrecioPack, campoStockPack);
 	}
 
@@ -511,6 +572,10 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 				check.setSelected(false);
 			}
 		}
+	}
+
+	private void normalizarCampoImagenPack() {
+		campoImagenPack.setText(UtilidadesImagenProducto.normalizarRutaImagen(campoImagenPack.getText()));
 	}
 
 	public void anadirProductoAPack() {
