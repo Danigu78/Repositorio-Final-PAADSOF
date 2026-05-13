@@ -250,9 +250,9 @@ public class VentanaPrincipal extends JFrame {
 		}
 
 		int dpi = Toolkit.getDefaultToolkit().getScreenResolution();
-		double escala = Math.min(1.0, dpi / 96.0);
+		double escala = dpi / 96.0;
 
-		return (int) Math.round(tamano * escala);
+		return (int) (tamano * escala);
 	}
 
 	public static void main(String[] args) {

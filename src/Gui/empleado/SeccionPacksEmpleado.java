@@ -243,7 +243,7 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 	}
 
 	private JPanel crearPanelCategoriasPack() {
-		JPanel panel = new JPanel(new GridLayout(0, 2, VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(4)));
+		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
 		panel.setOpaque(false);
 
 		checksCategoriasPack.clear();
@@ -264,9 +264,7 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		scroll.setOpaque(false);
 		scroll.getViewport().setOpaque(false);
 		scroll.setBorder(null);
-		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		scroll.setPreferredSize(new Dimension(VentanaPrincipal.escalar(390), VentanaPrincipal.escalar(115)));
+		scroll.setPreferredSize(new Dimension(VentanaPrincipal.escalar(390), VentanaPrincipal.escalar(80)));
 
 		JPanel contenedor = new JPanel(new BorderLayout());
 		contenedor.setOpaque(false);
