@@ -10,23 +10,36 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Controlador de la pantalla de login y registro. Implementa ActionListener
- * según el patrón MVC de los apuntes.
+ * Controlador de la pantalla de login y registro.
  *
  * @author Daniel
  * @version 1.0
  */
 public class ControladorLogin implements ActionListener {
-
+	/** Ventana principal de la aplicación. */
 	private VentanaPrincipal ventana;
+	/** Vista de login y registro. */
 	private PantallaLogin vista;
+	/** Instancia principal de la tienda. */
 	private Tienda tienda;
-
+	/**
+	 * Construye el controlador de login.
+	 *
+	 * @param ventana ventana principal
+	 * @param vista pantalla de login
+	 * @return void
+	 */
 	public ControladorLogin(VentanaPrincipal ventana, PantallaLogin vista) {
 		this.ventana = ventana;
 		this.vista = vista;
 		this.tienda = Tienda.getInstancia();
 	}
+	/**
+	 * Gestiona los eventos de la vista.
+	 *
+	 * @param e evento de acción
+	 * @return void
+	 */
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -47,7 +60,12 @@ public class ControladorLogin implements ActionListener {
 	}
 
 	/**
-	 * Realiza el login según el tipo de usuario seleccionado.
+	 * Realiza el login según el tipo de usuario.
+	 *
+	 * @param nickname nombre de usuario
+	 * @param password contraseña del usuario
+	 * @param tipo tipo de usuario (Cliente, Empleado o Gestor)
+	 * @return void
 	 */
 	public void realizarLogin(String nickname, String password, String tipo) {
 		if (nickname.isEmpty() || password.isEmpty()) {
@@ -84,7 +102,13 @@ public class ControladorLogin implements ActionListener {
 	}
 
 	/**
-	 * Realiza el registro de un nuevo cliente.
+	 * Registra un nuevo cliente en el sistema.
+	 *
+	 * @param nickname nombre de usuario
+	 * @param password contraseña del usuario
+	 * @param dni documento del cliente
+	 * @param tipo tipo de usuario (debe ser Cliente)
+	 * @return void
 	 */
 	public void realizarRegistro(String nickname, String password, String dni, String tipo) {
 		if (!"Cliente".equalsIgnoreCase(tipo)) {
@@ -115,15 +139,28 @@ public class ControladorLogin implements ActionListener {
 			vista.mostrarError("Error al registrarse: " + ex.getMessage());
 		}
 	}
-
+	/**
+	 * Inicia sesión como invitado.
+	 *
+	 * @return void
+	 */
 	public void continuarComoInvitado() {
 		ventana.loginInvitado();
 	}
 
+/**
+ * Muestra la pantalla de registro.
+ *
+ * @return void
+ */
 	public void irARegistro() {
 		vista.mostrarRegistro();
 	}
-
+	/**
+	 * Muestra la pantalla de login.
+	 *
+	 * @return void
+	 */
 	public void irALogin() {
 		vista.mostrarLogin();
 	}

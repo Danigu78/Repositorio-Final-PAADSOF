@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.Locale;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -493,7 +494,7 @@ public abstract class PanelBaseInterfaz extends JPanel {
 				label.setText("Sin imagen");
 				label.setForeground(VentanaPrincipal.COLOR_TEXTO2);
 			}
-		} catch (java.io.IOException e) {
+		} catch (IOException e) {
 			label.setText("Sin imagen");
 			label.setForeground(VentanaPrincipal.COLOR_TEXTO2);
 		}
@@ -615,13 +616,13 @@ public abstract class PanelBaseInterfaz extends JPanel {
 		labelUsuario.setForeground(VentanaPrincipal.COLOR_TEXTO2);
 		panelDerecha.add(labelUsuario);
 
-		// Separador vertical entre nickname y botón salir
+		
 		JPanel separador = new JPanel();
 		separador.setBackground(VentanaPrincipal.COLOR_ACENTO);
 		separador.setPreferredSize(new Dimension(VentanaPrincipal.escalar(3), VentanaPrincipal.escalar(25)));
 		panelDerecha.add(separador);
 
-		// crearBotonRojo() ya existe en PanelBaseInterfaz
+	
 		JButton botonLogout = crearBotonRojo(" Salir");
 		botonLogout.setFont(VentanaPrincipal.FUENTE_PEQUENA);
 		botonLogout.addActionListener(e -> ventana.logout());
@@ -677,8 +678,7 @@ public abstract class PanelBaseInterfaz extends JPanel {
 	}
 
 	/**
-	 * Marca un botón de la barra como activo y desmarca el anterior. Lo llaman los
-	 * paneles principales desde su actionPerformed.
+	 * Marca un botón de la barra como activo y desmarca el anterior.
 	 *
 	 * @param barra La barra de navegación
 	 * @param boton El botón a marcar como activo
@@ -721,8 +721,7 @@ public abstract class PanelBaseInterfaz extends JPanel {
 	}
 
 	/**
-	 * Actualiza el nombre de usuario que se muestra en la barra de navegación. Lo
-	 * llaman los subpaneles tras cambiar el nickname en el perfil.
+	 * Actualiza el nombre de usuario que se muestra en la barra de navegación.
 	 *
 	 * @param barra       La barra de navegación
 	 * @param nuevoNombre El nuevo nombre a mostrar
