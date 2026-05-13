@@ -9,8 +9,7 @@ import java.awt.event.*;
 import usuarios.Gestor;
 
 /**
- * Subpanel de perfil del gestor. Extiende AbstractPanelGestor para reutilizar
- * helpers visuales. Sigue el patrón MVC de los apuntes.
+ * Subpanel de perfil del gestor.
  *
  * @author Antonino
  * @version 1.0
@@ -22,22 +21,47 @@ public class SubpanelPerfilGestor extends AbstractPanelGestor {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Controlador asociado al subpanel.
+	 * Gestiona la lógica de actualización del perfil del gestor.
+	 */
 	private ControladorConfiguracionGestor controlador;
 
-	// Campos — atributos para que el controlador pueda leerlos
+	/**
+	 * Campo de texto para introducir el nuevo nickname del gestor.
+	 */
 	private JTextField campoNick;
+	
+	/**
+	 * Campo de contraseña para introducir la nueva contraseña del gestor.
+	 */
 	private JPasswordField campoPass;
+	
+	/**
+	 * Etiqueta que muestra el nickname actual del gestor.
+	 */
 	private JLabel labelNickActual;
 
-	// Botón — atributo para registrar el controlador
+	/**
+	 * Botón que guarda los cambios realizados en el perfil.
+	 */
 	private JButton botonGuardar;
 
+	/**
+	 * Constructor del subpanel de perfil del gestor.
+	 *
+	 * @param ventana ventana principal del sistema
+	 * @param gestor  usuario gestor loggeado
+	 */
 	public SubpanelPerfilGestor(VentanaPrincipal ventana, Gestor gestor) {
 		super(ventana, gestor);
 		this.controlador = new ControladorConfiguracionGestor(this, gestor);
 		inicializarUI();
 	}
 
+	/**
+	 * Inicializa la interfaz gráfica del subpanel de perfil.
+	 */
 	private void inicializarUI() {
 		JPanel panelContenido = new JPanel(new GridBagLayout());
 		panelContenido.setBackground(VentanaPrincipal.COLOR_FONDO);
@@ -94,6 +118,11 @@ public class SubpanelPerfilGestor extends AbstractPanelGestor {
 		setControlador(controlador);
 	}
 
+	/**
+	 * Asigna el controlador como listener del botón de guardado,
+	 * 
+	 * @param c controlador que manejará las acciones del panel
+	 */
 	public void setControlador(ActionListener c) {
 		if (botonGuardar != null) {
 			for (ActionListener al : botonGuardar.getActionListeners())
@@ -103,7 +132,7 @@ public class SubpanelPerfilGestor extends AbstractPanelGestor {
 	}
 
 	/**
-	 * Lee los campos y guarda el perfil. Lo llama el controlador.
+	 * Procesa la actualización del perfil leyendo los campos de la interfaz.
 	 */
 	public void procesarGuardar() {
 		String nuevoNick = campoNick.getText().trim();
@@ -117,6 +146,11 @@ public class SubpanelPerfilGestor extends AbstractPanelGestor {
 		}
 	}
 
+	/**
+	 * Muestra un mensaje de error 
+	 *
+	 * @param msg mensaje de error a mostrar
+	 */
 	@Override
 	public void mostrarError(String msg) {
 		JOptionPane.showMessageDialog(this, msg, "Error", JOptionPane.ERROR_MESSAGE);

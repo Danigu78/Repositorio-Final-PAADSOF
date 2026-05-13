@@ -25,35 +25,106 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Controlador del subpanel de estadísticas.
+	 */
 	private ControladorEstadisticasGestor controlador;
 
+	/**
+	 * Spinner para seleccionar el año en estadísticas mensuales.
+	 */
 	private JSpinner spinnerAño;
+
+	/**
+	 * Panel donde se muestran los 12 meses del año con sus ingresos.
+	 */
 	private JPanel panelMesesAño;
+
+	/**
+	 * Tabla de productos con columna extra de ingresos generados.
+	 */
 	private TablaProductosVenta tablaIngresosProductosVenta;
 
+	/**
+	 * Spinner de fecha de inicio para consultas de rango total de ingresos.
+	 */
 	private JSpinner spinnerRangoInicio;
+
+	/**
+	 * Spinner de fecha de fin para consultas de rango total de ingresos.
+	 */
 	private JSpinner spinnerRangoFin;
+
+	/**
+	 * Etiqueta donde se muestra el resultado del rango total de ingresos.
+	 */
 	private JLabel labelResultadoRango;
 
+	/**
+	 * Spinner de fecha de inicio para ingresos por ventas en rango.
+	 */
 	private JSpinner spinnerRangoVentasInicio;
+
+	/**
+	 * Spinner de fecha de fin para ingresos por ventas en rango.
+	 */
 	private JSpinner spinnerRangoVentasFin;
+
+	/**
+	 * Etiqueta donde se muestra el resultado de ingresos por ventas en rango.
+	 */
 	private JLabel labelResultadoVentas;
 
+	/**
+	 * Spinner de fecha de inicio para ingresos por tasación en rango.
+	 */
 	private JSpinner spinnerRangoTasacionInicio;
+
+	/**
+	 * Spinner de fecha de fin para ingresos por tasación en rango.
+	 */
 	private JSpinner spinnerRangoTasacionFin;
+
+	/**
+	 * Etiqueta donde se muestra el resultado de ingresos por tasación en rango.
+	 */
 	private JLabel labelResultadoTasacion;
 
+	/**
+	 * Botón para consultar ingresos por año.
+	 */
 	private JButton botonConsultarAño;
+
+	/**
+	 * Botón para consultar ingresos totales en un rango de fechas.
+	 */
 	private JButton botonConsultarRango;
+
+	/**
+	 * Botón para consultar ingresos por ventas en un rango de fechas.
+	 */
 	private JButton botonConsultarRangoVentas;
+
+	/**
+	 * Botón para consultar ingresos por tasación en un rango de fechas.
+	 */
 	private JButton botonConsultarRangoTasacion;
 
+	/**
+	 * Constructor del subpanel de estadísticas del gestor.
+	 *
+	 * @param ventana la ventana principal del sistema
+	 * @param gestor  usuario gestor loggeado
+	 */
 	public SubpanelEstadisticasGestor(VentanaPrincipal ventana, Gestor gestor) {
 		super(ventana, gestor);
 		this.controlador = new ControladorEstadisticasGestor(this, gestor);
 		inicializarUI();
 	}
 
+	/**
+	 * Inicializa toda la interfaz del subpanel de estadísticas.
+	 */
 	private void inicializarUI() {
 		JPanel panelContenido = new JPanel();
 		panelContenido.setLayout(new BoxLayout(panelContenido, BoxLayout.Y_AXIS));
@@ -87,6 +158,11 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
 		setControlador(controlador);
 	}
 
+	/**
+	 * Registra el ActionListener del controlador en todos los botones del panel.
+	 *
+	 * @param c controlador que manejará los eventos del subpanel
+	 */
 	public void setControlador(ActionListener c) {
 		if (botonConsultarAño != null) {
 			for (ActionListener al : botonConsultarAño.getActionListeners())
@@ -110,6 +186,11 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
 		}
 	}
 
+	/**
+	 * Crea la sección de ingresos generales del sistema.
+	 *
+	 * @return JPanel con tarjetas de estadísticas
+	 */
 	private JPanel crearSeccionIngresos() {
 		JPanel panel = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(15), 0));
 		panel.setBackground(VentanaPrincipal.COLOR_FONDO);
@@ -120,6 +201,11 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
 		return panel;
 	}
 
+	/**
+	 * Crea la tabla de ingresos por producto.
+	 *
+	 * @return JPanel con la tabla de productos enriquecida
+	 */
 	private JPanel crearSeccionIngresosProductosComun() {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.setBackground(VentanaPrincipal.COLOR_TARJETA);
@@ -143,6 +229,11 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
 		return panel;
 	}
 
+	/**
+	 * Crea la sección de ingresos mensuales de un año.
+	 *
+	 * @return JPanel con la sección de análisis anual
+	 */
 	private JPanel crearSeccionMesesAño() {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.setBackground(VentanaPrincipal.COLOR_TARJETA);
@@ -176,6 +267,11 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
 		return panel;
 	}
 
+	/**
+	 * Crea la sección de ingresos totales en un rango de fechas.
+	 *
+	 * @return JPanel con controles de rango y resultado
+	 */
 	private JPanel crearSeccionRangoTotal() {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.setBackground(VentanaPrincipal.COLOR_TARJETA);
@@ -201,6 +297,11 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
 		return panel;
 	}
 
+	/**
+	 * Crea la sección de ingresos por ventas en un rango de fechas.
+	 *
+	 * @return JPanel con controles de rango de ventas
+	 */
 	private JPanel crearSeccionRangoVentas() {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.setBackground(VentanaPrincipal.COLOR_TARJETA);
@@ -226,6 +327,11 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
 		return panel;
 	}
 
+	/**
+	 * Crea la sección de ingresos por tasación en un rango de fechas.
+	 *
+	 * @return JPanel con controles de rango de tasación
+	 */
 	private JPanel crearSeccionRangoTasacion() {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.setBackground(VentanaPrincipal.COLOR_TARJETA);
@@ -252,8 +358,9 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
 	}
 
 	/**
-	 * Crea un panel de controles de rango reutilizable. Guarda los spinners y el
-	 * botón en clientProperty.
+	 * Crea un panel reutilizable de selección de rango de fechas.
+	 *
+	 * @return JPanel con controles de rango reutilizables
 	 */
 	private JPanel crearPanelControlesRango() {
 		JPanel panel = new JPanel(
@@ -275,7 +382,7 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
 		JButton boton = crearBotonNaranja("Consultar");
 		panel.add(boton);
 
-		// Guardamos referencias para recuperarlas al crear cada sección
+		
 		panel.putClientProperty("inicio", spinnerInicio);
 		panel.putClientProperty("fin", spinnerFin);
 		panel.putClientProperty("boton", boton);
@@ -283,6 +390,14 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
 		return panel;
 	}
 
+	/**
+	 * Crea una sección de ranking de clientes.
+	 *
+	 * @param titulo   título visible de la sección
+	 * @param clientes lista de clientes ordenados por ranking
+	 * @param tipo     tipo de ranking ("compras" o "intercambios")
+	 * @return JPanel con el ranking de clientes
+	 */
 	private JPanel crearSeccionTop(String titulo, List<Cliente> clientes, String tipo) {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.setBackground(VentanaPrincipal.COLOR_TARJETA);
@@ -321,6 +436,12 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
 		return panel;
 	}
 
+	/**
+	 * Rellena el panel de meses con los ingresos del año seleccionado.
+	 *
+	 * @param panel    panel donde se dibujan los meses
+	 * @param ingresos array de ingresos mensuales (12 posiciones)
+	 */
 	private void rellenarPanelMeses(JPanel panel, double[] ingresos) {
 		panel.removeAll();
 		String[] meses = { "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic" };
@@ -348,6 +469,13 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
 		panel.repaint();
 	}
 
+	/**
+	 * Crea una tarjeta visual para mostrar una estadística individual.
+	 *
+	 * @param titulo nombre de la estadística
+	 * @param valor  valor formateado a mostrar
+	 * @return JPanel con la tarjeta visual
+	 */
 	private JPanel crearTarjetaEstadistica(String titulo, String valor) {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.setBackground(VentanaPrincipal.COLOR_TARJETA);
@@ -366,7 +494,9 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
 	}
 
 	/**
-	 * Crea el borde estándar de tarjeta — reutilizado en todas las secciones.
+	 * Crea el borde estándar reutilizable para todas las tarjetas del panel.
+	 *
+	 * @return Border con estilo uniforme del sistema
 	 */
 	private javax.swing.border.Border crearBordeTarjeta() {
 		return javax.swing.BorderFactory
@@ -376,13 +506,17 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
 								VentanaPrincipal.escalar(15)));
 	}
 
-	// ── Métodos que llama el controlador ──────────────────────────────────
-
+	/**
+	 * Procesa la consulta de ingresos por año seleccionado.
+	 */
 	public void procesarConsultarAño() {
 		int año = (int) spinnerAño.getValue();
 		rellenarPanelMeses(panelMesesAño, controlador.getIngresosPorAño(año));
 	}
 
+	/**
+	 * Procesa la consulta de ingresos totales en un rango de fechas.
+	 */
 	public void procesarConsultarRango() {
 		LocalDate inicio = spinnerALocalDate(spinnerRangoInicio);
 		LocalDate fin = spinnerALocalDate(spinnerRangoFin);
@@ -394,7 +528,10 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
 		labelResultadoRango
 				.setText("Ingresos totales del " + inicio + " al " + fin + ":  " + String.format("%.2f EUR", total));
 	}
-
+	
+	/**
+	 * Procesa la consulta de ingresos por ventas en un rango de fechas.
+	 */
 	public void procesarConsultarRangoVentas() {
 		LocalDate inicio = spinnerALocalDate(spinnerRangoVentasInicio);
 		LocalDate fin = spinnerALocalDate(spinnerRangoVentasFin);
@@ -407,6 +544,9 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
 				.setText("Ingresos por ventas del " + inicio + " al " + fin + ":  " + String.format("%.2f EUR", total));
 	}
 
+	/**
+	 * Procesa la consulta de ingresos por tasación en un rango de fechas.
+	 */
 	public void procesarConsultarRangoTasacion() {
 		LocalDate inicio = spinnerALocalDate(spinnerRangoTasacionInicio);
 		LocalDate fin = spinnerALocalDate(spinnerRangoTasacionFin);
@@ -420,7 +560,10 @@ public class SubpanelEstadisticasGestor extends AbstractPanelGestor {
 	}
 
 	/**
-	 * Convierte un JSpinner de fecha a LocalDate.
+	 * Convierte un JSpinner de tipo fecha en un LocalDate.
+	 *
+	 * @param spinner spinner con valor de tipo java.util.Date
+	 * @return LocalDate equivalente al valor del spinner
 	 */
 	private LocalDate spinnerALocalDate(JSpinner spinner) {
 		java.util.Date fecha = (java.util.Date) spinner.getValue();

@@ -22,50 +22,98 @@ import ventas.Regalo;
  * Subpanel de gestión de productos y descuentos para el gestor.
  *
  * Permite consultar productos, modificar precios y crear/eliminar descuentos.
+ * 
+ * @author Antonino
+ * @version 1.0
  */
 public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 
 	private static final long serialVersionUID = 1L;
 
+	/** Controlador del subpanel */
 	private ControladorProductosDescuentosGestor controlador;
 
+	/** Panel que contiene la lista de descuentos */
 	private JPanel panelDescuentos;
+
+	/** Panel de parámetros de descuento */
 	private JPanel panelParametros;
+
+	/** Layout para alternar tipos de parámetros de descuento */
 	private CardLayout cardParametros;
 
+	/** Campo para el nombre del descuento */
 	private JTextField campoNombreDescuento;
+
+	/** Duración en días del descuento */
 	private JSpinner spinnerDias;
+
+	/** Selector del tipo de descuento */
 	private JComboBox<String> comboTipoDescuento;
 
+	/** Mínimo de gasto para descuento por volumen */
 	private JSpinner spinnerGastoMin;
+
+	/** Porcentaje de descuento por volumen */
 	private JSpinner spinnerPorcentajeVol;
 
+	/** Panel selector de categoría */
 	private JPanel panelComboCat;
+
+	/** Porcentaje de descuento por categoría */
 	private JSpinner spinnerPorcentajeCat;
 
+	/** Cantidad mínima para descuento por cantidad */
 	private JSpinner spinnerCantidadMin;
+
+	/** Selector de producto para descuento por cantidad */
 	private JPanel panelComboProdCant;
+
+	/** Porcentaje de descuento por cantidad */
 	private JSpinner spinnerPorcentajeCant;
 
+	/** Selector de producto regalo */
 	private JPanel panelComboProdRegalo;
+
+	/** Gasto mínimo para obtener regalo */
 	private JSpinner spinnerGastoRegalo;
 
+	/** Campo de búsqueda de descuentos */
 	private JTextField campoBusquedaDescuentos;
+
+	/** Campo de ID para cambio de precio */
 	private JTextField campoIdPrecio;
+
+	/** Spinner de nuevo precio manual */
 	private JSpinner spinnerPrecioManual;
 
+	/** Tabla de productos de venta */
 	private TablaProductosVenta tablaProductosVenta;
+
+	/** Filtro por tipo de descuento */
 	private JComboBox<String> comboFiltroTipoDescuentos;
 
+	/** Botón para cambiar precio de producto */
 	private JButton botonCambiarPrecio;
+
+	/** Botón para crear un nuevo descuento */
 	private JButton botonCrearDescuento;
 
+	/**
+	 * Constructor del subpanel de productos y descuentos.
+	 *
+	 * @param ventana ventana principal de la aplicación
+	 * @param gestor  gestor actualmente autenticado
+	 */
 	public SubpanelProductosDescuentosGestor(VentanaPrincipal ventana, Gestor gestor) {
 		super(ventana, gestor);
 		this.controlador = new ControladorProductosDescuentosGestor(this, gestor);
 		inicializarUI();
 	}
 
+	/**
+	 * Inicializa toda la interfaz del subpanel.
+	 */
 	private void inicializarUI() {
 		setLayout(new BorderLayout());
 
@@ -89,6 +137,11 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 		add(scroll, BorderLayout.CENTER);
 	}
 
+	/**
+	 * Crea el panel con la tabla de productos de venta.
+	 *
+	 * @return panel con la tabla de productos
+	 */
 	private JPanel crearPanelProductosTabla() {
 		JPanel panel = crearBloque("Productos de venta");
 
@@ -99,6 +152,11 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 		return panel;
 	}
 
+	/**
+	 * Crea el bloque para cambiar manualmente el precio de un producto.
+	 *
+	 * @return panel con formulario de cambio de precio
+	 */
 	private JPanel crearPanelCambiarPrecio() {
 		JPanel bloque = crearBloque("Cambiar precio de un producto");
 
@@ -118,6 +176,11 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 		return bloque;
 	}
 
+	/**
+	 * Crea el formulario de datos para el cambio de precio.
+	 *
+	 * @return panel con campos de ID y precio
+	 */
 	private JPanel crearPanelDatosPrecio() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -133,6 +196,11 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 		return panel;
 	}
 
+	/**
+	 * Crea el botón de acción para actualizar el precio de un producto.
+	 *
+	 * @return panel con el botón de acción
+	 */
 	private JPanel crearPanelBotonPrecio() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -153,6 +221,11 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 		return panel;
 	}
 
+	/**
+	 * Crea el bloque principal de gestión de descuentos.
+	 *
+	 * @return panel de descuentos
+	 */
 	private JPanel crearPanelDescuentos() {
 		JPanel bloque = crearBloque("Descuentos");
 
@@ -169,6 +242,11 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 		return bloque;
 	}
 
+	/**
+	 * Crea el formulario dividido en dos partes: generales y especificos
+	 *
+	 * @return panel del formulario de creación
+	 */
 	private JPanel crearFormularioDescuento() {
 		JPanel panel = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(30), 0));
 		panel.setOpaque(false);
@@ -179,6 +257,11 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 		return panel;
 	}
 
+	/**
+	 * Crea el panel de datos comunes a todos los descuentos.
+	 *
+	 * @return panel con campos generales
+	 */
 	private JPanel crearPanelDatosComunesDescuento() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -213,6 +296,11 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 		return panel;
 	}
 
+	/**
+	 * Crea el panel de datos específicos según tipo de descuento.
+	 *
+	 * @return panel dinámico de parámetros
+	 */
 	private JPanel crearPanelDatosEspecificosDescuento() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -242,6 +330,9 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 		return panel;
 	}
 
+	/**
+	 * Panel de parámetros para descuento por volumen.
+	 */
 	private JPanel crearPanelVolumen() {
 		JPanel panel = crearPanelCamposTipoDescuento();
 
@@ -258,6 +349,9 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 		return panel;
 	}
 
+	/**
+	 * Panel de parámetros para descuento por categoría.
+	 */
 	private JPanel crearPanelCategoria() {
 		JPanel panel = crearPanelCamposTipoDescuento();
 
@@ -280,6 +374,9 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 		return panel;
 	}
 
+	/**
+	 * Panel de parámetros para descuento por cantidad.
+	 */
 	private JPanel crearPanelCantidad() {
 		JPanel panel = crearPanelCamposTipoDescuento();
 
@@ -300,6 +397,9 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 		return panel;
 	}
 
+	/**
+	 * Panel de parámetros para descuento tipo regalo.
+	 */
 	private JPanel crearPanelRegalo() {
 		JPanel panel = crearPanelCamposTipoDescuento();
 
@@ -315,6 +415,12 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 		return panel;
 	}
 
+	/**
+	 * Crea un panel base reutilizable para los formularios de datos específicos
+	 * de los distintos tipos de descuento.
+	 *
+	 * @return JPanel vacío configurado como contenedor vertical reutilizable.
+	 */
 	private JPanel crearPanelCamposTipoDescuento() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -322,6 +428,11 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 		return panel;
 	}
 
+	/**
+	 * Crea el panel que muestra la lista de descuentos creados
+	 *
+	 * @return panel con listado de descuentos
+	 */
 	private JPanel crearPanelListaDescuentos() {
 		JPanel panelListaDescuentos = new JPanel(new BorderLayout());
 		panelListaDescuentos.setOpaque(false);
@@ -369,6 +480,9 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 		return panelListaDescuentos;
 	}
 
+	/**
+	 * Filtra los descuentos según texto y tipo seleccionado.
+	 */
 	private void filtrarDescuentos() {
 		String texto = normalizarTexto(campoBusquedaDescuentos.getText());
 
@@ -400,6 +514,11 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 		panelDescuentos.repaint();
 	}
 
+	/**
+	 * Obtiene nombres de productos incluyendo opción "Todos".
+	 *
+	 * @return array de nombres de productos
+	 */
 	private String[] getNombresProductos() {
 		List<ProductoVenta> productos = controlador.getProductos();
 		String[] nombres = new String[productos.size() + 1];
@@ -412,6 +531,11 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 		return nombres;
 	}
 
+	/**
+	 * Obtiene nombres de productos sin opción "Todos".
+	 *
+	 * @return array de nombres de productos
+	 */
 	private String[] getNombresProductosSinTodos() {
 		List<ProductoVenta> productos = controlador.getProductos();
 		String[] nombres = new String[productos.size()];
@@ -423,6 +547,9 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 		return nombres;
 	}
 
+	/**
+	 * Actualiza completamente la lista de descuentos sin filtros.
+	 */
 	private void actualizarDescuentos() {
 		panelDescuentos.removeAll();
 
@@ -450,6 +577,12 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 		panelDescuentos.repaint();
 	}
 
+	/**
+	 * Crea la fila visual de un descuento individual.
+	 *
+	 * @param d descuento a representar
+	 * @return panel con la fila del descuento
+	 */
 	private JPanel crearFilaDescuento(Descuento d) {
 		JPanel fila = new JPanel(new BorderLayout());
 		fila.setBackground(d.estaActivo() ? VentanaPrincipal.COLOR_TARJETA : new Color(245, 245, 245));
@@ -487,6 +620,12 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 		return fila;
 	}
 
+	/**
+	 * Devuelve el tipo de descuento como String.
+	 *
+	 * @param descuento descuento a evaluar
+	 * @return tipo de descuento
+	 */
 	private String obtenerTipoDescuento(Descuento descuento) {
 		if (descuento instanceof DescuentoVolumen) {
 			return "Volumen";
@@ -503,6 +642,12 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 		return "Otro";
 	}
 
+	/**
+	 * Devuelve la descripción detallada del descuento.
+	 *
+	 * @param descuento descuento a describir
+	 * @return texto descriptivo
+	 */
 	private String obtenerDetalleDescuento(Descuento descuento) {
 		if (descuento instanceof DescuentoVolumen) {
 			DescuentoVolumen d = (DescuentoVolumen) descuento;
@@ -532,6 +677,9 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 		return "Sin detalle";
 	}
 
+	/**
+	 * Procesa el cambio manual de precio de un producto.
+	 */
 	public void procesarCambiarPrecioManual() {
 		String idProducto = campoIdPrecio.getText().trim();
 		double nuevo = ((Number) spinnerPrecioManual.getValue()).doubleValue();
@@ -552,6 +700,9 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 		}
 	}
 
+	/**
+	 * Procesa la creación de un nuevo descuento según el tipo seleccionado.
+	 */
 	public void procesarCrearDescuento() {
 		String nombre = campoNombreDescuento.getText().trim();
 
@@ -615,6 +766,11 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 		}
 	}
 
+	/**
+	 * Procesa la eliminación de un descuento existente.
+	 *
+	 * @param id identificador del descuento
+	 */
 	public void procesarEliminarDescuento(String id) {
 		if (controlador.eliminarDescuento(id)) {
 			mostrarMensaje("Descuento eliminado.");
@@ -624,6 +780,13 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 		}
 	}
 
+	/**
+	 * Extrae el ID de un producto desde texto seleccionado en combo.
+	 *
+	 * @param texto texto seleccionado
+	 * @param productos lista de productos
+	 * @return ID del producto o cadena vacía
+	 */
 	private String extraerIdDeTexto(String texto, List<ProductoVenta> productos) {
 		if (texto == null) {
 			return "";
@@ -648,6 +811,12 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 		return "";
 	}
 
+	/**
+	 * Extrae el ID entre paréntesis en un string.
+	 *
+	 * @param texto texto con formato "nombre (ID)"
+	 * @return ID extraído o vacío
+	 */
 	private String extraerIdEntreParentesis(String texto) {
 		String limpio = texto.trim();
 		int abre = limpio.lastIndexOf('(');
