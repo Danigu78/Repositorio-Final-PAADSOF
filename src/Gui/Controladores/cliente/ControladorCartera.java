@@ -11,18 +11,28 @@ import java.util.List;
 import javax.swing.JFileChooser;
 
 /**
- * Controlador del subpanel de cartera. Implementa ActionListener según el
- * patrón MVC de los apuntes.
- *
+ * Controlador del subpanel de cartera.
+ * 
  * @author Daniel
  * @version 1.0
  */
 public class ControladorCartera implements ActionListener {
 
+	/** Vista de la cartera. */
 	private SubpanelCartera vista;
+
+	/** Cliente asociado a la cartea. */
 	private Cliente cliente;
+
+	/** Tienda principal del sistema. */
 	private Tienda tienda;
 
+	/**
+	 * Crea el controlador de la cartera.
+	 *
+	 * @param vista vista asociada a la cartera
+	 * @param cliente cliente propietario de la cartera
+	 */
 	public ControladorCartera(SubpanelCartera vista, Cliente cliente) {
 		this.vista = vista;
 		this.cliente = cliente;
@@ -30,8 +40,7 @@ public class ControladorCartera implements ActionListener {
 	}
 
 	/**
-	 * Gestiona los eventos de los botones de la vista. Distingue la acción por el
-	 * actionCommand del botón pulsado.
+	 * Gestiona los eventos de los botones de la vista.
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -41,21 +50,20 @@ public class ControladorCartera implements ActionListener {
 		if (cmd == null)
 			return;
 		if ("añadir".equals(cmd)) {
-			// El usuario pulsó añadir — le decimos a la vista que muestre el diálogo
+			// El usuario pulsó añadir le decimos a la vista que muestre el diálogo
 			vista.mostrarDialogoAñadir();
 		} else if ("explorador".equals(cmd)) {
-			// El usuario pulsó seleccionar imagen — abrimos el explorador
+			// El usuario pulsó seleccionar imagen abrimos el explorador
 			abrirExplorador();
 		} else if (cmd.startsWith("tasar:")) {
-			// El usuario pulsó solicitar tasación — cogemos el id del producto
+			// El usuario pulsó solicitar tasación cogemos el id del producto
 			String idProducto = cmd.substring(6);
 			irAPagoTasacion(idProducto);
 		}
 	}
 
 	/**
-	 * Añade un producto a la cartera del cliente. Lo llama la vista cuando el
-	 * usuario confirma el diálogo de añadir.
+	 * Añade un producto a la cartera del cliente.
 	 *
 	 * @param nombre      Nombre del producto
 	 * @param descripcion Descripción del producto

@@ -16,18 +16,14 @@ import productos.ProductoVenta;
 import usuarios.Cliente;
 
 /**
- * Subpanel del catálogo de productos de CheckPoint. Muestra recomendados arriba
- * y el catálogo completo debajo. Extiende AbstractPanelCliente para reutilizar
- * helpers visuales del cliente. Sigue el patrón MVC de los apuntes.
+ * Subpanel del catálogo de productos de CheckPoint. 
  *
  * @author Daniel
  * @version 1.0
  */
 public class SubpanelCatalogo extends AbstractPanelCliente {
 
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
 
 	/** Controlador del catálogo. */
@@ -72,11 +68,11 @@ public class SubpanelCatalogo extends AbstractPanelCliente {
 	/** Panel contenedor del CardLayout. */
 	private JPanel panelContenido;
 
-	/** Botones de acción — atributos para registrar el controlador. */
+	/** Botones de acción atributos para registrar el controlador. */
 	private JButton botonBuscar;
 	private JButton botonReset;
 
-	/** Opciones del combo de orden — paralelo a los métodos del controlador. */
+	/** Opciones del combo de orden */
 	private static final String ORDEN_ID = "Por ID";
 	private static final String ORDEN_NOMBRE_ASC = "Nombre A-Z";
 	private static final String ORDEN_NOMBRE_DESC = "Nombre Z-A";
@@ -128,7 +124,7 @@ public class SubpanelCatalogo extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Registra el controlador en los botones — patrón de los apuntes.
+	 * Registra el controlador en los botones 
 	 *
 	 * @param c El ActionListener a registrar
 	 */
@@ -182,7 +178,7 @@ public class SubpanelCatalogo extends AbstractPanelCliente {
 		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scroll.getViewport().setBackground(VentanaPrincipal.COLOR_FONDO);
 
-		// Fix scroll — recalcula la altura cuando cambia el ancho del viewport
+	
 		scroll.getViewport().addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(ComponentEvent e) {
@@ -218,7 +214,7 @@ public class SubpanelCatalogo extends AbstractPanelCliente {
 				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15),
 						VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(15))));
 
-		// ── Fila 1 ───────────────────────────────────────────────────────────
+	
 		JPanel filaFiltros = new JPanel(new FlowLayout(FlowLayout.LEFT, VentanaPrincipal.escalar(12), 0));
 		filaFiltros.setBackground(VentanaPrincipal.COLOR_PANEL);
 
@@ -248,7 +244,7 @@ public class SubpanelCatalogo extends AbstractPanelCliente {
 		spinnerPrecioMin.setPreferredSize(new Dimension(VentanaPrincipal.escalar(70), VentanaPrincipal.escalar(30)));
 		filaFiltros.add(spinnerPrecioMin);
 
-		JLabel labelHasta = new JLabel("—");
+		JLabel labelHasta = new JLabel("-");
 		labelHasta.setForeground(VentanaPrincipal.COLOR_TEXTO2);
 		filaFiltros.add(labelHasta);
 
@@ -267,11 +263,9 @@ public class SubpanelCatalogo extends AbstractPanelCliente {
 		comboOrden.addActionListener(e -> buscar());
 		filaFiltros.add(comboOrden);
 
-		// crearBotonNaranja() de PanelBaseInterfaz
 		botonBuscar = crearBotonNaranja("Buscar");
 		filaFiltros.add(botonBuscar);
 
-		// crearBotonOutline() de PanelBaseInterfaz
 		botonReset = crearBotonOutline("Limpiar");
 		filaFiltros.add(botonReset);
 
@@ -330,8 +324,7 @@ public class SubpanelCatalogo extends AbstractPanelCliente {
 
 	/**
 	 * Realiza la búsqueda con los filtros actuales. Aplica nombre, categoría,
-	 * precio, tipo y orden. El orden lo delega en el controlador. Lo llama el
-	 * controlador y el Enter del campo.
+	 * precio, tipo y orden. El orden lo delega en el controlador.
 	 */
 	public void buscar() {
 		if (controlador == null)
@@ -362,8 +355,6 @@ public class SubpanelCatalogo extends AbstractPanelCliente {
 			}
 			productos = filtrados;
 		}
-
-		// Delega el orden en el controlador
 		mostrarProductos(ordenarProductos(productos));
 	}
 
@@ -419,8 +410,7 @@ public class SubpanelCatalogo extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Resetea todos los filtros y muestra todos los productos ordenados por ID. Lo
-	 * llama el controlador.
+	 * Resetea todos los filtros y muestra todos los productos ordenados por ID.
 	 */
 	public void resetearFiltros() {
 		campoBusqueda.setText("");
@@ -508,8 +498,6 @@ public class SubpanelCatalogo extends AbstractPanelCliente {
 
 		panelProductos.revalidate();
 		panelProductos.repaint();
-
-		// Forzar recálculo del tamaño preferido tras añadir tarjetas
 		SwingUtilities.invokeLater(() -> {
 			panelProductos.firePropertyChange("preferredSize", 0, 1);
 			panelProductos.revalidate();
@@ -629,9 +617,6 @@ public class SubpanelCatalogo extends AbstractPanelCliente {
 	    labelPrecio.setBorder(BorderFactory.createEmptyBorder(
 	        0, 0, VentanaPrincipal.escalar(4), 0));
 	    panelInfo.add(labelPrecio);
-
-	   
-	 
 
 	    JLabel labelNota = producto.getReseñas().isEmpty()
 	        ? new JLabel("Sin reseñas")
@@ -786,7 +771,6 @@ public class SubpanelCatalogo extends AbstractPanelCliente {
 	}
 	/**
 	 * Recarga el combo de categorías con las activas actuales.
-	 * Lo llama PanelGestor tras crear o eliminar una categoría.
 	 */
 	public void refrescarComboCategorias() {
 	    if (controlador == null) return;

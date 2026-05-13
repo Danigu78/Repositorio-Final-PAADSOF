@@ -16,9 +16,7 @@ import java.awt.event.*;
 
 /**
  * Subpanel que muestra la información completa de un producto. Si el producto
- * es un Pack muestra además su contenido y el ahorro. Extiende
- * AbstractPanelCliente para reutilizar helpers visuales del cliente. Sigue el
- * patrón MVC de los apuntes.
+ * es un Pack muestra además su contenido y el ahorro. 
  *
  * @author Daniel
  * @version 1.0
@@ -45,10 +43,10 @@ public class SubpanelProducto extends AbstractPanelCliente {
 	/** Producto que se está mostrando. */
 	private ProductoVenta producto;
 
-	/** Botón volver — atributo para registrar el controlador. */
+	/** Botón volver  atributo para registrar el controlador. */
 	private JButton botonVolver;
 
-	/** Botón añadir al carrito — atributo para registrar el controlador. */
+	/** Botón añadir al carrito  atributo para registrar el controlador. */
 	private JButton botonAñadir;
 
 	/**
@@ -63,8 +61,7 @@ public class SubpanelProducto extends AbstractPanelCliente {
 	}
 
 	/**
-	 * No se usa en este subpanel — la construcción se hace en mostrarProducto(). Se
-	 * implementa por obligación de AbstractPanelCliente.
+	 * actualzar
 	 *
 	 * @param cliente El cliente logueado
 	 */
@@ -90,7 +87,7 @@ public class SubpanelProducto extends AbstractPanelCliente {
 		removeAll();
 		add(crearBarraSuperior(), BorderLayout.NORTH);
 
-		// Panel central fijo arriba — no scrollea
+		
 		JPanel panelCompleto = new JPanel(new BorderLayout());
 		panelCompleto.setBackground(VentanaPrincipal.COLOR_FONDO);
 		panelCompleto.add(crearPanelCentral(), BorderLayout.NORTH);
@@ -106,7 +103,7 @@ public class SubpanelProducto extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Registra el controlador en los botones — patrón de los apuntes.
+	 * Registra el controlador en los botones 
 	 *
 	 * @param c El ActionListener a registrar
 	 */
@@ -130,10 +127,10 @@ public class SubpanelProducto extends AbstractPanelCliente {
 	 * @return Panel de la barra superior
 	 */
 	private JPanel crearBarraSuperior() {
-		String textoVolver = subpanelCarrito != null ? "← Volver al carrito"
-				: subpanelPedidos != null ? "← Volver al pedido" : "← Volver al catálogo";
+		String textoVolver = subpanelCarrito != null ? " Volver al carrito"
+				: subpanelPedidos != null ? " Volver al pedido" : " Volver al catálogo";
 
-		// crearBarraVolver() de PanelBaseInterfaz
+		
 		JPanel barra = crearBarraVolver(textoVolver);
 		botonVolver = getBotonVolver(barra);
 		botonVolver.setActionCommand("volver");
@@ -142,7 +139,7 @@ public class SubpanelProducto extends AbstractPanelCliente {
 
 	/**
 	 * Crea el panel central con imagen e información del producto. Si es un Pack
-	 * muestra además el contenido y el ahorro. Este panel queda fijo — no scrollea.
+	 * muestra además el contenido
 	 *
 	 * @return Panel central del producto
 	 */
@@ -155,7 +152,7 @@ public class SubpanelProducto extends AbstractPanelCliente {
 		JLabel labelImagen = new JLabel();
 		labelImagen.setHorizontalAlignment(SwingConstants.CENTER);
 		labelImagen.setPreferredSize(new Dimension(VentanaPrincipal.escalar(300), VentanaPrincipal.escalar(300)));
-		// cargarImagen() de PanelBaseInterfaz
+		
 		cargarImagen(labelImagen, producto.getImagenRuta(), VentanaPrincipal.escalar(280),
 				VentanaPrincipal.escalar(280));
 		panel.add(labelImagen, BorderLayout.WEST);
@@ -165,7 +162,7 @@ public class SubpanelProducto extends AbstractPanelCliente {
 		panelInfo.setBackground(VentanaPrincipal.COLOR_FONDO);
 		panelInfo.setBorder(BorderFactory.createEmptyBorder(0, VentanaPrincipal.escalar(30), 0, 0));
 
-		// Badge PACK si es un pack
+		// etiqueta PACK si es un pack
 		if (producto instanceof Pack) {
 			JLabel labelBadge = new JLabel("PACK");
 			labelBadge.setFont(VentanaPrincipal.FUENTE_BOTON);
@@ -196,7 +193,7 @@ public class SubpanelProducto extends AbstractPanelCliente {
 			double sumaIndividual = pack.calcularSumaProductos();
 			double ahorro = sumaIndividual - pack.calcularPrecioFinal();
 
-			// Precio suma individual
+			
 			JLabel labelPrecioOriginal = crearLabel(String.format("Precio individual: %.2f€", sumaIndividual));
 			panelInfo.add(labelPrecioOriginal);
 			panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(4)));
@@ -243,12 +240,10 @@ public class SubpanelProducto extends AbstractPanelCliente {
 			panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 		}
 
-		// Stock — para todos
 		JLabel labelStock = crearLabel("Stock disponible: " + producto.getStockDisponible());
 		panelInfo.add(labelStock);
 		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
-		// Descripción — para todos
 		JLabel labelDescTitulo = new JLabel("Descripción:");
 		labelDescTitulo.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
 		labelDescTitulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
@@ -260,7 +255,7 @@ public class SubpanelProducto extends AbstractPanelCliente {
 		panelInfo.add(labelDesc);
 		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
-		// Reseñas media
+		
 		if (!producto.getReseñas().isEmpty()) {
 			JLabel labelMedia = new JLabel(String.format(" %.1f/10 (%d reseñas)", producto.getMediaPuntuacion(),
 					producto.getReseñas().size()));
@@ -275,7 +270,7 @@ public class SubpanelProducto extends AbstractPanelCliente {
 
 		// Botón añadir al carrito
 		if (controlador.hayCliente()) {
-			// crearBotonNaranja() de PanelBaseInterfaz
+			
 			botonAñadir = crearBotonNaranja("Añadir al carrito");
 			botonAñadir.setActionCommand("añadirCarrito");
 			panelInfo.add(botonAñadir);
@@ -306,7 +301,6 @@ public class SubpanelProducto extends AbstractPanelCliente {
 		panelReseñas.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
 		if (producto.getReseñas().isEmpty()) {
-			// crearLabel() de PanelBaseInterfaz
 			JLabel labelVacio = crearLabel("Este producto no tiene reseñas todavía.");
 			labelVacio.setAlignmentX(Component.LEFT_ALIGNMENT);
 			panelReseñas.add(labelVacio);
@@ -346,8 +340,8 @@ public class SubpanelProducto extends AbstractPanelCliente {
 								VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(15))));
 		tarjeta.setMaximumSize(new Dimension(Integer.MAX_VALUE, VentanaPrincipal.escalar(80)));
 
-		JLabel labelCabecera = new JLabel(String.format(" %.1f/10", reseña.getPuntuacion()) + "  —  "
-				+ (reseña.getAutor() != null ? reseña.getAutor().getNickname() : "Anónimo") + "  —  "
+		JLabel labelCabecera = new JLabel(String.format(" %.1f/10", reseña.getPuntuacion()) + "  -  "
+				+ (reseña.getAutor() != null ? reseña.getAutor().getNickname() : "Anónimo") + "  -  "
 				+ reseña.getFecha());
 		labelCabecera.setFont(VentanaPrincipal.FUENTE_BOTON);
 		labelCabecera.setForeground(VentanaPrincipal.COLOR_ACENTO);
@@ -362,15 +356,14 @@ public class SubpanelProducto extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Muestra el diálogo para seleccionar la cantidad a añadir al carrito. Lo llama
-	 * el controlador desde actionPerformed.
+	 * Muestra el diálogo para seleccionar la cantidad a añadir al carrito. 
 	 */
 	public void seleccionarUnidades() {
 		JSpinner spinnerCantidad = new JSpinner(new SpinnerNumberModel(1, 1, producto.getStockDisponible(), 1));
 		spinnerCantidad.setFont(VentanaPrincipal.FUENTE_NORMAL);
 
 		JPanel panelDialogo = new JPanel(new FlowLayout());
-		// crearLabel() de PanelBaseInterfaz
+		
 		panelDialogo.add(crearLabel("Cantidad (máx. " + producto.getStockDisponible() + "):"));
 		panelDialogo.add(spinnerCantidad);
 
@@ -384,7 +377,7 @@ public class SubpanelProducto extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Vuelve al subpanel de origen. Lo llama el controlador desde actionPerformed.
+	 * Vuelve al subpanel de origen.
 	 */
 	public void volver() {
 		if (subpanelCarrito != null) {
@@ -397,7 +390,7 @@ public class SubpanelProducto extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Muestra un mensaje de éxito. Lo llama el controlador.
+	 * Muestra un mensaje de éxito.
 	 *
 	 * @param mensaje El mensaje de éxito
 	 */

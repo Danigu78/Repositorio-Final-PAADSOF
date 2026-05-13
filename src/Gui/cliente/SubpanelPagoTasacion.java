@@ -11,9 +11,7 @@ import productos.Producto2Mano;
 import usuarios.Cliente;
 
 /**
- * Subpanel de pago de tasación. Extiende AbstractPanelCliente para reutilizar
- * helpers visuales del cliente. Sigue el patrón MVC de los apuntes: expone
- * setControlador(ActionListener).
+ * Subpanel de pago de tasación.
  *
  * @author Daniel
  * @version 1.0
@@ -40,10 +38,10 @@ public class SubpanelPagoTasacion extends AbstractPanelCliente {
 	/** Campo fecha de caducidad. */
 	private JTextField campoFecha;
 
-	/** Botón pagar — atributo para registrar el controlador. */
+	/** Botón pagar atributo para registrar el controlador. */
 	private JButton botonPagar;
 
-	/** Botón volver — atributo para registrar el controlador. */
+	/** Botón volver atributo para registrar el controlador. */
 	private JButton botonVolver;
 
 	/**
@@ -58,9 +56,9 @@ public class SubpanelPagoTasacion extends AbstractPanelCliente {
 	}
 
 	/**
-	 * No se usa en este subpanel — la construcción se hace en mostrarPago(). Se
-	 * implementa por obligación de AbstractPanelCliente.
+	 * actualizacion
 	 *
+	 * 
 	 * @param cliente El cliente logueado
 	 */
 	@Override
@@ -87,8 +85,8 @@ public class SubpanelPagoTasacion extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Registra el controlador en los botones — patrón de los apuntes. Elimina
-	 * listeners anteriores para evitar duplicados.
+	 * Registra el controlador en los botones Elimina listeners anteriores para
+	 * evitar duplicados.
 	 *
 	 * @param c El ActionListener a registrar
 	 */
@@ -106,9 +104,8 @@ public class SubpanelPagoTasacion extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Devuelve el número de tarjeta introducido. Lo lee el controlador desde
-	 * realizarPago().
-	 *
+	 * Devuelve el número de tarjeta introducido.
+	 * 
 	 * @return Número de tarjeta
 	 */
 	public String getNumeroTarjeta() {
@@ -116,7 +113,7 @@ public class SubpanelPagoTasacion extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Devuelve el CVV introducido. Lo lee el controlador desde realizarPago().
+	 * Devuelve el CVV introducido.
 	 *
 	 * @return CVV
 	 */
@@ -125,8 +122,7 @@ public class SubpanelPagoTasacion extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Devuelve la fecha de caducidad introducida. Lo lee el controlador desde
-	 * realizarPago().
+	 * Devuelve la fecha de caducidad introducida.
 	 *
 	 * @return Fecha en formato MM/AA
 	 */
@@ -135,14 +131,13 @@ public class SubpanelPagoTasacion extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Crea la barra superior con botón volver a la cartera. Usa crearBarraVolver()
-	 * y getBotonVolver() de PanelBaseInterfaz.
+	 * Crea la barra superior con botón volver a la cartera.
 	 *
 	 * @return Panel de la barra superior
 	 */
 	private JPanel crearBarraSuperior() {
-		// crearBarraVolver() de PanelBaseInterfaz
-		JPanel barra = crearBarraVolver("← Volver a mi cartera");
+
+		JPanel barra = crearBarraVolver(" Volver a mi cartera");
 		botonVolver = getBotonVolver(barra);
 		botonVolver.setActionCommand("volver");
 		return barra;
@@ -180,7 +175,6 @@ public class SubpanelPagoTasacion extends AbstractPanelCliente {
 
 		gbc.insets = new Insets(VentanaPrincipal.escalar(4), 0, VentanaPrincipal.escalar(4), 0);
 
-		// crearLabel() de PanelBaseInterfaz — sustituye crearEtiqueta()
 		JLabel labelProducto = crearLabel("Producto: " + controlador.getNombreProducto());
 		gbc.gridy = 1;
 		panel.add(labelProducto, gbc);
@@ -199,7 +193,7 @@ public class SubpanelPagoTasacion extends AbstractPanelCliente {
 		gbc.gridy = 4;
 		panel.add(crearLabel("Número de tarjeta (16 dígitos):"), gbc);
 
-		// crearCampo() de PanelBaseInterfaz — sustituye crearCampo() propio
+		
 		campoTarjeta = crearCampo();
 		gbc.gridy = 5;
 		panel.add(campoTarjeta, gbc);
@@ -226,7 +220,6 @@ public class SubpanelPagoTasacion extends AbstractPanelCliente {
 		gbc.gridy = 9;
 		panel.add(campoFecha, gbc);
 
-		// crearBotonNaranja() de PanelBaseInterfaz
 		botonPagar = crearBotonNaranja(String.format("Pagar %.2f€", controlador.getPrecioTasacion()));
 		botonPagar.setActionCommand("pagar");
 		botonPagar.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(12), VentanaPrincipal.escalar(20),
@@ -240,7 +233,7 @@ public class SubpanelPagoTasacion extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Vuelve a la cartera. Lo llama el controlador.
+	 * Vuelve a la cartera.
 	 */
 	public void volverACartera() {
 		if (panelCliente != null)
@@ -248,7 +241,7 @@ public class SubpanelPagoTasacion extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Muestra un mensaje de éxito. Lo llama el controlador.
+	 * Muestra un mensaje de éxito.
 	 *
 	 * @param mensaje El mensaje de éxito
 	 */

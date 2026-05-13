@@ -14,8 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Controlador del subpanel de descuentos del cliente. Implementa ActionListener
- * según el patrón MVC de los apuntes.
+ * Controlador del subpanel de descuentos del cliente. 
  *
  * @author Daniel
  * @version 1.0

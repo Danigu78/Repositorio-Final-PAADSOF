@@ -15,24 +15,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Controlador del subpanel del carrito. Implementa ActionListener según el
- * patrón MVC de los apuntes.
+ * Controlador del subpanel del carrito.
  *
  * @author Daniel
  * @version 1.0
  */
 public class ControladorCarrito implements ActionListener {
 
+	/** Vista del carrito. */
 	private SubpanelCarrito vista;
-	private Cliente cliente;
-	private Tienda tienda;
 
+	/** Cliente asociado al carrito. */
+	private Cliente cliente;
+
+	/** Tienda principal del sistema. */
+	private Tienda tienda;
+	/**
+	 * Crea el controlador del carrito.
+	 *
+	 * @param vista vista asociada al carrito
+	 * @param cliente cliente propietario del carrito
+	 */
 	public ControladorCarrito(SubpanelCarrito vista, Cliente cliente) {
 		this.vista = vista;
 		this.cliente = cliente;
 		this.tienda = Tienda.getInstancia();
 	}
-
+	/**
+	 * Gestiona las acciones del carrito.
+	 *
+	 * @param e evento generado por la interfaz
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e == null)
@@ -67,7 +80,7 @@ public class ControladorCarrito implements ActionListener {
 	}
 
 	/**
-	 * Confirma la reserva del carrito — lo llama la vista tras confirmar.
+	 * Confirma la reserva del carrito
 	 */
 	public void confirmarReserva() {
 		boolean ok = cliente.reservarCarrito();
@@ -79,6 +92,9 @@ public class ControladorCarrito implements ActionListener {
 		}
 	}
 
+	/**
+	 * elimina un producto
+	 */
 	private void eliminarProductoPorId(String id) {
 		for (LineaCarrito l : getLineasCarrito()) {
 			if (l.getProducto().getId().equals(id)) {
@@ -89,7 +105,7 @@ public class ControladorCarrito implements ActionListener {
 	}
 
 	/**
-	 * Elimina un producto del carrito — lo llama la vista tras confirmar.
+	 * Elimina un producto del carrito
 	 */
 	public boolean eliminarProducto(ProductoVenta producto) {
 		if (revisarCarritoCaducado()) {
@@ -122,6 +138,9 @@ public class ControladorCarrito implements ActionListener {
 		return ok;
 	}
 
+	/*
+	 * Obtiene las lienas del carrito
+	 */
 	public List<LineaCarrito> getLineasCarrito() {
 		Carrito carrito = cliente.getCarritoActual();
 		if (carrito == null)
@@ -129,6 +148,9 @@ public class ControladorCarrito implements ActionListener {
 		return carrito.getLineas();
 	}
 
+	/*
+	 * Obtiene el subtotal.
+	 */
 	public double getSubtotal() {
 		Carrito carrito = cliente.getCarritoActual();
 		if (carrito == null)
@@ -136,6 +158,9 @@ public class ControladorCarrito implements ActionListener {
 		return carrito.calcularSubtotal();
 	}
 
+	/*
+	 * Obtiene el total
+	 */
 	public double getTotal() {
 		Carrito carrito = cliente.getCarritoActual();
 		if (carrito == null)
@@ -143,6 +168,9 @@ public class ControladorCarrito implements ActionListener {
 		return carrito.getTotal();
 	}
 
+	/*
+	 * Obtiene el descuento que se ha empleado
+	 */
 	public String getDescuento() {
 		Carrito carrito = cliente.getCarritoActual();
 		if (carrito == null || carrito.getDescuentoAplicado() == null)
@@ -150,6 +178,9 @@ public class ControladorCarrito implements ActionListener {
 		return carrito.getDescuentoAplicado().getNombre();
 	}
 
+	/*
+	 * Obtiene el tiempo restante
+	 */
 	public long getMinutosRestantesCarrito() {
 		Carrito carrito = cliente.getCarritoActual();
 		if (carrito == null)
@@ -158,15 +189,24 @@ public class ControladorCarrito implements ActionListener {
 		return Math.max(0, ChronoUnit.MINUTES.between(LocalDateTime.now(), caducidad));
 	}
 
+	/*
+	 * Obtiene el carrito vacio
+	 */
 	public boolean carritoVacio() {
 		Carrito carrito = cliente.getCarritoActual();
 		return carrito == null || carrito.estaVacio();
 	}
 
+	/*
+	 * Obtiene el tiempo maximo de pago.
+	 */
 	public int getTiempoMaxPago() {
 		return tienda.getTiempoMaxPago();
 	}
 
+	/*
+	 * Revisa el tiempo restante de los pedidos
+	 */
 	public void revisarTiempos() {
 		tienda.getComprobadorTiempos().revisarCarritosCaducados();
 		tienda.getComprobadorTiempos().revisarPedidosPendientesCaducados();
@@ -174,6 +214,9 @@ public class ControladorCarrito implements ActionListener {
 		GuardadoTienda.guardar(tienda);
 	}
 
+	/*
+	 * Revisa el carrito caducado
+	 */
 	private boolean revisarCarritoCaducado() {
 		Carrito carrito = cliente.getCarritoActual();
 		if (carrito != null && carrito.estaCaducado()) {

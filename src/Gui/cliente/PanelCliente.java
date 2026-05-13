@@ -11,18 +11,13 @@ import usuarios.Cliente;
 import ventas.Pedido;
 
 /**
- * Panel principal del cliente en CheckPoint. Extiende PanelBaseInterfaz para
- * reutilizar helpers visuales y la barra de navegación común. Sigue el patrón
- * MVC de los apuntes — delega la navegación en ControladorPanelCliente.
+ * Panel principal del cliente en CheckPoint.
  *
  * @author Daniel
  * @version 1.0
  */
 public class PanelCliente extends PanelBaseInterfaz {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private static final String SEC_CATALOGO = "CATALOGO";
 	private static final String SEC_CARRITO = "CARRITO";
@@ -83,7 +78,7 @@ public class PanelCliente extends PanelBaseInterfaz {
 				{ "Intercambios", SEC_INTERCAMBIOS }, { "Notificaciones", SEC_NOTIFICACIONES },
 				{ "Mi Perfil", SEC_PERFIL }, { "Descuentos", SEC_DESCUENTOS } };
 
-		// crearBarraNavegacion() de PanelBaseInterfaz
+	
 		barra = crearBarraNavegacion(" CheckPoint", "Usuario", pestañas, controlador);
 		add(barra, BorderLayout.NORTH);
 		
@@ -139,7 +134,6 @@ public class PanelCliente extends PanelBaseInterfaz {
 	 * @param cmd ActionCommand de la pestaña a marcar
 	 */
 	public void marcarPestaña(String cmd) {
-		// marcarBotonBarraActivoPorCmd() de PanelBaseInterfaz
 		marcarBotonBarraActivoPorCmd(barra, cmd);
 	}
 
@@ -191,7 +185,7 @@ public class PanelCliente extends PanelBaseInterfaz {
 	 */
 	public void actualizarCliente(Cliente cliente) {
 		this.cliente = cliente;
-		// actualizarUsuarioBarra() de PanelBaseInterfaz
+		
 		actualizarUsuarioBarra(barra, cliente.getNickname());
 		subpanelCatalogo.actualizar(cliente);
 		subpanelCarrito.actualizar(cliente);
@@ -207,7 +201,7 @@ public class PanelCliente extends PanelBaseInterfaz {
 	}
 
 	/**
-	 * Navega al subpanel de pago con el pedido indicado. Lo llama SubpanelPedidos.
+	 * Navega al subpanel de pago con el pedido indicado.
 	 *
 	 * @param pedido  El pedido a pagar
 	 * @param cliente El cliente logueado
@@ -218,16 +212,14 @@ public class PanelCliente extends PanelBaseInterfaz {
 	}
 
 	/**
-	 * Actualiza los datos de la sección de pedidos. Lo llama SubpanelPago tras
-	 * pagar correctamente.
+	 * Actualiza los datos de la sección de pedidos.
 	 */
 	public void actualizarSeccionPedidos() {
 		subpanelPedidos.actualizar(cliente);
 	}
 
 	/**
-	 * Vuelve a la cartera y la actualiza. Lo llama SubpanelPagoTasacion tras pagar
-	 * la tasación.
+	 * Vuelve a la cartera y la actualiza.
 	 */
 	public void volverACartera() {
 		mostrarSeccion(SEC_CARTERA);
@@ -235,8 +227,7 @@ public class PanelCliente extends PanelBaseInterfaz {
 	}
 
 	/**
-	 * Actualiza el nombre de usuario en la barra de navegación. Lo llama
-	 * SubpanelPerfil tras cambiar el nickname.
+	 * Actualiza el nombre de usuario en la barra de navegación
 	 *
 	 * @param nombre El nuevo nombre a mostrar
 	 */

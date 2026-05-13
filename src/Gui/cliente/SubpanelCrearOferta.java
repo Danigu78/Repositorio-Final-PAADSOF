@@ -15,18 +15,14 @@ import java.util.List;
 /**
  * Subpanel para crear una oferta de intercambio. Muestra dos columnas: los
  * productos del cliente y los del propietario. El usuario selecciona con
- * checkboxes qué productos incluir en la oferta. Extiende AbstractPanelCliente
- * para reutilizar helpers visuales del cliente. Sigue el patrón MVC de los
- * apuntes.
+ * checkboxes qué productos incluir en la oferta.
  *
  * @author Daniel
  * @version 1.0
  */
 public class SubpanelCrearOferta extends AbstractPanelCliente {
 
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
 
 	/** Subpanel de detalle del producto para volver. */
@@ -38,16 +34,16 @@ public class SubpanelCrearOferta extends AbstractPanelCliente {
 	/** Producto del propietario al que se hace la oferta. */
 	private Producto2Mano productoObjetivo;
 
-	/** Botón volver — atributo para registrar el controlador. */
+	/** Botón volver  atributo para registrar el controlador. */
 	private JButton botonVolver;
 
-	/** Botón enviar oferta — atributo para registrar el controlador. */
+	/** Botón enviar oferta  atributo para registrar el controlador. */
 	private JButton botonEnviar;
 
-	/** Checkboxes de mis productos — paralelo a misProductos. */
+	/** Checkboxes de mis productos  paralelo a misProductos. */
 	private List<JCheckBox> checkboxesMios;
 
-	/** Checkboxes de los productos del propietario — paralelo a susProductos. */
+	/** Checkboxes de los productos del propietario paralelo a susProductos. */
 	private List<JCheckBox> checkboxesSuyos;
 
 	/** Lista de mis productos disponibles para ofertar. */
@@ -77,8 +73,6 @@ public class SubpanelCrearOferta extends AbstractPanelCliente {
 	}
 
 	/**
-	 * No se usa en este subpanel — la construcción se hace en el constructor. Se
-	 * implementa por obligación de AbstractPanelCliente.
 	 *
 	 * @param cliente El cliente logueado
 	 */
@@ -88,7 +82,7 @@ public class SubpanelCrearOferta extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Registra el controlador en los botones — patrón de los apuntes.
+	 * Registra el controlador en los botones  .
 	 *
 	 * @param c El ActionListener a registrar
 	 */
@@ -118,14 +112,13 @@ public class SubpanelCrearOferta extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Crea la barra superior con botón volver. Usa crearBarraVolver() y
-	 * getBotonVolver() de PanelBaseInterfaz.
+	 * Crea la barra superior con botón volver. 
 	 *
 	 * @return Panel de la barra superior
 	 */
 	private JPanel crearBarra() {
-		// crearBarraVolver() de PanelBaseInterfaz
-		JPanel barra = crearBarraVolver("← Volver al producto");
+		
+		JPanel barra = crearBarraVolver(" Volver al producto");
 		botonVolver = getBotonVolver(barra);
 		botonVolver.setActionCommand("volver");
 		return barra;
@@ -184,7 +177,7 @@ public class SubpanelCrearOferta extends AbstractPanelCliente {
 		panelLista.setBackground(VentanaPrincipal.COLOR_PANEL);
 
 		if (productos.isEmpty()) {
-			// crearLabel() de PanelBaseInterfaz
+			
 			JLabel labelVacio = crearLabel(mensajeVacio);
 			labelVacio.setFont(VentanaPrincipal.FUENTE_PEQUENA);
 			panelLista.add(labelVacio);
@@ -204,7 +197,7 @@ public class SubpanelCrearOferta extends AbstractPanelCliente {
 				fila.add(checkbox, BorderLayout.WEST);
 
 				if (p.getValoracion() != null) {
-					// crearLabel() de PanelBaseInterfaz
+				
 					JLabel labelPrecio = crearLabel(String.format("%.2f€", p.getValoracion().getPrecioTasacion()));
 					labelPrecio.setFont(VentanaPrincipal.FUENTE_PEQUENA);
 					labelPrecio.setForeground(VentanaPrincipal.COLOR_ACENTO);
@@ -226,8 +219,7 @@ public class SubpanelCrearOferta extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Crea el panel inferior con el botón de enviar oferta. Usa crearBotonNaranja()
-	 * de PanelBaseInterfaz.
+	 * Crea el panel inferior con el botón de enviar oferta.
 	 *
 	 * @return Panel del botón enviar
 	 */
@@ -237,7 +229,7 @@ public class SubpanelCrearOferta extends AbstractPanelCliente {
 		panel.setBorder(
 				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(10), 0, VentanaPrincipal.escalar(20), 0));
 
-		// crearBotonNaranja() de PanelBaseInterfaz
+		
 		botonEnviar = crearBotonNaranja("Enviar oferta");
 		botonEnviar.setActionCommand("enviar");
 		botonEnviar.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(12),
@@ -248,8 +240,7 @@ public class SubpanelCrearOferta extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Devuelve los productos del cliente seleccionados. Lo lee el controlador para
-	 * enviar la oferta.
+	 * Devuelve los productos del cliente seleccionados. 
 	 *
 	 * @return Lista de productos seleccionados
 	 */
@@ -262,8 +253,7 @@ public class SubpanelCrearOferta extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Devuelve los productos del propietario seleccionados. Lo lee el controlador
-	 * para enviar la oferta.
+	 * Devuelve los productos del propietario seleccionados.
 	 *
 	 * @return Lista de productos seleccionados
 	 */
@@ -276,14 +266,14 @@ public class SubpanelCrearOferta extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Vuelve al detalle del producto. Lo llama el controlador.
+	 * Vuelve al detalle del producto.
 	 */
 	public void volver() {
 		subpanelOrigen.volverAlDetalle();
 	}
 
 	/**
-	 * Muestra un mensaje de éxito. Lo llama el controlador.
+	 * Muestra un mensaje de éxito.
 	 *
 	 * @param mensaje El mensaje de éxito
 	 */

@@ -10,9 +10,7 @@ import ventas.Pedido;
 
 /**
  * Subpanel de pago de CheckPoint. Muestra el resumen del pedido, campos de
- * tarjeta y botón pagar. Tras pago correcto vuelve a Mis Pedidos. Extiende
- * AbstractPanelCliente para reutilizar helpers visuales del cliente. Sigue el
- * patrón MVC de los apuntes.
+ * tarjeta y botón pagar. 
  *
  * @author Daniel
  * @version 1.0
@@ -30,10 +28,10 @@ public class SubpanelPago extends AbstractPanelCliente {
 	/** Controlador del pago. */
 	private ControladorPago controlador;
 
-	/** Botón volver — atributo para registrar el controlador. */
+	/** Botón volver  atributo para registrar el controlador. */
 	private JButton botonVolver;
 
-	/** Botón pagar — atributo para registrar el controlador. */
+	/** Botón pagar  atributo para registrar el controlador. */
 	private JButton botonPagar;
 
 	/** Campo número de tarjeta. */
@@ -57,7 +55,7 @@ public class SubpanelPago extends AbstractPanelCliente {
 	}
 
 	/**
-	 * No se usa en este subpanel — la construcción se hace en mostrarPago(). Se
+	 * No se usa en este subpanel  la construcción se hace en mostrarPago(). Se
 	 * implementa por obligación de AbstractPanelCliente.
 	 *
 	 * @param cliente El cliente logueado
@@ -86,7 +84,7 @@ public class SubpanelPago extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Registra el controlador en los botones — patrón de los apuntes.
+	 * Registra el controlador en los botones  patrón de los apuntes.
 	 *
 	 * @param c El ActionListener a registrar
 	 */
@@ -124,8 +122,8 @@ public class SubpanelPago extends AbstractPanelCliente {
 	 * @return Panel de la barra superior
 	 */
 	private JPanel crearBarraSuperior() {
-		// crearBarraVolver() de PanelBaseInterfaz
-		JPanel barra = crearBarraVolver("← Volver a mis pedidos");
+		
+		JPanel barra = crearBarraVolver(" Volver a mis pedidos");
 		botonVolver = getBotonVolver(barra);
 		botonVolver.setActionCommand("volver");
 		return barra;
@@ -166,7 +164,7 @@ public class SubpanelPago extends AbstractPanelCliente {
 		gbc.insets = new Insets(VentanaPrincipal.escalar(4), 0, VentanaPrincipal.escalar(4), 0);
 
 		// Info pedido
-		// crearLabel() de PanelBaseInterfaz
+		
 		gbc.gridy = 1;
 		panel.add(crearLabel("Pedido: " + controlador.getIdPedido()), gbc);
 
@@ -186,7 +184,7 @@ public class SubpanelPago extends AbstractPanelCliente {
 		gbc.gridy = 4;
 		panel.add(crearLabel("Número de tarjeta (16 dígitos):"), gbc);
 
-		// crearCampo() de PanelBaseInterfaz
+		
 		campoTarjeta = crearCampo();
 		gbc.gridy = 5;
 		panel.add(campoTarjeta, gbc);
@@ -208,7 +206,7 @@ public class SubpanelPago extends AbstractPanelCliente {
 		gbc.gridy = 7;
 		panel.add(campoCVV, gbc);
 
-		// Fecha caducidad — igual que SubpanelPagoTasacion
+		
 		gbc.gridy = 8;
 		panel.add(crearLabel("Fecha caducidad (MM/AA):"), gbc);
 
@@ -216,8 +214,7 @@ public class SubpanelPago extends AbstractPanelCliente {
 		gbc.gridy = 9;
 		panel.add(campoFecha, gbc);
 
-		// Botón pagar
-		// crearBotonNaranja() de PanelBaseInterfaz
+		
 		botonPagar = crearBotonNaranja(String.format("Pagar %.2f€", controlador.getTotal()));
 		botonPagar.setActionCommand("pagar");
 		botonPagar.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(12), VentanaPrincipal.escalar(20),
@@ -231,7 +228,7 @@ public class SubpanelPago extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Vuelve a Mis Pedidos. Lo llama el controlador.
+	 * Vuelve a Mis Pedidos.
 	 */
 	public void volverAPedidos() {
 		if (panelCliente != null) {
@@ -241,7 +238,7 @@ public class SubpanelPago extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Muestra un mensaje de éxito. Lo llama el controlador.
+	 * Muestra un mensaje de éxito. 
 	 *
 	 * @param mensaje El mensaje de éxito
 	 */

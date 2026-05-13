@@ -7,8 +7,7 @@ import Gui.cliente.PanelCliente;
 
 /**
  * Controlador del panel principal del cliente. Gestiona la navegación entre
- * secciones de la barra de navegación. Implementa ActionListener según el
- * patrón MVC de los apuntes.
+ * secciones de la barra de navegación.
  *
  * @author Daniel
  * @version 1.0

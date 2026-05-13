@@ -11,8 +11,6 @@ import usuarios.Cliente;
 
 /**
  * Subpanel del perfil del cliente. Permite cambiar nickname y contraseña.
- * Extiende AbstractPanelCliente para reutilizar helpers visuales del cliente.
- * Sigue el patrón MVC de los apuntes.
  *
  * @author Daniel
  * @version 1.0
@@ -69,7 +67,7 @@ public class SubpanelPerfil extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Registra el controlador en el botón guardar — patrón de los apuntes.
+	 * Registra el controlador en el botón guardar 
 	 *
 	 * @param c El ActionListener a registrar
 	 */
@@ -112,7 +110,6 @@ public class SubpanelPerfil extends AbstractPanelCliente {
 
 		gbc.insets = new Insets(VentanaPrincipal.escalar(4), 0, VentanaPrincipal.escalar(4), 0);
 
-		// crearLabel() de PanelBaseInterfaz
 		labelNicknameActual = crearLabel("Nickname actual: " + cliente.getNickname());
 		gbc.gridy = 1;
 		panel.add(labelNicknameActual, gbc);
@@ -121,10 +118,8 @@ public class SubpanelPerfil extends AbstractPanelCliente {
 		panel.add(new JSeparator(), gbc);
 
 		gbc.gridy = 3;
-		// crearLabel() de PanelBaseInterfaz — sustituye crearEtiqueta()
+		
 		panel.add(crearLabel("Nuevo nickname (déjalo vacío para no cambiar):"), gbc);
-
-		// crearCampo() de PanelBaseInterfaz — sustituye crearCampo() propio
 		campoNickname = crearCampo();
 		gbc.gridy = 4;
 		panel.add(campoNickname, gbc);
@@ -151,7 +146,6 @@ public class SubpanelPerfil extends AbstractPanelCliente {
 		gbc.gridy = 7;
 		panel.add(labelInfo, gbc);
 
-		// crearBotonNaranja() de PanelBaseInterfaz — sustituye el botón manual
 		botonGuardar = crearBotonNaranja("Guardar cambios");
 		botonGuardar.setActionCommand("guardar");
 		botonGuardar.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(12),
@@ -165,8 +159,7 @@ public class SubpanelPerfil extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Devuelve el nuevo nickname introducido. Lo lee el controlador desde
-	 * guardarCambios().
+	 * Devuelve el nuevo nickname introducido.
 	 *
 	 * @return Nuevo nickname o vacío si no se quiere cambiar
 	 */
@@ -175,8 +168,7 @@ public class SubpanelPerfil extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Devuelve la nueva contraseña introducida. Lo lee el controlador desde
-	 * guardarCambios().
+	 * Devuelve la nueva contraseña introducida. 
 	 *
 	 * @return Nueva contraseña
 	 */
@@ -185,8 +177,7 @@ public class SubpanelPerfil extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Actualiza el nombre de usuario en la barra del panel cliente. Lo llama el
-	 * controlador tras guardar correctamente.
+	 * Actualiza el nombre de usuario en la barra del panel cliente. 
 	 */
 	public void actualizarNombreEnBarra() {
 		if (panelCliente != null)
@@ -203,7 +194,7 @@ public class SubpanelPerfil extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Muestra un mensaje de éxito. Lo llama el controlador.
+	 * Muestra un mensaje de éxito. 
 	 *
 	 * @param mensaje El mensaje de éxito
 	 */

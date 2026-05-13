@@ -9,11 +9,9 @@ import Gui.VentanaPrincipal;
 import java.awt.*;
 
 /**
- * Clase base para los subpaneles del cliente en CheckPoint. Extiende
- * PanelBaseInterfaz
- *
- * @author Daniel
- * @version 1.0
+ * Clase base para los paneles de la parte del cliente. Sirve para no repetir
+ * código visual y gestionar el scroll y las tarjetas de la interfaz. * @author
+ * Daniel
  */
 public abstract class AbstractPanelCliente extends PanelBaseInterfaz {
 
@@ -21,32 +19,30 @@ public abstract class AbstractPanelCliente extends PanelBaseInterfaz {
 	 * Identificador de versión para la serialización de la clase.
 	 */
 	private static final long serialVersionUID = 1L;
-	/** Cliente logueado actualmente. */
+	/** El cliente que tiene la sesion abierta */
 	protected Cliente cliente;
 
 	/**
-	 * Constructor de la clase base del panel cliente.
-	 *
-	 * @param ventana La ventana principal
+	 * Constructor que vincula el panel a la ventana principal.
+	 * 
+	 * @param ventana La ventana de la aplicacion
 	 */
 	protected AbstractPanelCliente(VentanaPrincipal ventana) {
 		super(ventana);
 	}
 
 	/**
-	 * Actualiza el subpanel con el cliente logueado. Cada subpanel implementa su
-	 * lógica de actualización.
-	 *
+	 * Actualiza el panel con los datos actuales del cliente.
+	 * 
 	 * @param cliente El cliente logueado
 	 */
 	public abstract void actualizar(Cliente cliente);
 
 	/**
-	 * Configura el panel de contenido y lo envuelve en un JScrollPane sin borde.
-	 * Reutilizado en carrito, pedidos, intercambios y cartera.
-	 *
-	 * @param panelContenido Panel al que se aplica el BoxLayout
-	 * @return JScrollPane listo para añadir al layout
+	 * Configura un panel con scroll vertical y fondo oscuro.
+	 * 
+	 * @param panelContenido El panel donde se meten los datos
+	 * @return El scroll ya configurado
 	 */
 	protected JScrollPane crearScrollContenido(JPanel panelContenido) {
 		panelContenido.setLayout(new BoxLayout(panelContenido, BoxLayout.Y_AXIS));
@@ -60,12 +56,11 @@ public abstract class AbstractPanelCliente extends PanelBaseInterfaz {
 	}
 
 	/**
-	 * Crea la estructura base de una tarjeta horizontal.
-	 *
-	 *
-	 * @param alturaMaxima  Altura máxima de la tarjeta en píxeles sin escalar
-	 * @param bordeInferior true para MatteBorder inferior, false para LineBorder
-	 * @return Panel de la tarjeta configurado
+	 * Crea el diseño de una tarjeta con bordes personalizados.
+	 * 
+	 * @param alturaMaxima  Altura del panel sin escalar
+	 * @param bordeInferior True para poner solo la linea de abajo
+	 * @return El panel de la tarjeta
 	 */
 	protected JPanel crearTarjetaBase(int alturaMaxima, boolean bordeInferior) {
 		JPanel tarjeta = new JPanel(new BorderLayout(VentanaPrincipal.escalar(15), 0));
@@ -87,10 +82,9 @@ public abstract class AbstractPanelCliente extends PanelBaseInterfaz {
 	}
 
 	/**
-	 * Crea un GridBagConstraints preconfigurado para el panel de info interior de
-	 * una tarjeta.
-	 *
-	 * @return GridBagConstraints listo para usar en filas de tarjeta
+	 * Configura el alineamiento para el texto de la tarjeta.
+	 * 
+	 * @return Las restricciones del GridBag
 	 */
 	protected GridBagConstraints crearGbcTarjeta() {
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -104,10 +98,9 @@ public abstract class AbstractPanelCliente extends PanelBaseInterfaz {
 	}
 
 	/**
-	 * Crea un GridBagConstraints preconfigurado para el panel de botones derecho de
-	 * una tarjeta.
-	 *
-	 * @return GridBagConstraints listo para usar en botones de tarjeta
+	 * Configura la posicion de los botones en la tarjeta.
+	 * 
+	 * @return Las restricciones para los botones
 	 */
 	protected GridBagConstraints crearGbcBotonesTarjeta() {
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -118,9 +111,9 @@ public abstract class AbstractPanelCliente extends PanelBaseInterfaz {
 	}
 
 	/**
-	 * Crea el panel de botones derecho de una tarjeta con GridBagLayout
-	 *
-	 * @return Panel de botones configurado
+	 * Crea el panel para meter los botones derechos.
+	 * 
+	 * @return El panel de botones
 	 */
 	protected JPanel crearPanelBotonesTarjeta() {
 		JPanel panel = new JPanel(new GridBagLayout());
@@ -129,9 +122,9 @@ public abstract class AbstractPanelCliente extends PanelBaseInterfaz {
 	}
 
 	/**
-	 * Crea el panel de info interior de una tarjeta con GridBagLayout
-	 *
-	 * @return Panel de info configurado
+	 * Crea el panel para meter la informacion central.
+	 * 
+	 * @return El panel de info
 	 */
 	protected JPanel crearPanelInfoTarjeta() {
 		JPanel panel = new JPanel(new GridBagLayout());
@@ -140,12 +133,12 @@ public abstract class AbstractPanelCliente extends PanelBaseInterfaz {
 	}
 
 	/**
-	 * Añade una tarjeta al panel con separación vertical debajo. Reutiliza el
-	 * patrón repetido en todos los rellenos de listas.
-	 *
-	 * @param panel      Panel donde añadir la tarjeta
-	 * @param tarjeta    Tarjeta a añadir
-	 * @param separacion Separación en píxeles sin escalar
+	 * Añade una tarjeta al panel y le pone un hueco debajo.
+	 * 
+	 * @param panel      Donde se añade la tarjeta
+	 * 
+	 * @param tarjeta    La tarjeta en si
+	 * @param separacion Espacio vertical de separacion
 	 */
 	protected void añadirTarjetaConSeparacion(JPanel panel, JPanel tarjeta, int separacion) {
 		tarjeta.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -154,11 +147,10 @@ public abstract class AbstractPanelCliente extends PanelBaseInterfaz {
 	}
 
 	/**
-	 * Crea un label de lista vacía con el estilo estándar del cliente. Fuente
-	 * subtítulo, color texto2, alineado a la izquierda.
-	 *
-	 * @param texto El texto a mostrar
-	 * @return JLabel configurado
+	 * Crea un label de texto para cuando una lista esta vacia.
+	 * 
+	 * @param texto Mensaje que se quiere mostrar
+	 * @return El label configurado
 	 */
 	protected JLabel crearLabelVacio(String texto) {
 		JLabel label = new JLabel(texto);
@@ -169,11 +161,11 @@ public abstract class AbstractPanelCliente extends PanelBaseInterfaz {
 	}
 
 	/**
-	 * Muestra un diálogo de confirmación YES/NO estándar.
-	 *
-	 * @param pregunta Texto de la pregunta
-	 * @param titulo   Título del diálogo
-	 * @return true si el usuario pulsa Sí
+	 * Muestra un cuadro para confirmar una accion (Si o No).
+	 * 
+	 * @param pregunta El texto de la pregunta
+	 * @param titulo   El titulo de la ventana
+	 * @return True si pulsa en Si
 	 */
 	protected boolean confirmar(String pregunta, String titulo) {
 		return JOptionPane.showConfirmDialog(this, pregunta, titulo,
@@ -181,12 +173,11 @@ public abstract class AbstractPanelCliente extends PanelBaseInterfaz {
 	}
 
 	/**
-	 * Rellena un panel de lista con las tarjetas de una lista. Si la lista está
-	 * vacía muestra el mensaje de vacío. Revalida y repinta el panel al terminar.
-	 *
-	 * @param panel        Panel de lista a rellenar
-	 * @param hayElementos true si hay elementos que mostrar
-	 * @param mensajeVacio Mensaje a mostrar si no hay elementos
+	 * Limpia el panel y pone el mensaje de vacio si no hay datos.
+	 * 
+	 * @param panel        El panel de la lista
+	 * @param hayElementos Si hay algo que enseñar o no
+	 * @param mensajeVacio Mensaje si se queda vacio
 	 */
 	protected void prepararPanelLista(JPanel panel, boolean hayElementos, String mensajeVacio) {
 		panel.removeAll();

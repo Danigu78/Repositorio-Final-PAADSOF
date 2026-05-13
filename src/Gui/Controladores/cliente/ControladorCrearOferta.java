@@ -12,19 +12,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Controlador del subpanel de crear oferta. Implementa ActionListener según el
- * patrón MVC de los apuntes.
+ * Controlador del subpanel de crear oferta.
  *
  * @author Daniel
  * @version 1.0
  */
 public class ControladorCrearOferta implements ActionListener {
-
+	/** Vista de creación de ofertas. */
 	private SubpanelCrearOferta vista;
+
+	/** Cliente que realiza la oferta. */
 	private Cliente cliente;
+
+	/** Producto sobre el que se realiza la oferta. */
 	private Producto2Mano productoObjetivo;
+
+	/** Tienda principal del sistema. */
 	private Tienda tienda;
 
+	/**
+	 * Inicializa el controlador encargado de gestionar la creación de ofertas
+	 * asociadas a un producto de segunda mano.
+	 *
+	 * @param vista            subpanel utilizado para la creación de ofertas
+	 * @param cliente          cliente que realiza la oferta sobre el producto
+	 * @param productoObjetivo producto de segunda mano sobre el que se realiza la
+	 *                         puja
+	 */
 	public ControladorCrearOferta(SubpanelCrearOferta vista, Cliente cliente, Producto2Mano productoObjetivo) {
 		this.vista = vista;
 		this.cliente = cliente;
@@ -33,7 +47,9 @@ public class ControladorCrearOferta implements ActionListener {
 	}
 
 	/**
-	 * Gestiona los eventos de los botones de la vista.
+	 * Gestiona las acciones de la vista.
+	 *
+	 * @param e evento generado por la interfaz
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {

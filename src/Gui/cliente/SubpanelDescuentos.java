@@ -16,8 +16,7 @@ import java.util.List;
 /**
  * Subpanel de descuentos activos del cliente. Muestra todos los descuentos
  * vigentes con tipo, detalle y período. Informa de que solo se aplica el más
- * ventajoso en el carrito. Extiende AbstractPanelCliente para reutilizar
- * helpers visuales. Sigue el patrón MVC de los apuntes.
+ * ventajoso en el carrito. 
  *
  * @author Daniel
  * @version 1.0
@@ -32,7 +31,7 @@ public class SubpanelDescuentos extends AbstractPanelCliente {
 	/** Controlador del subpanel. */
 	private ControladorDescuentos controlador;
 
-	/** Botón refrescar — atributo para registrar el controlador. */
+	/** Botón refrescar  atributo para registrar el controlador. */
 	private JButton botonRefrescar;
 
 	/** Panel donde se insertan las tarjetas de descuentos. */
@@ -74,7 +73,7 @@ public class SubpanelDescuentos extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Registra el controlador en los botones — patrón de los apuntes.
+	 * Registra el controlador en los botones 
 	 *
 	 * @param c El ActionListener a registrar
 	 */
@@ -88,8 +87,7 @@ public class SubpanelDescuentos extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Recarga las tarjetas de descuentos. Lo llama el controlador desde
-	 * actionPerformed.
+	 * Recarga las tarjetas de descuentos. 
 	 */
 	public void cargarDescuentos() {
 		if (panelLista == null)
@@ -106,14 +104,14 @@ public class SubpanelDescuentos extends AbstractPanelCliente {
 	 * @return Panel del bloque aviso
 	 */
 	private JPanel crearBloqueAviso() {
-		// crearBloque() de PanelBaseInterfaz
+		
 		JPanel bloque = crearBloque("¿Cómo funcionan los descuentos?");
 
 		JPanel panelInfo = new JPanel();
 		panelInfo.setOpaque(false);
 		panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.Y_AXIS));
 
-		// crearLabel() de PanelBaseInterfaz
+		
 		panelInfo.add(crearLabel("En CheckPoint se aplica automáticamente el descuento "
 				+ "que primero suponga una disminución de precio."));
 		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(6)));
@@ -183,7 +181,7 @@ public class SubpanelDescuentos extends AbstractPanelCliente {
 	 * @return Panel con la tarjeta
 	 */
 	private JPanel crearTarjetaDescuento(Descuento d) {
-		// crearTarjetaBase() de AbstractPanelCliente
+		
 		JPanel tarjeta = crearTarjetaBase(VentanaPrincipal.escalar(110), true);
 		tarjeta.setLayout(new BorderLayout(VentanaPrincipal.escalar(15), 0));
 
@@ -237,10 +235,10 @@ public class SubpanelDescuentos extends AbstractPanelCliente {
 			texto = " VOLUMEN";
 			color = new Color(60, 150, 80);
 		} else if (d instanceof DescuentoCantidad) {
-			texto = " CANTIDAD";
+			texto = " CANTIDAD";//morado
 			color = new Color(150, 80, 180);
 		} else if (d instanceof Regalo) {
-			texto = " REGALO";
+			texto = " REGALO";// rojo
 			color = new Color(200, 80, 80);
 		} else {
 			texto = " OFERTA";

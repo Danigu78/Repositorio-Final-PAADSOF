@@ -16,8 +16,7 @@ import ventas.Pedido;
 import tienda.*;
 
 /**
- * Subpanel de mis pedidos de CheckPoint. Extiende AbstractPanelCliente para
- * reutilizar helpers visuales del cliente. Sigue el patrón MVC de los apuntes.
+ * Subpanel de mis pedidos de CheckPoint.
  *
  * @author Daniel
  * @version 1.0
@@ -96,7 +95,7 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Muestra la lista de pedidos. Lo llama el controlador al volver.
+	 * Muestra la lista de pedidos. 
 	 */
 	public void mostrarLista() {
 		rellenarLista();
@@ -104,7 +103,7 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Navega al pago del pedido. Lo llama el controlador.
+	 * Navega al pago del pedido.
 	 *
 	 * @param pedido El pedido a pagar
 	 */
@@ -140,7 +139,7 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 		panel.add(titulo, BorderLayout.NORTH);
 
 		panelListaPedidos = new JPanel();
-		// crearScrollContenido() de AbstractPanelCliente
+		
 		JScrollPane scroll = crearScrollContenido(panelListaPedidos);
 		panel.add(scroll, BorderLayout.CENTER);
 
@@ -154,11 +153,11 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 		panelListaPedidos.removeAll();
 		List<Pedido> pedidos = controlador.getPedidos();
 		if (pedidos.isEmpty()) {
-			// crearLabelVacio() de AbstractPanelCliente
+			
 			panelListaPedidos.add(crearLabelVacio("No tienes pedidos todavía."));
 		} else {
 			for (Pedido p : pedidos)
-				// añadirTarjetaConSeparacion() de AbstractPanelCliente
+				
 				añadirTarjetaConSeparacion(panelListaPedidos, crearTarjetaPedido(p), 0);
 		}
 		panelListaPedidos.revalidate();
@@ -166,17 +165,15 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Crea una tarjeta visual para un pedido de la lista. Usa crearTarjetaBase(),
-	 * crearGbcTarjeta() y crearPanelBotonesTarjeta() de AbstractPanelCliente.
+	 * Crea una tarjeta visual para un pedido de la lista. 
 	 *
 	 * @param pedido El pedido a mostrar
 	 * @return Panel con la tarjeta
 	 */
 	private JPanel crearTarjetaPedido(Pedido pedido) {
-		// crearTarjetaBase() de AbstractPanelCliente — MatteBorder inferior
+		
 		JPanel tarjeta = crearTarjetaBase(120, true);
 
-		// crearPanelInfoTarjeta() y crearGbcTarjeta() de AbstractPanelCliente
 		JPanel panelInfo = crearPanelInfoTarjeta();
 		GridBagConstraints gbc = crearGbcTarjeta();
 
@@ -200,7 +197,7 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 
 		if (controlador.estaPendientePago(pedido)) {
 			long minutos = controlador.getMinutosRestantesPago(pedido);
-			JLabel labelTiempo = new JLabel(minutos <= 5 ? "⚠ Solo quedan " + minutos + " min para pagar"
+			JLabel labelTiempo = new JLabel(minutos <= 5 ? " Solo quedan " + minutos + " min para pagar"
 					: "Tiempo para pagar: " + minutos + " min");
 			labelTiempo.setFont(VentanaPrincipal.FUENTE_PEQUENA);
 			labelTiempo.setForeground(minutos <= 5 ? new Color(200, 50, 50) : VentanaPrincipal.COLOR_TEXTO2);
@@ -210,11 +207,9 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 
 		tarjeta.add(panelInfo, BorderLayout.CENTER);
 
-		// crearPanelBotonesTarjeta() y crearGbcBotonesTarjeta() de AbstractPanelCliente
 		JPanel panelBotones = crearPanelBotonesTarjeta();
 		GridBagConstraints gbcB = crearGbcBotonesTarjeta();
 
-		// crearBotonOutline() de PanelBaseInterfaz
 		JButton botonVer = crearBotonOutline("Ver pedido");
 		botonVer.setActionCommand("verPedido:" + pedido.getIdPedido());
 		botonVer.addActionListener(controlador);
@@ -222,7 +217,7 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 		panelBotones.add(botonVer, gbcB);
 
 		if (controlador.estaPendientePago(pedido)) {
-			// crearBotonNaranja() de PanelBaseInterfaz
+			
 			JButton botonPagar = crearBotonNaranja("Pagar ahora");
 			botonPagar.setActionCommand("pagar:" + pedido.getIdPedido());
 			botonPagar.addActionListener(controlador);
@@ -241,8 +236,7 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Muestra el detalle de un pedido concreto. Lo llama el controlador desde
-	 * actionPerformed.
+	 * Muestra el detalle de un pedido concreto. 
 	 *
 	 * @param pedido El pedido a mostrar
 	 */
@@ -251,8 +245,8 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 		panelDetallePedido.setLayout(new BorderLayout());
 		panelDetallePedido.setBackground(VentanaPrincipal.COLOR_FONDO);
 
-		// crearBarraVolver() de PanelBaseInterfaz
-		JPanel barra = crearBarraVolver("← Volver a mis pedidos");
+	
+		JPanel barra = crearBarraVolver(" Volver a mis pedidos");
 		botonVolverDetalle = getBotonVolver(barra);
 		botonVolverDetalle.setActionCommand("volver");
 		botonVolverDetalle.addActionListener(controlador);
@@ -289,7 +283,7 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 
 		if (controlador.estaPendientePago(pedido)) {
 			long minutos = controlador.getMinutosRestantesPago(pedido);
-			JLabel labelTiempo = new JLabel(minutos <= 5 ? "⚠ Solo quedan " + minutos + " min para pagar"
+			JLabel labelTiempo = new JLabel(minutos <= 5 ? " Solo quedan " + minutos + " min para pagar"
 					: "Tienes " + minutos + " min para pagar");
 			labelTiempo.setFont(VentanaPrincipal.FUENTE_NORMAL);
 			labelTiempo.setForeground(minutos <= 5 ? new Color(200, 50, 50) : VentanaPrincipal.COLOR_TEXTO2);
@@ -297,7 +291,7 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 			contenido.add(labelTiempo);
 			contenido.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
-			// crearBotonNaranja() de PanelBaseInterfaz
+			
 			JButton botonPagar = crearBotonNaranja("Pagar ahora");
 			botonPagar.setAlignmentX(Component.LEFT_ALIGNMENT);
 			botonPagar.setActionCommand("pagar:" + pedido.getIdPedido());
@@ -345,9 +339,7 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Crea una fila visual para un producto dentro del detalle del pedido. Usa
-	 * cargarImagen(), crearBotonOutline() y crearBotonNaranja() de
-	 * PanelBaseInterfaz.
+	 * Crea una fila visual para un producto dentro del detalle del pedido. 
 	 *
 	 * @param linea  La línea del pedido
 	 * @param pedido El pedido al que pertenece la línea
@@ -426,8 +418,7 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Muestra un diálogo para introducir el código de recogida. Lo llama el
-	 * controlador desde actionPerformed.
+	 * Muestra un diálogo para introducir el código de recogida. 
 	 *
 	 * @param pedido El pedido a recoger
 	 */
@@ -447,8 +438,7 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Muestra el formulario para escribir una reseña de un producto. Lo llama el
-	 * controlador desde actionPerformed.
+	 * Muestra el formulario para escribir una reseña de un producto.
 	 *
 	 * @param producto El producto a reseñar
 	 */
@@ -456,7 +446,6 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 		JSpinner spinnerPuntuacion = new JSpinner(new SpinnerNumberModel(5, 0, 10, 1));
 		spinnerPuntuacion.setFont(VentanaPrincipal.FUENTE_NORMAL);
 
-		// crearArea() de PanelBaseInterfaz
 		JTextArea areaComentario = crearArea();
 		areaComentario.setRows(4);
 
@@ -467,7 +456,6 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 		gbc.weightx = 1;
 		gbc.insets = new Insets(VentanaPrincipal.escalar(5), 0, VentanaPrincipal.escalar(5), 0);
 
-		// crearLabel() de PanelBaseInterfaz
 		gbc.gridy = 0;
 		panelForm.add(crearLabel("Producto: " + producto.getNombre()), gbc);
 		gbc.gridy = 1;

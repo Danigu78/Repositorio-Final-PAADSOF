@@ -12,18 +12,14 @@ import productos.Producto2Mano;
 import usuarios.Cliente;
 
 /**
- * Subpanel de la cartera personal del cliente. Extiende AbstractPanelCliente
- * para reutilizar helpers visuales del cliente. Sigue el patrón MVC de los
- * apuntes: expone setControlador(ActionListener).
+ * Subpanel de la cartera personal del cliente. 
  *
  * @author Daniel
  * @version 1.0
  */
 public class SubpanelCartera extends AbstractPanelCliente {
 
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
 
 	/** Controlador de la cartera. */
@@ -45,11 +41,11 @@ public class SubpanelCartera extends AbstractPanelCliente {
 	/** Panel contenedor del CardLayout. */
 	private JPanel panelContenido;
 
-	/** Botón añadir — atributo para registrar el controlador. */
+	/** Botón añadir  */
 	private JButton botonAñadir;
 
 	/**
-	 * Campo imagen del diálogo — atributo para que el controlador pueda
+	 * Campo imagen del diálogo  atributo para que el controlador pueda
 	 * actualizarlo tras abrir el explorador de archivos.
 	 */
 	private JTextField campoImagenDialogo;
@@ -83,7 +79,7 @@ public class SubpanelCartera extends AbstractPanelCliente {
 
 	/**
 	 * Actualiza el subpanel con los datos del cliente. Crea el controlador y lo
-	 * registra en el botón — patrón de los apuntes.
+	 * registra en el botón  patrón de los apuntes.
 	 *
 	 * @param cliente El cliente logueado
 	 */
@@ -97,8 +93,7 @@ public class SubpanelCartera extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Registra el controlador en el botón añadir — patrón de los apuntes. Elimina
-	 * listeners anteriores para evitar duplicados.
+	 * Registra el controlador en el botón añadir . 
 	 *
 	 * @param c El ActionListener a registrar
 	 */
@@ -128,7 +123,7 @@ public class SubpanelCartera extends AbstractPanelCliente {
 		titulo.setForeground(VentanaPrincipal.COLOR_TEXTO);
 		cabecera.add(titulo, BorderLayout.WEST);
 
-		// crearBotonNaranja() de PanelBaseInterfaz — sustituye crearBotonPrincipal()
+	
 		botonAñadir = crearBotonNaranja("+ Añadir producto");
 		botonAñadir.setActionCommand("añadir");
 		cabecera.add(botonAñadir, BorderLayout.EAST);
@@ -136,7 +131,7 @@ public class SubpanelCartera extends AbstractPanelCliente {
 		panel.add(cabecera, BorderLayout.NORTH);
 
 		panelProductos = new JPanel();
-		// crearScrollContenido() de AbstractPanelCliente — configura BoxLayout y scroll
+		
 		JScrollPane scroll = crearScrollContenido(panelProductos);
 		panel.add(scroll, BorderLayout.CENTER);
 
@@ -151,11 +146,11 @@ public class SubpanelCartera extends AbstractPanelCliente {
 
 		List<Producto2Mano> productos = controlador.getProductos();
 		if (productos.isEmpty()) {
-			// crearLabelVacio() de AbstractPanelCliente
+		
 			panelProductos.add(crearLabelVacio("No tienes productos en tu cartera."));
 		} else {
 			for (Producto2Mano p : productos) {
-				// añadirTarjetaConSeparacion() de AbstractPanelCliente
+				
 				añadirTarjetaConSeparacion(panelProductos, crearTarjeta(p), 0);
 			}
 		}
@@ -165,25 +160,23 @@ public class SubpanelCartera extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Crea una tarjeta visual para un producto de la cartera. Usa
-	 * crearTarjetaBase(), crearGbcTarjeta() y crearPanelBotonesTarjeta() de
-	 * AbstractPanelCliente.
+	 * Crea una tarjeta visual para un producto de la cartera. 
 	 *
 	 * @param producto El producto a mostrar
 	 * @return Panel con la tarjeta
 	 */
 	private JPanel crearTarjeta(Producto2Mano producto) {
-		// crearTarjetaBase() de AbstractPanelCliente — MatteBorder inferior
+	
 		JPanel tarjeta = crearTarjetaBase(110, true);
 
-		// Imagen — cargarImagen() de PanelBaseInterfaz
+		
 		JLabel labelImagen = new JLabel();
 		labelImagen.setHorizontalAlignment(SwingConstants.CENTER);
 		labelImagen.setPreferredSize(new Dimension(VentanaPrincipal.escalar(80), VentanaPrincipal.escalar(80)));
 		cargarImagen(labelImagen, producto.getImagenRuta(), VentanaPrincipal.escalar(70), VentanaPrincipal.escalar(70));
 		tarjeta.add(labelImagen, BorderLayout.WEST);
 
-		// crearPanelInfoTarjeta() y crearGbcTarjeta() de AbstractPanelCliente
+		
 		JPanel panelInfo = crearPanelInfoTarjeta();
 		GridBagConstraints gbc = crearGbcTarjeta();
 
@@ -202,19 +195,18 @@ public class SubpanelCartera extends AbstractPanelCliente {
 		gbc.gridy = 1;
 		panelInfo.add(labelDesc, gbc);
 
-		// Estado del producto en fila 2
 		JLabel labelEstado = crearLabelEstadoProducto(producto);
 		gbc.gridy = 2;
 		panelInfo.add(labelEstado, gbc);
 
 		tarjeta.add(panelInfo, BorderLayout.CENTER);
 
-		// crearPanelBotonesTarjeta() y crearGbcBotonesTarjeta() de AbstractPanelCliente
+		
 		JPanel panelBotones = crearPanelBotonesTarjeta();
 		GridBagConstraints gbcB = crearGbcBotonesTarjeta();
 
 		if (!controlador.estaValorado(producto) && !controlador.tieneTasacionPendiente(producto)) {
-			// crearBotonNaranja() de PanelBaseInterfaz
+			
 			JButton botonTasar = crearBotonNaranja("Solicitar tasación");
 			botonTasar.setActionCommand("tasar:" + producto.getId());
 			botonTasar.addActionListener(controlador);
@@ -236,15 +228,15 @@ public class SubpanelCartera extends AbstractPanelCliente {
 	private JLabel crearLabelEstadoProducto(Producto2Mano producto) {
 		JLabel label;
 		if (controlador.estaValorado(producto) && producto.isBloqueado()) {
-			label = new JLabel("Bloqueado — Has enviado una oferta "
+			label = new JLabel("Bloqueado - Has enviado una oferta "
 					+ "ofreciendo este producto. Se desbloqueará cuando " + "se responda a la oferta.");
 			label.setForeground(new Color(180, 50, 50));
 		} else if (controlador.estaValorado(producto)) {
-			label = new JLabel("Estado: " + producto.getValoracion().getEstadoProducto() + "  —  Precio tasado: "
+			label = new JLabel("Estado: " + producto.getValoracion().getEstadoProducto() + "  -  Precio tasado: "
 					+ String.format("%.2f€", producto.getValoracion().getPrecioTasacion()));
 			label.setForeground(new Color(50, 150, 50));
 		} else if (controlador.tieneTasacionPendiente(producto)) {
-			label = new JLabel("Tasación solicitada — esperando empleado");
+			label = new JLabel("Tasación solicitada - esperando empleado");
 			label.setForeground(new Color(0, 120, 200));
 		} else {
 			label = new JLabel("Sin tasar — solicita la tasación");
@@ -255,15 +247,13 @@ public class SubpanelCartera extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Muestra el diálogo para añadir un producto a la cartera. Lo llama el
-	 * controlador cuando el usuario pulsa el botón añadir. Al confirmar pasa los
-	 * datos directamente al controlador.
+	 * Muestra el diálogo para añadir un producto a la cartera.
 	 */
 	public void mostrarDialogoAñadir() {
 		JTextField campoNombre = new JTextField(20);
 		JTextField campoDescripcion = new JTextField(20);
 
-		// El campo imagen no es editable — se rellena con el explorador
+		
 		campoImagenDialogo = new JTextField(20);
 		campoImagenDialogo.setEditable(false);
 
@@ -307,8 +297,7 @@ public class SubpanelCartera extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Actualiza el campo de imagen del diálogo. Lo llama el controlador tras abrir
-	 * el explorador de archivos.
+	 * Actualiza el campo de imagen del diálogo. 
 	 *
 	 * @param nombreArchivo Nombre del archivo seleccionado
 	 */
@@ -318,7 +307,7 @@ public class SubpanelCartera extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Navega al subpanel de pago de tasación. Lo llama el controlador.
+	 * Navega al subpanel de pago de tasación. 
 	 *
 	 * @param producto El producto a tasar
 	 */
@@ -330,7 +319,7 @@ public class SubpanelCartera extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Muestra un mensaje de éxito. Lo llama el controlador.
+	 * Muestra un mensaje de éxito.
 	 *
 	 * @param mensaje El mensaje de éxito
 	 */

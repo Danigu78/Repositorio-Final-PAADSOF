@@ -13,9 +13,7 @@ import java.util.List;
 
 /**
  * Subpanel de notificaciones del cliente. Muestra la bandeja, acciones,
- * preferencias de notificación y categorías de interés. Extiende
- * AbstractPanelCliente para reutilizar helpers visuales del cliente. Sigue el
- * patrón MVC de los apuntes.
+ * preferencias de notificación y categorías de interés.
  *
  * @author Daniel
  * @version 1.0
@@ -57,7 +55,7 @@ public class SubpanelNotificaciones extends AbstractPanelCliente {
 	/** Label con el resumen de notificaciones mostradas. */
 	private JLabel labelResumen;
 
-	/** Botones — atributos para registrar el controlador. */
+	/** Botones atributos para registrar el controlador. */
 	private JButton botonRefrescar;
 	private JButton botonVer;
 	private JButton botonMarcarTodas;
@@ -67,7 +65,7 @@ public class SubpanelNotificaciones extends AbstractPanelCliente {
 	private JButton botonQuitarCategoria;
 
 	/**
-	 * Tipos configurables — los obligatorios no aparecen.
+	 * Tipos configurables los obligatorios no aparecen.
 	 */
 	private static final TipoNotificacion[] TIPOS_CONFIGURABLES = { TipoNotificacion.DESCUENTO,
 			TipoNotificacion.PEDIDO_CADUCADO, TipoNotificacion.PRODUCTO_INTERCAMBIO_NUEVO,
@@ -100,7 +98,6 @@ public class SubpanelNotificaciones extends AbstractPanelCliente {
 		this.controlador = new ControladorNotificaciones(this, cliente);
 		removeAll();
 
-		// crearPanelBase() y getContenido() de PanelBaseInterfaz
 		JPanel panelBase = crearPanelBase("");
 		JPanel contenido = getContenido(panelBase);
 
@@ -122,7 +119,7 @@ public class SubpanelNotificaciones extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Registra el controlador en los botones — patrón de los apuntes.
+	 * Registra el controlador en los botones
 	 *
 	 * @param c El ActionListener a registrar
 	 */
@@ -135,10 +132,10 @@ public class SubpanelNotificaciones extends AbstractPanelCliente {
 		registrar(botonAñadirCategoria, c, "añadirCategoria");
 		registrar(botonQuitarCategoria, c, "quitarCategoria");
 		if (comboFiltro != null) {
-		    for (ActionListener al : comboFiltro.getActionListeners())
-		        comboFiltro.removeActionListener(al);
-		    comboFiltro.setActionCommand("filtrar");
-		    comboFiltro.addActionListener(c);
+			for (ActionListener al : comboFiltro.getActionListeners())
+				comboFiltro.removeActionListener(al);
+			comboFiltro.setActionCommand("filtrar");
+			comboFiltro.addActionListener(c);
 		}
 	}
 
@@ -164,7 +161,7 @@ public class SubpanelNotificaciones extends AbstractPanelCliente {
 	 * @return Panel del bloque bandeja
 	 */
 	private JPanel crearBloqueBandeja() {
-		// crearBloque() de PanelBaseInterfaz
+
 		JPanel bloque = crearBloque("Bandeja de notificaciones");
 
 		notificacionesMostradas = new ArrayList<>();
@@ -172,15 +169,11 @@ public class SubpanelNotificaciones extends AbstractPanelCliente {
 		listaNotificaciones = new JList<>(modeloNotificaciones);
 		estilizarLista();
 
-		
 		comboFiltro = crearCombo(new String[] { "Todas", "No vistas", "Vistas" });
-		
 
-		// crearBotonSecundario() de PanelBaseInterfaz
 		botonRefrescar = crearBotonSecundario("Refrescar");
 		botonRefrescar.setActionCommand("refrescar");
 
-		// crearLabel() de PanelBaseInterfaz
 		labelResumen = crearLabel("");
 
 		JPanel filaFiltro = new JPanel(new BorderLayout(VentanaPrincipal.escalar(12), 0));
@@ -198,11 +191,9 @@ public class SubpanelNotificaciones extends AbstractPanelCliente {
 		filaFiltro.add(zonaFiltro, BorderLayout.CENTER);
 		filaFiltro.add(zonaBoton, BorderLayout.EAST);
 
-		// estilizarScroll() de PanelBaseInterfaz
 		JScrollPane scrollLista = estilizarScroll(listaNotificaciones);
 		scrollLista.setPreferredSize(new Dimension(VentanaPrincipal.escalar(1050), VentanaPrincipal.escalar(330)));
 
-		// gbcCampo() de PanelBaseInterfaz
 		bloque.add(labelResumen, gbcCampo(1));
 		bloque.add(filaFiltro, gbcCampo(2));
 		bloque.add(scrollLista, gbcCampo(3));
@@ -216,7 +207,7 @@ public class SubpanelNotificaciones extends AbstractPanelCliente {
 	 * @return Panel del bloque acciones
 	 */
 	private JPanel crearBloqueAcciones() {
-		// crearBloque() de PanelBaseInterfaz
+
 		JPanel bloque = crearBloque("Consultar notificación");
 
 		JPanel panelAcciones = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(30), 0));
@@ -235,13 +226,12 @@ public class SubpanelNotificaciones extends AbstractPanelCliente {
 	 * @return Panel del bloque preferencias
 	 */
 	private JPanel crearBloquePreferencias() {
-		// crearBloque() de PanelBaseInterfaz
+
 		JPanel bloque = crearBloque("Preferencias de notificación");
 
 		JPanel panelPreferencias = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(30), 0));
 		panelPreferencias.setOpaque(false);
 
-		// Columna izquierda — explicación
 		JPanel panelInfo = new JPanel();
 		panelInfo.setOpaque(false);
 		panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.Y_AXIS));
@@ -251,7 +241,7 @@ public class SubpanelNotificaciones extends AbstractPanelCliente {
 		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(8)));
 		panelInfo.add(crearLabel("(pagos, recogidas, intercambios confirmados...)"));
 
-		// Columna derecha — combo + estado + botones
+		// columna derecha
 		JPanel panelControles = new JPanel();
 		panelControles.setOpaque(false);
 		panelControles.setLayout(new BoxLayout(panelControles, BoxLayout.Y_AXIS));
@@ -259,7 +249,6 @@ public class SubpanelNotificaciones extends AbstractPanelCliente {
 		panelControles.add(crearLabel("Tipo de notificación:"));
 		panelControles.add(Box.createVerticalStrut(VentanaPrincipal.escalar(6)));
 
-		// crearCombo() de PanelBaseInterfaz
 		comboTipos = crearCombo(NOMBRES_TIPOS);
 		comboTipos.setAlignmentX(Component.LEFT_ALIGNMENT);
 		comboTipos.addActionListener(e -> actualizarEstadoCombo());
@@ -279,12 +268,10 @@ public class SubpanelNotificaciones extends AbstractPanelCliente {
 		filaBotones.setPreferredSize(tam);
 		filaBotones.setMaximumSize(tam);
 
-		// crearBotonNaranja() de PanelBaseInterfaz
-		botonActivar = crearBotonNaranja("✔ Activar");
+		botonActivar = crearBotonNaranja(" Activar");
 		botonActivar.setActionCommand("activar");
 
-		// crearBotonRojo() de PanelBaseInterfaz
-		botonDesactivar = crearBotonRojo("✖ Desactivar");
+		botonDesactivar = crearBotonRojo(" Desactivar");
 		botonDesactivar.setActionCommand("desactivar");
 
 		filaBotones.add(botonActivar);
@@ -301,9 +288,7 @@ public class SubpanelNotificaciones extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Crea el bloque de categorías de interés. Mismo estilo que permisos en
-	 * SubpanelEmpleadosGestor: combo + botones arriba, categorías activas en línea
-	 * abajo.
+	 * Crea el bloque de categorías de interés.
 	 *
 	 * @return Panel del bloque categorías
 	 */
@@ -350,7 +335,6 @@ public class SubpanelNotificaciones extends AbstractPanelCliente {
 
 	/**
 	 * Actualiza el combo de categorías y el label de categorías activas en línea.
-	 * Lo llama el controlador tras añadir o quitar una categoría.
 	 *
 	 * @param categoriasTienda  Nombres de todas las categorías de la tienda
 	 * @param categoriasInteres Nombres de las categorías de interés del cliente
@@ -381,7 +365,7 @@ public class SubpanelNotificaciones extends AbstractPanelCliente {
 
 	/**
 	 * Devuelve el nombre de la categoría seleccionada en el combo. Lo usan tanto
-	 * añadir como quitar — el usuario selecciona en el combo.
+	 * añadir como quitar
 	 *
 	 * @return Nombre de la categoría o null
 	 */
@@ -404,8 +388,7 @@ public class SubpanelNotificaciones extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Devuelve el TipoNotificacion seleccionado en el combo de preferencias. Lo lee
-	 * el controlador desde cambiarPreferencia().
+	 * Devuelve el TipoNotificacion seleccionado en el combo de preferencias.
 	 *
 	 * @return El tipo seleccionado o null
 	 */
@@ -433,9 +416,8 @@ public class SubpanelNotificaciones extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Actualiza el label de estado para un tipo concreto. Lo llama el controlador
-	 * tras cambiar una preferencia.
-	 *
+	 * Actualiza el label de estado para un tipo concreto.
+	 * 
 	 * @param tipo   El tipo de notificación actualizado
 	 * @param activa true si está activada
 	 */
@@ -447,8 +429,7 @@ public class SubpanelNotificaciones extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Carga y muestra las notificaciones según el filtro seleccionado. Lo llama el
-	 * controlador y el combo al cambiar.
+	 * Carga y muestra las notificaciones según el filtro seleccionado.
 	 */
 	public void cargarNotificaciones() {
 		if (controlador == null)
@@ -471,7 +452,7 @@ public class SubpanelNotificaciones extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Muestra la notificación seleccionada en un diálogo. Lo llama el controlador.
+	 * Muestra la notificación seleccionada en un diálogo.
 	 */
 	public void verNotificacionSeleccionada() {
 		int posicion = listaNotificaciones.getSelectedIndex();

@@ -16,9 +16,8 @@ import usuarios.Cliente;
 /**
  * Subpanel de intercambios del cliente. Muestra cinco pestañas: ofertas
  * enviadas, recibidas, aceptadas pendientes de confirmación por empleado,
- * historial y rechazadas/caducadas. Extiende AbstractPanelCliente para
- * reutilizar helpers visuales del cliente. Sigue el patrón MVC de los apuntes.
- *
+ * historial y rechazadas/caducadas.
+ * 
  * @author Daniel
  * @version 1.0
  */
@@ -116,9 +115,8 @@ public class SubpanelIntercambios extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Registra el controlador en los botones de la barra. Patrón MVC de los
-	 * apuntes.
-	 *
+	 * Registra el controlador en los botones de la barra.
+	 * 
 	 * @param c El ActionListener a registrar
 	 */
 	public void setControlador(ActionListener c) {
@@ -308,11 +306,10 @@ public class SubpanelIntercambios extends AbstractPanelCliente {
 		contenidoEnviadas.removeAll();
 		List<Oferta> ofertas = controlador.getOfertasEnviadas();
 		if (ofertas.isEmpty()) {
-			// crearLabelVacio() de AbstractPanelCliente
 			contenidoEnviadas.add(crearLabelVacio("No tienes ofertas enviadas pendientes."));
 		} else {
 			for (Oferta o : ofertas)
-				// añadirTarjetaConSeparacion() de AbstractPanelCliente
+
 				añadirTarjetaConSeparacion(contenidoEnviadas, crearTarjetaOferta(o, false), 8);
 		}
 		contenidoEnviadas.revalidate();
@@ -390,13 +387,12 @@ public class SubpanelIntercambios extends AbstractPanelCliente {
 
 	/**
 	 * Crea el panel de info interior compartido por todas las tarjetas de oferta.
-	 * Reutiliza crearPanelInfoTarjeta() y crearGbcTarjeta() de
-	 * AbstractPanelCliente.
 	 *
+	 * 
 	 * @return Par {panelInfo, gbc} listo para añadir filas
 	 */
 	private JPanel crearPanelInfoOferta() {
-		// crearPanelInfoTarjeta() de AbstractPanelCliente
+
 		return crearPanelInfoTarjeta();
 	}
 
@@ -407,7 +403,7 @@ public class SubpanelIntercambios extends AbstractPanelCliente {
 	 * @return GridBagConstraints con gridy=0, listo para incrementar
 	 */
 	private GridBagConstraints gbcOferta() {
-		// crearGbcTarjeta() de AbstractPanelCliente
+
 		return crearGbcTarjeta();
 	}
 
@@ -421,7 +417,7 @@ public class SubpanelIntercambios extends AbstractPanelCliente {
 	 * @return Panel con la tarjeta
 	 */
 	private JPanel crearTarjetaOferta(Oferta oferta, boolean esRecibida) {
-		// crearTarjetaBase() de AbstractPanelCliente — MatteBorder inferior
+
 		JPanel tarjeta = crearTarjetaBase(165, true);
 
 		JPanel panelInfo = crearPanelInfoOferta();
@@ -435,7 +431,7 @@ public class SubpanelIntercambios extends AbstractPanelCliente {
 
 		String conQuien = esRecibida ? "De: " + oferta.getOrigen().getNickname()
 				: "Para: " + oferta.getDestino().getNickname();
-		// crearLabel() de PanelBaseInterfaz
+
 		JLabel labelConQuien = crearLabel(conQuien);
 		gbc.gridy = 1;
 		panelInfo.add(labelConQuien, gbc);
@@ -450,7 +446,7 @@ public class SubpanelIntercambios extends AbstractPanelCliente {
 		gbc.gridy = 3;
 		panelInfo.add(labelSolicita, gbc);
 
-		// Tiempo restante — solo si está PENDIENTE
+		// tiempo
 		if (oferta.getEstado() == EstadoOferta.PENDIENTE) {
 			JLabel labelTiempo = crearLabel(controlador.getTiempoRestante(oferta));
 			labelTiempo.setFont(VentanaPrincipal.FUENTE_PEQUENA);
@@ -461,19 +457,17 @@ public class SubpanelIntercambios extends AbstractPanelCliente {
 
 		tarjeta.add(panelInfo, BorderLayout.CENTER);
 
-		// crearPanelBotonesTarjeta() y crearGbcBotonesTarjeta() de AbstractPanelCliente
 		JPanel panelBotones = crearPanelBotonesTarjeta();
 		GridBagConstraints gbcB = crearGbcBotonesTarjeta();
 
 		if (esRecibida) {
-			// crearBotonNaranja() de PanelBaseInterfaz
+
 			JButton botonAceptar = crearBotonNaranja("Aceptar");
 			botonAceptar.setActionCommand("aceptar:" + oferta.getId());
 			botonAceptar.addActionListener(controlador);
 			gbcB.gridy = 0;
 			panelBotones.add(botonAceptar, gbcB);
 
-			// crearBotonRojo() de PanelBaseInterfaz
 			JButton botonRechazar = crearBotonRojo("Rechazar");
 			botonRechazar.setActionCommand("rechazar:" + oferta.getId());
 			botonRechazar.addActionListener(controlador);
@@ -505,7 +499,7 @@ public class SubpanelIntercambios extends AbstractPanelCliente {
 		JPanel panelInfo = crearPanelInfoOferta();
 		GridBagConstraints gbc = gbcOferta();
 
-		JLabel labelId = new JLabel(oferta.getId() + "  ⏳ Esperando confirmación de empleado");
+		JLabel labelId = new JLabel(oferta.getId() + "   Esperando confirmación de empleado");
 		labelId.setFont(VentanaPrincipal.FUENTE_BOTON);
 		labelId.setForeground(new Color(0, 120, 200));
 		gbc.gridy = 0;
@@ -545,7 +539,7 @@ public class SubpanelIntercambios extends AbstractPanelCliente {
 		JPanel panelInfo = crearPanelInfoOferta();
 		GridBagConstraints gbc = gbcOferta();
 
-		JLabel labelId = new JLabel(oferta.getId() + "  —  " + controlador.getTextoEstado(oferta));
+		JLabel labelId = new JLabel(oferta.getId() + "  -  " + controlador.getTextoEstado(oferta));
 		labelId.setFont(VentanaPrincipal.FUENTE_BOTON);
 		labelId.setForeground(new Color(50, 150, 50));
 		gbc.gridy = 0;
@@ -592,7 +586,7 @@ public class SubpanelIntercambios extends AbstractPanelCliente {
 		Color colorEstado = oferta.getEstado() == EstadoOferta.CADUCADA ? new Color(150, 100, 0)
 				: new Color(180, 50, 50);
 
-		JLabel labelId = new JLabel(oferta.getId() + "  —  " + motivo);
+		JLabel labelId = new JLabel(oferta.getId() + "  -  " + motivo);
 		labelId.setFont(VentanaPrincipal.FUENTE_BOTON);
 		labelId.setForeground(colorEstado);
 		gbc.gridy = 0;
@@ -638,8 +632,7 @@ public class SubpanelIntercambios extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Procesa la aceptación de una oferta. Lo llama el controlador desde
-	 * actionPerformed. Tras aceptar navega a la pestaña de aceptadas.
+	 * Procesa la aceptación de una oferta. Tras aceptar navega a la pestaña de aceptadas.
 	 *
 	 * @param idOferta Id de la oferta a aceptar
 	 */
@@ -655,9 +648,8 @@ public class SubpanelIntercambios extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Procesa el rechazo de una oferta. Lo llama el controlador desde
-	 * actionPerformed.
-	 *
+	 * Procesa el rechazo de una oferta.
+	 * 
 	 * @param idOferta Id de la oferta a rechazar
 	 */
 	public void procesarRechazarOferta(String idOferta) {

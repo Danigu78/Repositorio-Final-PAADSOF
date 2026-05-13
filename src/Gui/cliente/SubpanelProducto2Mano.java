@@ -11,9 +11,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 /**
- * Subpanel de detalle de un producto de segunda mano. Extiende
- * AbstractPanelCliente para reutilizar helpers visuales del cliente. Sigue el
- * patrón MVC de los apuntes.
+ * Subpanel de detalle de un producto de segunda mano.
  *
  * @author Daniel
  * @version 1.0
@@ -40,10 +38,10 @@ public class SubpanelProducto2Mano extends AbstractPanelCliente {
 	/** Panel contenedor del CardLayout. */
 	private JPanel panelContenido;
 
-	/** Botón volver — atributo para registrar el controlador. */
+	/** Botón volver atributo para registrar el controlador. */
 	private JButton botonVolver;
 
-	/** Botón ofertar — atributo para registrar el controlador. */
+	/** Botón ofertar atributo para registrar el controlador. */
 	private JButton botonOfertar;
 
 	/**
@@ -63,8 +61,7 @@ public class SubpanelProducto2Mano extends AbstractPanelCliente {
 	}
 
 	/**
-	 * No se usa en este subpanel — la construcción se hace en mostrarProducto(). Se
-	 * implementa por obligación de AbstractPanelCliente.
+	 * actualizar
 	 *
 	 * @param cliente El cliente logueado
 	 */
@@ -74,8 +71,7 @@ public class SubpanelProducto2Mano extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Carga el producto y construye la interfaz. Crea el controlador y lo registra
-	 * en los botones — patrón de los apuntes.
+	 * Carga el producto y construye la interfaz.
 	 *
 	 * @param producto El producto a mostrar
 	 * @param cliente  El cliente logueado o null
@@ -103,7 +99,7 @@ public class SubpanelProducto2Mano extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Registra el controlador en los botones — patrón de los apuntes.
+	 * Registra el controlador en los botones 
 	 *
 	 * @param c El ActionListener a registrar
 	 */
@@ -121,9 +117,7 @@ public class SubpanelProducto2Mano extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Crea el panel de detalle del producto con imagen e información. Usa
-	 * crearBarraVolver(), cargarImagen() y crearBotonNaranja() de
-	 * PanelBaseInterfaz.
+	 * Crea el panel de detalle del producto con imagen e información.
 	 *
 	 * @param producto El producto a mostrar
 	 * @return Panel con el detalle
@@ -132,8 +126,7 @@ public class SubpanelProducto2Mano extends AbstractPanelCliente {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.setBackground(VentanaPrincipal.COLOR_FONDO);
 
-		// crearBarraVolver() de PanelBaseInterfaz
-		JPanel barra = crearBarraVolver("← Volver a segunda mano");
+		JPanel barra = crearBarraVolver(" Volver a segunda mano");
 		botonVolver = getBotonVolver(barra);
 		botonVolver.setActionCommand("volver");
 		panel.add(barra, BorderLayout.NORTH);
@@ -146,7 +139,6 @@ public class SubpanelProducto2Mano extends AbstractPanelCliente {
 		JLabel labelImagen = new JLabel();
 		labelImagen.setHorizontalAlignment(SwingConstants.CENTER);
 		labelImagen.setPreferredSize(new Dimension(VentanaPrincipal.escalar(300), VentanaPrincipal.escalar(300)));
-		// cargarImagen() de PanelBaseInterfaz
 		cargarImagen(labelImagen, producto.getImagenRuta(), VentanaPrincipal.escalar(280),
 				VentanaPrincipal.escalar(280));
 		panelCentral.add(labelImagen, BorderLayout.WEST);
@@ -162,7 +154,6 @@ public class SubpanelProducto2Mano extends AbstractPanelCliente {
 		panelInfo.add(labelNombre);
 		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(15)));
 
-		// crearLabel() de PanelBaseInterfaz
 		JLabel labelPropietario = crearLabel("Propietario: " + producto.getPropietario().getNickname());
 		panelInfo.add(labelPropietario);
 		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
@@ -192,7 +183,6 @@ public class SubpanelProducto2Mano extends AbstractPanelCliente {
 		}
 
 		if (controlador.puedeOfertar()) {
-			// crearBotonNaranja() de PanelBaseInterfaz
 			botonOfertar = crearBotonNaranja("Hacer oferta");
 			botonOfertar.setActionCommand("ofertar");
 			botonOfertar.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(10),
@@ -213,7 +203,7 @@ public class SubpanelProducto2Mano extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Navega al subpanel de crear oferta. Lo llama el controlador.
+	 * Navega al subpanel de crear oferta. 
 	 */
 	
 	public void navegarACrearOferta() {

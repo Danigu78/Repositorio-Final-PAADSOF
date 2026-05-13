@@ -12,24 +12,43 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Controlador del catálogo de productos. Implementa ActionListener según el
- * patrón MVC de los apuntes.
+ * Controlador del catálogo de productos.
  *
  * @author Daniel
  * @version 1.0
  */
 public class ControladorCatalogo implements ActionListener {
-
+	/**
+	 * Instancia única de la tienda utilizada para acceder al catálogo,
+	 * categorías y sistema de recomendaciones.
+	 */
 	private Tienda tienda;
+	/**
+	 * Cliente asociado al controlador. Puede ser null si el usuario
+	 * accede como invitado.
+	 */
 	private Cliente cliente;
+	/**
+	 * Vista encargada de mostrar el catálogo y recoger las acciones
+	 * realizadas por el usuario.
+	 */
 	private SubpanelCatalogo vista;
-
+	/**
+	 * Construye el controlador del catálogo asociándolo a un cliente y a su vista.
+	 *
+	 * @param cliente cliente que interactúa con el catálogo; puede ser null
+	 *                 en caso de usuario invitado
+	 * @param vista subpanel encargado de mostrar el catálogo y gestionar
+	 *              la interacción gráfica
+	 */
 	public ControladorCatalogo(Cliente cliente, SubpanelCatalogo vista) {
 		this.tienda = Tienda.getInstancia();
 		this.cliente = cliente;
 		this.vista = vista;
 	}
-
+	/**
+	 * Gestiona los eventos de los botones de la vista.
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e == null)
@@ -175,7 +194,7 @@ public class ControladorCatalogo implements ActionListener {
 	}
 
 	/**
-	 * Extrae el número del ID de un producto ("PV3" 3).
+	 * Extrae el número del ID de un producto .
 	 */
 	private int extraerNumeroId(String id) {
 		if (id == null)

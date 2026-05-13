@@ -8,14 +8,14 @@ import tienda.Tienda;
 import usuarios.Cliente;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Controlador del subpanel de intercambios del cliente. Gestiona la navegación
- * entre secciones y las acciones de aceptar y rechazar ofertas. Implementa
- * ActionListener según el patrón MVC de los apuntes.
+ * entre secciones y las acciones de aceptar y rechazar ofertas. 
  *
  * @author Daniel
  * @version 1.0
@@ -137,8 +137,8 @@ public class ControladorIntercambios implements ActionListener {
 		if (oferta.haCaducado())
 			return "Caducada";
 		LocalDateTime caducidad = oferta.getFechaOferta().plusMinutes(tiempoMax);
-		long minutos = java.time.Duration.between(LocalDateTime.now(), caducidad).toMinutes();
-		long segundos = java.time.Duration.between(LocalDateTime.now(), caducidad).toSeconds() % 60;
+		long minutos = Duration.between(LocalDateTime.now(), caducidad).toMinutes();
+		long segundos = Duration.between(LocalDateTime.now(), caducidad).toSeconds() % 60;
 		return minutos + "m " + segundos + "s restantes";
 	}
 
@@ -153,7 +153,7 @@ public class ControladorIntercambios implements ActionListener {
 		case PENDIENTE:
 			return "Pendiente";
 		case ACEPTADA:
-			return "Aceptada — esperando confirmación de empleado";
+			return "Aceptada - esperando confirmación de empleado";
 		case RECHAZADA:
 			return "Rechazada";
 		case CADUCADA:

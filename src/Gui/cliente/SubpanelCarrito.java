@@ -13,18 +13,14 @@ import usuarios.Cliente;
 import ventas.LineaCarrito;
 
 /**
- * Subpanel del carrito de compra de CheckPoint. Extiende AbstractPanelCliente
- * para reutilizar helpers visuales del cliente. Sigue el patrón MVC de los
- * apuntes.
+ * Subpanel del carrito de compra de CheckPoint.
  *
  * @author Daniel
  * @version 1.0
  */
 public class SubpanelCarrito extends AbstractPanelCliente {
 
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 
 	/** Controlador del carrito. */
@@ -54,7 +50,7 @@ public class SubpanelCarrito extends AbstractPanelCliente {
 	/** Panel contenedor del estado del carrito. */
 	private JPanel panelEstado;
 
-	/** Botón tramitar — atributo para registrar el controlador. */
+	/** Botón tramitar  atributo para registrar el controlador. */
 	private JButton botonTramitar;
 
 	/**
@@ -94,7 +90,7 @@ public class SubpanelCarrito extends AbstractPanelCliente {
 		if (!controlador.carritoVacio()) {
 			panelProductos.removeAll();
 			for (LineaCarrito l : controlador.getLineasCarrito()) {
-				// añadirTarjetaConSeparacion() de AbstractPanelCliente
+				
 				panelProductos.add(crearTarjetaProducto(l));
 			}
 			panelProductos.revalidate();
@@ -114,7 +110,7 @@ public class SubpanelCarrito extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Registra el controlador en el botón tramitar — patrón de los apuntes.
+	 * Registra el controlador 
 	 *
 	 * @param c El ActionListener a registrar
 	 */
@@ -183,7 +179,6 @@ public class SubpanelCarrito extends AbstractPanelCliente {
 		panel.setBackground(VentanaPrincipal.COLOR_FONDO);
 
 		panelProductos = new JPanel();
-		// crearScrollContenido() de AbstractPanelCliente configura BoxLayout y scroll
 		JScrollPane scroll = crearScrollContenido(panelProductos);
 		panel.add(scroll, BorderLayout.CENTER);
 
@@ -221,7 +216,7 @@ public class SubpanelCarrito extends AbstractPanelCliente {
 		gbc.gridy = 1;
 		panel.add(new JSeparator(), gbc);
 
-		// crearLabel() de PanelBaseInterfaz
+	
 		gbc.gridy = 2;
 		panel.add(crearLabel("Subtotal:"), gbc);
 
@@ -264,7 +259,7 @@ public class SubpanelCarrito extends AbstractPanelCliente {
 		gbc.gridy = 10;
 		panel.add(labelTiempo, gbc);
 
-		// crearBotonNaranja() de PanelBaseInterfaz
+	
 		botonTramitar = crearBotonNaranja("Tramitar pedido");
 		botonTramitar.setActionCommand("tramitar");
 		gbc.gridy = 11;
@@ -279,8 +274,7 @@ public class SubpanelCarrito extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Crea una tarjeta visual para una línea del carrito. Usa crearTarjetaBase(),
-	 * crearGbcTarjeta() y crearPanelBotonesTarjeta() de AbstractPanelCliente.
+	 * Crea una tarjeta visual para una línea del carrito. 
 	 *
 	 * @param linea La línea del carrito a mostrar
 	 * @return Panel con la tarjeta
@@ -288,7 +282,6 @@ public class SubpanelCarrito extends AbstractPanelCliente {
 	private JPanel crearTarjetaProducto(LineaCarrito linea) {
 		ProductoVenta producto = linea.getProducto();
 
-		// crearTarjetaBase() de AbstractPanelCliente — LineBorder para carrito
 		JPanel tarjeta = new JPanel(new BorderLayout(VentanaPrincipal.escalar(15), 0));
 		tarjeta.setBackground(VentanaPrincipal.COLOR_TARJETA);
 		tarjeta.setMaximumSize(new Dimension(Integer.MAX_VALUE, VentanaPrincipal.escalar(140)));
@@ -298,17 +291,15 @@ public class SubpanelCarrito extends AbstractPanelCliente {
 				BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(20),
 						VentanaPrincipal.escalar(15), VentanaPrincipal.escalar(20))));
 
-		// Imagen — cargarImagen() de PanelBaseInterfaz
 		JLabel labelImagen = new JLabel();
 		labelImagen.setHorizontalAlignment(SwingConstants.CENTER);
 		labelImagen.setPreferredSize(new Dimension(VentanaPrincipal.escalar(100), VentanaPrincipal.escalar(100)));
 		cargarImagen(labelImagen, producto.getImagenRuta(), VentanaPrincipal.escalar(90), VentanaPrincipal.escalar(90));
 		tarjeta.add(labelImagen, BorderLayout.WEST);
 
-		// crearPanelInfoTarjeta() de AbstractPanelCliente
 		JPanel panelInfo = crearPanelInfoTarjeta();
 
-		// crearGbcTarjeta() de AbstractPanelCliente
+		
 		GridBagConstraints gbc = crearGbcTarjeta();
 
 		JLabel labelNombre = new JLabel(producto.getNombre());
@@ -340,7 +331,7 @@ public class SubpanelCarrito extends AbstractPanelCliente {
 		JSpinner spinnerCantidad = new JSpinner(new SpinnerNumberModel(linea.getCantidad(), 1, stockMaximo, 1));
 		spinnerCantidad.setFont(VentanaPrincipal.FUENTE_NORMAL);
 		spinnerCantidad.setPreferredSize(new Dimension(VentanaPrincipal.escalar(70), VentanaPrincipal.escalar(28)));
-		// ChangeListener — lógica de presentación pura
+		
 		spinnerCantidad.addChangeListener(e -> controlador.cambiarCantidad(producto, (int) spinnerCantidad.getValue()));
 		gbc.gridx = 1;
 		gbc.gridy = 2;
@@ -348,7 +339,6 @@ public class SubpanelCarrito extends AbstractPanelCliente {
 
 		tarjeta.add(panelInfo, BorderLayout.CENTER);
 
-		// crearPanelBotonesTarjeta() y crearGbcBotonesTarjeta() de AbstractPanelCliente
 		JPanel panelBotones = crearPanelBotonesTarjeta();
 		GridBagConstraints gbcB = crearGbcBotonesTarjeta();
 
@@ -358,14 +348,14 @@ public class SubpanelCarrito extends AbstractPanelCliente {
 		gbcB.gridy = 0;
 		panelBotones.add(labelSubtotalLinea, gbcB);
 
-		// crearBotonOutline() de PanelBaseInterfaz
+		
 		JButton botonVerInfo = crearBotonOutline("Ver información");
 		botonVerInfo.setActionCommand("ver:" + producto.getId());
 		botonVerInfo.addActionListener(controlador);
 		gbcB.gridy = 1;
 		panelBotones.add(botonVerInfo, gbcB);
 
-		// crearBotonRojo() de PanelBaseInterfaz
+		
 		JButton botonEliminar = crearBotonRojo("Eliminar");
 		botonEliminar.setActionCommand("eliminar:" + producto.getId());
 		botonEliminar.addActionListener(controlador);
@@ -402,10 +392,9 @@ public class SubpanelCarrito extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Muestra confirmación para tramitar el pedido. Lo llama el controlador.
+	 * Muestra confirmación para tramitar el pedido.
 	 */
 	public void mostrarConfirmacionTramitar() {
-		// confirmar() de AbstractPanelCliente
 		if (confirmar("¿Confirmas la reserva del pedido por " + String.format("%.2f€", controlador.getTotal()) + "?\n"
 				+ "Tendrás " + controlador.getTiempoMaxPago() + " minutos para pagarlo.", "Confirmar pedido")) {
 			controlador.confirmarReserva();
@@ -413,21 +402,19 @@ public class SubpanelCarrito extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Muestra confirmación para eliminar un producto del carrito. Lo llama el
-	 * controlador.
+	 * Muestra confirmación para eliminar un producto del carrito. 
 	 *
 	 * @param producto El producto a eliminar
 	 */
 	public void mostrarConfirmacionEliminar(ProductoVenta producto) {
-		// confirmar() de AbstractPanelCliente
+		
 		if (confirmar("¿Eliminar " + producto.getNombre() + " del carrito?", "Confirmar")) {
 			controlador.eliminarProducto(producto);
 		}
 	}
 
 	/**
-	 * Actualiza los labels del resumen del pedido. Lo llama el controlador y el
-	 * método actualizar.
+	 * Actualiza los labels del resumen del pedido.
 	 */
 	public void actualizarResumen() {
 		if (controlador == null)
@@ -450,7 +437,7 @@ public class SubpanelCarrito extends AbstractPanelCliente {
 	}
 
 	/**
-	 * Muestra un aviso informativo. Lo llama el controlador.
+	 * Muestra un aviso informativo.
 	 *
 	 * @param mensaje El mensaje de aviso
 	 */

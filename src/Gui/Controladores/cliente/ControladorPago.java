@@ -13,8 +13,7 @@ import java.sql.Date;
 
 /**
  * Controlador del subpanel de pago. Gestiona el proceso de pago usando el
- * método pagarCarrito del cliente. Implementa ActionListener según el patrón
- * MVC de los apuntes.
+ * método pagarCarrito del cliente. 
  *
  * @author Daniel
  * @version 1.0

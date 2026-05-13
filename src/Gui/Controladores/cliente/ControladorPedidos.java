@@ -26,9 +26,11 @@ import excepciones.*;
  * @version 1.0
  */
 public class ControladorPedidos implements ActionListener {
-
+	/** Vista del subpanel de pedidos. */
 	private SubpanelPedidos vista;
+	/** Cliente logueado. */
 	private Cliente cliente;
+	/** Tienda principal del sistema. */
 	private Tienda tienda;
 
 	public ControladorPedidos(SubpanelPedidos vista, Cliente cliente) {

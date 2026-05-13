@@ -14,9 +14,8 @@ import java.util.List;
 
 /**
  * Controlador del subpanel de notificaciones del cliente. Gestiona la bandeja,
- * las preferencias de notificación y las categorías de interés. Implementa
- * ActionListener según el patrón MVC de los apuntes.
- *
+ * las preferencias de notificación y las categorías de interés. 
+ * 
  * @author Daniel
  * @version 1.0
  */

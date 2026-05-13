@@ -15,8 +15,7 @@ import productos.Producto2Mano;
 import usuarios.Cliente;
 
 /**
- * Subpanel del catálogo de segunda mano. Extiende AbstractPanelCliente para
- * reutilizar helpers visuales del cliente. Sigue el patrón MVC de los apuntes.
+ * Subpanel del catálogo de segunda mano. 
  *
  * @author Daniel
  * @version 1.0
@@ -130,7 +129,7 @@ public class SubpanelSegundaMano extends AbstractPanelCliente {
 		scrollProductos.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollProductos.getViewport().setBackground(VentanaPrincipal.COLOR_FONDO);
 
-		// Fix scroll recalcula la altura cuando cambia el ancho del viewport
+	
 		scrollProductos.getViewport().addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(ComponentEvent e) {
@@ -197,7 +196,7 @@ public class SubpanelSegundaMano extends AbstractPanelCliente {
 		spinnerPrecioMin.setPreferredSize(new Dimension(VentanaPrincipal.escalar(70), VentanaPrincipal.escalar(30)));
 		filaFiltros.add(spinnerPrecioMin);
 
-		JLabel labelHasta = new JLabel("—");
+		JLabel labelHasta = new JLabel("-");
 		labelHasta.setForeground(VentanaPrincipal.COLOR_TEXTO2);
 		filaFiltros.add(labelHasta);
 
@@ -236,9 +235,7 @@ public class SubpanelSegundaMano extends AbstractPanelCliente {
 		JPanel filaUsuario = new JPanel(new FlowLayout(FlowLayout.CENTER, VentanaPrincipal.escalar(15), 0));
 		filaUsuario.setBackground(VentanaPrincipal.COLOR_PANEL);
 		filaUsuario.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(8), 0, 0, 0));
-
 		filaUsuario.add(crearLabel("Ver cartera de:"));
-
 		campoUsuario = new JTextField(12);
 		campoUsuario.setFont(VentanaPrincipal.FUENTE_NORMAL);
 		campoUsuario.setForeground(Color.BLACK);
@@ -448,7 +445,6 @@ public class SubpanelSegundaMano extends AbstractPanelCliente {
 		panelInfo.add(labelPropietario);
 		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(3)));
 
-		// Todos los productos que llegan aquí tienen valoración
 		JLabel labelPrecio = new JLabel(String.format("%.2f€", producto.getValoracion().getPrecioTasacion()));
 		labelPrecio.setFont(VentanaPrincipal.FUENTE_PRECIO);
 		labelPrecio.setForeground(VentanaPrincipal.COLOR_ACENTO);
@@ -464,7 +460,6 @@ public class SubpanelSegundaMano extends AbstractPanelCliente {
 
 		panelInfo.add(Box.createVerticalStrut(VentanaPrincipal.escalar(5)));
 
-		// crearBotonNaranja() de PanelBaseInterfaz
 		JButton botonVer = crearBotonNaranja("Ver información");
 		botonVer.setAlignmentX(Component.CENTER_ALIGNMENT);
 		botonVer.setActionCommand("ver:" + producto.getId());
@@ -494,13 +489,13 @@ public class SubpanelSegundaMano extends AbstractPanelCliente {
 				}
 			}
 		} catch (IOException e) {
-			// sin icono
+		
 		}
 		return label;
 	}
 
 	/**
-	 * Navega al detalle de un producto de segunda mano. Lo llama el controlador
+	 * Navega al detalle de un producto de segunda mano. 
 	 * desde actionPerformed.
 	 *
 	 * @param producto El producto a ver

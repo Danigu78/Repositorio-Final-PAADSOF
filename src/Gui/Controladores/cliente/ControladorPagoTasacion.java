@@ -7,11 +7,11 @@ import tienda.Tienda;
 import usuarios.Cliente;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Date;
 import java.util.Calendar;
 
 /**
- * Controlador del subpanel de pago de tasación. Implementa ActionListener según
- * el patrón MVC de los apuntes.
+ * Controlador del subpanel de pago de tasación. 
  *
  * @author Daniel
  * @version 1.0
@@ -92,7 +92,7 @@ public class ControladorPagoTasacion implements ActionListener {
 		}
 
 		// Parseamos MM/AA validamos mes entre 01 y 12
-		java.sql.Date fechaTarjeta;
+		Date fechaTarjeta;
 		try {
 			String[] partes = fechaStr.split("/");
 			if (partes.length != 2)
@@ -107,7 +107,7 @@ public class ControladorPagoTasacion implements ActionListener {
 
 			Calendar cal = Calendar.getInstance();
 			cal.set(año, mes - 1, 1);
-			fechaTarjeta = new java.sql.Date(cal.getTimeInMillis());
+			fechaTarjeta = new Date(cal.getTimeInMillis());
 		} catch (NumberFormatException ex) {
 			vista.mostrarError("La fecha debe contener solo números. Usa MM/AA.");
 			return;
