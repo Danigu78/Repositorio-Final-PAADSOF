@@ -5,6 +5,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+import productos.Categoria;
+import productos.ProductoVenta;
 import tienda.GuardadoTienda;
 import tienda.Tienda;
 import usuarios.Empleado;
@@ -50,6 +52,18 @@ public class ControladorCategoriasEmpleado implements ActionListener {
 		if (!validacion.isExito()) {
 			return validacion;
 		}
+		ProductoVenta producto = Tienda.getInstancia().buscarProductoVentaPorId(idProducto.trim());
+		if (producto == null) {
+			return ResultadoOperacion.error("No existe ningún producto con ese ID.");
+		}
+		Categoria categoriaTienda = Tienda.getInstancia().buscarCategoriaPorNombre(categoria.trim());
+		if (categoriaTienda == null || categoriaTienda.isEliminada()) {
+			return ResultadoOperacion.error("No existe esa categoría.");
+		}
+		if (producto.getCategorias().contains(categoriaTienda)) {
+			return ResultadoOperacion.error("El producto ya tiene esa categoría.");
+		}
+
 		boolean ok = empleado.añadirProductoACategoria(idProducto.trim(), categoria.trim());
 		guardarSiExito(ok);
 		return ok ? ResultadoOperacion.ok("Categoría añadida correctamente")
@@ -61,6 +75,18 @@ public class ControladorCategoriasEmpleado implements ActionListener {
 		if (!validacion.isExito()) {
 			return validacion;
 		}
+		ProductoVenta producto = Tienda.getInstancia().buscarProductoVentaPorId(idProducto.trim());
+		if (producto == null) {
+			return ResultadoOperacion.error("No existe ningún producto con ese ID.");
+		}
+		Categoria categoriaTienda = Tienda.getInstancia().buscarCategoriaPorNombre(categoria.trim());
+		if (categoriaTienda == null || categoriaTienda.isEliminada()) {
+			return ResultadoOperacion.error("No existe esa categoría.");
+		}
+		if (!producto.getCategorias().contains(categoriaTienda)) {
+			return ResultadoOperacion.error("El producto no tiene esa categoría.");
+		}
+
 		boolean ok = empleado.eliminarProductoDeCategoria(idProducto.trim(), categoria.trim());
 		guardarSiExito(ok);
 		return ok ? ResultadoOperacion.ok("Categoría quitada correctamente")

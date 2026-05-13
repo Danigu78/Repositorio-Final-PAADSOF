@@ -786,7 +786,7 @@ public class Empleado extends UsuarioRegistrado implements Serializable {
 		}
 
 		try {
-			boolean añadido = c.addProducto(p);
+			boolean añadido = p.addCategoria(c);
 			if (añadido) {
 				System.out.println(
 						"Se ha añadido el producto con id " + idProducto + " a la categoria " + nombreCat + ".");
@@ -843,7 +843,7 @@ public class Empleado extends UsuarioRegistrado implements Serializable {
 			return false;
 		}
 
-		boolean eliminado = c.deleteProducto(p);
+		boolean eliminado = p.deleteCategoria(c);
 
 		if (eliminado) {
 			System.out.println(
