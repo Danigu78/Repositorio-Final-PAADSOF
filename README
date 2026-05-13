@@ -1,0 +1,24 @@
+Hola sacha, te adjuntamos aquí algunos de los usuarios ya creados con sus respectivas contraseñas.
+
+Gestor - 	usuario: admin_Gestor
+			contra: Admin@1234
+			
+Usuario 1 -	usuario: dani
+			contra: Daniel-7
+			
+Usuario 2 - usuario: antonino
+			contra: Antonino-7
+			
+Empleado - 	usuario empleado4
+			contra: Empleado-4
+			
+Obviamente puedes crear los empleados y clientes que quieras, pero por si quieres acceder
+a algunos de los ya creados, donde hicimos las pruebas y tenemos información útil, como
+hisotiales, notificaciones,... ya hechas.
+
+La entrega 4 está en la carpeta de entregables. En ella tienes la matriz y el diagrama adaptado 
+a esta nueva entrega (el diagrama sin la GUI como dice el moodle). Además te añadimos un informe
+de nuestra implementación de  la GUI, donde te resumimos un poco las decisiones de implementación 
+de la vista y de los controladores.
+
+Esperamos que te guste mucho el proyecto!! :)
