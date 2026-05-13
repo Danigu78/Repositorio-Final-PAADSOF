@@ -3,11 +3,33 @@ package test_junit.test_junit_productos;
 import static org.junit.jupiter.api.Assertions.*;
 import productos.*;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.*;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import tienda.Tienda;
+import tienda.GuardadoTienda;
 import excepciones.ProductoInvalidoException;
 
 public class ProductoValidacionesTest {
 
+	private static byte[] datOriginal;
+
+    @BeforeAll
+    static void guardarDat() throws Exception {
+        File fichero = new File("datos_tienda.dat");
+        if (fichero.exists()) {
+            datOriginal = Files.readAllBytes(fichero.toPath());
+        }
+    }
+
+    @AfterAll
+    static void restaurarDat() throws Exception {
+        if (datOriginal != null) {
+            Files.write(Paths.get("datos_tienda.dat"), datOriginal);
+            GuardadoTienda.cargar(); // Recarga la tienda con los datos originales
+        }
+    }
 	@Test
 	void comicValidoSeCreaCorrectamente() {
 		Comic comic = new Comic("comic1", "descripcion1", "imagen1.jpg", 12.5, 8, 120, "editorial1", 2020);

@@ -5,7 +5,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.*;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import tienda.Tienda;
+import tienda.GuardadoTienda;
 import excepciones.ProductoInvalidoException;
 import excepciones.ValoracionInvalidaException;
 import usuarios.Cliente;
@@ -14,7 +19,23 @@ import ventas.Pago;
 import productos.*;
 
 public class SegundaManoTest {
+	private static byte[] datOriginal;
 
+    @BeforeAll
+    static void guardarDat() throws Exception {
+        File fichero = new File("datos_tienda.dat");
+        if (fichero.exists()) {
+            datOriginal = Files.readAllBytes(fichero.toPath());
+        }
+    }
+
+    @AfterAll
+    static void restaurarDat() throws Exception {
+        if (datOriginal != null) {
+            Files.write(Paths.get("datos_tienda.dat"), datOriginal);
+            GuardadoTienda.cargar(); // Recarga la tienda con los datos originales
+        }
+    }
 	@Test
 	void producto2ManoConPropietarioValidoSeCreaCorrectamente() {
 		Cliente cliente = new Cliente("cliente1", "1234", "11111111A");
