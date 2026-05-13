@@ -616,13 +616,11 @@ public abstract class PanelBaseInterfaz extends JPanel {
 		labelUsuario.setForeground(VentanaPrincipal.COLOR_TEXTO2);
 		panelDerecha.add(labelUsuario);
 
-		
 		JPanel separador = new JPanel();
 		separador.setBackground(VentanaPrincipal.COLOR_ACENTO);
 		separador.setPreferredSize(new Dimension(VentanaPrincipal.escalar(3), VentanaPrincipal.escalar(25)));
 		panelDerecha.add(separador);
 
-	
 		JButton botonLogout = crearBotonRojo(" Salir");
 		botonLogout.setFont(VentanaPrincipal.FUENTE_PEQUENA);
 		botonLogout.addActionListener(e -> ventana.logout());
