@@ -7,18 +7,26 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Controlador del subpanel de detalle de producto de segunda mano. Implementa
- * ActionListener según el patrón MVC de los apuntes.
+ * Controlador del subpanel de detalle de producto de segunda mano. 
  *
  * @author Daniel
  * @version 1.0
  */
 public class ControladorProducto2Mano implements ActionListener {
-
+	/** Vista del subpanel de producto de segunda mano. */
 	private SubpanelProducto2Mano vista;
+	/** Producto de segunda mano mostrado. */
 	private Producto2Mano producto;
+	/** Cliente logueado. */
 	private Cliente cliente;
-
+	/**
+	 * Construye el controlador del producto de segunda mano.
+	 *
+	 * @param vista vista del producto de segunda mano
+	 * @param producto producto de segunda mano a mostrar
+	 * @param cliente cliente logueado
+	 * @return void
+	 */
 	public ControladorProducto2Mano(SubpanelProducto2Mano vista, Producto2Mano producto, Cliente cliente) {
 		this.vista = vista;
 		this.producto = producto;
@@ -26,7 +34,10 @@ public class ControladorProducto2Mano implements ActionListener {
 	}
 
 	/**
-	 * Gestiona los eventos de los botones de la vista.
+	 * Gestiona los eventos de la vista.
+	 *
+	 * @param e evento de acción
+	 * @return void
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -41,10 +52,9 @@ public class ControladorProducto2Mano implements ActionListener {
 	}
 
 	/**
-	 * Indica si hay cliente logueado y no es el propietario del producto. Solo en
-	 * ese caso se muestra el botón de ofertar.
+	 * Indica si el cliente puede realizar una oferta.
 	 *
-	 * @return true si puede ofertar
+	 * @return true si el cliente está logueado y no es el propietario del producto
 	 */
 	public boolean puedeOfertar() {
 		if (cliente == null)

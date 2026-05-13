@@ -33,12 +33,24 @@ public class ControladorPedidos implements ActionListener {
 	/** Tienda principal del sistema. */
 	private Tienda tienda;
 
+	/**
+	 * Controla el perfil del cliente.
+	 *
+	 * @param subpanelPerfil vista del perfil
+	 * @param cliente        cliente que edita su perfil
+	 */
 	public ControladorPedidos(SubpanelPedidos vista, Cliente cliente) {
 		this.vista = vista;
 		this.cliente = cliente;
 		this.tienda = Tienda.getInstancia();
 	}
 
+	/**
+	 * Gestiona las acciones de la vista.
+	 *
+	 * @param e evento de acción
+	 * @return void
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e == null)
@@ -77,12 +89,24 @@ public class ControladorPedidos implements ActionListener {
 		}
 	}
 
+	/**
+	 * Revisa tiempos de carritos y pedidos.
+	 *
+	 * @return void
+	 */
 	private void revisarTiempos() {
 		tienda.getComprobadorTiempos().revisarCarritosCaducados();
 		tienda.getComprobadorTiempos().revisarPedidosPendientesCaducados();
 		GuardadoTienda.guardar(tienda);
 	}
 
+	/**
+	 * Busca un pedido por id y ejecuta una acción.
+	 *
+	 * @param id     identificador del pedido
+	 * @param accion acción a ejecutar con el pedido encontrado
+	 * @return void
+	 */
 	private void buscarPedidoYEjecutar(String id, Consumer<Pedido> accion) {
 		for (Pedido p : cliente.getHistorialPedidos()) {
 			if (p.getIdPedido().equals(id)) {
@@ -92,6 +116,13 @@ public class ControladorPedidos implements ActionListener {
 		}
 	}
 
+	/**
+	 * Busca un producto por id dentro del historial de pedidos.
+	 *
+	 * @param idProducto identificador del producto
+	 * @param accion     acción a ejecutar con el producto encontrado
+	 * @return void
+	 */
 	private void buscarProductoYEjecutar(String idProducto, Consumer<ProductoVenta> accion) {
 		for (Pedido p : cliente.getHistorialPedidos()) {
 			for (LineaPedido l : p.getLineas()) {
@@ -103,12 +134,23 @@ public class ControladorPedidos implements ActionListener {
 		}
 	}
 
+	/**
+	 * Devuelve la lista de pedidos del cliente.
+	 *
+	 * @return lista de pedidos
+	 */
 	public List<Pedido> getPedidos() {
 		List<Pedido> todos = new ArrayList<>(cliente.getHistorialPedidos());
 		java.util.Collections.reverse(todos);
 		return todos;
 	}
 
+	/**
+	 * Devuelve los minutos restantes para pagar un pedido.
+	 *
+	 * @param pedido pedido a consultar
+	 * @return minutos restantes (0 si no aplica)
+	 */
 	public long getMinutosRestantesPago(Pedido pedido) {
 		if (pedido.getEstado() != EstadoPedido.PENDIENTE_PAGO)
 			return 0;
@@ -116,6 +158,12 @@ public class ControladorPedidos implements ActionListener {
 		return Math.max(0, ChronoUnit.MINUTES.between(LocalDateTime.now(), caducidad));
 	}
 
+	/**
+	 * Devuelve el texto del estado de un pedido.
+	 *
+	 * @param pedido pedido a consultar
+	 * @return estado del pedido en formato texto
+	 */
 	public String getTextoEstado(Pedido pedido) {
 		switch (pedido.getEstado()) {
 		case PENDIENTE_PAGO:
@@ -133,10 +181,23 @@ public class ControladorPedidos implements ActionListener {
 		}
 	}
 
+	/**
+	 * Indica si un pedido está pendiente de pago.
+	 *
+	 * @param pedido pedido a comprobar
+	 * @return true si está pendiente de pago y no ha caducado
+	 */
 	public boolean estaPendientePago(Pedido pedido) {
 		return pedido.getEstado() == EstadoPedido.PENDIENTE_PAGO && !pedido.isCaducado();
 	}
 
+	/**
+	 * Gestiona la solicitud de recogida de un pedido.
+	 *
+	 * @param pedido pedido afectado
+	 * @param codigo código de recogida
+	 * @return true si la operación fue correcta
+	 */
 	public boolean gestionarSolicitudRecogida(Pedido pedido, String codigo) {
 		boolean exito = cliente.solicitarRecogidaPedido(codigo);
 		if (exito)
@@ -144,6 +205,14 @@ public class ControladorPedidos implements ActionListener {
 		return exito;
 	}
 
+	/**
+	 * Permite escribir una reseña de un producto.
+	 *
+	 * @param producto   producto a reseñar
+	 * @param pts        puntuación dada
+	 * @param comentario comentario de la reseña
+	 * @return true si se guardó correctamente
+	 */
 	public boolean escribirReseña(ProductoVenta producto, int pts, String comentario) {
 		try {
 			boolean ok = cliente.escribirReseña(producto, pts, comentario);
@@ -162,6 +231,12 @@ public class ControladorPedidos implements ActionListener {
 		}
 	}
 
+	/**
+	 * Indica si el cliente ya ha reseñado un producto.
+	 *
+	 * @param producto producto a comprobar
+	 * @return true si ya existe reseña del cliente
+	 */
 	public boolean yaReseñó(ProductoVenta producto) {
 		for (Reseña r : producto.getReseñas()) {
 			if (r.getAutor() != null && r.getAutor().getNickname().equals(cliente.getNickname())) {
@@ -171,10 +246,22 @@ public class ControladorPedidos implements ActionListener {
 		return false;
 	}
 
+	/**
+	 * Devuelve el cliente asociado al controlador.
+	 *
+	 * @return cliente logueado
+	 */
 	public Cliente getCliente() {
 		return cliente;
 	}
+
+	/**
+	 * Devuelve un producto por su id.
+	 *
+	 * @param idProducto identificador del producto
+	 * @return producto encontrado o null si no existe
+	 */
 	public ProductoVenta getProductoPorId(String idProducto) {
-	    return Tienda.getInstancia().buscarProductoVentaPorId(idProducto);
+		return Tienda.getInstancia().buscarProductoVentaPorId(idProducto);
 	}
 }

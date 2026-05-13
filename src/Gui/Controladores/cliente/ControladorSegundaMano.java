@@ -12,8 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Controlador del subpanel de segunda mano. Implementa ActionListener según el
- * patrón MVC de los apuntes.
+ * Controlador del subpanel de segunda mano.
  *
  * @author Daniel
  * @version 1.0

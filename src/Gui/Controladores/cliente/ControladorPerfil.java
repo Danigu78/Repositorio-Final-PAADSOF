@@ -9,22 +9,34 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Controlador del subpanel de perfil. Implementa ActionListener según el patrón
- * MVC de los apuntes.
+ * Controlador del subpanel de perfil. 
  *
  * @author Daniel
  * @version 1.0
  */
 public class ControladorPerfil implements ActionListener {
-
+	/** Vista del perfil. */
 	private SubpanelPerfil vista;
+	/** Cliente logueado. */
 	private Cliente cliente;
-
+	/**
+	 * Construye el controlador del perfil.
+	 *
+	 * @param subpanelPerfil vista del perfil
+	 * @param cliente cliente que edita su perfil
+	 * @return void
+	 */
 	public ControladorPerfil(SubpanelPerfil subpanelPerfil, Cliente cliente) {
 		this.vista = subpanelPerfil;
 		this.cliente = cliente;
 	}
 
+/**
+ * Gestiona las acciones de la vista.
+ *
+ * @param e evento de acción
+ * @return void
+ */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e == null)
@@ -35,8 +47,9 @@ public class ControladorPerfil implements ActionListener {
 	}
 
 	/**
-	 * Guarda los cambios del perfil del cliente. Si los campos están vacíos
-	 * mantiene los valores actuales.
+	 * Guarda los cambios del perfil del cliente.
+	 *
+	 * @return void
 	 */
 	private void guardarCambios() {
 		String nuevoNickname = vista.getNuevoNickname();
@@ -54,7 +67,7 @@ public class ControladorPerfil implements ActionListener {
 		}
 
 		// Si la contraseña está vacía mantenemos la actual
-		// pero modificarPerfil requiere contraseña — usamos la actual
+		// pero modificarPerfil requiere contraseña l
 		if (nuevaPassword.isBlank()) {
 			vista.mostrarError("Debes introducir la contraseña aunque no la cambies.");
 			return;
