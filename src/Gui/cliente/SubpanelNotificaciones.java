@@ -134,6 +134,12 @@ public class SubpanelNotificaciones extends AbstractPanelCliente {
 		registrar(botonDesactivar, c, "desactivar");
 		registrar(botonAñadirCategoria, c, "añadirCategoria");
 		registrar(botonQuitarCategoria, c, "quitarCategoria");
+		if (comboFiltro != null) {
+		    for (ActionListener al : comboFiltro.getActionListeners())
+		        comboFiltro.removeActionListener(al);
+		    comboFiltro.setActionCommand("filtrar");
+		    comboFiltro.addActionListener(c);
+		}
 	}
 
 	/**
@@ -166,9 +172,9 @@ public class SubpanelNotificaciones extends AbstractPanelCliente {
 		listaNotificaciones = new JList<>(modeloNotificaciones);
 		estilizarLista();
 
-		// crearCombo() de PanelBaseInterfaz
+		
 		comboFiltro = crearCombo(new String[] { "Todas", "No vistas", "Vistas" });
-		comboFiltro.addActionListener(e -> cargarNotificaciones());
+		
 
 		// crearBotonSecundario() de PanelBaseInterfaz
 		botonRefrescar = crearBotonSecundario("Refrescar");
@@ -436,7 +442,7 @@ public class SubpanelNotificaciones extends AbstractPanelCliente {
 	public void actualizarEstadoPreferencia(TipoNotificacion tipo, boolean activa) {
 		if (labelEstadoPreferencia == null)
 			return;
-		labelEstadoPreferencia.setText("Estado actual: " + (activa ? "✔ Activada" : "✖ Desactivada"));
+		labelEstadoPreferencia.setText("Estado actual: " + (activa ? " Activada" : " Desactivada"));
 		labelEstadoPreferencia.setForeground(activa ? new Color(50, 150, 50) : new Color(180, 50, 50));
 	}
 

@@ -73,6 +73,10 @@ public class ControladorNotificaciones implements ActionListener {
 		case "quitarCategoria":
 			quitarCategoriaInteres();
 			break;
+		case "filtrar":
+			vista.cargarNotificaciones();
+			break;
+
 		}
 	}
 
