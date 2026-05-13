@@ -13,8 +13,9 @@ import productos.Categoria;
 import usuarios.Gestor;
 
 /**
- * Subpanel de gestión de categorías para el gestor. Permite crear y eliminar
- * categorías, y añadir o quitar categorías a productos.
+ * Subpanel de gestión de categorías para el gestor. Permite crear, eliminar,
+ * listar y buscar categorías, además de añadir o quitar categorías a
+ * productos.
  *
  * @author Antonino
  * @version 1.0
@@ -23,24 +24,49 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 
 	private static final long serialVersionUID = 1L;
 
+	/** Controlador asociado al subpanel. */
 	private ControladorCategoriasGestor controlador;
 
+	/** Campo de texto para el nombre de la categoría. */
 	private JTextField campoNombre;
+	
+	/** Campo de texto para la descripción de la categoría. */
 	private JTextField campoDesc;
+	
+	/** Campo de texto para el ID del producto. */
 	private JTextField campoIdProducto;
+	
+	/** ComboBox de selección de categorías. */
 	private JComboBox<String> comboCategoria;
+	
+	/** Tabla de productos de venta. */
 	private TablaProductosVenta tablaProductosVenta;
 
-	// Panel y campo para lista de categorías
+	/** Panel que contiene la lista de categorías. */
 	private JPanel panelListaCategorias;
+	
+	/** Campo de búsqueda de categorías. */
 	private JTextField campoBusquedaCategorias;
 
+	/** Botón para crear categorías. */
 	private JButton botonCrear;
+	
+	/** Botón para añadir categoría a un producto. */
 	private JButton botonAnadirCategoria;
+	
+	/** Botón para quitar categoría de un producto. */
 	private JButton botonQuitarCategoria;
 
+	/** Referencia al panel principal del gestor. */
 	private PanelGestor panelGestor;
 
+	/**
+	 * Constructor del subpanel de categorías del gestor.
+	 *
+	 * @param ventana      Ventana principal
+	 * @param gestor       Gestor logueado
+	 * @param panelGestor  Panel principal del gestor
+	 */
 	public SubpanelCategoriasGestor(VentanaPrincipal ventana, Gestor gestor, PanelGestor panelGestor) {
 		super(ventana, gestor);
 		this.panelGestor = panelGestor;
@@ -48,6 +74,9 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 		inicializarUI();
 	}
 
+	/**
+	 * Construye la interfaz gráfica del subpanel.
+	 */
 	private void inicializarUI() {
 		setLayout(new BorderLayout());
 
@@ -78,6 +107,11 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 		setControlador(controlador);
 	}
 
+	/**
+	 * Registra el controlador en los botones del subpanel.
+	 *
+	 * @param c Controlador a registrar
+	 */
 	public void setControlador(ActionListener c) {
 		if (botonCrear != null) {
 			for (ActionListener al : botonCrear.getActionListeners())
@@ -96,7 +130,11 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 		}
 	}
 
-	
+	/**
+	 * Crea el formulario de creación de nuevas categorías.
+	 *
+	 * @return Panel del formulario
+	 */
 	private JPanel crearFormularioNuevaCategoria() {
 		JPanel panel = new JPanel(
 				new FlowLayout(FlowLayout.LEFT, VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(10)));
@@ -126,11 +164,15 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 		return panel;
 	}
 
-
+	/**
+	 * Crea el bloque visual de listado de categorías con buscador.
+	 *
+	 * @return Panel del bloque de categorías
+	 */
 	private JPanel crearBloqueListaCategorias() {
 		JPanel bloque = crearBloque("Categorías creadas");
 
-		// Barra de búsqueda
+		
 		JPanel barraBusqueda = new JPanel(
 				new FlowLayout(FlowLayout.LEFT, VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(5)));
 		barraBusqueda.setOpaque(false);
@@ -141,7 +183,7 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 		escucharCambios(campoBusquedaCategorias, this::filtrarCategorias);
 		barraBusqueda.add(campoBusquedaCategorias);
 
-		// Panel lista
+		
 		panelListaCategorias = new JPanel();
 		panelListaCategorias.setLayout(new BoxLayout(panelListaCategorias, BoxLayout.Y_AXIS));
 		panelListaCategorias.setBackground(VentanaPrincipal.COLOR_FONDO);
@@ -168,7 +210,7 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 	}
 
 	/**
-	 * Filtra la lista de categorías por nombre o id.
+	 * Filtra la lista de categorías por nombre 
 	 */
 	private void filtrarCategorias() {
 		String texto = campoBusquedaCategorias.getText().trim().toLowerCase();
@@ -208,8 +250,10 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 	}
 
 	/**
-	 * Crea una fila para una categoría con id, nombre, descripción y botón
-	 * eliminar.
+	 * Crea una fila visual para representar una categoría.
+	 *
+	 * @param c Categoría a mostrar
+	 * @return Panel de la fila de categoría
 	 */
 	private JPanel crearFilaCategoria(Categoria c) {
 		boolean eliminada = c.isEliminada();
@@ -249,7 +293,11 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 		return fila;
 	}
 
-
+	/**
+	 * Crea el panel que contiene la tabla de productos de venta.
+	 *
+	 * @return Panel con la tabla
+	 */
 	private JPanel crearPanelTablaProductos() {
 		JPanel panel = crearBloque("Productos de venta");
 		tablaProductosVenta = new TablaProductosVenta(() -> controlador.getProductosOrdenados(), false);
@@ -257,6 +305,11 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 		return panel;
 	}
 
+	/**
+	 * Crea el bloque de cambio de categorías para productos.
+	 *
+	 * @return Panel del bloque
+	 */
 	private JPanel crearBloqueCambiarCategoriaProducto() {
 		JPanel bloque = crearBloque("Cambiar categoría de un producto");
 
@@ -269,6 +322,11 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 		return bloque;
 	}
 
+	/**
+	 * Crea el panel de datos de categorías 
+	 *
+	 * @return Panel de datos
+	 */
 	private JPanel crearPanelDatosCategoria() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -280,6 +338,11 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 		return panel;
 	}
 
+	/**
+	 * Crea el panel de botones de modificación de categorías.
+	 *
+	 * @return Panel de botones
+	 */
 	private JPanel crearPanelBotonesCategoria() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -302,6 +365,9 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 		return panel;
 	}
 
+	/**
+	 * Procesa la creación de una nueva categoría.
+	 */
 	public void procesarCrearCategoria() {
 		String nombre = campoNombre.getText().trim();
 		String desc = campoDesc.getText().trim();
@@ -326,6 +392,11 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 			panelGestor.refrescarFiltrosCategorias();
 	}
 
+	/**
+	 * Procesa la eliminación de una categoría.
+	 *
+	 * @param nombre Nombre de la categoría
+	 */
 	public void procesarEliminarCategoria(String nombre) {
 		int confirm = JOptionPane.showConfirmDialog(this,
 				"¿Seguro que quieres eliminar la categoría \"" + nombre + "\"?\nSe quitará de todos los productos.",
@@ -348,6 +419,9 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 			panelGestor.refrescarFiltrosCategorias();
 	}
 
+	/**
+	 * Procesa la asignación de una categoría a un producto.
+	 */
 	public void procesarAnadirCategoriaProducto() {
 		String idProducto = campoIdProducto.getText().trim();
 		String nombreCategoria = obtenerCategoriaSeleccionada();
@@ -368,6 +442,9 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 		}
 	}
 
+	/**
+	 * Procesa la eliminación de una categoría de un producto.
+	 */
 	public void procesarQuitarCategoriaProducto() {
 		String idProducto = campoIdProducto.getText().trim();
 		String nombreCategoria = obtenerCategoriaSeleccionada();
@@ -392,6 +469,11 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 		}
 	}
 
+	/**
+	 * Devuelve la categoría actualmente seleccionada en el combo.
+	 *
+	 * @return Nombre de la categoría seleccionada o null
+	 */
 	private String obtenerCategoriaSeleccionada() {
 		Object sel = comboCategoria.getSelectedItem();
 		if (sel == null)
@@ -402,8 +484,7 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 
 	/**
 	 * Recarga el combo de categorías con los datos actuales de la tienda. Se llama
-	 * tras crear o eliminar una categoría para que el filtro de la tabla y el combo
-	 * se actualicen sin reiniciar.
+	 * tras crear o eliminar una categoría para actualizar el combo sin reiniciar.
 	 */
 	public void cargarCategorias() {
 		comboCategoria.removeAllItems();

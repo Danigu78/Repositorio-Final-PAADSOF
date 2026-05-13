@@ -6,8 +6,7 @@ import java.awt.event.ActionListener;
 
 /**
  * Controlador del panel principal del gestor. Gestiona la navegación entre
- * secciones de la barra de navegación. Implementa ActionListener según el
- * patrón MVC de los apuntes.
+ * secciones de la barra de navegación. 
  *
  * @author Antonino
  * @version 1.0

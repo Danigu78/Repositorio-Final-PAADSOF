@@ -8,10 +8,9 @@ import java.awt.*;
 import java.awt.event.*;
 import usuarios.Gestor;
 
+
 /**
- * Subpanel de configuración del sistema para el gestor. Extiende
- * AbstractPanelGestor para reutilizar helpers visuales. Sigue el patrón MVC de
- * los apuntes.
+ * Subpanel de configuración del sistema para el gestor. 
  *
  * @author Antonino
  * @version 1.0
@@ -20,26 +19,48 @@ public class SubpanelConfiguracionGestor extends AbstractPanelGestor {
 
 	private static final long serialVersionUID = 1L;
 
+	/** Controlador asociado al subpanel de configuración. */
 	private ControladorConfiguracionGestor controlador;
 
-	// Spinners — atributos para que el controlador pueda leerlos
+	/** Spinner para el tiempo máximo del carrito. */
 	private JSpinner spinnerCarrito;
+	
+	/** Spinner para el tiempo máximo de oferta. */
 	private JSpinner spinnerOferta;
+	
+	/** Spinner para el tiempo máximo de pago. */
 	private JSpinner spinnerPago;
+	
+	/** Spinner para el precio de tasación. */
 	private JSpinner spinnerTasacion;
+	
+	/** Spinner para el peso de valoración del recomendador. */
 	private JSpinner spinnerPesoValoracion;
+	
+	/** Spinner para el peso de compras del recomendador. */
 	private JSpinner spinnerPesoCompras;
+	
+	/** Spinner para el peso de categorías del recomendador. */
 	private JSpinner spinnerPesoCategorias;
 
-	// Botón — atributo para registrar el controlador
+	/** Botón para guardar la configuración del sistema. */
 	private JButton botonGuardar;
 
+	/**
+	 * Constructor del subpanel de configuración del gestor.
+	 *
+	 * @param ventana Ventana principal de la aplicación
+	 * @param gestor  Gestor logueado en el sistema
+	 */
 	public SubpanelConfiguracionGestor(VentanaPrincipal ventana, Gestor gestor) {
 		super(ventana, gestor);
 		this.controlador = new ControladorConfiguracionGestor(this, gestor);
 		inicializarUI();
 	}
 
+	/**
+	 * Inicializa la interfaz gráfica del subpanel de configuración.
+	 */
 	private void inicializarUI() {
 		JPanel panelContenido = new JPanel(new GridBagLayout());
 		panelContenido.setBackground(VentanaPrincipal.COLOR_FONDO);
@@ -60,7 +81,7 @@ public class SubpanelConfiguracionGestor extends AbstractPanelGestor {
 
 		gbc.insets = new Insets(VentanaPrincipal.escalar(8), 0, VentanaPrincipal.escalar(4), 0);
 
-		// crearLabel() de PanelBaseInterfaz
+		
 		gbc.gridy = 1;
 		panelContenido.add(crearLabel("Tiempo máximo carrito (minutos):"), gbc);
 		spinnerCarrito = new JSpinner(new SpinnerNumberModel(valorTiempo(controlador.getTiempoCarrito()), 1, 9999, 1));
@@ -120,7 +141,7 @@ public class SubpanelConfiguracionGestor extends AbstractPanelGestor {
 		gbc.gridy = 15;
 		panelContenido.add(spinnerPesoCategorias, gbc);
 
-		// crearBotonNaranja() de PanelBaseInterfaz
+		
 		botonGuardar = crearBotonNaranja("Guardar configuración");
 		botonGuardar.setActionCommand("guardarConfig");
 		gbc.gridy = 16;
@@ -131,6 +152,11 @@ public class SubpanelConfiguracionGestor extends AbstractPanelGestor {
 		setControlador(controlador);
 	}
 
+	/**
+	 * Registra el controlador en el botón de guardado.
+	 *
+	 * @param c Controlador de eventos
+	 */
 	public void setControlador(ActionListener c) {
 		if (botonGuardar != null) {
 			for (ActionListener al : botonGuardar.getActionListeners())
@@ -140,7 +166,8 @@ public class SubpanelConfiguracionGestor extends AbstractPanelGestor {
 	}
 
 	/**
-	 * Lee los spinners y guarda la configuración. Lo llama el controlador.
+	 * Procesa y guarda la configuración del sistema leyendo los valores de los
+	 * spinners.
 	 */
 	public void procesarGuardar() {
 		int carrito = (int) spinnerCarrito.getValue();
@@ -163,11 +190,20 @@ public class SubpanelConfiguracionGestor extends AbstractPanelGestor {
 		}
 	}
 
+	/**
+	 * Muestra mensaje de error
+	 */
 	@Override
 	public void mostrarError(String msg) {
 		JOptionPane.showMessageDialog(this, msg, "Error", JOptionPane.ERROR_MESSAGE);
 	}
 
+	/**
+	 * Ajusta el valor mínimo de tiempo permitido.
+	 *
+	 * @param valor valor original
+	 * @return valor corregido
+	 */
 	private int valorTiempo(int valor) {
 		if (valor < 1) {
 			return 1;
@@ -175,6 +211,12 @@ public class SubpanelConfiguracionGestor extends AbstractPanelGestor {
 		return valor;
 	}
 
+	/**
+	 * Ajusta el valor mínimo de tasación permitido.
+	 *
+	 * @param valor valor original
+	 * @return valor corregido
+	 */
 	private double valorTasacion(double valor) {
 		if (valor <= 5.0) {
 			return 5.01;
@@ -182,6 +224,11 @@ public class SubpanelConfiguracionGestor extends AbstractPanelGestor {
 		return valor;
 	}
 
+
+	/**
+	 * Actualiza los valores de los spinners de pesos con los valores actuales del
+	 * sistema.
+	 */
 	private void actualizarPesos() {
 		spinnerPesoValoracion.setValue(controlador.getPesoValoracion());
 		spinnerPesoCompras.setValue(controlador.getPesoCompras());
