@@ -22,11 +22,12 @@ public class ControladorLogin implements ActionListener {
 	private PantallaLogin vista;
 	/** Instancia principal de la tienda. */
 	private Tienda tienda;
+
 	/**
 	 * Construye el controlador de login.
 	 *
 	 * @param ventana ventana principal
-	 * @param vista pantalla de login
+	 * @param vista   pantalla de login
 	 * @return void
 	 */
 	public ControladorLogin(VentanaPrincipal ventana, PantallaLogin vista) {
@@ -34,6 +35,7 @@ public class ControladorLogin implements ActionListener {
 		this.vista = vista;
 		this.tienda = Tienda.getInstancia();
 	}
+
 	/**
 	 * Gestiona los eventos de la vista.
 	 *
@@ -64,7 +66,7 @@ public class ControladorLogin implements ActionListener {
 	 *
 	 * @param nickname nombre de usuario
 	 * @param password contraseña del usuario
-	 * @param tipo tipo de usuario (Cliente, Empleado o Gestor)
+	 * @param tipo     tipo de usuario (Cliente, Empleado o Gestor)
 	 * @return void
 	 */
 	public void realizarLogin(String nickname, String password, String tipo) {
@@ -106,8 +108,8 @@ public class ControladorLogin implements ActionListener {
 	 *
 	 * @param nickname nombre de usuario
 	 * @param password contraseña del usuario
-	 * @param dni documento del cliente
-	 * @param tipo tipo de usuario (debe ser Cliente)
+	 * @param dni      documento del cliente
+	 * @param tipo     tipo de usuario (debe ser Cliente)
 	 * @return void
 	 */
 	public void realizarRegistro(String nickname, String password, String dni, String tipo) {
@@ -139,6 +141,7 @@ public class ControladorLogin implements ActionListener {
 			vista.mostrarError("Error al registrarse: " + ex.getMessage());
 		}
 	}
+
 	/**
 	 * Inicia sesión como invitado.
 	 *
@@ -148,14 +151,15 @@ public class ControladorLogin implements ActionListener {
 		ventana.loginInvitado();
 	}
 
-/**
- * Muestra la pantalla de registro.
- *
- * @return void
- */
+	/**
+	 * Muestra la pantalla de registro.
+	 *
+	 * @return void
+	 */
 	public void irARegistro() {
 		vista.mostrarRegistro();
 	}
+
 	/**
 	 * Muestra la pantalla de login.
 	 *

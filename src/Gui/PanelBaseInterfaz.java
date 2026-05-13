@@ -21,16 +21,24 @@ public abstract class PanelBaseInterfaz extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	protected final VentanaPrincipal ventana;
-
+	/**
+	 * Constructor base del panel.
+	 *
+	 * @param ventana ventana principal de la aplicación
+	 */
 	protected PanelBaseInterfaz(VentanaPrincipal ventana) {
 		this.ventana = ventana;
 		setLayout(new BorderLayout());
 		setBackground(VentanaPrincipal.COLOR_FONDO);
 	}
 
+
 	/**
-	 * Crea el panel base con scroll y título. Guarda el panel de contenido en
-	 * clientProperty "contenido".
+	 * Crea un panel base con scroll y título superior.
+	 * Guarda el panel de contenido en clientProperty "contenido".
+	 *
+	 * @param titulo título de la sección
+	 * @return panel contenedor listo para añadir componentes
 	 */
 	protected JPanel crearPanelBase(String titulo) {
 		JPanel wrapper = new JPanel(new BorderLayout());
@@ -63,14 +71,20 @@ public abstract class PanelBaseInterfaz extends JPanel {
 	}
 
 	/**
-	 * Devuelve el panel de contenido guardado en el wrapper.
+	 * Obtiene el panel de contenido interno de un wrapper creado con crearPanelBase.
+	 *
+	 * @param base panel base
+	 * @return panel de contenido interno
 	 */
 	protected JPanel getContenido(JPanel base) {
 		return (JPanel) base.getClientProperty("contenido");
 	}
 
 	/**
-	 * Crea un bloque con título y GridBagLayout — mismo estilo empleado.
+	 * Crea un bloque visual con título usando GridBagLayout.
+	 *
+	 * @param titulo título del bloque
+	 * @return panel bloque estilizado
 	 */
 	protected JPanel crearBloque(String titulo) {
 		JPanel bloque = new JPanel(new GridBagLayout());
@@ -99,8 +113,12 @@ public abstract class PanelBaseInterfaz extends JPanel {
 	}
 
 	/**
-	 * GridBagConstraints para campos mismo estilo empleado.
+	 * Genera constraints estándar para campos.
+	 *
+	 * @param y posición vertical en GridBagLayout
+	 * @return GridBagConstraints configurado
 	 */
+
 	protected GridBagConstraints gbcCampo(int y) {
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
@@ -113,7 +131,10 @@ public abstract class PanelBaseInterfaz extends JPanel {
 	}
 
 	/**
-	 * GridBagConstraints para botones — mismo estilo empleado.
+	 * Genera constraints estándar para botones.
+	 *
+	 * @param y posición vertical en GridBagLayout
+	 * @return GridBagConstraints configurado
 	 */
 	protected GridBagConstraints gbcBoton(int y) {
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -127,7 +148,11 @@ public abstract class PanelBaseInterfaz extends JPanel {
 	}
 
 	/**
-	 * GridBagConstraints para filtros mismo estilo empleado.
+	 * Genera constraints estándar para filtros.
+	 *
+	 * @param x posición horizontal
+	 * @param y posición vertical
+	 * @return GridBagConstraints configurado
 	 */
 	protected GridBagConstraints gbcFiltro(int x, int y) {
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -140,14 +165,23 @@ public abstract class PanelBaseInterfaz extends JPanel {
 		gbc.weightx = 1.0;
 		return gbc;
 	}
-
+	/**
+	 * Crea una etiqueta estándar.
+	 *
+	 * @param texto texto a mostrar
+	 * @return JLabel configurado
+	 */
 	protected JLabel crearLabel(String texto) {
 		JLabel label = new JLabel(texto);
 		label.setFont(VentanaPrincipal.FUENTE_NORMAL);
 		label.setForeground(VentanaPrincipal.COLOR_TEXTO2);
 		return label;
 	}
-
+	/**
+	 * Crea un campo de texto estándar.
+	 *
+	 * @return JTextField configurado
+	 */
 	protected JTextField crearCampo() {
 		JTextField campo = new JTextField();
 		campo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
@@ -162,7 +196,11 @@ public abstract class PanelBaseInterfaz extends JPanel {
 								VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(12))));
 		return campo;
 	}
-
+	/**
+	 * Crea un campo de texto compacto.
+	 *
+	 * @return JTextField compacto configurado
+	 */
 	protected JTextField crearCampoCompacto() {
 		JTextField campo = new JTextField();
 		campo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
@@ -178,6 +216,11 @@ public abstract class PanelBaseInterfaz extends JPanel {
 		return campo;
 	}
 
+	/**
+	 * Crea un área de texto multilínea.
+	 *
+	 * @return JTextArea configurado
+	 */
 	protected JTextArea crearArea() {
 		JTextArea area = new JTextArea(5, 20);
 		area.setFont(new Font("Segoe UI", Font.PLAIN, 14));
@@ -190,7 +233,12 @@ public abstract class PanelBaseInterfaz extends JPanel {
 				VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(12)));
 		return area;
 	}
-
+	/**
+	 * Crea un JComboBox genérico.
+	 *
+	 * @param valores array de valores
+	 * @return JComboBox con los valores
+	 */
 	protected <T> JComboBox<T> crearCombo(T[] valores) {
 		JComboBox<T> combo = new JComboBox<>(valores);
 		combo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
@@ -200,7 +248,13 @@ public abstract class PanelBaseInterfaz extends JPanel {
 		combo.setBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE, 1));
 		return combo;
 	}
-
+	/**
+	 * Estiliza un JScrollPane alrededor de un componente, aplicando bordes,
+	 * colores de fondo coherentes y configuración de scroll vertical y horizontal.
+	 *
+	 * @param comp componente que se insertará dentro del JScrollPane
+	 * @return JScrollPane estilizado con el componente añadido
+	 */
 	protected JScrollPane estilizarScroll(Component comp) {
 		JScrollPane scroll = new JScrollPane(comp);
 		scroll.setBorder(BorderFactory.createLineBorder(VentanaPrincipal.COLOR_BORDE, 1));
@@ -217,6 +271,12 @@ public abstract class PanelBaseInterfaz extends JPanel {
 		return scroll;
 	}
 
+/**
+ * Crea un botón de acción principal con estilo estándar (color acento).
+ *
+ * @param texto texto que se mostrará en el botón
+ * @return JButton configurado como botón de acción principal
+ */
 	protected JButton crearBotonAccion(String texto) {
 		JButton boton = new JButton(texto);
 		boton.setFont(VentanaPrincipal.FUENTE_BOTON);
@@ -231,6 +291,13 @@ public abstract class PanelBaseInterfaz extends JPanel {
 				VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(16)));
 		return boton;
 	}
+	/**
+	 * Crea un botón secundario con el mismo estilo base que el botón de acción,
+	 * pero pensado para acciones menos importantes.
+	 *
+	 * @param texto texto que se mostrará en el botón
+	 * @return JButton configurado como botón secundario
+	 */
 
 	protected JButton crearBotonSecundario(String texto) {
 		JButton boton = new JButton(texto);
@@ -247,7 +314,13 @@ public abstract class PanelBaseInterfaz extends JPanel {
 				VentanaPrincipal.escalar(7), VentanaPrincipal.escalar(14)));
 		return boton;
 	}
-
+	/**
+	 * Crea un botón de acción de tipo "peligro", usado para acciones destructivas
+	 * como eliminar o cancelar.
+	 *
+	 * @param texto texto que se mostrará en el botón
+	 * @return JButton configurado como botón de peligro
+	 */
 	protected JButton crearBotonPeligro(String texto) {
 		JButton boton = new JButton(texto);
 		boton.setFont(VentanaPrincipal.FUENTE_BOTON);
@@ -262,7 +335,13 @@ public abstract class PanelBaseInterfaz extends JPanel {
 				VentanaPrincipal.escalar(7), VentanaPrincipal.escalar(14)));
 		return boton;
 	}
-
+	/**
+	 * Crea un panel de formulario con etiqueta y campo alineados en columna.
+	 *
+	 * @param etiqueta texto descriptivo del campo
+	 * @param campo componente de entrada (texto, combo, etc.)
+	 * @return JPanel que contiene el campo con su etiqueta
+	 */
 	protected JPanel crearCampoFormulario(String etiqueta, JComponent campo) {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -279,15 +358,29 @@ public abstract class PanelBaseInterfaz extends JPanel {
 		panel.add(campo);
 		return panel;
 	}
-
+	/**
+	 * Muestra un mensaje informativo en un cuadro de diálogo.
+	 *
+	 * @param mensaje texto del mensaje a mostrar
+	 */
 	protected void mostrarMensaje(String mensaje) {
 		JOptionPane.showMessageDialog(this, mensaje, "Información", JOptionPane.INFORMATION_MESSAGE);
 	}
-
+	/**
+	 * Muestra un mensaje de error en un cuadro de diálogo.
+	 *
+	 * @param mensaje texto del error a mostrar
+	 */
 	protected void mostrarError(String mensaje) {
 		JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
 	}
-
+	/**
+	 * Añade un listener a un campo de texto que ejecuta una acción cada vez que
+	 * cambia su contenido.
+	 *
+	 * @param campo JTextField al que se le añade el listener
+	 * @param accion acción a ejecutar cuando el texto cambie
+	 */
 	protected void escucharCambios(JTextField campo, Runnable accion) {
 		campo.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
@@ -306,13 +399,24 @@ public abstract class PanelBaseInterfaz extends JPanel {
 			}
 		});
 	}
-
+	/**
+	 * Convierte un texto a formato normalizado (trim + minúsculas).
+	 *
+	 * @param texto cadena de entrada
+	 * @return texto normalizado o cadena vacía si es null
+	 */
 	protected String normalizarTexto(String texto) {
 		if (texto == null)
 			return "";
 		return texto.trim().toLowerCase(Locale.ROOT);
 	}
 
+/**
+ * Convierte un String a Double de forma segura.
+ *
+ * @param texto cadena a convertir
+ * @return Double convertido o null si no es válido
+ */
 	protected Double leerDoubleSeguro(String texto) {
 		if (texto == null || texto.trim().isBlank())
 			return null;
@@ -322,7 +426,12 @@ public abstract class PanelBaseInterfaz extends JPanel {
 			return null;
 		}
 	}
-
+	/**
+	 * Convierte un String a Integer de forma segura.
+	 *
+	 * @param texto cadena a convertir
+	 * @return Integer convertido o null si no es válido
+	 */
 	protected Integer leerEnteroSeguro(String texto) {
 		if (texto == null || texto.trim().isBlank())
 			return null;
@@ -332,7 +441,13 @@ public abstract class PanelBaseInterfaz extends JPanel {
 			return null;
 		}
 	}
-
+	/**
+	 * Comprueba si una cadena contiene otra de forma insensible a mayúsculas/minúsculas.
+	 *
+	 * @param base texto donde se realiza la búsqueda
+	 * @param buscado texto que se quiere buscar dentro de base
+	 * @return true si buscado está contenido en base o si buscado es null/vacío; false en caso contrario
+	 */
 	protected boolean contieneTexto(String base, String buscado) {
 		if (buscado == null || buscado.isBlank())
 			return true;
@@ -341,12 +456,24 @@ public abstract class PanelBaseInterfaz extends JPanel {
 		return base.toLowerCase(Locale.ROOT).contains(buscado.toLowerCase(Locale.ROOT));
 	}
 
+	/**
+	 * Convierte cualquier objeto a String de forma segura y lo recorta.
+	 *
+	 * @param value objeto a convertir en texto
+	 * @return representación en String sin espacios laterales, o cadena vacía si es null
+	 */
 	protected String valorTexto(Object value) {
 		if (value == null)
 			return "";
 		return String.valueOf(value).trim();
 	}
-
+	/**
+	 * Convierte un objeto a Double de forma segura.
+	 * Acepta números, Strings con coma o punto decimal y valores con símbolo €.
+	 *
+	 * @param value objeto a convertir
+	 * @return Double convertido o null si el valor no es válido
+	 */
 	protected Double valorDouble(Object value) {
 		if (value == null)
 			return null;
@@ -361,7 +488,12 @@ public abstract class PanelBaseInterfaz extends JPanel {
 			return null;
 		}
 	}
-
+	/**
+	 * Convierte un objeto a Integer de forma segura.
+	 *
+	 * @param value objeto a convertir
+	 * @return Integer convertido o null si el valor no es válido
+	 */
 	protected Integer valorInteger(Object value) {
 		if (value == null)
 			return null;
@@ -378,7 +510,10 @@ public abstract class PanelBaseInterfaz extends JPanel {
 	}
 
 	/**
-	 * Crea un botón de acción naranja con hover — estilo principal.
+	 * Crea un botón de acción principal con estilo naranja y efecto hover.
+	 *
+	 * @param texto texto que se mostrará en el botón
+	 * @return JButton configurado como botón naranja principal
 	 */
 	protected JButton crearBotonNaranja(String texto) {
 		JButton boton = new JButton(texto);
@@ -406,7 +541,10 @@ public abstract class PanelBaseInterfaz extends JPanel {
 	}
 
 	/**
-	 * Crea un botón secundario con borde naranja — estilo outline.
+	 * Crea un botón con estilo outline naranja (bordes visibles y fondo neutro).
+	 *
+	 * @param texto texto que se mostrará en el botón
+	 * @return JButton configurado como botón outline
 	 */
 	protected JButton crearBotonOutline(String texto) {
 		JButton boton = new JButton(texto);
@@ -424,7 +562,10 @@ public abstract class PanelBaseInterfaz extends JPanel {
 	}
 
 	/**
-	 * Crea un botón de volver con borde naranja y hover.
+	 * Crea un botón de volver con borde naranja y efecto hover.
+	 *
+	 * @param texto texto que se mostrará en el botón
+	 * @return JButton configurado como botón de volver
 	 */
 	protected JButton crearBotonVolver(String texto) {
 		JButton boton = new JButton(texto);

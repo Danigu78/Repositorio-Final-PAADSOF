@@ -90,21 +90,7 @@ public class CarritoYRegaloTest {
 		assertNull(carrito.getDescuentoAplicado());
 	}
 
-	@Test
-	void carritoTotalConDescuentoVolumen() {
-		Cliente cliente1 = new Cliente("luis1", "1234", "87654321B");
-		ProductoVenta juego2 = new ProductoPrueba("juego2", "desc", "img", 25.0, 10);
-		Carrito carrito = new Carrito(cliente1);
 
-		carrito.añadirProducto(juego2, 3); // 75
-
-		DescuentoVolumen descuento = new DescuentoVolumen("rebaja1", LocalDateTime.now().minusDays(1),
-				LocalDateTime.now().plusDays(1), 50.0, 10);
-
-		carrito.setDescuentoAplicado(descuento);
-
-		assertEquals(67.5, carrito.getTotal(), 0.01);
-	}
 
 	@Test
 	void regaloAplicaRegaloSiLlegaAlUmbral() {

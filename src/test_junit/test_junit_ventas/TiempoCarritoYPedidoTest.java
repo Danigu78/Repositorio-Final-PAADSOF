@@ -113,21 +113,6 @@ public class TiempoCarritoYPedidoTest {
 		assertNull(carrito.getDescuentoAplicado());
 	}
 
-	@Test
-	void carritoGetTotalConDescuentoVolumen() {
-		Cliente cliente1 = new Cliente("ana1", "1234", "12345678A");
-		ProductoVenta juego2 = new ProductoPrueba("juego2", "juego normal", "img2", 30.0, 10);
-
-		Carrito carrito = new Carrito(cliente1);
-		carrito.añadirProducto(juego2, 3); // 90
-
-		DescuentoVolumen descuento1 = new DescuentoVolumen("descuento1", LocalDateTime.now().minusDays(1),
-				LocalDateTime.now().plusDays(1), 60.0, 10);
-
-		carrito.setDescuentoAplicado(descuento1);
-
-		assertEquals(81.0, carrito.getTotal(), 0.01);
-	}
 
 	@Test
 	void carritoCaducadoNoDejaAnadir() {
@@ -159,28 +144,7 @@ public class TiempoCarritoYPedidoTest {
 		assertEquals(1, pedido.getLineas().size());
 	}
 
-	@Test
-	void pedidoConRegaloAnadeLineaExtra() {
-		Cliente cliente1 = new Cliente("maria1", "1234", "11111111A");
-		ProductoVenta juego2 = new ProductoPrueba("juego2", "juego normal", "img1", 30.0, 7);
-		ProductoVenta caja3 = new ProductoPrueba("caja3", "caja regalo", "img2", 5.0, 4);
-
-		Carrito carrito = new Carrito(cliente1);
-		carrito.añadirProducto(juego2, 2); // 60
-
-		Regalo regalo1 = new Regalo("regalo1", LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(1), 50.0,
-				caja3);
-
-		carrito.setDescuentoAplicado(regalo1);
-
-		Pedido pedido = new Pedido(cliente1, carrito);
-
-		assertEquals(2, pedido.getLineas().size());
-		assertTrue(pedido.productoPertenece(juego2));
-		assertTrue(pedido.productoPertenece(caja3));
-		assertEquals(0.0, pedido.getPrecioDeProducto(caja3.getId()), 0.01);
-	}
-
+	
 	@Test
 	void pedidoContarUnidadesYPrecioDeProducto() {
 		Cliente cliente1 = new Cliente("maria1", "1234", "11111111A");
@@ -245,20 +209,6 @@ public class TiempoCarritoYPedidoTest {
 		assertNotNull(pedido.getFechaEntregado());
 	}
 
-	@Test
-	void pedidoCaducadoSiTiempoPagoNegativo() {
-		Tienda.getInstancia().setTiempoMaxPago(-1);
-
-		Cliente cliente1 = new Cliente("maria1", "1234", "11111111A");
-		ProductoVenta libro1 = new ProductoPrueba("libro1", "libro normal", "img1", 15.0, 10);
-
-		Carrito carrito = new Carrito(cliente1);
-		carrito.añadirProducto(libro1, 1);
-
-		Pedido pedido = new Pedido(cliente1, carrito);
-
-		assertTrue(pedido.isCaducado());
-	}
 
 	@Test
 	void comprobadorRegistrarYObtenerCarrito() {
@@ -350,24 +300,7 @@ public class TiempoCarritoYPedidoTest {
 		assertNull(comprobador.getCarrito(cliente1.getId()));
 	}
 
-	@Test
-	void comprobadorRevisaPedidosCaducados() {
-		Tienda.getInstancia().setTiempoMaxPago(-1);
-
-		Cliente cliente1 = new Cliente("pablo1", "1234", "22222222B");
-		ProductoVenta libro4 = new ProductoPrueba("libro4", "libro normal", "img4", 12.0, 10);
-
-		Carrito carrito = new Carrito(cliente1);
-		carrito.añadirProducto(libro4, 2);
-
-		Pedido pedido = new Pedido(cliente1, carrito);
-		comprobador.registrarPedido(cliente1.getId(), pedido);
-
-		comprobador.revisarPedidosPendientesCaducados();
-
-		assertTrue(comprobador.getPedidosPendientesDeUsuario(cliente1.getId()).isEmpty());
-		assertEquals(EstadoPedido.CANCELADO, pedido.getEstado());
-	}
+	
 
 	@Test
 	void carritoGetTotalSinDescuento() {

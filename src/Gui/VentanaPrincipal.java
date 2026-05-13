@@ -80,8 +80,6 @@ public class VentanaPrincipal extends JFrame {
 			controlador.inicializarDatosTienda();
 			GuardadoTienda.guardar(Tienda.getInstancia());
 		}
-		Tienda.getInstancia().getComprobadorTiempos().revisarCarritosCaducados();
-		Tienda.getInstancia().getComprobadorTiempos().revisarPedidosPendientesCaducados();
 
 		inicializarVentana();
 		inicializarPantallas();

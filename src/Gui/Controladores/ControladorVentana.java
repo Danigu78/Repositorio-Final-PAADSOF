@@ -22,30 +22,14 @@ import java.util.List;
  */
 public class ControladorVentana {
 
-	/** Ventana principal de la aplicación. */
 	private VentanaPrincipal ventana;
-
-	/** Instancia de la tienda. */
 	private Tienda tienda;
-
-	/** Pantalla de login. */
 	private PantallaLogin pantallaLogin;
-
-	/** Panel del cliente. */
 	private PanelCliente panelCliente;
-
-	/** Panel del empleado. */
 	private PanelEmpleado panelEmpleado;
-
-	/** Panel del gestor. */
 	private PanelGestor panelGestor;
-
-	/** Cliente actualmente logueado. */
 	private Cliente clienteActual;
-
-	/** Empleado actualmente logueado. */
 	private Empleado empleadoActual;
-
 
 	/**
 	 * Constructor del controlador de la ventana principal.
@@ -81,7 +65,9 @@ public class ControladorVentana {
 		// Intentamos cargar el estado completo desde el fichero .dat
 		Tienda tiendaCargada = GuardadoTienda.cargar();
 
-		
+		// Si el fichero existía ya tiene todo — clientes, empleados, productos, etc.
+		// GuardadoTienda.cargar() devuelve una tienda nueva si no existe el fichero
+		// Una tienda nueva no tiene stock, así que eso nos sirve para distinguir
 		if (!tiendaCargada.getStockVentas().isEmpty()) {
 			return;
 		}
@@ -107,7 +93,7 @@ public class ControladorVentana {
 				TipoPermisos.CONFIRMACION_INTERCAMBIO);
 		gestor.darDeAltaEmpleados_Permisos("empleado", "Empleado@1234", permisos);
 
-	
+		// El empleado carga los productos desde productos.txt
 		Empleado emp = tienda.loginEmpleado("empleado", "Empleado@1234");
 		emp.cargarProductosFicheroTexto("ficheros/productos.txt");
 		emp.logout();

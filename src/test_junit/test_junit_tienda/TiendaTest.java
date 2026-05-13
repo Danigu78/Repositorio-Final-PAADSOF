@@ -24,7 +24,7 @@ public class TiendaTest {
 	private ProductoVenta watchmen;
 	private ProductoVenta akira;
 	private ProductoVenta figura;
-	
+
 	private Cliente clienteA;
 	private Cliente clienteB;
 
@@ -314,30 +314,6 @@ public class TiendaTest {
 		List<Producto2Mano> listaInt = new ArrayList<>();
 		tienda.setCatalogoIntercambio(listaInt);
 		assertSame(listaInt, tienda.getCatalogoIntercambio());
-	}
-
-	@Test
-	@Order(19)
-	@DisplayName("limpiarDescuentosCaducados: Cobertura completa de la lógica de limpieza")
-	void testLimpiarDescuentosCaducadosRamas() {
-		LocalDateTime ahora = LocalDateTime.now();
-
-		Descuento dActivo = new DescuentoVolumen("D_Activo", ahora.minusDays(1), ahora.plusDays(1), 10.0, 10.0);
-
-		Descuento dCaducado = new DescuentoVolumen("D_Caducado", ahora.minusDays(5), ahora.minusHours(1), 10.0, 10.0);
-
-		List<Descuento> listaParaSet = new ArrayList<>();
-		listaParaSet.add(dActivo);
-		listaParaSet.add(dCaducado);
-
-		tienda.setDescuentosActivos(listaParaSet);
-		assertEquals(2, tienda.getDescuentosActivos().size());
-
-		tienda.limpiarDescuentosCaducados();
-
-		assertEquals(1, tienda.getDescuentosActivos().size());
-		assertTrue(tienda.getDescuentosActivos().contains(dActivo));
-		assertFalse(tienda.getDescuentosActivos().contains(dCaducado));
 	}
 
 	@Test

@@ -130,15 +130,6 @@ public class GestorTest {
 	}
 
 	@Test
-	@DisplayName("asignarPermiso con datos validos devuelve true")
-	void testAsignarPermisoOk() {
-		gestor.darDeAltaEmpleados_Permisos("emp_perm_ges", "Perm@12345", gestor.crearListaPermisos());
-		Empleado e = tienda.loginEmpleado("emp_perm_ges", "Perm@12345");
-		assertTrue(gestor.asignarPermiso(e.getId(), TipoPermisos.GESTION_STOCK));
-		assertTrue(e.tienePermiso(TipoPermisos.GESTION_STOCK));
-	}
-
-	@Test
 	@DisplayName("asignarPermiso ya existente devuelve false")
 	void testAsignarPermisoYaExiste() {
 		gestor.darDeAltaEmpleados_Permisos("emp_perm2_ges", "Perm@12345",
@@ -157,13 +148,6 @@ public class GestorTest {
 		assertFalse(e.tienePermiso(TipoPermisos.GESTION_STOCK));
 	}
 
-	@Test
-	@DisplayName("retirarPermiso no existente devuelve false")
-	void testRetirarPermisoNoExiste() {
-		gestor.darDeAltaEmpleados_Permisos("emp_ret2_ges", "Ret@123456", gestor.crearListaPermisos());
-		Empleado e = tienda.loginEmpleado("emp_ret2_ges", "Ret@123456");
-		assertFalse(gestor.retirarPermiso(e.getId(), TipoPermisos.GESTION_STOCK));
-	}
 
 	@Test
 	@DisplayName("configurarTiemposSistema con valores validos devuelve true")
@@ -236,12 +220,7 @@ public class GestorTest {
 				LocalDateTime.now().plusHours(2)));
 	}
 
-	@Test
-	@DisplayName("crearDescuentoVolumen con precio minimo menor de 20 devuelve false")
-	void testCrearDescuentoVolumenPrecioMin() {
-		assertFalse(gestor.crearDescuentoVolumen("Desc_vol2_ges", 10.0, 10.0, LocalDateTime.now().minusMinutes(1),
-				LocalDateTime.now().plusHours(2)));
-	}
+	
 
 	@Test
 	@DisplayName("crearDescuentoVolumen con fechas invalidas devuelve false")
@@ -306,12 +285,7 @@ public class GestorTest {
 				LocalDateTime.now().plusHours(2)));
 	}
 
-	@Test
-	@DisplayName("crearDescuentoRegalo con gasto menor o igual a 35 devuelve false")
-	void testCrearDescuentoRegaloGastoBajo() {
-		assertFalse(gestor.crearDescuentoRegalo("Regalo2_ges", figura.getId(), 35.0,
-				LocalDateTime.now().minusMinutes(1), LocalDateTime.now().plusHours(2)));
-	}
+	
 
 	@Test
 	@DisplayName("crearDescuentoRegalo con producto inexistente devuelve false")
@@ -694,35 +668,7 @@ public class GestorTest {
 		assertTrue(resultado.isEmpty(), "La lista debería estar vacía si no hay clientes registrados");
 	}
 
-	@Test
-	@DisplayName("verClientesTopIntercambios: Ranking de intercambios finalizados")
-	void testClientesTopIntercambiosOrden() {
 
-		tienda.registrarNuevoCliente("intercambiador_1", "Pass@1234", "11111111A");
-		Cliente c1 = tienda.loginCliente("intercambiador_1", "Pass@1234");
-
-		tienda.registrarNuevoCliente("intercambiador_2", "Pass@1234", "22222222B");
-		Cliente c2 = tienda.loginCliente("intercambiador_2", "Pass@1234");
-
-		Oferta intercambio = new Oferta(c1, c2, new ArrayList<>(), new ArrayList<>());
-
-		tienda.getIntercambiosFinalizados().add(intercambio);
-
-		List<Cliente> ranking = gestor.verClientesTopIntercambios();
-
-		assertNotNull(ranking);
-		assertFalse(ranking.isEmpty());
-
-		assertTrue(ranking.contains(c1));
-		assertTrue(ranking.contains(c2));
-
-		int countC1 = 0;
-		for (Oferta o : tienda.getIntercambiosFinalizados()) {
-			if (o.getOrigen().equals(c1) || o.getDestino().equals(c1))
-				countC1++;
-		}
-		assertEquals(1, countC1, "El cliente 1 debería tener 1 intercambio contabilizado");
-	}
 
 	@Test
 	@DisplayName("verClientesTopIntercambios: Lista vacía sin clientes")

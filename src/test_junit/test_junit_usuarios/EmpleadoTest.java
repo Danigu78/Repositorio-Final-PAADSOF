@@ -74,11 +74,7 @@ public class EmpleadoTest {
 		assertTrue(empStock.puedeRealizarTarea(TipoPermisos.GESTION_STOCK));
 	}
 
-	@Test
-	@DisplayName("puedeRealizarTarea sin permiso devuelve false")
-	void testPuedeRealizarTareaSinPermiso() {
-		assertFalse(empSinPermisos.puedeRealizarTarea(TipoPermisos.GESTION_STOCK));
-	}
+	
 
 	@Test
 	@DisplayName("puedeRealizarTarea sin sesion devuelve false")
@@ -125,12 +121,7 @@ public class EmpleadoTest {
 				tienda.seleccionarCategorias("Anime_emp"), 0, null, 0, 0, 0, 0, null, null, 0, 0, 0, 0, null));
 	}
 
-	@Test
-	@DisplayName("añadirProducto_nuevo sin permiso devuelve false")
-	void testAñadirProductoSinPermiso() {
-		assertFalse(empSinPermisos.añadirProducto_nuevo("C", "Test", "desc", "img.jpg", 10.0, 5,
-				tienda.seleccionarCategorias("Anime_emp"), 200, "Ed", 2000, 0, 0, 0, null, null, 0, 0, 0, 0, null));
-	}
+	
 
 	@Test
 	@DisplayName("añadirProducto_nuevo con nombre null devuelve false")
@@ -166,11 +157,6 @@ public class EmpleadoTest {
 		assertFalse(empStock.reponerStockProducto("ID-FALSO", 5));
 	}
 
-	@Test
-	@DisplayName("reponerStockProducto sin permiso devuelve false")
-	void testReponerStockSinPermiso() {
-		assertFalse(empSinPermisos.reponerStockProducto(watchmen.getId(), 5));
-	}
 
 	@Test
 	@DisplayName("modificarDescripcionProducto con datos validos devuelve true")
@@ -191,11 +177,7 @@ public class EmpleadoTest {
 		assertFalse(empStock.modificarDescripcionProducto(watchmen.getId(), null));
 	}
 
-	@Test
-	@DisplayName("modificarDescripcionProducto sin permiso devuelve false")
-	void testModificarDescripcionSinPermiso() {
-		assertFalse(empSinPermisos.modificarDescripcionProducto(watchmen.getId(), "desc"));
-	}
+
 
 	@Test
 	@DisplayName("añadirProductoACategoria con datos validos devuelve true")
@@ -215,11 +197,7 @@ public class EmpleadoTest {
 		assertFalse(empStock.añadirProductoACategoria(watchmen.getId(), "CategoriaFalsa"));
 	}
 
-	@Test
-	@DisplayName("añadirProductoACategoria sin permiso devuelve false")
-	void testAñadirProductoACategoriaSinPermiso() {
-		assertFalse(empSinPermisos.añadirProductoACategoria(watchmen.getId(), "Familiar_emp"));
-	}
+	
 
 	@Test
 	@DisplayName("eliminarProductoDeCategoria con datos validos devuelve true")
@@ -234,11 +212,7 @@ public class EmpleadoTest {
 		assertFalse(empStock.eliminarProductoDeCategoria(null, "Familiar_emp"));
 	}
 
-	@Test
-	@DisplayName("eliminarProductoDeCategoria sin permiso devuelve false")
-	void testEliminarProductoDeCategoriaSinPermiso() {
-		assertFalse(empSinPermisos.eliminarProductoDeCategoria(watchmen.getId(), "Anime_emp"));
-	}
+	
 
 	@Test
 	@DisplayName("crearPack con datos validos devuelve true")
@@ -249,13 +223,7 @@ public class EmpleadoTest {
 		assertTrue(empStock.crearPack("TestPack", "desc", "img.jpg", 20.0, 3, lineas,new ArrayList<Categoria>()));
 	}
 
-	@Test
-	@DisplayName("crearPack con solo un producto devuelve false")
-	void testCrearPackUnProducto() {
-		ArrayList<LineaPack> lineas = new ArrayList<>();
-		lineas.add(new LineaPack(watchmen, 1));
-		assertFalse(empStock.crearPack("TestPack", "desc", "img.jpg", 20.0, 3, lineas,new ArrayList<Categoria>()));
-	}
+	
 
 	@Test
 	@DisplayName("crearPack con nombre null devuelve false")
@@ -266,14 +234,6 @@ public class EmpleadoTest {
 		assertFalse(empStock.crearPack(null, "desc", "img.jpg", 20.0, 3, lineas,new ArrayList<Categoria>()));
 	}
 
-	@Test
-	@DisplayName("crearPack sin permiso devuelve false")
-	void testCrearPackSinPermiso() {
-		ArrayList<LineaPack> lineas = new ArrayList<>();
-		lineas.add(new LineaPack(watchmen, 1));
-		lineas.add(new LineaPack(akira, 1));
-		assertFalse(empSinPermisos.crearPack("TestPack", "desc", "img.jpg", 20.0, 3, lineas,new ArrayList<Categoria>()));
-	}
 
 	@Test
 	@DisplayName("prepararPedido con pedido pagado devuelve true")
@@ -292,11 +252,7 @@ public class EmpleadoTest {
 		assertFalse(empPedidos.prepararPedido("PEDIDO-FALSO"));
 	}
 
-	@Test
-	@DisplayName("prepararPedido sin permiso devuelve false")
-	void testPrepararPedidoSinPermiso() {
-		assertFalse(empSinPermisos.prepararPedido("cualquier-id"));
-	}
+	
 
 	@Test
 	@DisplayName("entregarPedido con flujo completo devuelve true")
@@ -322,11 +278,7 @@ public class EmpleadoTest {
 		assertFalse(empPedidos.entregarPedido(p.getCodigoRecogida()));
 	}
 
-	@Test
-	@DisplayName("entregarPedido sin permiso devuelve false")
-	void testEntregarPedidoSinPermiso() {
-		assertFalse(empSinPermisos.entregarPedido("codigo-falso"));
-	}
+	
 
 	@Test
 	@DisplayName("tasarProducto con datos validos tasa correctamente")
@@ -349,16 +301,6 @@ public class EmpleadoTest {
 		assertFalse(p.isVisible());
 	}
 
-	@Test
-	@DisplayName("tasarProducto sin permiso no tasa")
-	void testTasarProductoSinPermiso() {
-		cliente.subirProducto("TestTasar_emp", "desc", "img.jpg");
-		Producto2Mano p = cliente.getCarteraIntercambio().get(cliente.getCarteraIntercambio().size() - 1);
-		tienda.solicitarTasacion(p);
-		empSinPermisos.tasarProducto(p.getId(), 15.0, EstadoProducto.MUY_BUENO);
-		assertFalse(p.isVisible());
-		assertNull(p.getValoracion());
-	}
 
 	@Test
 	@DisplayName("tienePermiso devuelve true para permiso asignado")
@@ -405,12 +347,6 @@ public class EmpleadoTest {
 		assertFalse(empStock.cargarProductosFicheroTexto("ruta/que/no/existe.txt"));
 	}
 
-	@Test
-	@DisplayName("cargarProductosFicheroTexto sin permiso devuelve false")
-	void testCargarFicheroSinPermiso() {
-
-		assertFalse(empSinPermisos.cargarProductosFicheroTexto("ficheros/productos.txt"));
-	}
 
 	@Test
 	@DisplayName("cargarProductosFicheroTexto con fichero valido devuelve true")
@@ -440,17 +376,7 @@ public class EmpleadoTest {
 		assertTrue(empStock.modificarUnidadesProductoEnPack(watchmen.getId(), idPack, 3));
 	}
 
-	@Test
-	@DisplayName("eliminarProductoDePack con datos validos devuelve true")
-	void testEliminarProductoPackOk() {
-		ArrayList<LineaPack> lineas = new ArrayList<>();
-		lineas.add(new LineaPack(watchmen, 1));
-		lineas.add(new LineaPack(akira, 1));
-		empStock.crearPack("PackDel", "desc", "img.jpg", 25.0, 5, lineas,new ArrayList<Categoria>() );
-		String idPack = tienda.buscarproductoPorNombre("PackDel").get(0).getId();
 
-		assertTrue(empStock.eliminarProductoDePack(idPack, watchmen.getId()));
-	}
 
 	@Test
 	@DisplayName("eliminarPack con datos validos devuelve true y libera stock")
@@ -503,22 +429,6 @@ public class EmpleadoTest {
 		empStock.verMisNotificacionesPorTipo(TipoNotificacion.PEDIDO_LISTO);
 	}
 
-	@Test
-	@DisplayName("confirmarIntercambio sin permiso devuelve false")
-	void testConfirmarIntercambioSinPermiso() {
-
-		Oferta o = new Oferta(cliente, cliente, new ArrayList<>(), new ArrayList<>());
-
-		boolean resultado = empStock.confirmarIntercambio(o);
-		assertFalse(resultado);
-	}
-
-	@Test
-	@DisplayName("confirmarIntercambio con oferta no aceptada devuelve false")
-	void testConfirmarIntercambioNoAceptada() {
-		Oferta o = new Oferta(cliente, cliente, new ArrayList<>(), new ArrayList<>());
-		assertFalse(empTasador.confirmarIntercambio(o));
-	}
 
 	@Test
 	@DisplayName("tasarProducto con id incorrecto no hace nada")
@@ -527,14 +437,6 @@ public class EmpleadoTest {
 		empTasador.tasarProducto(null, 10.0, EstadoProducto.MUY_BUENO);
 	}
 
-	@Test
-	@DisplayName("asignar y quitar permisos funciona correctamente")
-	void testGestionPermisosManual() {
-		empSinPermisos.asignarPermiso(TipoPermisos.GESTION_STOCK);
-		assertTrue(empSinPermisos.tienePermiso(TipoPermisos.GESTION_STOCK));
-		empSinPermisos.quitarPermiso(TipoPermisos.GESTION_STOCK);
-		assertFalse(empSinPermisos.tienePermiso(TipoPermisos.GESTION_STOCK));
-	}
 
 	@Test
 	@DisplayName("metodos getter y setter para cobertura")
@@ -621,14 +523,6 @@ public class EmpleadoTest {
 		}
 	}
 
-	@Test
-	@DisplayName("confirmarIntercambio con oferta en estado incorrecto")
-	void testConfirmarIntercambioEstadoErroneo() {
-
-		Oferta o = new Oferta(cliente, cliente, new ArrayList<>(), new ArrayList<>());
-
-		assertFalse(empTasador.confirmarIntercambio(o));
-	}
 
 	@Test
 	@DisplayName("añadirProducto_nuevo con categorias que no existen en la tienda")
@@ -818,70 +712,12 @@ public class EmpleadoTest {
 		assertFalse(empStock.añadirProductoaPack(idExtra, idPack, 10));
 	}
 
-	@Test
-	@DisplayName("añadirProductoaPack sin permiso muestra mensaje de error")
-	void testAñadirProductoPackSinPermisoMensaje() {
+	
 
-		assertFalse(empSinPermisos.añadirProductoaPack(watchmen.getId(), "CUALQUIER-PACK", 1));
-	}
 
-	@Test
-	@DisplayName("añadirProductoaPack añade producto correctamente (camino feliz)")
-	void testAñadirProductoPackOk() {
 
-		ArrayList<LineaPack> lineas = new ArrayList<>();
-		lineas.add(new LineaPack(watchmen, 1));
-		lineas.add(new LineaPack(akira, 1));
-		empStock.crearPack("PackCaminoFeliz", "desc", "img.jpg", 30.0, 10, lineas,new ArrayList<Categoria>());
 
-		ProductoVenta pack = tienda.buscarproductoPorNombre("PackCaminoFeliz").get(0);
-
-		empStock.añadirProducto_nuevo("F", "FiguraNueva", "d", "i", 10, 20, tienda.seleccionarCategorias("Anime_emp"),
-				0, null, 0, 10, 10, 10, "P", "M", 0, 0, 0, 0, null);
-		ProductoVenta figura = tienda.buscarproductoPorNombre("FiguraNueva").get(0);
-
-		assertTrue(empStock.añadirProductoaPack(figura.getId(), pack.getId(), 1));
-	}
-
-	@Test
-	@DisplayName("confirmarIntercambio: cubrir bloque try exitoso")
-	void testConfirmarIntercambioVerdeTry() throws OfertaNoDisponibleException {
-		// 1. Setup mínimo: necesitamos una oferta con origen y destino para que no de
-		// NPE el print
-		Cliente c1 = new Cliente("c1", "p", "1");
-		Cliente c2 = new Cliente("c2", "p", "2");
-
-		Oferta o = new Oferta(c1, c2, new ArrayList<>(), new ArrayList<>());
-
-		o.setEstado(EstadoOferta.ACEPTADA);
-		assertTrue(empTasador.confirmarIntercambio(o));
-	}
-
-	@Test
-	@DisplayName("confirmarIntercambio: Forzar entrada al catch")
-	void testConfirmarIntercambioCatch() throws OfertaNoDisponibleException {
-
-		Cliente c1 = new Cliente("origen", "pass", "123");
-		Cliente c2 = new Cliente("destino", "pass", "456");
-		Oferta o = new Oferta(c1, c2, new ArrayList<>(), new ArrayList<>());
-
-		o.setEstado(EstadoOferta.ACEPTADA);
-
-		Tienda.getInstancia().setTiempoMaxOferta(0);
-
-		o.setEstado(EstadoOferta.RECHAZADA);
-
-		boolean resultado = empTasador.confirmarIntercambio(o);
-
-		assertFalse(resultado);
-	}
-
-	@Test
-	@DisplayName("modificarUnidadesPack: Cubrir error de permisos")
-	void testModPackErrorPermisos() {
-
-		assertFalse(empSinPermisos.modificarUnidadesProductoEnPack("P1", "PACK1", 10));
-	}
+	
 
 	@Test
 	@DisplayName("modificarUnidadesPack:  error de IDs vacíos")

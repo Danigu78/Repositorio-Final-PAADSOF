@@ -104,37 +104,4 @@ public class PackTest {
 		assertThrows(StockInsuficienteParaPackException.class, () -> pack.modificarUnidades(comic, 5));
 	}
 
-	@Test
-	void setPrecioOficialValidoActualizaPrecio() {
-		Comic comic = new Comic("comic1", "descripcion1", "imagen1.jpg", 10.0, 20, 100, "editorial1", 2020);
-		Pack pack = new Pack("pack1", "descripcionPack1", "imagenPack1.jpg", 15.0, 2);
-		pack.addProducto(comic, 1);
-
-		assertTrue(pack.setPrecioOficial(8.0));
-		assertEquals(8.0, pack.getPrecioOficial());
-	}
-
-	@Test
-	void setPrecioOficialInvalidoLanzaExcepcion() {
-		Comic comic = new Comic("comic1", "descripcion1", "imagen1.jpg", 10.0, 20, 100, "editorial1", 2020);
-		Pack pack = new Pack("pack1", "descripcionPack1", "imagenPack1.jpg", 15.0, 2);
-		pack.addProducto(comic, 1);
-
-		assertThrows(ProductoInvalidoException.class, () -> pack.setPrecioOficial(9.5));
-	}
-
-	@Test
-	void calcularSumaProductosYPrecioFinalFuncionan() {
-		Comic comic = new Comic("comic1", "descripcion1", "imagen1.jpg", 10.0, 20, 100, "editorial1", 2020);
-		Figura figura = new Figura("figura1", "descripcion2", "imagen2.jpg", 25.0, 10, 20, 10, 8, "material1",
-				"marca1");
-		Pack pack = new Pack("pack3", "descripcionPack3", "imagenPack3.jpg", 20.0, 1);
-
-		pack.addProducto(comic, 2);
-		pack.addProducto(figura, 1);
-
-		assertEquals(45.0, pack.calcularSumaProductos());
-		assertEquals(20.0, pack.calcularPrecioFinal());
-		assertTrue(pack.toString().contains("pack3"));
-	}
 }

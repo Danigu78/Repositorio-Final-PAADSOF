@@ -11,11 +11,22 @@ import Gui.cliente.SubpanelSegundaMano;
 import java.awt.*;
 import java.awt.event.*;
 
+/**
+ * Panel principal para usuarios invitados (sin registro). Permite navegar entre
+ * catálogo y segunda mano, además de ofrecer acceso a registro/login y salida
+ * de la aplicación.
+ *
+ * Este panel utiliza CardLayout para gestionar las distintas secciones.
+ *
+ * @author Daniel
+ * @version 1.0
+ */
 public class PanelInvitado extends JPanel {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	/** Ventana principal de la aplicación */
 	private VentanaPrincipal ventana;
 	/** Identificador de la sección catálogo */
 	private static final String SEC_CATALOGO = "CATALOGO";
@@ -23,6 +34,7 @@ public class PanelInvitado extends JPanel {
 	private static final String SEC_SEGUNDA_MANO = "SEGUNDA_MANO";
 	/** Botón actualmente seleccionado en la barra de navegación */
 	private JButton botonActivo;
+	/** Controlador del panel de invitado */
 	private ControladorPanelInvitado controlador;
 	/** Layout que gestiona el cambio entre secciones */
 	private CardLayout cardSecciones;
@@ -33,6 +45,11 @@ public class PanelInvitado extends JPanel {
 	/** Panel de productos de segunda mano */
 	private SubpanelSegundaMano subpanelSegundaMano;
 
+	/**
+	 * Constructor del panel de invitado.
+	 *
+	 * @param ventana ventana principal de la aplicación
+	 */
 	public PanelInvitado(VentanaPrincipal ventana) {
 		this.ventana = ventana;
 		this.controlador = new ControladorPanelInvitado(ventana, this);
@@ -40,6 +57,9 @@ public class PanelInvitado extends JPanel {
 		inicializarUI();
 	}
 
+	/**
+	 * Inicializa la interfaz del panel (barra + secciones).
+	 */
 	private void inicializarUI() {
 		JPanel barraNavegacion = crearBarraDeNavegacion();
 		add(barraNavegacion, BorderLayout.NORTH);
@@ -61,6 +81,11 @@ public class PanelInvitado extends JPanel {
 
 	}
 
+	/**
+	 * Crea la barra superior de navegación del invitado.
+	 *
+	 * @return panel de la barra de navegación
+	 */
 	private JPanel crearBarraDeNavegacion() {
 		JPanel barra = new JPanel(new BorderLayout());
 		barra.setPreferredSize(new Dimension(0, VentanaPrincipal.escalar(58)));
@@ -87,13 +112,10 @@ public class PanelInvitado extends JPanel {
 		if (iconoescalado != null) {
 			labelLogo.setIcon(iconoescalado);
 		}
-
 		labelLogo.setFont(new Font("Segoe UI", Font.BOLD, VentanaPrincipal.escalar(18)));
 		labelLogo.setForeground(VentanaPrincipal.COLOR_ACENTO);
-
 		// centramos verticalmente ambos
 		labelLogo.setVerticalTextPosition(SwingConstants.CENTER);
-
 		labelLogo.setIconTextGap(VentanaPrincipal.escalar(5)); // separacion entre el logo y el texto.
 		barra.add(labelLogo, BorderLayout.WEST);
 
@@ -131,8 +153,7 @@ public class PanelInvitado extends JPanel {
 																										// arriba de 12
 																										// para que no
 																										// este pegado
-																										// arriba
-
+																										//
 		JLabel labelInvitado = new JLabel("Usuario no registrado");
 		labelInvitado.setFont(VentanaPrincipal.FUENTE_NORMAL);
 		labelInvitado.setForeground(VentanaPrincipal.COLOR_TEXTO2);
@@ -202,6 +223,13 @@ public class PanelInvitado extends JPanel {
 
 	}
 
+	/**
+	 * Crea un botón de pestaña para navegación entre secciones.
+	 *
+	 * @param texto   texto visible del botón
+	 * @param seccion identificador de la sección
+	 * @return botón configurado
+	 */
 	private JButton crearBotonPestaña(String texto, String seccion) {
 		JButton boton = new JButton(texto);
 		boton.setFont(new Font("Segoe UI", Font.PLAIN, VentanaPrincipal.escalar(13)));
@@ -233,6 +261,11 @@ public class PanelInvitado extends JPanel {
 		return boton;
 	}
 
+	/**
+	 * Marca visualmente un botón como activo.
+	 *
+	 * @param boton botón a marcar
+	 */
 	public void marcarBotonActivo(JButton boton) {
 		int v = VentanaPrincipal.escalar(8);
 		int h = VentanaPrincipal.escalar(12);
@@ -250,6 +283,9 @@ public class PanelInvitado extends JPanel {
 		));
 	}
 
+	/**
+	 * Desmarca cualquier botón activo de la barra.
+	 */
 	public void desmarcarTodo() {
 		if (botonActivo != null) {
 
@@ -258,12 +294,16 @@ public class PanelInvitado extends JPanel {
 
 			// Volvemos a poner el texto en su color normal
 			botonActivo.setForeground(VentanaPrincipal.COLOR_TEXTO_BARRA);
-
 			// Olvidamos cuál era el botón activo
 			botonActivo = null;
 		}
 	}
 
+	/**
+	 * Crea un separador que usaremos en la barra de navegacion a la derecha
+	 * 
+	 * @return void
+	 */
 	private JPanel crearSeparador() {
 		JPanel sep = new JPanel();
 		sep.setBackground(VentanaPrincipal.COLOR_ACENTO);
@@ -271,11 +311,20 @@ public class PanelInvitado extends JPanel {
 		return sep;
 	}
 
+	/**
+	 * Muestra una sección del panel usando CardLayout.
+	 *
+	 * @param seccion identificador de la sección
+	 */
 	public void mostrarSeccion(String seccion) {
 		cardSecciones.show(panelSecciones, seccion);
 		actualizarSeccion(seccion);
 	}
-
+	/**
+	 * Actualiza el contenido de la sección activa.
+	 *
+	 * @param seccion sección a actualizar
+	 */
 	private void actualizarSeccion(String seccion) {
 		switch (seccion) {
 		case SEC_CATALOGO:
