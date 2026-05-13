@@ -11,24 +11,57 @@ import tienda.GuardadoTienda;
 import tienda.Tienda;
 import usuarios.Empleado;
 
-/** Controlador de la sección de categorías. */
+/**
+*Controlador de la sección de categorías.
+*
+* @author Antonino
+* @version 1.0
+*/
+
+
 public class ControladorCategoriasEmpleado implements ActionListener {
 
+	/** Acción para añadir una categoría a un producto. */
 	public static final String ANADIR_CATEGORIA = "categorias.anadir";
+	
+	/** Acción para quitar una categoría de un producto. */
 	public static final String QUITAR_CATEGORIA = "categorias.quitar";
 
+	/** Empleado autenticado que ejecuta las operaciones. */
 	private final Empleado empleado;
+	
+	/**
+	 * Controlador auxiliar utilizado para acceder a información
+	 * de productos y categorías.
+	 */
 	private final ControladorProductosEmpleado productos = new ControladorProductosEmpleado();
+	
+	/** Vista asociada al controlador. */
 	private SeccionCategoriasEmpleado vista;
 
+	/**
+	 * Constructor del controlador.
+	 *
+	 * @param empleado empleado que realiza las operaciones sobre categorías.
+	 */
 	public ControladorCategoriasEmpleado(Empleado empleado) {
 		this.empleado = empleado;
 	}
 
+	/**
+	 * Asocia la vista a este controlador.
+	 *
+	 * @param vista vista de categorías del empleado.
+	 */
 	public void setVista(SeccionCategoriasEmpleado vista) {
 		this.vista = vista;
 	}
 
+	/**
+	 * Gestiona los eventos generados desde la interfaz gráfica.
+	 *
+	 * @param e evento de acción generado por la interfaz.
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (vista == null || e == null) {
@@ -43,10 +76,22 @@ public class ControladorCategoriasEmpleado implements ActionListener {
 		}
 	}
 
+	/**
+	 * Obtiene la lista de nombres de categorías de productos de venta.
+	 *
+	 * @return lista de nombres de categorías disponibles.
+	 */
 	public List<String> getNombresCategorias() {
 		return productos.obtenerNombresCategoriasVenta();
 	}
 
+	/**
+	 * Añade un producto a una categoría.
+	 *
+	 * @param idProducto ID del producto.
+	 * @param categoria nombre de la categoría.
+	 * @return resultado de la operación con mensaje descriptivo.
+	 */
 	public ResultadoOperacion anadirCategoria(String idProducto, String categoria) {
 		ResultadoOperacion validacion = validar(idProducto, categoria);
 		if (!validacion.isExito()) {
@@ -70,6 +115,13 @@ public class ControladorCategoriasEmpleado implements ActionListener {
 				: ResultadoOperacion.error("No se pudo añadir la categoría");
 	}
 
+	/**
+	 * Elimina un producto de una categoría.
+	 *
+	 * @param idProducto ID del producto.
+	 * @param categoria nombre de la categoría.
+	 * @return resultado de la operación con mensaje descriptivo.
+	 */
 	public ResultadoOperacion quitarCategoria(String idProducto, String categoria) {
 		ResultadoOperacion validacion = validar(idProducto, categoria);
 		if (!validacion.isExito()) {
@@ -93,12 +145,25 @@ public class ControladorCategoriasEmpleado implements ActionListener {
 				: ResultadoOperacion.error("No se pudo quitar la categoría");
 	}
 
+	/**
+	 * Guarda el estado actual de la tienda si la operación
+	 * realizada ha tenido éxito.
+	 *
+	 * @param ok indica si la operación fue correcta.
+	 */
 	private void guardarSiExito(boolean ok) {
 		if (ok) {
 			GuardadoTienda.guardar(Tienda.getInstancia());
 		}
 	}
 
+	/**
+	 * Valida los datos necesarios para operar con categorías.
+	 *
+	 * @param idProducto ID del producto.
+	 * @param categoria nombre de la categoría.
+	 * @return resultado de validación.
+	 */
 	private ResultadoOperacion validar(String idProducto, String categoria) {
 		if (empleado == null) {
 			return ResultadoOperacion.error("No hay empleado activo.");

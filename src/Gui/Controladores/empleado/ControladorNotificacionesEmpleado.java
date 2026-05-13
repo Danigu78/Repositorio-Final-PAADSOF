@@ -12,26 +12,53 @@ import tienda.Tienda;
 import usuarios.Empleado;
 
 /**
- * Controlador de las notificaciones del empleado.
+ * Controlador encargado de gestionar las notificaciones de un empleado.
  */
+
+
 public class ControladorNotificacionesEmpleado implements ActionListener {
 
+	/** Acción para recargar la lista de notificaciones. */
 	public static final String REFRESCAR = "notificaciones.refrescar";
+	
+	/** Acción para aplicar filtros sobre las notificaciones. */
 	public static final String FILTRAR = "notificaciones.filtrar";
+	
+	/** Acción para visualizar una notificación concreta. */
 	public static final String VER_NOTIFICACION = "notificaciones.ver";
+	
+	/** Acción para marcar todas las notificaciones como vistas. */
 	public static final String MARCAR_TODAS = "notificaciones.marcarTodas";
 
+	/** Empleado asociado al controlador. */
 	private final Empleado empleado;
+	
+	/** Vista vinculada al controlador. */
 	private SeccionNotificacionesEmpleado vista;
 
+	/**
+	 * Constructor del controlador.
+	 *
+	 * @param empleado empleado que gestionará las notificaciones
+	 */
 	public ControladorNotificacionesEmpleado(Empleado empleado) {
 		this.empleado = empleado;
 	}
 
+	/**
+	 * Asocia la vista al controlador.
+	 *
+	 * @param vista vista de notificaciones del empleado
+	 */
 	public void setVista(SeccionNotificacionesEmpleado vista) {
 		this.vista = vista;
 	}
 
+	/**
+	 * Gestiona las acciones generadas desde la interfaz.
+	 *
+	 * @param e evento producido por la interfaz
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (vista == null || e == null) {
@@ -48,6 +75,12 @@ public class ControladorNotificacionesEmpleado implements ActionListener {
 		}
 	}
 
+	/**
+	 * Obtiene las notificaciones del empleado aplicando un filtro.
+	 *
+	 * @param filtro filtro seleccionado 
+	 * @return lista de notificaciones filtradas y ordenadas por fecha descendente
+	 */
 	public List<Notificacion> getNotificacionesFiltradas(String filtro) {
 		List<Notificacion> resultado = new ArrayList<>();
 		List<Notificacion> notificaciones = empleado == null ? null : empleado.getNotificaciones();
@@ -78,6 +111,11 @@ public class ControladorNotificacionesEmpleado implements ActionListener {
 		return resultado;
 	}
 
+	/**
+	 * Cuenta cuántas notificaciones no han sido leídas.
+	 *
+	 * @return número de notificaciones pendientes de leer
+	 */
 	public int contarNoVistas() {
 		int noVistas = 0;
 		List<Notificacion> notificaciones = empleado == null ? null : empleado.getNotificaciones();
@@ -92,11 +130,21 @@ public class ControladorNotificacionesEmpleado implements ActionListener {
 		return noVistas;
 	}
 
+	/**
+	 * Comprueba si el empleado tiene notificaciones.
+	 *
+	 * @return true si existen notificaciones
+	 */
 	public boolean tieneNotificaciones() {
 		List<Notificacion> notificaciones = empleado == null ? null : empleado.getNotificaciones();
 		return notificaciones != null && !notificaciones.isEmpty();
 	}
 
+	/**
+	 * Marca una notificación concreta como leída.
+	 *
+	 * @param notificacion notificación a marcar
+	 */
 	public void marcarComoVista(Notificacion notificacion) {
 		if (notificacion != null) {
 			notificacion.marcarComoLeida();
@@ -104,6 +152,11 @@ public class ControladorNotificacionesEmpleado implements ActionListener {
 		}
 	}
 
+	/**
+	 * Marca todas las notificaciones del empleado como leídas.
+	 *
+	 * @return resultado de la operación
+	 */
 	public ResultadoOperacion marcarTodasComoVistas() {
 		List<Notificacion> notificaciones = empleado == null ? null : empleado.getNotificaciones();
 		if (notificaciones == null || notificaciones.isEmpty()) {
@@ -118,6 +171,12 @@ public class ControladorNotificacionesEmpleado implements ActionListener {
 		return ResultadoOperacion.ok("Todas las notificaciones se han marcado como vistas.");
 	}
 
+	/**
+	 * Genera una línea resumen de una notificación para mostrar en listas.
+	 *
+	 * @param notificacion notificación a resumir
+	 * @return texto resumido 
+	 */
 	public String crearTextoLista(Notificacion notificacion) {
 		String estado = notificacion.isLeida() ? "Vista" : "Nueva";
 		String tipo = obtenerTipo(notificacion);
@@ -125,6 +184,12 @@ public class ControladorNotificacionesEmpleado implements ActionListener {
 		return estado + "   |   " + tipo + "   |   " + fecha + "   |   " + crearResumenMensaje(notificacion);
 	}
 
+	/**
+	 * Genera un resumen corto del mensaje de una notificación.
+	 *
+	 * @param notificacion notificación a resumir
+	 * @return resumen reducido del mensaje
+	 */
 	private String crearResumenMensaje(Notificacion notificacion) {
 		if (notificacion == null || notificacion.getMensaje() == null || notificacion.getMensaje().trim().isBlank()) {
 			return "Sin detalle";
@@ -133,6 +198,12 @@ public class ControladorNotificacionesEmpleado implements ActionListener {
 		return mensaje.length() > 75 ? mensaje.substring(0, 72) + "..." : mensaje;
 	}
 
+	/**
+	 * Genera el texto completo de una notificación.
+	 *
+	 * @param notificacion notificación a mostrar
+	 * @return texto detallado de la notificación
+	 */
 	public String crearTextoNotificacion(Notificacion notificacion) {
 		if (notificacion == null) {
 			return "Notificación no encontrada.";
@@ -145,6 +216,13 @@ public class ControladorNotificacionesEmpleado implements ActionListener {
 		return texto.toString();
 	}
 
+	/**
+	 * Comprueba si una notificación cumple el filtro seleccionado.
+	 *
+	 * @param notificacion notificación a comprobar
+	 * @param filtro filtro seleccionado
+	 * @return  true si la notificación cumple el filtro
+	 */
 	private boolean cumpleFiltro(Notificacion notificacion, String filtro) {
 		String filtroElegido = filtro == null ? "Todas" : filtro;
 		if ("No vistas".equals(filtroElegido) && notificacion.isLeida()) {

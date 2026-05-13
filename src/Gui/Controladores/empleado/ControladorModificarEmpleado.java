@@ -14,31 +14,68 @@ import usuarios.Empleado;
 import usuarios.TipoPermisos;
 import utilidades.RutasImagen;
 
-/** Controlador de la sección de edición de productos. */
+/**
+ * Controlador de la sección de edición de productos
+ */
+
 public class ControladorModificarEmpleado implements ActionListener {
 
+	/** Acción para cargar los datos de un producto. */
 	public static final String CARGAR_DATOS = "modificar.cargar";
+	
+	/** Acción para guardar los cambios realizados. */
 	public static final String GUARDAR_CAMBIOS = "modificar.guardar";
+	
+	/** Acción para seleccionar una imagen. */
 	public static final String SELECCIONAR_IMAGEN = "modificar.seleccionarImagen";
+	
+	/** Acción para visualizar la imagen del producto. */
 	public static final String VER_IMAGEN = "modificar.verImagen";
 
+	/** Nombre interno para productos tipo cómic. */
 	private static final String TIPO_COMIC = "Comic";
+	
+	/** Nombre interno para productos tipo juego de mesa. */
 	private static final String TIPO_JUEGO = "Juego";
+	
+	/** Nombre interno para productos tipo figura. */
 	private static final String TIPO_FIGURA = "Figura";
+	
+	/** Nombre interno para productos tipo pack. */
 	private static final String TIPO_PACK = "Pack";
 
+	/** Empleado autenticado. */
 	private final Empleado empleado;
+	
+	/** Controlador auxiliar de productos. */
 	private final ControladorProductosEmpleado productos = new ControladorProductosEmpleado();
+	
+	/** Vista asociada al controlador. */
 	private SeccionModificarEmpleado vista;
 
+	/**
+	 * Constructor del controlador.
+	 *
+	 * @param empleado empleado autenticado
+	 */
 	public ControladorModificarEmpleado(Empleado empleado) {
 		this.empleado = empleado;
 	}
 
+	/**
+	 * Asocia la vista al controlador.
+	 *
+	 * @param vista sección gráfica de modificación
+	 */
 	public void setVista(SeccionModificarEmpleado vista) {
 		this.vista = vista;
 	}
 
+	/**
+	 * Gestiona las acciones lanzadas desde la interfaz.
+	 *
+	 * @param e evento recibido
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (vista == null || e == null) {
@@ -57,10 +94,22 @@ public class ControladorModificarEmpleado implements ActionListener {
 		}
 	}
 
+	/**
+	 * Busca un producto de venta por su ID.
+	 *
+	 * @param idProducto identificador del producto
+	 * @return producto encontrado o null
+	 */
 	public ProductoVenta buscarProducto(String idProducto) {
 		return productos.buscarProductoVentaPorId(idProducto);
 	}
 
+	/**
+	 * Obtiene el tipo de un producto.
+	 *
+	 * @param producto producto a analizar
+	 * @return nombre del tipo de producto
+	 */
 	public String obtenerTipoProducto(ProductoVenta producto) {
 		if (producto instanceof Comic) {
 			return TIPO_COMIC;
@@ -77,6 +126,11 @@ public class ControladorModificarEmpleado implements ActionListener {
 		return "Producto";
 	}
 
+	/**
+	 * Guarda los cambios realizados sobre un producto.
+	 *
+	 * @return resultado de la operación
+	 */
 	public ResultadoOperacion guardarProducto(String idProducto, String nombre, String descripcion, String imagen,
 			String paginasTexto, String editorial, String anioTexto, String minJugadoresTexto, String maxJugadoresTexto,
 			String minEdadTexto, String maxEdadTexto, String estilo, String alturaTexto, String anchoTexto,
@@ -130,6 +184,12 @@ public class ControladorModificarEmpleado implements ActionListener {
 		}
 	}
 
+	/**
+	 * Guarda los datos específicos de un cómic.
+	 *
+	 * @param comic cómic a actualizar
+	 * @return resultado de la operación
+	 */
 	private ResultadoOperacion guardarComic(Comic comic, String nombre, String descripcion, String imagen,
 			String paginasTexto, String editorial, String anioTexto) {
 		Integer paginas = leerEntero(paginasTexto);
@@ -148,6 +208,12 @@ public class ControladorModificarEmpleado implements ActionListener {
 		return ResultadoOperacion.ok("Cómic actualizado correctamente.");
 	}
 
+	/**
+	 * Guarda los datos específicos de un juego de mesa.
+	 *
+	 * @param juego juego a actualizar
+	 * @return resultado de la operación
+	 */
 	private ResultadoOperacion guardarJuego(JuegoMesa juego, String nombre, String descripcion, String imagen,
 			String minJugadoresTexto, String maxJugadoresTexto, String minEdadTexto, String maxEdadTexto,
 			String estilo) {
@@ -168,6 +234,12 @@ public class ControladorModificarEmpleado implements ActionListener {
 		return ResultadoOperacion.ok("Juego actualizado correctamente.");
 	}
 
+	/**
+	 * Guarda los datos específicos de una figura.
+	 *
+	 * @param figura figura a actualizar
+	 * @return resultado de la operación
+	 */
 	private ResultadoOperacion guardarFigura(Figura figura, String nombre, String descripcion, String imagen,
 			String alturaTexto, String anchoTexto, String largoTexto, String material, String marca) {
 		Double altura = leerDouble(alturaTexto);
@@ -189,20 +261,44 @@ public class ControladorModificarEmpleado implements ActionListener {
 		return ResultadoOperacion.ok("Figura actualizada correctamente.");
 	}
 
+	/**
+	 * Actualiza los datos comunes de un producto.
+	 *
+	 * @param producto producto a modificar
+	 * @param nombre nuevo nombre
+	 * @param descripcion nueva descripción
+	 * @param imagen nueva imagen
+	 */
 	private void guardarDatosBasicos(ProductoVenta producto, String nombre, String descripcion, String imagen) {
 		producto.setNombre(nombre.trim());
 		producto.setDescripcion(descripcion.trim());
 		producto.setImagenRuta(imagen);
 	}
 
+	/**
+	 * Guarda permanentemente el estado de la tienda.
+	 */
 	private void guardar() {
 		GuardadoTienda.guardar(Tienda.getInstancia());
 	}
 
+	/**
+	 * Normaliza la ruta de una imagen.
+	 *
+	 * @param imagen ruta original
+	 * @return ruta normalizada
+	 */
 	private String normalizarRutaImagen(String imagen) {
 		return RutasImagen.normalizarNombreArchivo(imagen);
 	}
 
+
+	/**
+	 * Convierte un texto a entero.
+	 *
+	 * @param texto texto recibido
+	 * @return entero convertido o null si es inválido
+	 */
 	private Integer leerEntero(String texto) {
 		if (texto == null || texto.trim().isBlank()) {
 			return null;
@@ -214,6 +310,12 @@ public class ControladorModificarEmpleado implements ActionListener {
 		}
 	}
 
+	/**
+	 * Convierte un texto a número decimal.
+	 *
+	 * @param texto texto recibido
+	 * @return número convertido o null si es inválido
+	 */
 	private Double leerDouble(String texto) {
 		if (texto == null || texto.trim().isBlank()) {
 			return null;

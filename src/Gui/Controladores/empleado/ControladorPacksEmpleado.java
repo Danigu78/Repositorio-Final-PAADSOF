@@ -16,34 +16,80 @@ import utilidades.RutasImagen;
 
 /**
  * Controlador de gestión de packs.
+ * 
+ * @author Lucas
+ * @version 1.0
  */
 public class ControladorPacksEmpleado implements ActionListener {
 
+	/** Acción para refrescar la lista de packs. */
 	public static final String REFRESCAR_PACKS = "packs.refrescar";
+	
+	/** Acción para visualizar el contenido escrito de un pack. */
 	public static final String VER_CONTENIDO = "packs.verContenido";
+	
+	/** Acción para limpiar el formulario de creación. */
 	public static final String LIMPIAR_CREAR = "packs.limpiarCrear";
+	
+	/** Acción para crear un nuevo pack. */
 	public static final String CREAR_PACK = "packs.crear";
+	
+	/** Acción para seleccionar una imagen para el pack. */
 	public static final String SELECCIONAR_IMAGEN = "packs.seleccionarImagen";
+	
+	/** Acción para visualizar la imagen del pack. */
 	public static final String VER_IMAGEN = "packs.verImagen";
+	
+	/** Acción para visualizar un pack concreto. */
 	public static final String VER_PACK = "packs.ver";
+	
+	/** Acción para añadir un producto a un pack. */
 	public static final String ANADIR_PRODUCTO = "packs.anadirProducto";
+	
+	/** Acción para cambiar las unidades de un producto dentro de un pack. */
 	public static final String CAMBIAR_UNIDADES = "packs.cambiarUnidades";
+	
+	/** Acción para eliminar un producto de un pack. */
 	public static final String QUITAR_PRODUCTO = "packs.quitarProducto";
+	
+	/** Acción para modificar el precio de un pack. */
 	public static final String CAMBIAR_PRECIO = "packs.cambiarPrecio";
+	
+	/** Acción para eliminar un pack. */
 	public static final String ELIMINAR_PACK = "packs.eliminar";
 
+	/** Empleado asociado al controlador. */
 	private final Empleado empleado;
+	
+	/** Controlador auxiliar de productos. */
 	private final ControladorProductosEmpleado productos = new ControladorProductosEmpleado();
+	
+	/** Vista asociada al controlador. */
 	private SeccionPacksEmpleado vista;
 
+	/**
+	 * Constructor del controlador.
+	 *
+	 * @param empleado empleado que gestionará los packs
+	 */
 	public ControladorPacksEmpleado(Empleado empleado) {
 		this.empleado = empleado;
 	}
 
+	/**
+	 * Asocia la vista al controlador.
+	 *
+	 * @param vista vista de packs
+	 */
 	public void setVista(SeccionPacksEmpleado vista) {
 		this.vista = vista;
 	}
 
+	/**
+	 * Gestiona las acciones generadas desde la interfaz.
+	 *
+	 * @param e evento recibido desde la interfaz
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (vista == null || e == null) {
@@ -78,14 +124,31 @@ public class ControladorPacksEmpleado implements ActionListener {
 		}
 	}
 
+	/**
+	 * Obtiene los nombres de todas las categorías de productos.
+	 *
+	 * @return lista de nombres de categorías
+	 */
 	public ArrayList<String> getNombresCategorias() {
 		return new ArrayList<>(productos.obtenerNombresCategoriasVenta());
 	}
 
+	/**
+	 * Construye las líneas de un pack a partir de un texto.
+	 *
+	 * @param texto texto con los productos y cantidades
+	 * @return lista de líneas del pack
+	 */
 	public ArrayList<LineaPack> construirLineasPack(String texto) throws Exception {
 		return productos.construirLineasPack(texto);
 	}
 
+	/**
+	 * Busca un pack por su identificador.
+	 *
+	 * @param idPack identificador del pack
+	 * @return pack encontrado o null si no existe
+	 */
 	public Pack buscarPack(String idPack) {
 		if (idPack == null || idPack.trim().isBlank()) {
 			return null;
@@ -100,6 +163,18 @@ public class ControladorPacksEmpleado implements ActionListener {
 		return null;
 	}
 
+	/**
+	 * Crea un nuevo pack de productos.
+	 *
+	 * @param nombre nombre del pack
+	 * @param descripcion descripción del pack
+	 * @param imagen ruta de la imagen
+	 * @param precioTexto precio del pack en texto
+	 * @param stockTexto stock disponible en texto
+	 * @param textoLineas productos incluidos en el pack
+	 * @param categoriasTexto categorías asociadas
+	 * @return resultado de la operación
+	 */
 	public ResultadoOperacion crearPack(String nombre, String descripcion, String imagen, String precioTexto,
 			String stockTexto, String textoLineas, String categoriasTexto) {
 
@@ -155,6 +230,14 @@ public class ControladorPacksEmpleado implements ActionListener {
 		}
 	}
 
+	/**
+	 * Añade un producto a un pack existente.
+	 *
+	 * @param idProducto ID del producto
+	 * @param idPack ID del pack
+	 * @param unidadesTexto unidades a añadir
+	 * @return resultado de la operación
+	 */
 	public ResultadoOperacion anadirProductoAPack(String idProducto, String idPack, String unidadesTexto) {
 		Integer unidades = leerEntero(unidadesTexto);
 
@@ -179,6 +262,14 @@ public class ControladorPacksEmpleado implements ActionListener {
 		}
 	}
 
+	/**
+	 * Modifica las unidades de un producto dentro de un pack.
+	 *
+	 * @param idProducto ID del producto
+	 * @param idPack ID del pack
+	 * @param unidadesTexto nuevo número de unidades
+	 * @return resultado de la operación
+	 */
 	public ResultadoOperacion cambiarUnidadesPack(String idProducto, String idPack, String unidadesTexto) {
 		Integer unidades = leerEntero(unidadesTexto);
 
@@ -203,6 +294,13 @@ public class ControladorPacksEmpleado implements ActionListener {
 		}
 	}
 
+	/**
+	 * Elimina un producto de un pack.
+	 *
+	 * @param idPack ID del pack
+	 * @param idProducto ID del producto
+	 * @return resultado de la operación
+	 */
 	public ResultadoOperacion quitarProductoDelPack(String idPack, String idProducto) {
 		if (empleado == null) {
 			return ResultadoOperacion.error("No hay empleado activo.");
@@ -231,6 +329,13 @@ public class ControladorPacksEmpleado implements ActionListener {
 		}
 	}
 
+	/**
+	 * Cambia el precio de un pack.
+	 *
+	 * @param idPack ID del pack
+	 * @param precioTexto nuevo precio
+	 * @return resultado de la operación
+	 */
 	public ResultadoOperacion cambiarPrecioPack(String idPack, String precioTexto) {
 		if (empleado == null) {
 			return ResultadoOperacion.error("No hay empleado activo.");
@@ -261,6 +366,12 @@ public class ControladorPacksEmpleado implements ActionListener {
 		}
 	}
 
+	/**
+	 * Elimina un pack existente.
+	 *
+	 * @param idPack ID del pack
+	 * @return resultado de la operación
+	 */
 	public ResultadoOperacion eliminarPack(String idPack) {
 		if (empleado == null) {
 			return ResultadoOperacion.error("No hay empleado activo.");
@@ -285,12 +396,23 @@ public class ControladorPacksEmpleado implements ActionListener {
 		}
 	}
 
+	/**
+	 * Guarda el estado de la tienda si la operación fue correcta.
+	 *
+	 * @param ok indica si la operación tuvo éxito
+	 */
 	private void guardarSiExito(boolean ok) {
 		if (ok) {
 			GuardadoTienda.guardar(Tienda.getInstancia());
 		}
 	}
 
+	/**
+	 * Genera un texto descriptivo con toda la información de un pack.
+	 *
+	 * @param pack pack del que se desea obtener la información
+	 * @return texto descriptivo del pack o mensaje de error si no existe
+	 */
 	public String crearTextoPack(Pack pack) {
 		if (pack == null) {
 			return "No existe ningún pack con ese ID.";
@@ -319,6 +441,12 @@ public class ControladorPacksEmpleado implements ActionListener {
 		return texto.toString();
 	}
 
+	/**
+	 * Genera un texto con las líneas de productos de un pack.
+	 * 
+	 * @param lineas líneas del pack
+	 * @return texto con la información de las líneas del pack
+	 */
 	public String crearTextoLineas(ArrayList<LineaPack> lineas) {
 		StringBuilder texto = new StringBuilder();
 
@@ -338,10 +466,24 @@ public class ControladorPacksEmpleado implements ActionListener {
 		return texto.toString();
 	}
 
+	/**
+	 * Formatea un precio usando el formato estándar de productos.
+	 *
+	 * @param precio precio a formatear
+	 * @return precio formateado
+	 */
 	public String formatearPrecio(double precio) {
 		return productos.formatearPrecio(precio);
 	}
 
+	/**
+	 * Valida los datos necesarios para modificar productos de un pack.
+	 *
+	 * @param idProducto identificador del producto
+	 * @param idPack identificador del pack
+	 * @param unidades número de unidades
+	 * @return resultado de la validación
+	 */
 	private ResultadoOperacion validarProductoPack(String idProducto, String idPack, Integer unidades) {
 		if (empleado == null) {
 			return ResultadoOperacion.error("No hay empleado activo.");
@@ -362,6 +504,13 @@ public class ControladorPacksEmpleado implements ActionListener {
 		return ResultadoOperacion.ok("Datos válidos");
 	}
 
+	/**
+	 * Convierte un texto separado por comas en una lista de categorías.
+	 *
+	 * @param texto texto con nombres de categorías separados por comas
+	 * @return lista de categorías encontradas
+	 * @throws Exception si alguna categoría no existe
+	 */
 	private ArrayList<Categoria> leerCategorias(String texto) throws Exception {
 		ArrayList<Categoria> categorias = new ArrayList<>();
 
@@ -392,6 +541,12 @@ public class ControladorPacksEmpleado implements ActionListener {
 		return categorias;
 	}
 
+	/**
+	 * Genera un texto con las categorías asociadas a un producto.
+	 *
+	 * @param producto producto del que se obtienen las categorías
+	 * @return texto con las categorías o mensaje indicando ausencia
+	 */
 	private String crearTextoCategorias(ProductoVenta producto) {
 		if (producto == null || producto.getCategorias() == null || producto.getCategorias().isEmpty()) {
 			return "Sin categorías";
@@ -410,10 +565,23 @@ public class ControladorPacksEmpleado implements ActionListener {
 		return texto;
 	}
 
+
+	/**
+	 * Normaliza el nombre de un archivo de imagen.
+	 *
+	 * @param imagen ruta o nombre original de la imagen
+	 * @return nombre normalizado
+	 */
 	private String normalizarRutaImagen(String imagen) {
 		return RutasImagen.normalizarNombreArchivo(imagen);
 	}
 
+	/**
+	 * Convierte un texto a entero.
+	 *
+	 * @param texto texto a convertir
+	 * @return número entero o null si el formato es inválido
+	 */
 	private Integer leerEntero(String texto) {
 		if (texto == null || texto.trim().isBlank()) {
 			return null;
@@ -426,6 +594,12 @@ public class ControladorPacksEmpleado implements ActionListener {
 		}
 	}
 
+	/**
+	 * Convierte un texto a número decimal.
+	 *
+	 * @param texto texto a convertir
+	 * @return número decimal o null si el formato es inválido
+	 */
 	private Double leerDouble(String texto) {
 		if (texto == null || texto.trim().isBlank()) {
 			return null;

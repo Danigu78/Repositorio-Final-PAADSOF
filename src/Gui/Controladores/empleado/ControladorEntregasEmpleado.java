@@ -15,24 +15,53 @@ import ventas.EstadoPedido;
 import ventas.LineaPedido;
 import ventas.Pedido;
 
-/** Controlador de entrega de pedidos. */
+
+/**
+ * Controlador de entrega de pedidos.
+ *
+ * @author Antonino
+ * @version 1.0
+ */
 public class ControladorEntregasEmpleado implements ActionListener {
 
+	/** Acción para refrescar la tabla de entregas. */
 	public static final String REFRESCAR = "entregas.refrescar";
+	
+	/** Acción para visualizar un pedido. */
 	public static final String VER_PEDIDO = "entregas.ver";
+	
+	/** Acción para marcar un pedido como entregado. */
 	public static final String ENTREGAR_PEDIDO = "entregas.entregar";
 
+	/** Empleado autenticado que realiza las operaciones. */
 	private final Empleado empleado;
+	
+	/** Vista asociada al controlador. */
 	private SeccionEntregasEmpleado vista;
 
+	/**
+	 * Constructor del controlador.
+	 *
+	 * @param empleado empleado encargado de gestionar las entregas.
+	 */
 	public ControladorEntregasEmpleado(Empleado empleado) {
 		this.empleado = empleado;
 	}
 
+	/**
+	 * Asocia la vista a este controlador.
+	 *
+	 * @param vista vista de entregas del empleado.
+	 */
 	public void setVista(SeccionEntregasEmpleado vista) {
 		this.vista = vista;
 	}
 
+	/**
+	 * Gestiona los eventos generados desde la interfaz gráfica.
+	 *
+	 * @param e evento generado por la interfaz.
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (vista == null || e == null) {
@@ -49,6 +78,11 @@ public class ControladorEntregasEmpleado implements ActionListener {
 		}
 	}
 
+	/**
+	 * Obtiene todos los pedidos cuyo estado es listo para recoger
+	 *
+	 * @return lista de pedidos listos para recogida.
+	 */
 	public List<Pedido> getPedidosListosParaRecoger() {
 		List<Pedido> pedidos = new ArrayList<>();
 		for (Pedido pedido : Tienda.getInstancia().getHistorialVentas()) {
@@ -59,6 +93,12 @@ public class ControladorEntregasEmpleado implements ActionListener {
 		return pedidos;
 	}
 
+	/**
+	 * Busca un pedido utilizando su código de recogida.
+	 *
+	 * @param codigo código de recogida del pedido.
+	 * @return pedido encontrado o {@code null} si no existe.
+	 */
 	public Pedido buscarPedidoPorCodigo(String codigo) {
 		if (codigo == null || codigo.trim().isBlank()) {
 			return null;
@@ -71,6 +111,12 @@ public class ControladorEntregasEmpleado implements ActionListener {
 		return null;
 	}
 
+	/**
+	 * Marca un pedido como entregado.
+	 *
+	 * @param codigo código de recogida del pedido.
+	 * @return resultado de la operación.
+	 */
 	public ResultadoOperacion entregarPedido(String codigo) {
 		if (empleado == null) {
 			return ResultadoOperacion.error("No hay empleado activo.");
@@ -96,12 +142,24 @@ public class ControladorEntregasEmpleado implements ActionListener {
 				: ResultadoOperacion.error("No se pudo entregar el pedido.");
 	}
 
+	/**
+	 * Guarda el estado actual de la tienda si la operación
+	 * realizada se completó correctamente.
+	 *
+	 * @param ok indica si la operación fue exitosa.
+	 */
 	private void guardarSiExito(boolean ok) {
 		if (ok) {
 			GuardadoTienda.guardar(Tienda.getInstancia());
 		}
 	}
 
+	/**
+	 * Genera un texto descriptivo con toda la información relevante de un pedido.
+	 *
+	 * @param pedido pedido a representar.
+	 * @return texto detallado del pedido.
+	 */
 	public String crearTextoPedido(Pedido pedido) {
 		if (pedido == null) {
 			return "Pedido no encontrado.";
@@ -137,6 +195,12 @@ public class ControladorEntregasEmpleado implements ActionListener {
 		return texto.toString();
 	}
 
+	/**
+	 * Obtiene el código de recogida de un pedido.
+	 *
+	 * @param pedido pedido consultado.
+	 * @return código de recogida o "-" si no existe.
+	 */
 	public String obtenerCodigoRecogida(Pedido pedido) {
 		if (pedido == null || pedido.getCodigoRecogida() == null || pedido.getCodigoRecogida().isBlank()) {
 			return "-";
@@ -144,6 +208,12 @@ public class ControladorEntregasEmpleado implements ActionListener {
 		return pedido.getCodigoRecogida();
 	}
 
+	/**
+	 * Formatea un precio al formato europeo con símbolo de euro.
+	 *
+	 * @param precio valor numérico.
+	 * @return precio formateado.
+	 */
 	public String formatearPrecio(double precio) {
 		return String.format(Locale.US, "%.2f €", precio).replace('.', ',');
 	}
