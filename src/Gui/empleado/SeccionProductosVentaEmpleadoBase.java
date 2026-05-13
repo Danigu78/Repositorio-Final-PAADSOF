@@ -390,6 +390,10 @@ public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoB
 		List<ProductoVenta> productos = new ArrayList<>();
 
 		for (ProductoVenta producto : obtenerProductosOrdenadosPorStock()) {
+			if (producto.isEliminado()) {
+				continue;
+			}
+
 			String id = producto.getId();
 			String nombre = producto.getNombre();
 			String tipo = obtenerTipoProductoVenta(producto);

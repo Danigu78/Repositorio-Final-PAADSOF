@@ -148,9 +148,11 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 
 		JButton botonSumar = crearBotonAccion("Sumar stock");
 		JButton botonRestar = crearBotonSecundario("Restar stock");
+		JButton botonEliminar = crearBotonPeligro("Eliminar producto");
 
 		ajustarBotonStock(botonSumar);
 		ajustarBotonStock(botonRestar);
+		ajustarBotonStock(botonEliminar);
 
 		JPanel filaBotones = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		filaBotones.setOpaque(false);
@@ -162,12 +164,21 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 		gbc.insets = new Insets(VentanaPrincipal.escalar(2), 0, 0, 0);
 		panel.add(filaBotones, gbc);
 
+		JPanel filaEliminar = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		filaEliminar.setOpaque(false);
+		filaEliminar.add(botonEliminar);
+
 		gbc.gridy = 4;
+		gbc.insets = new Insets(VentanaPrincipal.escalar(8), 0, 0, 0);
+		panel.add(filaEliminar, gbc);
+
+		gbc.gridy = 5;
 		gbc.weighty = 1.0;
 		panel.add(Box.createVerticalGlue(), gbc);
 
 		conectar(botonSumar, ControladorStockEmpleado.SUMAR_STOCK);
 		conectar(botonRestar, ControladorStockEmpleado.RESTAR_STOCK);
+		conectar(botonEliminar, ControladorStockEmpleado.ELIMINAR_PRODUCTO);
 
 		return panel;
 	}
@@ -473,6 +484,34 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 
 		if (resultado.isExito()) {
 			recargarTablaProductos(tablaProductos.tabla);
+			campoUnidades.setText("");
+			mostrarMensaje(resultado.getMensaje());
+		} else {
+			mostrarError(resultado.getMensaje());
+		}
+	}
+
+	public void eliminarProducto() {
+		String idProducto = campoIdProducto.getText().trim();
+
+		if (idProducto.isBlank()) {
+			mostrarError("Escribe el ID del producto.");
+			return;
+		}
+
+		int opcion = JOptionPane.showConfirmDialog(this,
+				"Se pondra el stock del producto a 0 y dejara de aparecer en la tienda.\nQuieres continuar?",
+				"Eliminar producto", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+
+		if (opcion != JOptionPane.YES_OPTION) {
+			return;
+		}
+
+		ResultadoOperacion resultado = controlador.eliminarProducto(idProducto);
+
+		if (resultado.isExito()) {
+			recargarTablaProductos(tablaProductos.tabla);
+			campoIdProducto.setText("");
 			campoUnidades.setText("");
 			mostrarMensaje(resultado.getMensaje());
 		} else {

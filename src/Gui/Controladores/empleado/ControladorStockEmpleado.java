@@ -17,6 +17,7 @@ public class ControladorStockEmpleado implements ActionListener {
 
 	public static final String SUMAR_STOCK = "stock.sumar";
 	public static final String RESTAR_STOCK = "stock.restar";
+	public static final String ELIMINAR_PRODUCTO = "stock.eliminarProducto";
 	public static final String SELECCIONAR_FICHERO = "stock.seleccionarFichero";
 	public static final String CARGAR_FICHERO = "stock.cargarFichero";
 	public static final String LIMPIAR_PRODUCTO = "stock.limpiarProducto";
@@ -47,6 +48,8 @@ public class ControladorStockEmpleado implements ActionListener {
 			vista.reponerStock();
 		} else if (RESTAR_STOCK.equals(accion)) {
 			vista.retirarStock();
+		} else if (ELIMINAR_PRODUCTO.equals(accion)) {
+			vista.eliminarProducto();
 		} else if (SELECCIONAR_FICHERO.equals(accion)) {
 			vista.seleccionarFichero();
 		} else if (CARGAR_FICHERO.equals(accion)) {
@@ -101,6 +104,21 @@ public class ControladorStockEmpleado implements ActionListener {
 
 		return ok ? ResultadoOperacion.ok("Stock retirado correctamente")
 				: ResultadoOperacion.error("No se pudo retirar el stock. Comprueba que hay unidades suficientes.");
+	}
+
+	public ResultadoOperacion eliminarProducto(String idProducto) {
+		if (empleado == null) {
+			return ResultadoOperacion.error("No hay empleado activo.");
+		}
+		if (idProducto == null || idProducto.trim().isBlank()) {
+			return ResultadoOperacion.error("Escribe el ID del producto");
+		}
+
+		boolean ok = empleado.eliminarProductoVenta(idProducto.trim());
+		guardarSiExito(ok);
+
+		return ok ? ResultadoOperacion.ok("Producto eliminado correctamente")
+				: ResultadoOperacion.error("No se pudo eliminar el producto");
 	}
 
 	public ResultadoOperacion cargarProductosDesdeFichero(String rutaFichero) {

@@ -609,6 +609,39 @@ public class Empleado extends UsuarioRegistrado implements Serializable {
 		return true;
 	}
 
+	public boolean eliminarProductoVenta(String idProducto) {
+		if (idProducto == null) {
+			System.out.println("El id del producto no puede ser null.");
+			return false;
+		}
+
+		if (!puedeRealizarTarea(TipoPermisos.GESTION_STOCK)) {
+			System.out.println("El empleado " + this.getNickname() + " no tiene el permiso de gestion de stock.");
+			return false;
+		}
+
+		ProductoVenta producto = Tienda.getInstancia().buscarProductoVentaPorId(idProducto.trim());
+
+		if (producto == null) {
+			System.out.println("No existe ningÃºn producto con id: " + idProducto);
+			return false;
+		}
+
+		if (producto instanceof Pack) {
+			boolean ok = producto.getStockDisponible() == 0
+					|| ((Pack) producto).retirarStockPack(producto.getStockDisponible());
+			if (ok) {
+				producto.setEliminado(true);
+			}
+			return ok;
+		}
+
+		producto.setStockDisponible(0);
+		producto.setEliminado(true);
+		System.out.println("Producto eliminado del inventario: " + producto.getId());
+		return true;
+	}
+
 	/**
 	 * Carga productos desde un fichero de texto.
 	 * 
@@ -786,7 +819,7 @@ public class Empleado extends UsuarioRegistrado implements Serializable {
 		}
 
 		try {
-			boolean añadido = c.addProducto(p);
+			boolean añadido = p.addCategoria(c);
 			if (añadido) {
 				System.out.println(
 						"Se ha añadido el producto con id " + idProducto + " a la categoria " + nombreCat + ".");
@@ -843,7 +876,7 @@ public class Empleado extends UsuarioRegistrado implements Serializable {
 			return false;
 		}
 
-		boolean eliminado = c.deleteProducto(p);
+		boolean eliminado = p.deleteCategoria(c);
 
 		if (eliminado) {
 			System.out.println(
