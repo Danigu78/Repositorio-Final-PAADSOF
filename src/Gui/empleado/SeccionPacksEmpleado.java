@@ -194,14 +194,14 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		JButton botonLimpiar = crearBotonSecundario("Limpiar");
 		JButton botonCrear = crearBotonAccion("Crear pack");
 
-		JPanel filaBotones = crearFilaBotones();
+		JPanel filaBotones = new JPanel(new GridLayout(1, 3, VentanaPrincipal.escalar(10), 0));
+		filaBotones.setOpaque(false);
+		filaBotones.setMaximumSize(new Dimension(VentanaPrincipal.escalar(620), VentanaPrincipal.escalar(42)));
 		filaBotones.add(botonVerLineas);
-		filaBotones.add(Box.createHorizontalStrut(VentanaPrincipal.escalar(10)));
 		filaBotones.add(botonLimpiar);
-		filaBotones.add(Box.createHorizontalStrut(VentanaPrincipal.escalar(10)));
 		filaBotones.add(botonCrear);
 
-		bloque.add(filaBotones, gbcBoton(2));
+		bloque.add(filaBotones, gbcCampo(2));
 
 		conectar(botonVerLineas, ControladorPacksEmpleado.VER_CONTENIDO);
 		conectar(botonLimpiar, ControladorPacksEmpleado.LIMPIAR_CREAR);
