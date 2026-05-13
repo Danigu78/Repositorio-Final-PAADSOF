@@ -19,7 +19,7 @@ import ventas.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TiendaTest {
 
-    private static byte[] datOriginal;
+   
 
     private static Tienda tienda;
     private Gestor gestor;
@@ -29,7 +29,7 @@ public class TiendaTest {
 
     private Cliente clienteA;
     private Cliente clienteB;
-
+    private static byte[] datOriginal;
     @BeforeAll
     static void guardarDat() throws Exception {
         java.io.File fichero = new java.io.File("datos_tienda.dat");

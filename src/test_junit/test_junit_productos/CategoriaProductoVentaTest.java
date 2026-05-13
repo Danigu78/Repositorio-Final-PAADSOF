@@ -1,136 +1,176 @@
 package test_junit.test_junit_productos;
 
 import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*; // Importamos anotaciones de JUnit 5
 
 import excepciones.ProductoYaEnCategoriaException;
 import excepciones.ReseñaDuplicadaException;
 import usuarios.Cliente;
 import productos.*;
+import tienda.Tienda;
+import tienda.GuardadoTienda;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class CategoriaProductoVentaTest {
 
-	@Test
-	void addProductoSincronizaCategoriaYProducto() {
-		Categoria categoria = new Categoria("categoria1", "descripcion1");
-		Comic comic = new Comic("comic1", "descripcionComic1", "imagen1.jpg", 12.0, 5, 100, "editorial1", 2020);
+    private static byte[] datOriginal;
 
-		assertTrue(categoria.addProducto(comic));
+    // --- Lógica de protección del archivo .dat ---
+    @BeforeAll
+    static void guardarDat() throws Exception {
+        java.io.File fichero = new java.io.File("datos_tienda.dat");
+        if (fichero.exists()) {
+            datOriginal = java.nio.file.Files.readAllBytes(fichero.toPath());
+        }
+    }
 
-		assertTrue(categoria.getProductos().contains(comic));
-		assertTrue(comic.getCategorias().contains(categoria));
-	}
+    @AfterAll
+    static void restaurarDat() throws Exception {
+        if (datOriginal != null) {
+            java.nio.file.Files.write(
+                java.nio.file.Paths.get("datos_tienda.dat"),
+                datOriginal);
+            GuardadoTienda.cargar();
+        }
+    }
 
-	@Test
-	void addProductoDuplicadoLanzaExcepcion() {
-		Categoria categoria = new Categoria("categoria1", "descripcion1");
-		Comic comic = new Comic("comic1", "descripcionComic1", "imagen1.jpg", 12.0, 5, 100, "editorial1", 2020);
+    @BeforeEach
+    void setUp() {
+        // Limpiamos la instancia de la tienda para que cada test sea independiente
+        Tienda.getInstancia().vaciarTienda();
+    }
+    // ---------------------------------------------
 
-		categoria.addProducto(comic);
+    @Test
+    @Order(1)
+    void addProductoSincronizaCategoriaYProducto() {
+        Categoria categoria = new Categoria("categoria1", "descripcion1");
+        Comic comic = new Comic("comic1", "descripcionComic1", "imagen1.jpg", 12.0, 5, 100, "editorial1", 2020);
 
-		assertThrows(ProductoYaEnCategoriaException.class, () -> categoria.addProducto(comic));
-	}
+        assertTrue(categoria.addProducto(comic));
 
-	@Test
-	void addProductoNullDevuelveFalse() {
-		Categoria categoria = new Categoria("categoria1", "descripcion1");
+        assertTrue(categoria.getProductos().contains(comic));
+        assertTrue(comic.getCategorias().contains(categoria));
+    }
 
-		assertFalse(categoria.addProducto(null));
-	}
+    @Test
+    @Order(2)
+    void addProductoDuplicadoLanzaExcepcion() {
+        Categoria categoria = new Categoria("categoria1", "descripcion1");
+        Comic comic = new Comic("comic1", "descripcionComic1", "imagen1.jpg", 12.0, 5, 100, "editorial1", 2020);
 
-	@Test
-	void deleteProductoEliminaEnAmbosLados() {
-		Categoria categoria = new Categoria("categoria1", "descripcion1");
-		Comic comic = new Comic("comic1", "descripcionComic1", "imagen1.jpg", 12.0, 5, 100, "editorial1", 2020);
-		categoria.addProducto(comic);
+        categoria.addProducto(comic);
 
-		assertTrue(categoria.deleteProducto(comic));
+        assertThrows(ProductoYaEnCategoriaException.class, () -> categoria.addProducto(comic));
+    }
 
-		assertFalse(categoria.getProductos().contains(comic));
-		assertFalse(comic.getCategorias().contains(categoria));
-	}
+    @Test
+    @Order(3)
+    void addProductoNullDevuelveFalse() {
+        Categoria categoria = new Categoria("categoria1", "descripcion1");
+        assertFalse(categoria.addProducto(null));
+    }
 
-	@Test
-	void deleteProductoNoExistenteDevuelveFalse() {
-		Categoria categoria = new Categoria("categoria1", "descripcion1");
-		Comic comic = new Comic("comic1", "descripcionComic1", "imagen1.jpg", 12.0, 5, 100, "editorial1", 2020);
+    @Test
+    @Order(4)
+    void deleteProductoEliminaEnAmbosLados() {
+        Categoria categoria = new Categoria("categoria1", "descripcion1");
+        Comic comic = new Comic("comic1", "descripcionComic1", "imagen1.jpg", 12.0, 5, 100, "editorial1", 2020);
+        categoria.addProducto(comic);
 
-		assertFalse(categoria.deleteProducto(comic));
-	}
+        assertTrue(categoria.deleteProducto(comic));
 
-	@Test
-	void addCategoriaDesdeProductoSincronizaAmbosLados() {
-		Categoria categoria = new Categoria("categoria2", "descripcion2");
-		JuegoMesa juego = new JuegoMesa("juego1", "descripcionJuego1", "imagen2.jpg", 35.0, 4, 3, 4, 10, 99, "tipo1");
+        assertFalse(categoria.getProductos().contains(comic));
+        assertFalse(comic.getCategorias().contains(categoria));
+    }
 
-		assertTrue(juego.addCategoria(categoria));
+    @Test
+    @Order(5)
+    void deleteProductoNoExistenteDevuelveFalse() {
+        Categoria categoria = new Categoria("categoria1", "descripcion1");
+        Comic comic = new Comic("comic1", "descripcionComic1", "imagen1.jpg", 12.0, 5, 100, "editorial1", 2020);
 
-		assertTrue(juego.getCategorias().contains(categoria));
-		assertTrue(categoria.getProductos().contains(juego));
-	}
+        assertFalse(categoria.deleteProducto(comic));
+    }
 
-	@Test
-	void deleteCategoriaDesdeProductoEliminaEnAmbosLados() {
-		Categoria categoria = new Categoria("categoria2", "descripcion2");
-		JuegoMesa juego = new JuegoMesa("juego1", "descripcionJuego1", "imagen2.jpg", 35.0, 4, 3, 4, 10, 99, "tipo1");
-		juego.addCategoria(categoria);
+    @Test
+    @Order(6)
+    void addCategoriaDesdeProductoSincronizaAmbosLados() {
+        Categoria categoria = new Categoria("categoria2", "descripcion2");
+        JuegoMesa juego = new JuegoMesa("juego1", "descripcionJuego1", "imagen2.jpg", 35.0, 4, 3, 4, 10, 99, "tipo1");
 
-		assertTrue(juego.deleteCategoria(categoria));
+        assertTrue(juego.addCategoria(categoria));
 
-		assertFalse(juego.getCategorias().contains(categoria));
-		assertFalse(categoria.getProductos().contains(juego));
-	}
+        assertTrue(juego.getCategorias().contains(categoria));
+        assertTrue(categoria.getProductos().contains(juego));
+    }
 
-	@Test
-	void mediaPuntuacionSinReseñasEsCero() {
-		Comic comic = new Comic("comic2", "descripcionComic2", "imagen3.jpg", 11.0, 3, 90, "editorial2", 2021);
+    @Test
+    @Order(7)
+    void deleteCategoriaDesdeProductoEliminaEnAmbosLados() {
+        Categoria categoria = new Categoria("categoria2", "descripcion2");
+        JuegoMesa juego = new JuegoMesa("juego1", "descripcionJuego1", "imagen2.jpg", 35.0, 4, 3, 4, 10, 99, "tipo1");
+        juego.addCategoria(categoria);
 
-		assertEquals(0.0, comic.getMediaPuntuacion());
-	}
+        assertTrue(juego.deleteCategoria(categoria));
 
-	@Test
-	void addReseñaAñadeYAsociaProducto() {
-		Comic comic = new Comic("comic2", "descripcionComic2", "imagen3.jpg", 11.0, 3, 90, "editorial2", 2021);
-		Cliente cliente = new Cliente("cliente1", "1234", "11111111A");
+        assertFalse(juego.getCategorias().contains(categoria));
+        assertFalse(categoria.getProductos().contains(juego));
+    }
 
-		Reseña reseña = new Reseña(cliente, comic, 8.0, "comentario1");
+    @Test
+    @Order(8)
+    void mediaPuntuacionSinReseñasEsCero() {
+        Comic comic = new Comic("comic2", "descripcionComic2", "imagen3.jpg", 11.0, 3, 90, "editorial2", 2021);
+        assertEquals(0.0, comic.getMediaPuntuacion());
+    }
 
-		assertEquals(1, comic.getReseñas().size());
-		assertEquals(comic, reseña.getProducto());
-		assertEquals(8.0, comic.getMediaPuntuacion());
-	}
+    @Test
+    @Order(9)
+    void addReseñaAñadeYAsociaProducto() {
+        Comic comic = new Comic("comic2", "descripcionComic2", "imagen3.jpg", 11.0, 3, 90, "editorial2", 2021);
+        Cliente cliente = new Cliente("cliente1", "1234", "11111111A");
 
-	@Test
-	void addReseñaDuplicadaPorMismoAutorLanzaExcepcion() {
-		Comic comic = new Comic("comic2", "descripcionComic2", "imagen3.jpg", 11.0, 3, 90, "editorial2", 2021);
-		Cliente cliente = new Cliente("cliente1", "1234", "11111111A");
+        Reseña reseña = new Reseña(cliente, comic, 8.0, "comentario1");
 
-		new Reseña(cliente, comic, 8.0, "comentario1");
+        assertEquals(1, comic.getReseñas().size());
+        assertEquals(comic, reseña.getProducto());
+        assertEquals(8.0, comic.getMediaPuntuacion());
+    }
 
-		assertThrows(ReseñaDuplicadaException.class, () -> new Reseña(cliente, comic, 9.0, "comentario2"));
-	}
+    @Test
+    @Order(10)
+    void addReseñaDuplicadaPorMismoAutorLanzaExcepcion() {
+        Comic comic = new Comic("comic2", "descripcionComic2", "imagen3.jpg", 11.0, 3, 90, "editorial2", 2021);
+        Cliente cliente = new Cliente("cliente1", "1234", "11111111A");
 
-	@Test
-	void deleteReseñaEliminaCorrectamente() {
-		Comic comic = new Comic("comic2", "descripcionComic2", "imagen3.jpg", 11.0, 3, 90, "editorial2", 2021);
-		Cliente cliente = new Cliente("cliente1", "1234", "11111111A");
-		Reseña reseña = new Reseña(cliente, comic, 8.0, "comentario1");
+        new Reseña(cliente, comic, 8.0, "comentario1");
 
-		assertTrue(comic.deleteReseña(reseña));
-		assertTrue(comic.getReseñas().isEmpty());
-		assertEquals(0.0, comic.getMediaPuntuacion());
-	}
+        assertThrows(ReseñaDuplicadaException.class, () -> new Reseña(cliente, comic, 9.0, "comentario2"));
+    }
 
-	@Test
-	void categoriaToStringMuestraProductos() {
-		Categoria categoria = new Categoria("categoria1", "descripcion1");
-		Comic comic = new Comic("comic1", "descripcionComic1", "imagen1.jpg", 12.0, 5, 100, "editorial1", 2020);
-		categoria.addProducto(comic);
+    @Test
+    @Order(11)
+    void deleteReseñaEliminaCorrectamente() {
+        Comic comic = new Comic("comic2", "descripcionComic2", "imagen3.jpg", 11.0, 3, 90, "editorial2", 2021);
+        Cliente cliente = new Cliente("cliente1", "1234", "11111111A");
+        Reseña reseña = new Reseña(cliente, comic, 8.0, "comentario1");
 
-		String texto = categoria.toString();
+        assertTrue(comic.deleteReseña(reseña));
+        assertTrue(comic.getReseñas().isEmpty());
+        assertEquals(0.0, comic.getMediaPuntuacion());
+    }
 
-		assertTrue(texto.contains("categoria1"));
-		assertTrue(texto.contains("comic1"));
-	}
+    @Test
+    @Order(12)
+    void categoriaToStringMuestraProductos() {
+        Categoria categoria = new Categoria("categoria1", "descripcion1");
+        Comic comic = new Comic("comic1", "descripcionComic1", "imagen1.jpg", 12.0, 5, 100, "editorial1", 2020);
+        categoria.addProducto(comic);
+
+        String texto = categoria.toString();
+
+        assertTrue(texto.contains("categoria1"));
+        assertTrue(texto.contains("comic1"));
+    }
 }

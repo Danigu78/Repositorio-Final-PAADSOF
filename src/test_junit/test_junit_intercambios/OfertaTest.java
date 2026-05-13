@@ -1,11 +1,9 @@
 package test_junit.test_junit_intercambios;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*; // Importamos todo para BeforeAll, AfterAll, etc.
 
 import excepciones.*;
-
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -16,6 +14,7 @@ import productos.*;
 import usuarios.*;
 import tienda.*;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class OfertaTest {
 	private Cliente origen;
 	private Cliente destino;
@@ -25,8 +24,32 @@ public class OfertaTest {
 	private List<Producto2Mano> ofertados;
 	private List<Producto2Mano> solicitados;
 
+	private static byte[] datOriginal;
+
+	
+	@BeforeAll
+	static void guardarDat() throws Exception {
+		java.io.File fichero = new java.io.File("datos_tienda.dat");
+		if (fichero.exists()) {
+			datOriginal = java.nio.file.Files.readAllBytes(fichero.toPath());
+		}
+	}
+
+	@AfterAll
+	static void restaurarDat() throws Exception {
+		if (datOriginal != null) {
+			java.nio.file.Files.write(
+				java.nio.file.Paths.get("datos_tienda.dat"),
+				datOriginal);
+			GuardadoTienda.cargar();
+		}
+	}
+	// ---------------------------------------------
+
 	@BeforeEach
 	void setUp() {
+		// Limpiamos la instancia de la tienda para cada test
+		Tienda.getInstancia().vaciarTienda();
 		Tienda.getInstancia().setTiempoMaxOferta(10);
 
 		origen = new Cliente("juan77", "pass123", "12345678Z");
@@ -49,6 +72,7 @@ public class OfertaTest {
 	}
 
 	@Test
+	@Order(1)
 	void testImprimirResumen() throws ProductoNoTasadoException {
 		Oferta oferta = new Oferta(origen, destino, ofertados, solicitados);
 
@@ -68,6 +92,7 @@ public class OfertaTest {
 	}
 
 	@Test
+	@Order(2)
 	void testConstructorYEstadoInicial() throws ProductoNoTasadoException {
 		Oferta oferta = new Oferta(origen, destino, ofertados, solicitados);
 		assertNotNull(oferta.getId());
@@ -75,14 +100,17 @@ public class OfertaTest {
 	}
 
 	@Test
+	@Order(3)
 	void testErrorProductoNoTasado() {
 		pOrigen.setValoracion(null);
+		// Usamos Exception.class o la específica si la tienes definida
 		assertThrows(Exception.class, () -> {
 			new Oferta(origen, destino, ofertados, solicitados);
 		});
 	}
 
 	@Test
+	@Order(4)
 	void testAceptarYEjecutar() throws Exception {
 		Oferta oferta = new Oferta(origen, destino, ofertados, solicitados);
 		oferta.aceptarYEjecutar();
@@ -91,6 +119,7 @@ public class OfertaTest {
 	}
 
 	@Test
+	@Order(5)
 	void testRechazar() throws Exception {
 		Oferta oferta = new Oferta(origen, destino, ofertados, solicitados);
 		oferta.rechazar();
@@ -98,6 +127,7 @@ public class OfertaTest {
 	}
 
 	@Test
+	@Order(6)
 	void testCaducidad() throws ProductoNoTasadoException {
 		Tienda.getInstancia().setTiempoMaxOferta(-1);
 		Oferta oferta = new Oferta(origen, destino, ofertados, solicitados);
@@ -106,6 +136,7 @@ public class OfertaTest {
 	}
 
 	@Test
+	@Order(7)
 	void testFechaCreacion() throws ProductoNoTasadoException {
 		Oferta oferta = new Oferta(origen, destino, ofertados, solicitados);
 		assertNotNull(oferta.getFechaOferta());
