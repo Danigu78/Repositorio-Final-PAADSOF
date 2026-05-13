@@ -89,12 +89,6 @@ public class TiendaTest {
         figura   = tienda.buscarproductoPorNombre("Figura_ges").get(0);
     }
 
-    @AfterEach
-    void tearDown() {
-        // Nada — el singleton queda sucio entre tests pero es correcto
-        // porque @BeforeEach siempre llama a vaciarTienda()
-    }
-
     @Test
     @Order(1)
     @DisplayName("buscarCLientePorId: Cobertura de nulos, vacíos y búsqueda real")
