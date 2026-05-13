@@ -28,6 +28,9 @@ public abstract class ProductoVenta extends Producto implements Serializable {
 	/** Opiniones y puntuaciones que han dejado los clientes. */
 	protected ArrayList<Reseña> reseñas;
 
+	/** Indica si el producto se ha quitado de la tienda. */
+	private boolean eliminado = false;
+
 	/**
 	 * Constructor de la clase ProductoVenta.
 	 *
@@ -108,6 +111,14 @@ public abstract class ProductoVenta extends Producto implements Serializable {
 		}
 
 		this.stockDisponible = cantidad;
+	}
+
+	public boolean isEliminado() {
+		return eliminado;
+	}
+
+	public void setEliminado(boolean eliminado) {
+		this.eliminado = eliminado;
 	}
 
 	/**

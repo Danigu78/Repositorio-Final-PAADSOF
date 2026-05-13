@@ -42,7 +42,7 @@ public class ControladorCatalogo implements ActionListener {
 		} else if (cmd != null && cmd.startsWith("ver:")) {
 			String idProducto = cmd.substring(4);
 			for (ProductoVenta p : tienda.getStockVentas()) {
-				if (p.getId().equals(idProducto)) {
+				if (p.getId().equals(idProducto) && !p.isEliminado()) {
 					vista.verProducto(p);
 					return;
 				}
@@ -55,7 +55,13 @@ public class ControladorCatalogo implements ActionListener {
 	 */
 
 	public List<ProductoVenta> obtenerTodosLosProductos() {
-		return tienda.getStockVentas();
+		List<ProductoVenta> resultado = new ArrayList<>();
+		for (ProductoVenta producto : tienda.getStockVentas()) {
+			if (!producto.isEliminado()) {
+				resultado.add(producto);
+			}
+		}
+		return resultado;
 	}
 
 	/**
@@ -65,6 +71,9 @@ public class ControladorCatalogo implements ActionListener {
 			double precioMax) {
 		List<ProductoVenta> resultado = new ArrayList<>();
 		for (ProductoVenta p : tienda.getStockVentas()) {
+			if (p.isEliminado()) {
+				continue;
+			}
 
 			if (texto != null && !texto.isBlank()) {
 				if (!p.getNombre().toLowerCase().contains(texto.toLowerCase()))
@@ -195,12 +204,14 @@ public class ControladorCatalogo implements ActionListener {
 	public List<ProductoVenta> getRecomendados() {
 		if (cliente == null) {
 			List<ProductoVenta> todos = new ArrayList<>(tienda.getStockVentas());
-			todos.removeIf(p -> p.getStockDisponible() <= 0);
+			todos.removeIf(p -> p.isEliminado() || p.getStockDisponible() <= 0);
 			todos.sort((a, b) -> Double.compare(b.getMediaPuntuacion(), a.getMediaPuntuacion()));
 			return todos.subList(0, Math.min(5, todos.size()));
 		}
 		try {
-			return tienda.getRecomendador().generarSugerencias(cliente);
+			List<ProductoVenta> recomendados = new ArrayList<>(tienda.getRecomendador().generarSugerencias(cliente));
+			recomendados.removeIf(p -> p.isEliminado());
+			return recomendados;
 		} catch (Exception e) {
 			return new ArrayList<>();
 		}
