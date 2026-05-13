@@ -11,10 +11,12 @@ import usuarios.TipoPermisos;
 /**
  * Controlador del panel principal del empleado.
  *
- * Mira permisos y cambia de seccion.
+ * @author Lucas
+ * @version 1.0
  */
 public class ControladorPanelEmpleado implements ActionListener {
 
+	/**Panel para salirse*/
 	public static final String LOGOUT = "panel.logout";
 
 	/** Empleado que esta usando el panel. */

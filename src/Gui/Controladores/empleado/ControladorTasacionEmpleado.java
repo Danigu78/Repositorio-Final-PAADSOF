@@ -13,25 +13,55 @@ import tienda.GuardadoTienda;
 import tienda.Tienda;
 import usuarios.Empleado;
 
-/** Controlador de tasaciones de productos de segunda mano. */
+/**
+ * Controlador de tasaciones de productos de segunda mano.
+ * 
+ * @author Lucas
+ * @version 1.0
+ */
 public class ControladorTasacionEmpleado implements ActionListener {
 
+	/** Acción para refrescar la lista de productos pendientes. */
 	public static final String REFRESCAR = "tasacion.refrescar";
+
+	/** Acción para ver la información de un producto. */
 	public static final String VER_PRODUCTO = "tasacion.verProducto";
+
+	/** Acción para visualizar la imagen del producto. */
 	public static final String VER_IMAGEN = "tasacion.verImagen";
+
+	/** Acción para realizar la tasación de un producto. */
 	public static final String TASAR_PRODUCTO = "tasacion.tasar";
 
+	/** Empleado que realiza las operaciones de tasación. */
 	private final Empleado empleado;
+
+	/** Vista asociada a la sección de tasaciones. */
 	private SeccionTasacionEmpleado vista;
 
+	/**
+	 * Crea el controlador de tasaciones.
+	 * 
+	 * @param empleado empleado que utilizará el controlador
+	 */
 	public ControladorTasacionEmpleado(Empleado empleado) {
 		this.empleado = empleado;
 	}
 
+	/**
+	 * Asigna la vista asociada al controlador.
+	 * 
+	 * @param vista vista de tasaciones del empleado
+	 */
 	public void setVista(SeccionTasacionEmpleado vista) {
 		this.vista = vista;
 	}
 
+	/**
+	 * Gestiona las acciones realizadas desde la interfaz.
+	 * 
+	 * @param e evento producido en la interfaz
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (vista == null || e == null) {
@@ -50,10 +80,21 @@ public class ControladorTasacionEmpleado implements ActionListener {
 		}
 	}
 
+	/**
+	 * Obtiene los productos pendientes de tasación.
+	 * 
+	 * @return lista de productos pendientes
+	 */
 	public List<Producto2Mano> getPendientesTasacion() {
 		return new ArrayList<>(Tienda.getInstancia().getPendientesTasacion());
 	}
 
+	/**
+	 * Busca un producto pendiente de tasación por su identificador.
+	 * 
+	 * @param idProducto identificador del producto
+	 * @return producto encontrado o null si no existe
+	 */
 	public Producto2Mano buscarProductoPendientePorId(String idProducto) {
 		if (idProducto == null || idProducto.trim().isBlank()) {
 			return null;
@@ -66,6 +107,14 @@ public class ControladorTasacionEmpleado implements ActionListener {
 		return null;
 	}
 
+	/**
+	 * Realiza la tasación de un producto de segunda mano.
+	 * 
+	 * @param idProducto  identificador del producto
+	 * @param precioTexto precio de tasación
+	 * @param estado      estado asignado al producto
+	 * @return resultado de la operación
+	 */
 	public ResultadoOperacion tasarProducto(String idProducto, String precioTexto, EstadoProducto estado) {
 		if (empleado == null) {
 			return ResultadoOperacion.error("No hay empleado activo.");
@@ -100,12 +149,23 @@ public class ControladorTasacionEmpleado implements ActionListener {
 		return ResultadoOperacion.error("No se pudo tasar el producto.");
 	}
 
+	/**
+	 * Guarda los cambios en disco si la operación fue correcta.
+	 * 
+	 * @param ok indica si la operación se realizó correctamente
+	 */
 	private void guardarSiExito(boolean ok) {
 		if (ok) {
 			GuardadoTienda.guardar(Tienda.getInstancia());
 		}
 	}
 
+	/**
+	 * Crea un texto descriptivo de un producto pendiente de tasación.
+	 * 
+	 * @param producto producto a mostrar
+	 * @return texto descriptivo del producto
+	 */
 	public String crearTextoProducto(Producto2Mano producto) {
 		if (producto == null) {
 			return "Producto no encontrado.";
@@ -129,6 +189,12 @@ public class ControladorTasacionEmpleado implements ActionListener {
 		return texto.toString();
 	}
 
+	/**
+	 * Obtiene el nombre del propietario de un producto.
+	 * 
+	 * @param producto producto consultado
+	 * @return nombre del propietario
+	 */
 	public String obtenerNombrePropietario(Producto2Mano producto) {
 		if (producto == null || producto.getPropietario() == null) {
 			return "Sin propietario";
@@ -136,6 +202,12 @@ public class ControladorTasacionEmpleado implements ActionListener {
 		return producto.getPropietario().getNickname();
 	}
 
+	/**
+	 * Obtiene la ruta de la imagen de un producto.
+	 * 
+	 * @param producto producto consultado
+	 * @return ruta de la imagen
+	 */
 	public String obtenerRutaImagen(Producto2Mano producto) {
 		if (producto == null || producto.getImagenRuta() == null || producto.getImagenRuta().isBlank()) {
 			return "-";
@@ -143,10 +215,22 @@ public class ControladorTasacionEmpleado implements ActionListener {
 		return producto.getImagenRuta();
 	}
 
+	/**
+	 * Formatea un precio en euros.
+	 * 
+	 * @param precio precio a formatear
+	 * @return precio formateado
+	 */
 	public String formatearPrecio(double precio) {
 		return String.format(Locale.US, "%.2f €", precio).replace('.', ',');
 	}
 
+	/**
+	 * Convierte un texto en un número decimal.
+	 * 
+	 * @param texto texto a convertir
+	 * @return número decimal o null si no es válido
+	 */
 	private Double leerDouble(String texto) {
 		if (texto == null || texto.trim().isBlank()) {
 			return null;

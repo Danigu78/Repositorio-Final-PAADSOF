@@ -14,20 +14,31 @@ import usuarios.Empleado;
 /**
  * Panel para gestionar las categorías de los productos.
  * 
- * Desde aquí el empleado puede consultar los productos actuales y cambiar sus
- * categorías escribiendo el ID del producto.
+ * @author Lucas
+ * @version 1.0
  */
 public class SeccionCategoriasEmpleado extends SeccionProductosVentaEmpleadoBase {
 
 	private static final long serialVersionUID = 1L;
 
+	/** Campo donde se introduce el ID del producto. */
 	private JTextField campoIdProducto;
+
+	/** Combo desplegable con las categorías disponibles. */
 	private JComboBox<String> comboCategoria;
+
+	/** Controlador de la sección de categorías del empleado. */
 	private ControladorCategoriasEmpleado controlador;
 
-	/* La usamos como tabla de consulta, igual que en stock */
+	/** Tabla de productos usada como vista de consulta. */
 	private TablaVenta tablaProductos;
 
+	/**
+	 * Constructor del panel de categorías del empleado.
+	 * 
+	 * @param ventana  ventana principal de la aplicación
+	 * @param empleado empleado que utiliza la sección
+	 */
 	public SeccionCategoriasEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
 		this.controlador = new ControladorCategoriasEmpleado(empleado);
@@ -36,17 +47,31 @@ public class SeccionCategoriasEmpleado extends SeccionProductosVentaEmpleadoBase
 		construirUI();
 	}
 
+	/**
+	 * Asigna el controlador de la vista.
+	 * 
+	 * @param controlador controlador de categorías
+	 */
 	public void setControlador(ActionListener controlador) {
 		if (controlador instanceof ControladorCategoriasEmpleado) {
 			this.controlador = (ControladorCategoriasEmpleado) controlador;
 		}
 	}
 
+	/**
+	 * Asocia un botón con una acción del controlador.
+	 * 
+	 * @param boton  botón a configurar
+	 * @param accion acción del controlador
+	 */
 	private void conectar(JButton boton, String accion) {
 		boton.setActionCommand(accion);
 		boton.addActionListener(controlador);
 	}
 
+	/**
+	 * Construye toda la interfaz del panel.
+	 */
 	private void construirUI() {
 		setLayout(new BorderLayout());
 
@@ -73,6 +98,9 @@ public class SeccionCategoriasEmpleado extends SeccionProductosVentaEmpleadoBase
 		add(panelBase, BorderLayout.CENTER);
 	}
 
+	/**
+	 * Crea el bloque principal de gestión de categorías.
+	 */
 	private JPanel crearBloqueCategorias() {
 		JPanel bloque = crearBloque("Cambiar categoría de un producto");
 
@@ -87,7 +115,9 @@ public class SeccionCategoriasEmpleado extends SeccionProductosVentaEmpleadoBase
 		return bloque;
 	}
 
-	// Parte izquierda: ID del producto y categoría elegida
+	/**
+	 * Panel izquierdo con los datos del formulario.
+	 */
 	private JPanel crearPanelDatosCategoria() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -103,7 +133,9 @@ public class SeccionCategoriasEmpleado extends SeccionProductosVentaEmpleadoBase
 		return panel;
 	}
 
-	// Parte derecha: botones para añadir o quitar la categoría
+	/**
+	 * Panel derecho con los botones de acción.
+	 */
 	private JPanel crearPanelBotonesCategoria() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -129,6 +161,9 @@ public class SeccionCategoriasEmpleado extends SeccionProductosVentaEmpleadoBase
 		return panel;
 	}
 
+	/**
+	 * Añade una categoría al producto indicado.
+	 */
 	public void anadirCategoria() {
 		ResultadoOperacion resultado = controlador.anadirCategoria(campoIdProducto.getText(),
 				obtenerCategoriaSeleccionada());
@@ -141,6 +176,9 @@ public class SeccionCategoriasEmpleado extends SeccionProductosVentaEmpleadoBase
 		}
 	}
 
+	/**
+	 * Quita una categoría del producto indicado.
+	 */
 	public void quitarCategoria() {
 		ResultadoOperacion resultado = controlador.quitarCategoria(campoIdProducto.getText(),
 				obtenerCategoriaSeleccionada());
@@ -153,6 +191,11 @@ public class SeccionCategoriasEmpleado extends SeccionProductosVentaEmpleadoBase
 		}
 	}
 
+	/**
+	 * Obtiene la categoría seleccionada en el combo.
+	 * 
+	 * @return nombre de categoría o null si no es válida
+	 */
 	private String obtenerCategoriaSeleccionada() {
 		Object seleccionado = comboCategoria.getSelectedItem();
 
@@ -169,6 +212,9 @@ public class SeccionCategoriasEmpleado extends SeccionProductosVentaEmpleadoBase
 		return categoria;
 	}
 
+	/**
+	 * Carga las categorías disponibles en el combo.
+	 */
 	private void cargarCategorias() {
 		comboCategoria.removeAllItems();
 		comboCategoria.addItem("Selecciona una categoría");

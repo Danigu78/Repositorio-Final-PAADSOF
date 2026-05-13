@@ -15,15 +15,29 @@ import productos.ProductoVenta;
 import tienda.Tienda;
 
 /**
- * Ayuda a sacar datos de productos para las pantallas del empleado.
- */
+* Ayuda a sacar datos de productos para las pantallas del empleado.
+* 
+* @author Lucas
+* @version 1.0
+*/
 public class ControladorProductosEmpleado implements ActionListener {
 
+
+	/**
+	 * Gestiona las acciones del controlador.
+	 * 
+	 * @param e evento producido
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// No tiene botones propios, se usa para consultas de productos.
 	}
 
+	/**
+	 * Obtiene los productos ordenados por stock y nombre.
+	 * 
+	 * @return lista de productos ordenados
+	 */
 	public List<ProductoVenta> obtenerProductosOrdenadosPorStock() {
 		ArrayList<ProductoVenta> productos = new ArrayList<>(Tienda.getInstancia().getStockVentas());
 		productos.sort(new java.util.Comparator<ProductoVenta>() {
@@ -39,6 +53,12 @@ public class ControladorProductosEmpleado implements ActionListener {
 		return productos;
 	}
 
+	/**
+	 * Busca un producto de venta por su ID.
+	 * 
+	 * @param idProducto ID del producto
+	 * @return producto encontrado o null
+	 */
 	public ProductoVenta buscarProductoVentaPorId(String idProducto) {
 		if (idProducto == null || idProducto.trim().isBlank()) {
 			return null;
@@ -46,6 +66,11 @@ public class ControladorProductosEmpleado implements ActionListener {
 		return Tienda.getInstancia().buscarProductoVentaPorId(idProducto.trim());
 	}
 
+	/**
+	 * Obtiene los nombres de las categorías activas.
+	 * 
+	 * @return lista de nombres de categorías
+	 */
 	public List<String> obtenerNombresCategoriasVenta() {
 		ArrayList<String> nombres = new ArrayList<>();
 		for (Categoria categoria : Tienda.getInstancia().getCategoriasActivas()) {
@@ -66,6 +91,12 @@ public class ControladorProductosEmpleado implements ActionListener {
 		return new ArrayList<>(nombres);
 	}
 
+	/**
+	 * Obtiene el texto con las categorías de un producto.
+	 * 
+	 * @param producto producto del que sacar categorías
+	 * @return texto con las categorías
+	 */
 	public String obtenerTextoCategorias(ProductoVenta producto) {
 		if (producto == null || producto.getCategorias().isEmpty()) {
 			return "-";
@@ -87,6 +118,12 @@ public class ControladorProductosEmpleado implements ActionListener {
 		return nombres.isEmpty() ? "-" : String.join(", ", nombres);
 	}
 
+	/**
+	 * Obtiene el tipo de un producto de venta.
+	 * 
+	 * @param producto producto a comprobar
+	 * @return tipo del producto
+	 */
 	public String obtenerTipoProductoVenta(ProductoVenta producto) {
 		if (producto instanceof Comic) {
 			return "Comic";
@@ -102,7 +139,13 @@ public class ControladorProductosEmpleado implements ActionListener {
 		}
 		return "Producto";
 	}
-
+	
+	/**
+	 * Construye las líneas de un pack a partir de un texto.
+	 * 
+	 * @param texto texto con las líneas del pack
+	 * @return lista de líneas del pack
+	 */
 	public ArrayList<LineaPack> construirLineasPack(String texto) throws Exception {
 		ArrayList<LineaPack> lineas = new ArrayList<>();
 		if (texto == null || texto.isBlank()) {
@@ -142,14 +185,33 @@ public class ControladorProductosEmpleado implements ActionListener {
 		return lineas;
 	}
 
+	/**
+	 * Formatea un precio en euros.
+	 * 
+	 * @param precio precio a formatear
+	 * @return texto con el precio formateado
+	 */
 	public String formatearPrecio(double precio) {
 		return String.format(java.util.Locale.US, "%.2f €", precio).replace('.', ',');
 	}
 
+	/**
+	 * Formatea una puntuación decimal.
+	 * 
+	 * @param puntuacion puntuación a formatear
+	 * @return texto con la puntuación formateada
+	 */
 	public String formatearPuntuacion(double puntuacion) {
 		return String.format(java.util.Locale.US, "%.1f", puntuacion).replace('.', ',');
 	}
 
+	/**
+	 * Comprueba si un texto ya está en una lista.
+	 * 
+	 * @param textos lista de textos
+	 * @param buscado texto buscado
+	 * @return true si existe, false en caso contrario
+	 */
 	private boolean estaEnLista(List<String> textos, String buscado) {
 		for (String texto : textos) {
 			if (texto.equalsIgnoreCase(buscado)) {

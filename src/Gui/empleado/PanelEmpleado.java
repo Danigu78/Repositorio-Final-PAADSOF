@@ -26,14 +26,32 @@ public class PanelEmpleado extends PanelBaseInterfaz {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	/**Sección de gestión de stock.*/
 	public static final String SEC_STOCK = "STOCK";
+	
+	/** Sección de gestión de categorías. */
 	public static final String SEC_CATEGORIAS = "CATEGORIAS";
+	
+	/** Sección de gestión de packs. */
 	public static final String SEC_PACKS = "PACKS";
+	
+	/** Sección de modificación de productos. */
 	public static final String SEC_MODIFICAR = "MODIFICAR";
+	
+	/** Sección de gestión de pedidos. */
 	public static final String SEC_PEDIDOS = "PEDIDOS";
+	
+	/** Sección de gestión de entregas. */
 	public static final String SEC_ENTREGA = "ENTREGA";
+	
+	/** Sección de tasación de productos. */
 	public static final String SEC_TASACION = "TASACION";
+	
+	/** Sección de intercambios. */
 	public static final String SEC_INTERCAMBIOS = "INTERCAMBIOS";
+	
+	/** Sección de notificaciones. */
 	public static final String SEC_NOTIFICACIONES = "NOTIFICACIONES";
 
 	/** Empleado logueado. */

@@ -15,25 +15,57 @@ import ventas.EstadoPedido;
 import ventas.LineaPedido;
 import ventas.Pedido;
 
-/** Controlador de gestión de pedidos del empleado. */
+/** Controlador de gestión de pedidos del empleado. 
+ * 
+ * @author Lucas
+ * @version 1.0
+ * */
 public class ControladorPedidosEmpleado implements ActionListener {
 
+	/** Acción para refrescar la tabla de pedidos. */
 	public static final String REFRESCAR = "pedidos.refrescar";
+	
+	/** Acción para filtrar pedidos por estado. */
 	public static final String FILTRAR = "pedidos.filtrar";
+	
+	/** Acción para visualizar un pedido. */
 	public static final String VER_PEDIDO = "pedidos.ver";
+	
+	/** Acción para preparar un pedido. */
 	public static final String PREPARAR_PEDIDO = "pedidos.preparar";
 
+	/** Empleado que realiza la gestión de pedidos. */
 	private final Empleado empleado;
+	
+
+	/** Vista asociada a la sección de pedidos. */
 	private SeccionPedidosEmpleado vista;
 
+
+	/**
+	 * Crea el controlador de pedidos del empleado.
+	 * 
+	 * @param empleado empleado que gestionará los pedidos
+	 */
 	public ControladorPedidosEmpleado(Empleado empleado) {
 		this.empleado = empleado;
 	}
 
+	/**
+	 * Asocia la vista de gestión de pedidos con el controlador.
+	 *
+	 * @param vista vista de pedidos del empleado
+	 */
 	public void setVista(SeccionPedidosEmpleado vista) {
 		this.vista = vista;
 	}
 
+	/**
+	 * Gestiona las acciones realizadas desde la interfaz de pedidos.
+	 *
+	 * @param e evento lanzado por la interfaz
+	 * 
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (vista == null || e == null) {
@@ -50,6 +82,13 @@ public class ControladorPedidosEmpleado implements ActionListener {
 		}
 	}
 
+	/**
+	 * Obtiene la lista de pedidos filtrados por estado.
+	 *
+	 * @param estadoElegido estado por el que se desea filtrar
+	 * @return lista de pedidos filtrados
+	 * 
+	 */
 	public List<Pedido> getPedidos(String estadoElegido) {
 		List<Pedido> pedidos = new ArrayList<>();
 		String filtro = estadoElegido == null ? "Todos" : estadoElegido;
@@ -63,6 +102,12 @@ public class ControladorPedidosEmpleado implements ActionListener {
 		return pedidos;
 	}
 
+	/**
+	 * Busca un pedido a partir de su identificador.
+	 *
+	 * @param idPedido identificador del pedido
+	 * @return pedido encontrado o null si no existe
+	 */
 	public Pedido buscarPedidoPorId(String idPedido) {
 		if (idPedido == null || idPedido.trim().isBlank()) {
 			return null;
@@ -75,6 +120,13 @@ public class ControladorPedidosEmpleado implements ActionListener {
 		return null;
 	}
 
+	/**
+	 * Prepara un pedido pagado para su posterior recogida o entrega.
+	 *
+	 * @param idPedido identificador del pedido
+	 * @return resultado de la operación
+	 * 
+	 */
 	public ResultadoOperacion prepararPedido(String idPedido) {
 		if (empleado == null) {
 			return ResultadoOperacion.error("No hay empleado activo.");
@@ -96,12 +148,22 @@ public class ControladorPedidosEmpleado implements ActionListener {
 				: ResultadoOperacion.error("No se pudo preparar el pedido. Comprueba que esté pagado.");
 	}
 
+	/**
+	 * Guarda el estado de la tienda si la operación se realizó correctamente.
+	 *
+	 * @param ok indica si la operación fue exitosa
+	 */
 	private void guardarSiExito(boolean ok) {
 		if (ok) {
 			GuardadoTienda.guardar(Tienda.getInstancia());
 		}
 	}
 
+	/**
+	 * Genera un array con las opciones de estados disponibles para pedidos.
+	 *
+	 * @return array de estados disponibles
+	 */
 	public String[] crearOpcionesEstado() {
 		EstadoPedido[] estados = EstadoPedido.values();
 		String[] opciones = new String[estados.length + 1];
@@ -112,6 +174,14 @@ public class ControladorPedidosEmpleado implements ActionListener {
 		return opciones;
 	}
 
+
+	/**
+	 * Genera un texto descriptivo con toda la información de un pedido.
+	 *
+	 * @param pedido pedido del que se desea obtener la información
+	 * @return texto descriptivo del pedido
+
+	 */
 	public String crearTextoPedido(Pedido pedido) {
 		if (pedido == null) {
 			return "Pedido no encontrado.";
@@ -138,6 +208,13 @@ public class ControladorPedidosEmpleado implements ActionListener {
 		return texto.toString();
 	}
 
+
+	/**
+	 * Genera un texto con los productos incluidos en un pedido.
+	 * 
+	 * @param pedido pedido del que se obtienen los productos
+	 * @return texto descriptivo de las líneas del pedido
+	 */
 	private String crearTextoProductosPedido(Pedido pedido) {
 		StringBuilder texto = new StringBuilder();
 		if (pedido.getLineas().isEmpty()) {
@@ -155,6 +232,13 @@ public class ControladorPedidosEmpleado implements ActionListener {
 		return texto.toString();
 	}
 
+
+	/**
+	 * Obtiene el código de recogida de un pedido.
+	 *
+	 * @param pedido pedido del que se obtiene el código
+	 * @return código de recogida o "-" si no existe
+	 */
 	public String obtenerCodigoRecogida(Pedido pedido) {
 		if (pedido == null || pedido.getCodigoRecogida() == null || pedido.getCodigoRecogida().isBlank()) {
 			return "-";
@@ -162,6 +246,13 @@ public class ControladorPedidosEmpleado implements ActionListener {
 		return pedido.getCodigoRecogida();
 	}
 
+
+	/**
+	 * Obtiene un texto indicando si la recogida del pedido ha sido solicitada.
+	 *
+	 * @param pedido pedido a comprobar
+	 * @return "Sí", "No" o "-" según el estado del pedido
+	 */
 	public String obtenerTextoRecogidaSolicitada(Pedido pedido) {
 		if (pedido == null || pedido.getEstado() != EstadoPedido.PAGADO) {
 			return "-";
@@ -169,6 +260,12 @@ public class ControladorPedidosEmpleado implements ActionListener {
 		return pedido.isRecogida_solicitada() ? "Sí" : "No";
 	}
 
+	/**
+	 * Formatea un precio en euros con dos decimales.
+	 *
+	 * @param precio precio a formatear
+	 * @return texto con el precio formateado
+	 */
 	public String formatearPrecio(double precio) {
 		return String.format(Locale.US, "%.2f €", precio).replace('.', ',');
 	}
