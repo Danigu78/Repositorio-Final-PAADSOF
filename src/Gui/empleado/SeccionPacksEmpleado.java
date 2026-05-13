@@ -174,6 +174,10 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 
 		campoNombrePack = crearCampo();
 		areaDescripcionPack = crearArea();
+		areaDescripcionPack.setLineWrap(true);
+		areaDescripcionPack.setWrapStyleWord(true);
+		areaDescripcionPack.setPreferredSize(new Dimension(VentanaPrincipal.escalar(360), VentanaPrincipal.escalar(70)));
+		areaDescripcionPack.setMaximumSize(new Dimension(Integer.MAX_VALUE, VentanaPrincipal.escalar(70)));
 		campoImagenPack = crearCampo();
 		campoPrecioPack = crearCampo();
 		campoStockPack = crearCampo();
@@ -181,12 +185,29 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		checksCategoriasPack = new ArrayList<>();
 		areaLineasPack = crearArea();
 
-		JPanel panelCrear = new JPanel(new GridLayout(1, 2, VentanaPrincipal.escalar(25), 0));
+		JPanel panelCrear = new JPanel(new GridBagLayout());
 		panelCrear.setOpaque(false);
 
+		GridBagConstraints gbcDatos = new GridBagConstraints();
+		gbcDatos.gridx = 0;
+		gbcDatos.gridy = 0;
+		gbcDatos.weightx = 0.58;
+		gbcDatos.weighty = 1.0;
+		gbcDatos.fill = GridBagConstraints.BOTH;
+		gbcDatos.anchor = GridBagConstraints.NORTHWEST;
+		gbcDatos.insets = new Insets(0, 0, 0, VentanaPrincipal.escalar(18));
+
+		GridBagConstraints gbcProductos = new GridBagConstraints();
+		gbcProductos.gridx = 1;
+		gbcProductos.gridy = 0;
+		gbcProductos.weightx = 0.42;
+		gbcProductos.weighty = 1.0;
+		gbcProductos.fill = GridBagConstraints.BOTH;
+		gbcProductos.anchor = GridBagConstraints.NORTHWEST;
+
 		panelCrear.add(crearPanelDatosPack(campoNombrePack, areaDescripcionPack, campoImagenPack, campoPrecioPack,
-				campoStockPack));
-		panelCrear.add(crearPanelProductosPack());
+				campoStockPack), gbcDatos);
+		panelCrear.add(crearPanelProductosPack(), gbcProductos);
 
 		bloque.add(panelCrear, gbcCampo(1));
 
@@ -216,23 +237,24 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
 
 		panel.add(crearLabel("Datos generales"));
 		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(8)));
 
-		panel.add(crearCampoFormulario("Nombre", campoNombre));
+		panel.add(crearCampoPack("Nombre", campoNombre, 40));
 		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
 		panel.add(crearCampoFormulario("Descripción", estilizarScroll(areaDescripcion)));
 		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
-		panel.add(crearCampoFormulario("Imagen", campoImagen));
+		panel.add(crearCampoPack("Imagen", campoImagen, 40));
 		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
-		panel.add(crearCampoFormulario("Precio", campoPrecio));
+		panel.add(crearCampoPack("Precio", campoPrecio, 40));
 		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
-		panel.add(crearCampoFormulario("Stock", campoStock));
+		panel.add(crearCampoPack("Stock", campoStock, 40));
 		panel.add(Box.createVerticalStrut(VentanaPrincipal.escalar(10)));
 
 		panel.add(crearLabel("Categorías"));
@@ -240,6 +262,16 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		panel.add(crearPanelCategoriasPack());
 
 		return panel;
+	}
+
+	private JPanel crearCampoPack(String etiqueta, JComponent campo, int altoCampo) {
+		int alto = VentanaPrincipal.escalar(altoCampo);
+		campo.setPreferredSize(new Dimension(VentanaPrincipal.escalar(360), alto));
+		campo.setMaximumSize(new Dimension(Integer.MAX_VALUE, alto));
+
+		JPanel panelCampo = crearCampoFormulario(etiqueta, campo);
+		panelCampo.setMaximumSize(new Dimension(Integer.MAX_VALUE, VentanaPrincipal.escalar(altoCampo + 24)));
+		return panelCampo;
 	}
 
 	private JPanel crearPanelCategoriasPack() {
@@ -267,6 +299,7 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scroll.setPreferredSize(new Dimension(VentanaPrincipal.escalar(390), VentanaPrincipal.escalar(115)));
+		scroll.setMaximumSize(new Dimension(Integer.MAX_VALUE, VentanaPrincipal.escalar(115)));
 
 		JPanel contenedor = new JPanel(new BorderLayout());
 		contenedor.setOpaque(false);
