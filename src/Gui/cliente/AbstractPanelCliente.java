@@ -10,9 +10,7 @@ import java.awt.*;
 
 /**
  * Clase base para los subpaneles del cliente en CheckPoint. Extiende
- * PanelBaseInterfaz para reutilizar todos sus helpers visuales. Añade helpers
- * específicos del cliente: tarjetas, paneles con scroll y gestión del cliente
- * logueado.
+ * PanelBaseInterfaz
  *
  * @author Daniel
  * @version 1.0
@@ -20,7 +18,7 @@ import java.awt.*;
 public abstract class AbstractPanelCliente extends PanelBaseInterfaz {
 
 	/**
-	 * 
+	 * Identificador de versión para la serialización de la clase.
 	 */
 	private static final long serialVersionUID = 1L;
 	/** Cliente logueado actualmente. */
@@ -44,9 +42,8 @@ public abstract class AbstractPanelCliente extends PanelBaseInterfaz {
 	public abstract void actualizar(Cliente cliente);
 
 	/**
-	 * Configura el panel de contenido con BoxLayout Y_AXIS y lo envuelve en un
-	 * JScrollPane sin borde. Reutilizado en carrito, pedidos, intercambios y
-	 * cartera.
+	 * Configura el panel de contenido y lo envuelve en un JScrollPane sin borde.
+	 * Reutilizado en carrito, pedidos, intercambios y cartera.
 	 *
 	 * @param panelContenido Panel al que se aplica el BoxLayout
 	 * @return JScrollPane listo para añadir al layout
@@ -63,10 +60,8 @@ public abstract class AbstractPanelCliente extends PanelBaseInterfaz {
 	}
 
 	/**
-	 * Crea la estructura base de una tarjeta horizontal con BorderLayout. Usada en
-	 * pedidos, carrito, intercambios y cartera. Con bordeInferior=true usa
-	 * MatteBorder inferior (listas). Con bordeInferior=false usa LineBorder
-	 * (tarjetas individuales).
+	 * Crea la estructura base de una tarjeta horizontal.
+	 *
 	 *
 	 * @param alturaMaxima  Altura máxima de la tarjeta en píxeles sin escalar
 	 * @param bordeInferior true para MatteBorder inferior, false para LineBorder
@@ -93,7 +88,7 @@ public abstract class AbstractPanelCliente extends PanelBaseInterfaz {
 
 	/**
 	 * Crea un GridBagConstraints preconfigurado para el panel de info interior de
-	 * una tarjeta. Ancla oeste, se estira horizontal, columna fija 0.
+	 * una tarjeta.
 	 *
 	 * @return GridBagConstraints listo para usar en filas de tarjeta
 	 */
@@ -123,8 +118,7 @@ public abstract class AbstractPanelCliente extends PanelBaseInterfaz {
 	}
 
 	/**
-	 * Crea el panel de botones derecho de una tarjeta con GridBagLayout y fondo
-	 * COLOR_TARJETA.
+	 * Crea el panel de botones derecho de una tarjeta con GridBagLayout
 	 *
 	 * @return Panel de botones configurado
 	 */
@@ -135,8 +129,7 @@ public abstract class AbstractPanelCliente extends PanelBaseInterfaz {
 	}
 
 	/**
-	 * Crea el panel de info interior de una tarjeta con GridBagLayout y fondo
-	 * COLOR_TARJETA.
+	 * Crea el panel de info interior de una tarjeta con GridBagLayout
 	 *
 	 * @return Panel de info configurado
 	 */

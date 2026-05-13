@@ -176,7 +176,8 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		areaDescripcionPack = crearArea();
 		areaDescripcionPack.setLineWrap(true);
 		areaDescripcionPack.setWrapStyleWord(true);
-		areaDescripcionPack.setPreferredSize(new Dimension(VentanaPrincipal.escalar(360), VentanaPrincipal.escalar(70)));
+		areaDescripcionPack
+				.setPreferredSize(new Dimension(VentanaPrincipal.escalar(360), VentanaPrincipal.escalar(70)));
 		areaDescripcionPack.setMaximumSize(new Dimension(Integer.MAX_VALUE, VentanaPrincipal.escalar(70)));
 		campoImagenPack = crearCampo();
 		campoImagenPack.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -221,26 +222,19 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		JButton botonLimpiar = crearBotonSecundario("Limpiar");
 		JButton botonCrear = crearBotonAccion("Crear pack");
 
-		JPanel filaBotones = new JPanel(new GridLayout(1, 3,
-		    VentanaPrincipal.escalar(10), 0));
+		JPanel filaBotones = new JPanel(new GridLayout(1, 3, VentanaPrincipal.escalar(10), 0));
 		filaBotones.setOpaque(false);
-		filaBotones.setMaximumSize(new Dimension(
-		    VentanaPrincipal.escalar(620), VentanaPrincipal.escalar(42)));
-		filaBotones.setMinimumSize(new Dimension(
-		    VentanaPrincipal.escalar(620), VentanaPrincipal.escalar(42)));
-		filaBotones.setPreferredSize(new Dimension(
-		    VentanaPrincipal.escalar(620), VentanaPrincipal.escalar(42)));
+		filaBotones.setMaximumSize(new Dimension(VentanaPrincipal.escalar(620), VentanaPrincipal.escalar(42)));
+		filaBotones.setMinimumSize(new Dimension(VentanaPrincipal.escalar(620), VentanaPrincipal.escalar(42)));
+		filaBotones.setPreferredSize(new Dimension(VentanaPrincipal.escalar(620), VentanaPrincipal.escalar(42)));
 		filaBotones.add(botonVerLineas);
 		filaBotones.add(botonLimpiar);
 		filaBotones.add(botonCrear);
 
-	
 		GridBagConstraints gbcBotones = gbcCampo(2);
 		gbcBotones.fill = GridBagConstraints.NONE;
 		gbcBotones.weightx = 0;
-		gbcBotones.insets = new Insets(
-		    VentanaPrincipal.escalar(14), 0,
-		    VentanaPrincipal.escalar(6), 0);
+		gbcBotones.insets = new Insets(VentanaPrincipal.escalar(14), 0, VentanaPrincipal.escalar(6), 0);
 		bloque.add(filaBotones, gbcBotones);
 
 		conectar(botonVerLineas, ControladorPacksEmpleado.VER_CONTENIDO);
@@ -350,13 +344,10 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		scroll.setBorder(null);
 		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		
-		scroll.setPreferredSize(new Dimension(
-		    VentanaPrincipal.escalar(390), VentanaPrincipal.escalar(130)));
-		scroll.setMinimumSize(new Dimension(
-		    VentanaPrincipal.escalar(390), VentanaPrincipal.escalar(130)));
-		scroll.setMaximumSize(new Dimension(
-		    Integer.MAX_VALUE, VentanaPrincipal.escalar(130)));
+
+		scroll.setPreferredSize(new Dimension(VentanaPrincipal.escalar(390), VentanaPrincipal.escalar(130)));
+		scroll.setMinimumSize(new Dimension(VentanaPrincipal.escalar(390), VentanaPrincipal.escalar(130)));
+		scroll.setMaximumSize(new Dimension(Integer.MAX_VALUE, VentanaPrincipal.escalar(130)));
 
 		JPanel contenedor = new JPanel(new BorderLayout());
 		contenedor.setOpaque(false);
@@ -479,7 +470,8 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		int opcion = selectorImagen.showOpenDialog(this);
 
 		if (opcion == JFileChooser.APPROVE_OPTION && selectorImagen.getSelectedFile() != null) {
-			campoImagenPack.setText(UtilidadesImagenProducto.normalizarRutaImagen(selectorImagen.getSelectedFile().getPath()));
+			campoImagenPack
+					.setText(UtilidadesImagenProducto.normalizarRutaImagen(selectorImagen.getSelectedFile().getPath()));
 		}
 	}
 
