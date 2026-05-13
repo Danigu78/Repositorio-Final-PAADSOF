@@ -38,10 +38,12 @@ public class ControladorConfiguracionGestor implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		if (e == null)
+			return;
 		String cmd = e.getActionCommand();
-		if (cmd.equals("guardarConfig") && vistaConfig != null) {
+		if ("guardarConfig".equals(cmd) && vistaConfig != null) {
 			vistaConfig.procesarGuardar();
-		} else if (cmd.equals("guardarPerfil") && vistaPerfil != null) {
+		} else if ("guardarPerfil".equals(cmd) && vistaPerfil != null) {
 			vistaPerfil.procesarGuardar();
 		}
 	}

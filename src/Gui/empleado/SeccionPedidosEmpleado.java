@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableRowSorter;
 
 import usuarios.Empleado;
 import ventas.Pedido;
@@ -25,6 +26,7 @@ public class SeccionPedidosEmpleado extends SeccionEmpleadoBase {
 
 	private JTable tablaPedidos;
 	private DefaultTableModel modeloPedidos;
+	private TableRowSorter<DefaultTableModel> ordenadorPedidos;
 
 	private JTextField campoIdPedido;
 	private JComboBox<String> comboEstadoPedido;
@@ -77,6 +79,7 @@ public class SeccionPedidosEmpleado extends SeccionEmpleadoBase {
 
 		tablaPedidos = new JTable(modeloPedidos);
 		estilizarTablaPedidos(tablaPedidos);
+		ordenadorPedidos = ponerOrdenacionTabla(tablaPedidos, modeloPedidos);
 
 		/*
 		 * Igual que en stock: la tabla es solo para consultar. No hace nada al pinchar,
@@ -101,10 +104,16 @@ public class SeccionPedidosEmpleado extends SeccionEmpleadoBase {
 		zonaCombo.add(crearLabel("Filtrar por estado"), BorderLayout.NORTH);
 		zonaCombo.add(comboEstadoPedido, BorderLayout.CENTER);
 
+		JPanel zonaBusqueda = new JPanel(new BorderLayout(0, VentanaPrincipal.escalar(4)));
+		zonaBusqueda.setOpaque(false);
+		zonaBusqueda.add(crearLabel("Buscar"), BorderLayout.NORTH);
+		zonaBusqueda.add(crearBuscadorTabla(ordenadorPedidos), BorderLayout.CENTER);
+
 		JPanel zonaBoton = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		zonaBoton.setOpaque(false);
 		zonaBoton.add(botonRefrescar);
 
+		filaFiltro.add(zonaBusqueda, BorderLayout.WEST);
 		filaFiltro.add(zonaCombo, BorderLayout.CENTER);
 		filaFiltro.add(zonaBoton, BorderLayout.EAST);
 

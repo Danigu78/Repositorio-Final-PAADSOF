@@ -39,16 +39,20 @@ public class ControladorPedidos implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		if (e == null)
+			return;
 		revisarTiempos();
 		String cmd = e.getActionCommand();
-		if (cmd.equals("volver")) {
+		if (cmd == null)
+			return;
+		if ("volver".equals(cmd)) {
 			vista.mostrarLista();
-		} else if (cmd.startsWith("verPedido:")) {
+		} else if (cmd != null && cmd.startsWith("verPedido:")) {
 			buscarPedidoYEjecutar(cmd.substring(10), p -> vista.verDetallePedido(p));
-		}else if (cmd.startsWith("verProducto")) {
-			 String idProducto = cmd.substring(12);
-			    vista.verProducto(idProducto);
-		} else if (cmd.startsWith("pagar:")) {
+		} else if (cmd != null && cmd.startsWith("verProducto")) {
+			String idProducto = cmd.substring(12);
+			vista.verProducto(idProducto);
+		} else if (cmd != null && cmd.startsWith("pagar:")) {
 			buscarPedidoYEjecutar(cmd.substring(6), p -> {
 				if (estaPendientePago(p)) {
 					vista.irAPago(p);
@@ -57,7 +61,7 @@ public class ControladorPedidos implements ActionListener {
 					vista.actualizar(cliente);
 				}
 			});
-		} else if (cmd.startsWith("recoger:")) {
+		} else if (cmd != null && cmd.startsWith("recoger:")) {
 			buscarPedidoYEjecutar(cmd.substring(8), p -> {
 				if (p.getEstado() == EstadoPedido.LISTO_PARA_RECOGER) {
 					vista.mostrarDialogoRecogida(p);

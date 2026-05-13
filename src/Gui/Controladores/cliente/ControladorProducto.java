@@ -27,8 +27,12 @@ public class ControladorProducto implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		if (e == null)
+			return;
 		String cmd = e.getActionCommand();
-		if (cmd.equals("volver")) {
+		if (cmd == null)
+			return;
+		if ("volver".equals(cmd)) {
 			volver();
 		} else if (cmd.equals("añadirCarrito")) {
 			vista.seleccionarUnidades();

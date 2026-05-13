@@ -34,6 +34,8 @@ public class SubpanelSegundaMano extends AbstractPanelCliente {
 	/** Panel donde se muestran las tarjetas de productos. */
 	private JPanel panelProductos;
 
+	private JScrollPane scrollProductos;
+
 	/** Campo de búsqueda por nombre de producto. */
 	private JTextField campoBusqueda;
 
@@ -122,30 +124,38 @@ public class SubpanelSegundaMano extends AbstractPanelCliente {
 		panelProductos.setBorder(BorderFactory.createEmptyBorder(VentanaPrincipal.escalar(10),
 				VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(10), VentanaPrincipal.escalar(10)));
 
-		JScrollPane scroll = new JScrollPane(panelProductos);
-		scroll.setBorder(null);
-		scroll.getVerticalScrollBar().setUnitIncrement(VentanaPrincipal.escalar(16));
-		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		scroll.getViewport().setBackground(VentanaPrincipal.COLOR_FONDO);
+		scrollProductos = new JScrollPane(panelProductos);
+		scrollProductos.setBorder(null);
+		scrollProductos.getVerticalScrollBar().setUnitIncrement(VentanaPrincipal.escalar(16));
+		scrollProductos.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollProductos.getViewport().setBackground(VentanaPrincipal.COLOR_FONDO);
 
 		// Fix scroll recalcula la altura cuando cambia el ancho del viewport
-		scroll.getViewport().addComponentListener(new ComponentAdapter() {
+		scrollProductos.getViewport().addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(ComponentEvent e) {
-				int anchoViewport = scroll.getViewport().getWidth();
-				int anchTarjeta = VentanaPrincipal.escalar(300) + VentanaPrincipal.escalar(25);
-				int porFila = Math.max(1, anchoViewport / anchTarjeta);
-				int numTarjetas = panelProductos.getComponentCount();
-				int filas = (int) Math.ceil((double) numTarjetas / porFila);
-				int altTarjeta = VentanaPrincipal.escalar(350) + VentanaPrincipal.escalar(25);
-				int altoTotal = filas * altTarjeta + VentanaPrincipal.escalar(20);
-				panelProductos.setPreferredSize(new Dimension(anchoViewport, altoTotal));
-				panelProductos.revalidate();
+				ajustarTamanoPanelProductos();
 			}
 		});
 
-		panel.add(scroll, BorderLayout.CENTER);
+		panel.add(scrollProductos, BorderLayout.CENTER);
 		return panel;
+	}
+
+	private void ajustarTamanoPanelProductos() {
+		if (scrollProductos == null || panelProductos == null)
+			return;
+		int anchoViewport = scrollProductos.getViewport().getWidth();
+		if (anchoViewport <= 0)
+			return;
+		int anchTarjeta = VentanaPrincipal.escalar(300) + VentanaPrincipal.escalar(25);
+		int porFila = Math.max(1, anchoViewport / anchTarjeta);
+		int numTarjetas = Math.max(1, panelProductos.getComponentCount());
+		int filas = (int) Math.ceil((double) numTarjetas / porFila);
+		int altTarjeta = VentanaPrincipal.escalar(350) + VentanaPrincipal.escalar(25);
+		int altoTotal = filas * altTarjeta + VentanaPrincipal.escalar(20);
+		panelProductos.setPreferredSize(new Dimension(anchoViewport, altoTotal));
+		panelProductos.revalidate();
 	}
 
 	/**
@@ -367,6 +377,7 @@ public class SubpanelSegundaMano extends AbstractPanelCliente {
 		panelProductos.repaint();
 
 		SwingUtilities.invokeLater(() -> {
+			ajustarTamanoPanelProductos();
 			panelProductos.revalidate();
 			panelProductos.repaint();
 		});

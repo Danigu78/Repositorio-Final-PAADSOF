@@ -168,7 +168,8 @@ public class PanelInvitado extends JPanel {
 				botonRegistro.setBackground(naranjaNormal);
 			}
 		});
-		botonRegistro.addActionListener(e -> controlador.irARegistro());
+		botonRegistro.setActionCommand(ControladorPanelInvitado.IR_REGISTRO);
+		botonRegistro.addActionListener(controlador);
 
 		panelDerecho.add(botonRegistro);
 		// añadimos otra vez el mismo separador
@@ -193,7 +194,8 @@ public class PanelInvitado extends JPanel {
 				botonCerrar.setForeground(new Color(220, 80, 80));
 			}
 		});
-		botonCerrar.addActionListener(e -> controlador.salirDeAplicacion());
+		botonCerrar.setActionCommand(ControladorPanelInvitado.SALIR);
+		botonCerrar.addActionListener(controlador);
 		panelDerecho.add(botonCerrar);
 		barra.add(panelDerecho, BorderLayout.EAST);
 		return barra;
@@ -226,10 +228,8 @@ public class PanelInvitado extends JPanel {
 			}
 		});
 
-		boton.addActionListener(e -> {
-			// la logica la hace el controlador.
-			controlador.gestionarNavegacion(boton, seccion);
-		});
+		boton.setActionCommand(ControladorPanelInvitado.NAVEGAR + seccion);
+		boton.addActionListener(controlador);
 		return boton;
 	}
 

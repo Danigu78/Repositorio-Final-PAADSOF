@@ -52,8 +52,10 @@ public class ControladorSegundaMano implements ActionListener {
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		if (e == null)
+			return;
 		String cmd = e.getActionCommand();
-		if (cmd.startsWith("ver:")) {
+		if (cmd != null && cmd.startsWith("ver:")) {
 			String idProducto = cmd.substring(4);
 			for (Producto2Mano p : tienda.buscarSegundaMano()) {
 				if (p.getId().equals(idProducto)) {

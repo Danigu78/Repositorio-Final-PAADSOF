@@ -27,7 +27,9 @@ public class ControladorPerfil implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equals("guardar")) {
+		if (e == null)
+			return;
+		if ("guardar".equals(e.getActionCommand())) {
 			guardarCambios();
 		}
 	}

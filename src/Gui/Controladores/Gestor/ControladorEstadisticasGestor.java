@@ -50,7 +50,11 @@ public class ControladorEstadisticasGestor implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		if (e == null)
+			return;
 		String cmd = e.getActionCommand();
+		if (cmd == null)
+			return;
 		if (cmd.equals("consultarAño")) {
 			vista.procesarConsultarAño();
 		} else if (cmd.equals("consultarRango")) {

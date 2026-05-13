@@ -51,9 +51,12 @@ public class ControladorPagoTasacion implements ActionListener {
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equals("pagar")) {
+		if (e == null)
+			return;
+		String cmd = e.getActionCommand();
+		if ("pagar".equals(cmd)) {
 			realizarPago();
-		} else if (e.getActionCommand().equals("volver")) {
+		} else if ("volver".equals(cmd)) {
 			vista.volverACartera();
 		}
 	}

@@ -34,15 +34,17 @@ public class ControladorProductosDescuentosGestor implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		if (e == null)
+			return;
 		String cmd = e.getActionCommand();
 
-		if (cmd.equals(CAMBIAR_PRECIO_MANUAL)) {
+		if (CAMBIAR_PRECIO_MANUAL.equals(cmd)) {
 			vista.procesarCambiarPrecioManual();
 
-		} else if (cmd.equals(CREAR_DESCUENTO)) {
+		} else if (CREAR_DESCUENTO.equals(cmd)) {
 			vista.procesarCrearDescuento();
 
-		} else if (cmd.startsWith(ELIMINAR_DESCUENTO)) {
+		} else if (cmd != null && cmd.startsWith(ELIMINAR_DESCUENTO)) {
 			vista.procesarEliminarDescuento(cmd.substring(ELIMINAR_DESCUENTO.length()));
 		}
 	}

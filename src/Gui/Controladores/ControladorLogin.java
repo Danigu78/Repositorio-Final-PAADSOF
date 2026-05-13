@@ -30,16 +30,18 @@ public class ControladorLogin implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		if (e == null)
+			return;
 		String cmd = e.getActionCommand();
-		if (cmd.equals("login")) {
+		if ("login".equals(cmd)) {
 			vista.hacerLogin();
-		} else if (cmd.equals("registro")) {
+		} else if ("registro".equals(cmd)) {
 			vista.hacerRegistro();
-		} else if (cmd.equals("irRegistro")) {
+		} else if ("irRegistro".equals(cmd)) {
 			irARegistro();
-		} else if (cmd.equals("irLogin")) {
+		} else if ("irLogin".equals(cmd)) {
 			irALogin();
-		} else if (cmd.equals("invitado")) {
+		} else if ("invitado".equals(cmd)) {
 			continuarComoInvitado();
 		}
 	}

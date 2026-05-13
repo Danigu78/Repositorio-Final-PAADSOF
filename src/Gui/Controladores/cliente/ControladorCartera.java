@@ -35,15 +35,20 @@ public class ControladorCartera implements ActionListener {
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equals("añadir")) {
+		if (e == null)
+			return;
+		String cmd = e.getActionCommand();
+		if (cmd == null)
+			return;
+		if ("añadir".equals(cmd)) {
 			// El usuario pulsó añadir — le decimos a la vista que muestre el diálogo
 			vista.mostrarDialogoAñadir();
-		} else if (e.getActionCommand().equals("explorador")) {
+		} else if ("explorador".equals(cmd)) {
 			// El usuario pulsó seleccionar imagen — abrimos el explorador
 			abrirExplorador();
-		} else if (e.getActionCommand().startsWith("tasar:")) {
+		} else if (cmd.startsWith("tasar:")) {
 			// El usuario pulsó solicitar tasación — cogemos el id del producto
-			String idProducto = e.getActionCommand().substring(6);
+			String idProducto = cmd.substring(6);
 			irAPagoTasacion(idProducto);
 		}
 	}

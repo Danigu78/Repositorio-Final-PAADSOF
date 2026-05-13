@@ -30,14 +30,16 @@ public class ControladorEmpleadosGestor implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		if (e == null)
+			return;
 		String cmd = e.getActionCommand();
-		if (cmd.equals("darDeAlta")) {
+		if ("darDeAlta".equals(cmd)) {
 			vista.procesarAlta();
-		} else if (cmd.startsWith("darDeBaja:")) {
+		} else if (cmd != null && cmd.startsWith("darDeBaja:")) {
 			vista.confirmarBaja(cmd.substring(10));
-		} else if (cmd.startsWith("asignarPermiso:")) {
+		} else if (cmd != null && cmd.startsWith("asignarPermiso:")) {
 			vista.procesarAsignarPermiso(cmd.substring(15));
-		} else if (cmd.startsWith("retirarPermiso:")) {
+		} else if (cmd != null && cmd.startsWith("retirarPermiso:")) {
 			vista.procesarRetirarPermiso(cmd.substring(15));
 		}
 	}

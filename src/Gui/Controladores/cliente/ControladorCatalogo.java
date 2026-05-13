@@ -32,12 +32,14 @@ public class ControladorCatalogo implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		if (e == null)
+			return;
 		String cmd = e.getActionCommand();
-		if (cmd.equals("buscar")) {
+		if ("buscar".equals(cmd)) {
 			vista.buscar();
-		} else if (cmd.equals("reset")) {
+		} else if ("reset".equals(cmd)) {
 			vista.resetearFiltros();
-		} else if (cmd.startsWith("ver:")) {
+		} else if (cmd != null && cmd.startsWith("ver:")) {
 			String idProducto = cmd.substring(4);
 			for (ProductoVenta p : tienda.getStockVentas()) {
 				if (p.getId().equals(idProducto)) {

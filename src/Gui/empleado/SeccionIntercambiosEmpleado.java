@@ -24,6 +24,7 @@ public class SeccionIntercambiosEmpleado extends SeccionEmpleadoBase {
 
 	private JTable tablaOfertas;
 	private DefaultTableModel modeloOfertas;
+	private TableRowSorter<DefaultTableModel> ordenadorOfertas;
 
 	private JTextField campoIdOferta;
 	private JComboBox<String> comboEstadoOferta;
@@ -76,6 +77,7 @@ public class SeccionIntercambiosEmpleado extends SeccionEmpleadoBase {
 
 		tablaOfertas = new JTable(modeloOfertas);
 		estilizarTablaOfertas(tablaOfertas);
+		ordenadorOfertas = ponerOrdenacionTabla(tablaOfertas, modeloOfertas);
 
 		/*
 		 * Como en las otras pantallas: la tabla solo sirve para mirar. El ID se escribe
@@ -100,10 +102,16 @@ public class SeccionIntercambiosEmpleado extends SeccionEmpleadoBase {
 		zonaCombo.add(crearLabel("Filtrar por estado"), BorderLayout.NORTH);
 		zonaCombo.add(comboEstadoOferta, BorderLayout.CENTER);
 
+		JPanel zonaBusqueda = new JPanel(new BorderLayout(0, VentanaPrincipal.escalar(4)));
+		zonaBusqueda.setOpaque(false);
+		zonaBusqueda.add(crearLabel("Buscar"), BorderLayout.NORTH);
+		zonaBusqueda.add(crearBuscadorTabla(ordenadorOfertas), BorderLayout.CENTER);
+
 		JPanel zonaBoton = new JPanel(new BorderLayout());
 		zonaBoton.setOpaque(false);
 		zonaBoton.add(botonRefrescar, BorderLayout.SOUTH);
 
+		filaFiltro.add(zonaBusqueda, BorderLayout.WEST);
 		filaFiltro.add(zonaCombo, BorderLayout.CENTER);
 		filaFiltro.add(zonaBoton, BorderLayout.EAST);
 

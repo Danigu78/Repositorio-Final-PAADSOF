@@ -321,7 +321,10 @@ public class SubpanelProducto extends AbstractPanelCliente {
 
 		JScrollPane scroll = new JScrollPane(panelReseñas);
 		scroll.setBorder(null);
+		scroll.setPreferredSize(new Dimension(0, VentanaPrincipal.escalar(260)));
+		scroll.setMinimumSize(new Dimension(0, VentanaPrincipal.escalar(140)));
 		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scroll.getViewport().setBackground(VentanaPrincipal.COLOR_PANEL);
 		scroll.getVerticalScrollBar().setUnitIncrement(VentanaPrincipal.escalar(16));
 		return scroll;

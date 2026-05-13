@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableRowSorter;
 
 import usuarios.Empleado;
 import ventas.Pedido;
@@ -25,6 +26,7 @@ public class SeccionEntregasEmpleado extends SeccionEmpleadoBase {
 
 	private JTable tablaPedidosListos;
 	private DefaultTableModel modeloPedidosListos;
+	private TableRowSorter<DefaultTableModel> ordenadorPedidosListos;
 
 	private JTextField campoCodigoRecogida;
 	private ControladorEntregasEmpleado controlador;
@@ -76,6 +78,7 @@ public class SeccionEntregasEmpleado extends SeccionEmpleadoBase {
 
 		tablaPedidosListos = new JTable(modeloPedidosListos);
 		estilizarTablaEntregas(tablaPedidosListos);
+		ordenadorPedidosListos = ponerOrdenacionTabla(tablaPedidosListos, modeloPedidosListos);
 
 		/*
 		 * La tabla es solo para mirar. El empleado escribe el código abajo cuando
@@ -90,10 +93,25 @@ public class SeccionEntregasEmpleado extends SeccionEmpleadoBase {
 		JButton botonRefrescar = crearBotonSecundario("Refrescar");
 		conectar(botonRefrescar, ControladorEntregasEmpleado.REFRESCAR);
 
+		JPanel filaBusqueda = new JPanel(new BorderLayout(VentanaPrincipal.escalar(12), 0));
+		filaBusqueda.setOpaque(false);
+
+		JPanel zonaBusqueda = new JPanel(new BorderLayout(0, VentanaPrincipal.escalar(4)));
+		zonaBusqueda.setOpaque(false);
+		zonaBusqueda.add(crearLabel("Buscar"), BorderLayout.NORTH);
+		zonaBusqueda.add(crearBuscadorTabla(ordenadorPedidosListos), BorderLayout.CENTER);
+
+		JPanel zonaBoton = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		zonaBoton.setOpaque(false);
+		zonaBoton.add(botonRefrescar);
+
+		filaBusqueda.add(zonaBusqueda, BorderLayout.WEST);
+		filaBusqueda.add(zonaBoton, BorderLayout.EAST);
+
 		bloque.add(crearLabel("Consulta los pedidos preparados. Para entregarlo, escribe el código abajo."),
 				gbcCampo(1));
-		bloque.add(scrollTabla, gbcCampo(2));
-		bloque.add(botonRefrescar, gbcBoton(3));
+		bloque.add(filaBusqueda, gbcCampo(2));
+		bloque.add(scrollTabla, gbcCampo(3));
 
 		cargarTablaEntregas();
 

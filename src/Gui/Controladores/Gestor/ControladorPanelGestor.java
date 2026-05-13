@@ -34,7 +34,11 @@ public class ControladorPanelGestor implements ActionListener {
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		if (vista == null || e == null)
+			return;
 		String cmd = e.getActionCommand();
+		if (cmd == null)
+			return;
 		vista.mostrarSeccion(cmd);
 		vista.marcarPestaña(cmd);
 	}

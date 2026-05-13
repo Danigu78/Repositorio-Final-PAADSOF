@@ -51,6 +51,8 @@ public class ControladorPanelEmpleado implements ActionListener {
 		if (vista == null || e == null)
 			return;
 		String cmd = e.getActionCommand();
+		if (cmd == null)
+			return;
 		if (LOGOUT.equals(cmd)) {
 			vista.salir();
 		} else {

@@ -46,7 +46,11 @@ public class ControladorNotificaciones implements ActionListener {
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		if (e == null)
+			return;
 		String cmd = e.getActionCommand();
+		if (cmd == null)
+			return;
 		switch (cmd) {
 		case "refrescar":
 			vista.cargarNotificaciones();
@@ -174,6 +178,15 @@ public class ControladorNotificaciones implements ActionListener {
 				continue;
 			resultado.add(n);
 		}
+		resultado.sort((n1, n2) -> {
+			if (n1.getFechaEnvio() == null && n2.getFechaEnvio() == null)
+				return 0;
+			if (n1.getFechaEnvio() == null)
+				return 1;
+			if (n2.getFechaEnvio() == null)
+				return -1;
+			return n2.getFechaEnvio().compareTo(n1.getFechaEnvio());
+		});
 		return resultado;
 	}
 

@@ -45,6 +45,8 @@ public class ControladorDescuentos implements ActionListener {
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		if (e == null)
+			return;
 		String cmd = e.getActionCommand();
 		if ("refrescar".equals(cmd)) {
 			vista.cargarDescuentos();

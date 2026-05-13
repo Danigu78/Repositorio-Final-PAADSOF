@@ -47,20 +47,22 @@ public class ControladorIntercambios implements ActionListener {
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		if (e == null)
+			return;
 		String cmd = e.getActionCommand();
-		if (cmd.equals("enviadas")) {
+		if ("enviadas".equals(cmd)) {
 			vista.mostrarSeccion("ENVIADAS");
-		} else if (cmd.equals("recibidas")) {
+		} else if ("recibidas".equals(cmd)) {
 			vista.mostrarSeccion("RECIBIDAS");
-		} else if (cmd.equals("historial")) {
+		} else if ("historial".equals(cmd)) {
 			vista.mostrarSeccion("HISTORIAL");
-		} else if (cmd.equals("rechazadas")) {
+		} else if ("rechazadas".equals(cmd)) {
 			vista.mostrarSeccion("RECHAZADAS");
-		} else if (cmd.equals("aceptadas")) {
+		} else if ("aceptadas".equals(cmd)) {
 			vista.mostrarSeccion("ACEPTADAS");
-		} else if (cmd.startsWith("aceptar:")) {
+		} else if (cmd != null && cmd.startsWith("aceptar:")) {
 			vista.procesarAceptarOferta(cmd.substring(8));
-		} else if (cmd.startsWith("rechazar:")) {
+		} else if (cmd != null && cmd.startsWith("rechazar:")) {
 			vista.procesarRechazarOferta(cmd.substring(9));
 		}
 	}

@@ -37,9 +37,12 @@ public class ControladorCrearOferta implements ActionListener {
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equals("volver")) {
+		if (e == null)
+			return;
+		String cmd = e.getActionCommand();
+		if ("volver".equals(cmd)) {
 			vista.volver();
-		} else if (e.getActionCommand().equals("enviar")) {
+		} else if ("enviar".equals(cmd)) {
 			enviarOferta();
 		}
 	}

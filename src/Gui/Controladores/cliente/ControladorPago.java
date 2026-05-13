@@ -50,11 +50,13 @@ public class ControladorPago implements ActionListener {
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		if (e == null)
+			return;
 		String cmd = e.getActionCommand();
-		if (cmd.equals("pagar")) {
+		if ("pagar".equals(cmd)) {
 			revisarTiempos();
 			vista.procesarPago();
-		} else if (cmd.equals("volver")) {
+		} else if ("volver".equals(cmd)) {
 			vista.volverAPedidos();
 		}
 	}

@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableRowSorter;
 
 import productos.EstadoProducto;
 import productos.Producto2Mano;
@@ -27,6 +28,7 @@ public class SeccionTasacionEmpleado extends SeccionEmpleadoBase {
 
 	private JTable tablaPendientes;
 	private DefaultTableModel modeloPendientes;
+	private TableRowSorter<DefaultTableModel> ordenadorPendientes;
 
 	private JTextField campoIdProducto;
 	private JTextField campoPrecioTasado;
@@ -79,6 +81,7 @@ public class SeccionTasacionEmpleado extends SeccionEmpleadoBase {
 
 		tablaPendientes = new JTable(modeloPendientes);
 		estilizarTablaTasaciones(tablaPendientes);
+		ordenadorPendientes = ponerOrdenacionTabla(tablaPendientes, modeloPendientes);
 
 		/*
 		 * Como en stock y pedidos: la tabla es solo para consultar. El ID se escribe
@@ -93,9 +96,24 @@ public class SeccionTasacionEmpleado extends SeccionEmpleadoBase {
 		JButton botonRefrescar = crearBotonSecundario("Refrescar");
 		conectar(botonRefrescar, ControladorTasacionEmpleado.REFRESCAR);
 
+		JPanel filaBusqueda = new JPanel(new BorderLayout(VentanaPrincipal.escalar(12), 0));
+		filaBusqueda.setOpaque(false);
+
+		JPanel zonaBusqueda = new JPanel(new BorderLayout(0, VentanaPrincipal.escalar(4)));
+		zonaBusqueda.setOpaque(false);
+		zonaBusqueda.add(crearLabel("Buscar"), BorderLayout.NORTH);
+		zonaBusqueda.add(crearBuscadorTabla(ordenadorPendientes), BorderLayout.CENTER);
+
+		JPanel zonaBoton = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		zonaBoton.setOpaque(false);
+		zonaBoton.add(botonRefrescar);
+
+		filaBusqueda.add(zonaBusqueda, BorderLayout.WEST);
+		filaBusqueda.add(zonaBoton, BorderLayout.EAST);
+
 		bloque.add(crearLabel("Consulta los productos pendientes. Para tasar uno, escribe su ID abajo."), gbcCampo(1));
-		bloque.add(scrollTabla, gbcCampo(2));
-		bloque.add(botonRefrescar, gbcBoton(3));
+		bloque.add(filaBusqueda, gbcCampo(2));
+		bloque.add(scrollTabla, gbcCampo(3));
 
 		cargarTablaPendientes();
 

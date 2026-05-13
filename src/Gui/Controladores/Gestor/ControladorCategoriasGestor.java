@@ -36,17 +36,19 @@ public class ControladorCategoriasGestor implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		if (e == null)
+			return;
 		String cmd = e.getActionCommand();
 
-		if (cmd.equals(CREAR_CATEGORIA)) {
+		if (CREAR_CATEGORIA.equals(cmd)) {
 			vista.procesarCrearCategoria();
 
-		} else if (cmd.equals(ANADIR_CATEGORIA_PRODUCTO)) {
+		} else if (ANADIR_CATEGORIA_PRODUCTO.equals(cmd)) {
 			vista.procesarAnadirCategoriaProducto();
 
-		} else if (cmd.equals(QUITAR_CATEGORIA_PRODUCTO)) {
+		} else if (QUITAR_CATEGORIA_PRODUCTO.equals(cmd)) {
 			vista.procesarQuitarCategoriaProducto();
-		} else if (cmd.startsWith(ELIMINAR_CATEGORIA + ":")) {
+		} else if (cmd != null && cmd.startsWith(ELIMINAR_CATEGORIA + ":")) {
 			vista.procesarEliminarCategoria(cmd.substring(ELIMINAR_CATEGORIA.length() + 1));
 		}
 	}

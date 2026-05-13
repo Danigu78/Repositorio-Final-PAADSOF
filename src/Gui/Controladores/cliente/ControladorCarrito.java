@@ -35,14 +35,16 @@ public class ControladorCarrito implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		if (e == null)
+			return;
 		revisarTiempos();
 		String cmd = e.getActionCommand();
-		if (cmd.equals("tramitar")) {
+		if ("tramitar".equals(cmd)) {
 			tramitar();
-		} else if (cmd.startsWith("eliminar:")) {
+		} else if (cmd != null && cmd.startsWith("eliminar:")) {
 			String idProducto = cmd.substring(9);
 			eliminarProductoPorId(idProducto);
-		} else if (cmd.startsWith("ver:")) {
+		} else if (cmd != null && cmd.startsWith("ver:")) {
 			String idProducto = cmd.substring(4);
 			vista.verProductoPorId(idProducto);
 		}
