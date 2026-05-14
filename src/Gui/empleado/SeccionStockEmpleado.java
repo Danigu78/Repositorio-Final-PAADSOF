@@ -15,51 +15,80 @@ import usuarios.Empleado;
 /**
  * Panel de gestión de stock para el empleado.
  * 
- * Desde aquí se pueden consultar productos, reponer stock y cargar productos
- * desde un fichero.
+ * Permite consultar productos, modificar stock, eliminar productos, cargar
+ * datos desde fichero y crear nuevos productos.
+ *
+ * @author Lucas
+ * @version 1.0
  */
 public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 
 	private static final long serialVersionUID = 1L;
 
+	/** Tipos de producto disponibles en el sistema */
 	private static final String TIPO_COMIC = "Comic";
 	private static final String TIPO_JUEGO = "Juego";
 	private static final String TIPO_FIGURA = "Figura";
 
+	/** Campo para introducir el ID del producto */
 	private JTextField campoIdProducto;
+
+	/** Campo para introducir unidades a modificar */
 	private JTextField campoUnidades;
+
+	/** Campo para ruta del fichero de carga */
 	private JTextField campoFichero;
+
+	/** Controlador principal de stock del empleado */
 	private ControladorStockEmpleado controlador;
 
-	/* La guardamos para poder refrescarla después de cambiar algo */
+	/** Tabla de productos mostrada en pantalla */
 	private TablaVenta tablaProductos;
+
+	/** Lista de categorías seleccionadas para un producto */
 	private java.util.List<JCheckBox> checksCategoriasProducto;
+
+	/** Panel con CardLayout para campos específicos por tipo */
 	private JPanel panelCamposTipo;
+
+	/** Layout para alternar formularios de tipo */
 	private CardLayout cardCamposTipo;
+
+	/** Combo para seleccionar tipo de producto */
 	private JComboBox<String> comboTipoProducto;
 
+	/** Campos generales de un producto */
 	private JTextField campoNombreProducto;
 	private JTextArea areaDescripcionProducto;
 	private JTextField campoImagenProducto;
 	private JTextField campoPrecioProducto;
 	private JTextField campoStockProducto;
 
+	/** Campos especificos de un comic */
 	private JTextField campoPaginasComic;
 	private JTextField campoEditorialComic;
 	private JTextField campoAnioComic;
 
+	/** Campos especificos de un juego de mesa */
 	private JTextField campoMinJugadores;
 	private JTextField campoMaxJugadores;
 	private JTextField campoMinEdad;
 	private JTextField campoMaxEdad;
 	private JTextField campoEstiloJuego;
 
+	/** Campos especificos de una figura */
 	private JTextField campoAlturaFigura;
 	private JTextField campoAnchoFigura;
 	private JTextField campoLargoFigura;
 	private JTextField campoMaterialFigura;
 	private JTextField campoMarcaFigura;
 
+	/**
+	 * Constructor del panel de stock del empleado.
+	 *
+	 * @param ventana  ventana principal de la aplicación
+	 * @param empleado empleado autenticado
+	 */
 	public SeccionStockEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
 		this.controlador = new ControladorStockEmpleado(empleado);
@@ -68,17 +97,31 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 		construirUI();
 	}
 
+	/**
+	 * Asigna el controlador de acciones al panel.
+	 *
+	 * @param controlador controlador que manejará los eventos de la vista
+	 */
 	public void setControlador(ActionListener controlador) {
 		if (controlador instanceof ControladorStockEmpleado) {
 			this.controlador = (ControladorStockEmpleado) controlador;
 		}
 	}
 
+	/**
+	 * Conecta un botón con una acción del controlador.
+	 *
+	 * @param boton  botón a configurar
+	 * @param accion comando de acción asociado
+	 */
 	private void conectar(JButton boton, String accion) {
 		boton.setActionCommand(accion);
 		boton.addActionListener(controlador);
 	}
 
+	/**
+	 * Construye toda la interfaz gráfica del panel.
+	 */
 	private void construirUI() {
 		setLayout(new BorderLayout());
 
@@ -106,6 +149,12 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 		add(panelBase, BorderLayout.CENTER);
 	}
 
+	/**
+	 * Crea el bloque de acciones de stock (sumar, restar, eliminar y carga de
+	 * fichero).
+	 *
+	 * @return panel con las acciones de stock
+	 */
 	private JPanel crearBloqueAccionesStock() {
 		JPanel bloque = crearBloque("Acciones de stock");
 
@@ -120,7 +169,11 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 		return bloque;
 	}
 
-	// Panel de la izquierda: sirve para sumar unidades a un producto
+	/**
+	 * Panel izquierdo de acciones de stock: sumar, restar y eliminar producto.
+	 *
+	 * @return panel de reponer stock
+	 */
 	private JPanel crearPanelReponerStock() {
 		JPanel panel = new JPanel(new GridBagLayout());
 		panel.setOpaque(false);
@@ -183,7 +236,11 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 		return panel;
 	}
 
-	// Panel de la derecha: cargar productos desde un txt
+	/**
+	 * Panel derecho para cargar productos desde un fichero externo.
+	 *
+	 * @return panel de carga de fichero
+	 */
 	private JPanel crearPanelCargarFichero() {
 		JPanel panel = new JPanel(new GridBagLayout());
 		panel.setOpaque(false);
@@ -230,6 +287,11 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 		return panel;
 	}
 
+	/**
+	 * Bloque principal para creación de productos nuevos.
+	 *
+	 * @return panel con formulario de creación
+	 */
 	private JPanel crearBloqueCrearProducto() {
 		JPanel bloque = crearBloque("Crear producto");
 
@@ -259,6 +321,9 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 		return bloque;
 	}
 
+	/**
+	 * Inicializa todos los campos del formulario de creación de producto.
+	 */
 	private void inicializarCamposCrearProducto() {
 		checksCategoriasProducto = new java.util.ArrayList<>();
 
@@ -292,6 +357,11 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 		campoMarcaFigura = crearCampo();
 	}
 
+	/**
+	 * Construye el panel de datos generales del producto
+	 *
+	 * @return panel con todos los campos de datos generales del producto
+	 */
 	private JPanel crearPanelDatosProducto() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -318,6 +388,11 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 		return panel;
 	}
 
+	/**
+	 * Crea el selector de imagen del producto.
+	 *
+	 * @return panel con campo de texto y botones de selección de imagen
+	 */
 	private JPanel crearSelectorImagenProducto() {
 		JButton botonSeleccionarImagen = crearBotonSecundario("Abrir...");
 		JButton botonVerImagen = crearBotonSecundario("Ver imagen");
@@ -344,6 +419,11 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 		return selector;
 	}
 
+	/**
+	 * Ajusta el tamaño visual de los botones usados en el selector de imagen.
+	 *
+	 * @param boton botón al que se le aplica el tamaño fijo
+	 */
 	private void ajustarBotonImagen(JButton boton) {
 		Dimension tamano = new Dimension(VentanaPrincipal.escalar(115), VentanaPrincipal.escalar(36));
 		boton.setPreferredSize(tamano);
@@ -351,6 +431,11 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 		boton.setMinimumSize(tamano);
 	}
 
+	/**
+	 * Crea el panel de selección de categorías del producto.
+	 *
+	 * @return panel con checkboxes dentro de un scroll
+	 */
 	private JPanel crearPanelCategoriasProducto() {
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
 		panel.setOpaque(false);
@@ -380,6 +465,11 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 		return contenedor;
 	}
 
+	/**
+	 * Crea el panel derecho con los campos específicos del tipo de producto.
+	 *
+	 * @return panel con los formularios específicos por tipo
+	 */
 	private JPanel crearPanelTipoProducto() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -408,6 +498,11 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 		return panel;
 	}
 
+	/**
+	 * Crea los campos específicos del tipo Comic.
+	 *
+	 * @return panel con formulario de Comic
+	 */
 	private JPanel crearCamposComic() {
 		JPanel panel = crearPanelCamposTipo();
 		panel.add(crearCampoFormulario("Páginas", campoPaginasComic));
@@ -418,6 +513,11 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 		return panel;
 	}
 
+	/**
+	 * Crea los campos específicos del tipo Juego.
+	 *
+	 * @return panel con formulario de Juego
+	 */
 	private JPanel crearCamposJuego() {
 		JPanel panel = crearPanelCamposTipo();
 		panel.add(crearCampoFormulario("Mín. jugadores", campoMinJugadores));
@@ -432,6 +532,11 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 		return panel;
 	}
 
+	/**
+	 * Crea los campos específicos del tipo Figura.
+	 *
+	 * @return panel con formulario de Figura
+	 */
 	private JPanel crearCamposFigura() {
 		JPanel panel = crearPanelCamposTipo();
 		panel.add(crearCampoFormulario("Altura", campoAlturaFigura));
@@ -446,6 +551,11 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 		return panel;
 	}
 
+	/**
+	 * Crea un panel base vacío para alojar los campos dinámicos de tipo.
+	 *
+	 * @return panel contenedor base
+	 */
 	private JPanel crearPanelCamposTipo() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -453,6 +563,11 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 		return panel;
 	}
 
+	/**
+	 * Ajusta el tamaño del formulario para mantener consistencia visual.
+	 *
+	 * @param panelFormulario panel al que se le aplica tamaño fijo
+	 */
 	private void ajustarAnchoFormulario(JPanel panelFormulario) {
 		Dimension tamano = new Dimension(VentanaPrincipal.escalar(520), VentanaPrincipal.escalar(68));
 		panelFormulario.setPreferredSize(tamano);
@@ -460,6 +575,11 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 		panelFormulario.setMinimumSize(tamano);
 	}
 
+	/**
+	 * Ajusta el tamaño de los botones usados en acciones de stock.
+	 *
+	 * @param boton botón al que se le aplica el tamaño fijo
+	 */
 	private void ajustarBotonStock(JButton boton) {
 		Dimension tamano = new Dimension(VentanaPrincipal.escalar(210), VentanaPrincipal.escalar(42));
 		boton.setPreferredSize(tamano);
@@ -467,6 +587,9 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 		boton.setMinimumSize(tamano);
 	}
 
+	/**
+	 * Aumenta el stock de un producto utilizando el ID y la cantidad indicada.
+	 */
 	public void reponerStock() {
 		ResultadoOperacion resultado = controlador.reponerStock(campoIdProducto.getText(), campoUnidades.getText());
 
@@ -479,6 +602,9 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 		}
 	}
 
+	/**
+	 * Reduce el stock de un producto utilizando el ID y la cantidad indicada.
+	 */
 	public void retirarStock() {
 		ResultadoOperacion resultado = controlador.retirarStock(campoIdProducto.getText(), campoUnidades.getText());
 
@@ -491,6 +617,10 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 		}
 	}
 
+	/**
+	 * Elimina un producto del sistema estableciendo su stock a 0 y ocultándolo de
+	 * la tienda.
+	 */
 	public void eliminarProducto() {
 		String idProducto = campoIdProducto.getText().trim();
 
@@ -519,6 +649,9 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 		}
 	}
 
+	/**
+	 * Abre un selector de archivos para elegir un fichero del sistema.
+	 */
 	public void seleccionarFichero() {
 		JFileChooser selectorFichero = new JFileChooser(); // Para abrir archivos del ordenador
 
@@ -530,6 +663,9 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 		}
 	}
 
+	/**
+	 * Abre un selector de archivos para seleccionar una imagen del producto.
+	 */
 	public void seleccionarImagenProducto() {
 		JFileChooser selectorImagen = new JFileChooser();
 		int opcion = selectorImagen.showOpenDialog(this);
@@ -540,6 +676,9 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 		}
 	}
 
+	/**
+	 * Muestra la imagen del producto actualmente indicada en el campo de texto.
+	 */
 	public void verImagenProducto() {
 		normalizarCampoImagenProducto();
 		String rutaImagen = campoImagenProducto.getText().trim();
@@ -552,6 +691,9 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 		UtilidadesImagenProducto.mostrarImagenProducto(this, rutaImagen);
 	}
 
+	/**
+	 * Carga productos desde un fichero externo utilizando la ruta indicada.
+	 */
 	public void cargarFichero() {
 		ResultadoOperacion resultado = controlador.cargarProductosDesdeFichero(campoFichero.getText());
 
@@ -563,6 +705,9 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 		}
 	}
 
+	/**
+	 * Crea un nuevo producto con todos los datos introducidos en el formulario.
+	 */
 	public void crearProducto() {
 		normalizarCampoImagenProducto();
 		ResultadoOperacion resultado = controlador.crearProducto(String.valueOf(comboTipoProducto.getSelectedItem()),
@@ -583,6 +728,12 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 		}
 	}
 
+	/**
+	 * Obtiene las categorías seleccionadas en el formulario de creación de
+	 * producto.
+	 *
+	 * @return cadena de categorías separadas por comas
+	 */
 	private String obtenerCategoriasSeleccionadas() {
 		String texto = "";
 
@@ -598,6 +749,9 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 		return texto;
 	}
 
+	/**
+	 * Limpia completamente el formulario de creación de producto.
+	 */
 	public void limpiarFormularioProducto() {
 		comboTipoProducto.setSelectedIndex(0);
 		campoNombreProducto.setText("");
@@ -627,6 +781,9 @@ public class SeccionStockEmpleado extends SeccionProductosVentaEmpleadoBase {
 		}
 	}
 
+	/**
+	 * Normaliza la ruta de la imagen introducida en el campo correspondiente.
+	 */
 	private void normalizarCampoImagenProducto() {
 		campoImagenProducto.setText(UtilidadesImagenProducto.normalizarRutaImagen(campoImagenProducto.getText()));
 	}
