@@ -43,6 +43,9 @@ public class SubpanelConfiguracionGestor extends AbstractPanelGestor {
 	/** Spinner para el peso de categorías del recomendador. */
 	private JSpinner spinnerPesoCategorias;
 
+	/** Spinner para el número máximo de productos recomendados. */
+	private JSpinner spinnerLimiteRecomendados;
+
 	/** Botón para guardar la configuración del sistema. */
 	private JButton botonGuardar;
 
@@ -141,10 +144,18 @@ public class SubpanelConfiguracionGestor extends AbstractPanelGestor {
 		gbc.gridy = 15;
 		panelContenido.add(spinnerPesoCategorias, gbc);
 
+		gbc.gridy = 16;
+		panelContenido.add(crearLabel("Productos recomendados al cliente:"), gbc);
+		spinnerLimiteRecomendados = new JSpinner(
+				new SpinnerNumberModel(controlador.getLimiteRecomendados(), 1, 9999, 1));
+		spinnerLimiteRecomendados.setFont(VentanaPrincipal.FUENTE_NORMAL);
+		gbc.gridy = 17;
+		panelContenido.add(spinnerLimiteRecomendados, gbc);
+
 		
 		botonGuardar = crearBotonNaranja("Guardar configuración");
 		botonGuardar.setActionCommand("guardarConfig");
-		gbc.gridy = 16;
+		gbc.gridy = 18;
 		gbc.insets = new Insets(VentanaPrincipal.escalar(20), 0, 0, 0);
 		panelContenido.add(botonGuardar, gbc);
 
@@ -177,12 +188,14 @@ public class SubpanelConfiguracionGestor extends AbstractPanelGestor {
 		double pesoValoracion = ((Number) spinnerPesoValoracion.getValue()).doubleValue();
 		double pesoCompras = ((Number) spinnerPesoCompras.getValue()).doubleValue();
 		double pesoCategorias = ((Number) spinnerPesoCategorias.getValue()).doubleValue();
+		int limiteRecomendados = (int) spinnerLimiteRecomendados.getValue();
 
 		boolean okTiempos = controlador.configurarTiempos(oferta, carrito, pago);
 		boolean okTasacion = controlador.setPrecioTasacion(tasacion);
 		boolean okPesos = controlador.setPesosRecomendador(pesoValoracion, pesoCompras, pesoCategorias);
+		boolean okLimite = controlador.setLimiteRecomendados(limiteRecomendados);
 
-		if (okTiempos && okTasacion && okPesos) {
+		if (okTiempos && okTasacion && okPesos && okLimite) {
 			actualizarPesos();
 			mostrarMensaje("Configuración guardada correctamente.");
 		} else {
@@ -233,5 +246,6 @@ public class SubpanelConfiguracionGestor extends AbstractPanelGestor {
 		spinnerPesoValoracion.setValue(controlador.getPesoValoracion());
 		spinnerPesoCompras.setValue(controlador.getPesoCompras());
 		spinnerPesoCategorias.setValue(controlador.getPesoCategorias());
+		spinnerLimiteRecomendados.setValue(controlador.getLimiteRecomendados());
 	}
 }

@@ -35,6 +35,12 @@ public class SubpanelCatalogo extends AbstractPanelCliente {
 	/** Panel donde se muestran los recomendados. */
 	private JPanel panelRecomendados;
 
+	/** Scroll de la sección de recomendados. */
+	private JScrollPane scrollRecomendados;
+
+	/** Divisor para redimensionar recomendados y catálogo. */
+	private JSplitPane splitProductos;
+
 	/** Campo de búsqueda por nombre. */
 	private JTextField campoBusqueda;
 
@@ -164,7 +170,14 @@ public class SubpanelCatalogo extends AbstractPanelCliente {
 
 		panelRecomendados = new JPanel(new BorderLayout());
 		panelRecomendados.setBackground(VentanaPrincipal.COLOR_FONDO);
-		panelCentral.add(panelRecomendados, BorderLayout.NORTH);
+		panelRecomendados.setMinimumSize(new Dimension(0, VentanaPrincipal.escalar(80)));
+		scrollRecomendados = new JScrollPane(panelRecomendados);
+		scrollRecomendados.setBorder(null);
+		scrollRecomendados.getViewport().setBackground(VentanaPrincipal.COLOR_FONDO);
+		scrollRecomendados.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollRecomendados.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		scrollRecomendados.getHorizontalScrollBar().setUnitIncrement(VentanaPrincipal.escalar(16));
+		scrollRecomendados.getVerticalScrollBar().setUnitIncrement(VentanaPrincipal.escalar(16));
 
 		panelProductos = new JPanel(
 				new FlowLayout(FlowLayout.LEFT, VentanaPrincipal.escalar(25), VentanaPrincipal.escalar(25)));
@@ -194,7 +207,17 @@ public class SubpanelCatalogo extends AbstractPanelCliente {
 			}
 		});
 
-		panelCentral.add(scroll, BorderLayout.CENTER);
+		splitProductos = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scrollRecomendados, scroll);
+		splitProductos.setBorder(null);
+		splitProductos.setContinuousLayout(true);
+		splitProductos.setOneTouchExpandable(true);
+		splitProductos.setResizeWeight(0.0);
+		splitProductos.setDividerSize(VentanaPrincipal.escalar(8));
+		scrollRecomendados.setMinimumSize(new Dimension(0, VentanaPrincipal.escalar(90)));
+		scrollRecomendados.setPreferredSize(new Dimension(0, VentanaPrincipal.escalar(270)));
+		scroll.setMinimumSize(new Dimension(0, VentanaPrincipal.escalar(220)));
+		panelCentral.add(splitProductos, BorderLayout.CENTER);
+		SwingUtilities.invokeLater(() -> splitProductos.setDividerLocation(VentanaPrincipal.escalar(270)));
 
 		panel.add(panelCentral, BorderLayout.CENTER);
 		return panel;
@@ -437,6 +460,7 @@ public class SubpanelCatalogo extends AbstractPanelCliente {
 	private void mostrarRecomendados() {
 		panelRecomendados.removeAll();
 		if (controlador == null) {
+			actualizarVisibilidadRecomendados(false);
 			panelRecomendados.revalidate();
 			panelRecomendados.repaint();
 			return;
@@ -444,6 +468,7 @@ public class SubpanelCatalogo extends AbstractPanelCliente {
 
 		List<ProductoVenta> recomendados = controlador.getRecomendados();
 		if (recomendados.isEmpty()) {
+			actualizarVisibilidadRecomendados(false);
 			panelRecomendados.revalidate();
 			panelRecomendados.repaint();
 			return;
@@ -466,14 +491,33 @@ public class SubpanelCatalogo extends AbstractPanelCliente {
 		for (ProductoVenta p : recomendados)
 			panelTarjetas.add(crearTarjetaPequeña(p));
 		contenedor.add(panelTarjetas, BorderLayout.CENTER);
+		panelTarjetas.setPreferredSize(new Dimension(
+				recomendados.size() * (VentanaPrincipal.escalar(160) + VentanaPrincipal.escalar(15)),
+				VentanaPrincipal.escalar(230)));
 
 		JSeparator sep = new JSeparator();
 		sep.setForeground(VentanaPrincipal.COLOR_BORDE);
 		contenedor.add(sep, BorderLayout.SOUTH);
 
 		panelRecomendados.add(contenedor, BorderLayout.CENTER);
+		actualizarVisibilidadRecomendados(true);
 		panelRecomendados.revalidate();
 		panelRecomendados.repaint();
+	}
+
+	/**
+	 * Muestra u oculta la zona superior de recomendados dentro del divisor.
+	 *
+	 * @param visible true si hay productos recomendados que enseñar
+	 */
+	private void actualizarVisibilidadRecomendados(boolean visible) {
+		if (scrollRecomendados == null || splitProductos == null) {
+			return;
+		}
+		scrollRecomendados.setVisible(visible);
+		splitProductos.setDividerSize(visible ? VentanaPrincipal.escalar(8) : 0);
+		SwingUtilities.invokeLater(() -> splitProductos
+				.setDividerLocation(visible ? VentanaPrincipal.escalar(270) : 0));
 	}
 
 	/**

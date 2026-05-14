@@ -225,7 +225,8 @@ public class ControladorCatalogo implements ActionListener {
 			List<ProductoVenta> todos = new ArrayList<>(tienda.getStockVentas());
 			todos.removeIf(p -> p.isEliminado() || p.getStockDisponible() <= 0);
 			todos.sort((a, b) -> Double.compare(b.getMediaPuntuacion(), a.getMediaPuntuacion()));
-			return todos.subList(0, Math.min(5, todos.size()));
+			int limite = tienda.getRecomendador().getLimiteMaximo();
+			return todos.subList(0, Math.min(limite, todos.size()));
 		}
 		try {
 			List<ProductoVenta> recomendados = new ArrayList<>(tienda.getRecomendador().generarSugerencias(cliente));

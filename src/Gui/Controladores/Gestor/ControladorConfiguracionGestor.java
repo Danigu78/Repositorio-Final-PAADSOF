@@ -119,6 +119,22 @@ public class ControladorConfiguracionGestor implements ActionListener {
 	}
 
 	/**
+	 * Configura el número máximo de productos recomendados que se muestran al
+	 * cliente.
+	 *
+	 * @param limite número máximo de productos recomendados
+	 * @return true si el límite se actualiza correctamente
+	 */
+	public boolean setLimiteRecomendados(int limite) {
+		if (limite <= 0) {
+			return false;
+		}
+		tienda.getRecomendador().setConfiguracion(limite, tienda.getRecomendador().isActivo());
+		GuardadoTienda.guardar(tienda);
+		return true;
+	}
+
+	/**
 	 * Modifica el perfil del gestor.
 	 *
 	 * @param nuevoNickname Nuevo nickname
@@ -193,6 +209,15 @@ public class ControladorConfiguracionGestor implements ActionListener {
 	 */
 	public double getPesoCategorias() {
 		return tienda.getRecomendador().getPesoCategorias();
+	}
+
+	/**
+	 * Devuelve el número máximo de productos recomendados configurado.
+	 *
+	 * @return límite de productos recomendados
+	 */
+	public int getLimiteRecomendados() {
+		return tienda.getRecomendador().getLimiteMaximo();
 	}
 
 	/**
