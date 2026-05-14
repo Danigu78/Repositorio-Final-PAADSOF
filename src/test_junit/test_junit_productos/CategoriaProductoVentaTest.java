@@ -15,7 +15,7 @@ public class CategoriaProductoVentaTest {
 
     private static byte[] datOriginal;
 
-    // --- Lógica de protección del archivo .dat ---
+    
     @BeforeAll
     static void guardarDat() throws Exception {
         java.io.File fichero = new java.io.File("datos_tienda.dat");
@@ -39,7 +39,7 @@ public class CategoriaProductoVentaTest {
         // Limpiamos la instancia de la tienda para que cada test sea independiente
         Tienda.getInstancia().vaciarTienda();
     }
-    // ---------------------------------------------
+   
 
     @Test
     @Order(1)
