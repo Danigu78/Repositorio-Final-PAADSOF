@@ -2,6 +2,12 @@ package test_junit.test_junit_tienda;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import productos.EstadoProducto;
 import productos.Producto2Mano;
 import tienda.FiltroSegundaMano;
+import tienda.GuardadoTienda;
 import usuarios.Cliente;
 import usuarios.Empleado;
 
@@ -18,7 +25,23 @@ class FiltroSegundaManoTest {
 	private Producto2Mano producto;
 	private Cliente cliente;
 	private Empleado empleado;
+	private static byte[] datOriginal;
 
+    @BeforeAll
+    static void guardarDat() throws Exception {
+        File fichero = new File("datos_tienda.dat");
+        if (fichero.exists()) {
+            datOriginal = Files.readAllBytes(fichero.toPath());
+        }
+    }
+
+    @AfterAll
+    static void restaurarDat() throws Exception {
+        if (datOriginal != null) {
+            Files.write(Paths.get("datos_tienda.dat"), datOriginal);
+            GuardadoTienda.cargar(); // Recarga la tienda con los datos originales
+        }
+    }
 	@BeforeEach
 	void setUp() {
 		filtro = new FiltroSegundaMano();
