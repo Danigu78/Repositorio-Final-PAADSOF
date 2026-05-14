@@ -299,10 +299,30 @@ public class SubpanelCategoriasGestor extends AbstractPanelGestor {
 	 * @return Panel con la tabla
 	 */
 	private JPanel crearPanelTablaProductos() {
-		JPanel panel = crearBloque("Productos de venta");
-		tablaProductosVenta = new TablaProductosVenta(() -> controlador.getProductosOrdenados(), false);
-		panel.add(tablaProductosVenta, gbcCampo(1));
-		return panel;
+	    JPanel panel = crearBloque("Productos de venta");
+	    tablaProductosVenta = new TablaProductosVenta(
+	        () -> controlador.getProductosOrdenados(), false);
+
+	    JButton botonRefrescar = crearBotonNaranja("Refrescar");
+	    botonRefrescar.setActionCommand("refrescarTablaCategoria");
+	    botonRefrescar.addActionListener(controlador);
+
+	    JPanel filaBoton = new JPanel(
+	        new FlowLayout(FlowLayout.LEFT, 0, 0));
+	    filaBoton.setOpaque(false);
+	    filaBoton.add(botonRefrescar);
+
+	    panel.add(tablaProductosVenta, gbcCampo(1));
+	    panel.add(filaBoton, gbcBoton(2));
+	    return panel;
+	}
+
+	/**
+	 * Refresca la tabla 
+	 */
+	public void refrescarTablaProductos() {
+	    if (tablaProductosVenta != null)
+	        tablaProductosVenta.refrescar();
 	}
 
 	/**

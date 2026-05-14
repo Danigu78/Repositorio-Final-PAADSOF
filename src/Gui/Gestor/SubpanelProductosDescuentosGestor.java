@@ -146,10 +146,29 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 		JPanel panel = crearBloque("Productos de venta");
 
 		tablaProductosVenta = new TablaProductosVenta(() -> controlador.getProductos(), false);
+		tablaProductosVenta.setAlSeleccionarId(id -> campoIdPrecio.setText(id));
+
+		JButton botonRefrescar = crearBotonNaranja("Refrescar");
+		botonRefrescar.setActionCommand("refrescarTablaProductos");
+		botonRefrescar.addActionListener(controlador);
+
+		JPanel filaBoton = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		filaBoton.setOpaque(false);
+		filaBoton.add(botonRefrescar);
 
 		panel.add(tablaProductosVenta, gbcCampo(1));
+		panel.add(filaBoton, gbcBoton(2));
 
 		return panel;
+	}
+
+	/**
+	 * refresca el contenido de la tabla cuando haya habiado algun cambio
+	 * 
+	 */
+	public void refrescarTablaProductos() {
+		if (tablaProductosVenta != null)
+			tablaProductosVenta.refrescar();
 	}
 
 	/**
@@ -416,8 +435,8 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 	}
 
 	/**
-	 * Crea un panel base reutilizable para los formularios de datos específicos
-	 * de los distintos tipos de descuento.
+	 * Crea un panel base reutilizable para los formularios de datos específicos de
+	 * los distintos tipos de descuento.
 	 *
 	 * @return JPanel vacío configurado como contenedor vertical reutilizable.
 	 */
@@ -783,7 +802,7 @@ public class SubpanelProductosDescuentosGestor extends AbstractPanelGestor {
 	/**
 	 * Extrae el ID de un producto desde texto seleccionado en combo.
 	 *
-	 * @param texto texto seleccionado
+	 * @param texto     texto seleccionado
 	 * @param productos lista de productos
 	 * @return ID del producto o cadena vacía
 	 */
