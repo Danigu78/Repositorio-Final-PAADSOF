@@ -1162,7 +1162,15 @@ public class Empleado extends UsuarioRegistrado implements Serializable {
 		System.out.println("Imagen del producto " + idProducto + " modificada correctamente.");
 		return true;
 	}
-
+	/**
+	 * Modifica los datos básicos de un producto.
+	 *
+	 * @param idProducto identificador del producto
+	 * @param nombre nuevo nombre del producto
+	 * @param descripcion nueva descripción del producto
+	 * @param imagen nueva ruta de la imagen
+	 * @return true si la modificación se realizó correctamente, false en caso contrario
+	 */
 	public boolean modificarDatosBasicosProducto(String idProducto, String nombre, String descripcion, String imagen) {
 		if (idProducto == null || nombre == null || descripcion == null || imagen == null) {
 			System.out.println("Los datos básicos del producto no pueden ser null.");
@@ -1183,11 +1191,24 @@ public class Empleado extends UsuarioRegistrado implements Serializable {
 		System.out.println("Datos básicos del producto " + idProducto + " modificados correctamente.");
 		return true;
 	}
-
+	/**
+	 * Normaliza la ruta del archivo de imagen.
+	 *
+	 * @param imagen nombre o ruta de la imagen
+	 * @return ruta normalizada de la imagen
+	 */
 	private String normalizarRutaImagen(String imagen) {
 		return RutasImagen.normalizarNombreArchivo(imagen);
 	}
-
+	/**
+	 * Modifica los datos específicos de un cómic.
+	 *
+	 * @param idProducto identificador del producto
+	 * @param numeroPaginas nuevo número de páginas
+	 * @param editorial nueva editorial
+	 * @param añoPublicacion nuevo año de publicación
+	 * @return true si la modificación se realizó correctamente, false en caso contrario
+	 */
 	public boolean modificarDatosComic(String idProducto, int numeroPaginas, String editorial, int añoPublicacion) {
 		if (!puedeRealizarTarea(TipoPermisos.MODIFICAR_PRODUCTO)) {
 			return false;
@@ -1204,7 +1225,17 @@ public class Empleado extends UsuarioRegistrado implements Serializable {
 		comic.setAñoPublicacion(añoPublicacion);
 		return true;
 	}
-
+	/**
+	 * Modifica los datos específicos de un juego de mesa.
+	 *
+	 * @param idProducto identificador del producto
+	 * @param minJugadores número mínimo de jugadores
+	 * @param maxJugadores número máximo de jugadores
+	 * @param minEdad edad mínima recomendada
+	 * @param maxEdad edad máxima recomendada
+	 * @param tipoJuego tipo de juego
+	 * @return true si la modificación se realizó correctamente, false en caso contrario
+	 */
 	public boolean modificarDatosJuegoMesa(String idProducto, int minJugadores, int maxJugadores, int minEdad,
 			int maxEdad, String tipoJuego) {
 		if (!puedeRealizarTarea(TipoPermisos.MODIFICAR_PRODUCTO)) {
@@ -1220,7 +1251,17 @@ public class Empleado extends UsuarioRegistrado implements Serializable {
 		juego.actualizarDatos(minJugadores, maxJugadores, minEdad, maxEdad, tipoJuego);
 		return true;
 	}
-
+	/**
+	 * Modifica los datos específicos de una figura.
+	 *
+	 * @param idProducto identificador del producto
+	 * @param altura nueva altura de la figura
+	 * @param ancho nuevo ancho de la figura
+	 * @param largo nuevo largo de la figura
+	 * @param material nuevo material de la figura
+	 * @param marca nueva marca de la figura
+	 * @return true si la modificación se realizó correctamente, false en caso contrario
+	 */
 	public boolean modificarDatosFigura(String idProducto, double altura, double ancho, double largo, String material,
 			String marca) {
 		if (!puedeRealizarTarea(TipoPermisos.MODIFICAR_PRODUCTO)) {

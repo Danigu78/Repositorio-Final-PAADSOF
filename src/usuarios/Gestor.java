@@ -416,8 +416,7 @@ public class Gestor extends UsuarioRegistrado implements Serializable {
 	 * Crea un descuento por cantidad.
 	 *
 	 * @param nombre         nombre del descuento
-	 * @param idProducto     id del producto
-	 * @param cantidadMinima cantidad mínima requerida
+	 * @param precioMinimo     precio minimo
 	 * @param porcentaje     porcentaje de descuento
 	 * @param inicio         fecha de inicio
 	 * @param fin            fecha de fin
@@ -759,7 +758,6 @@ public class Gestor extends UsuarioRegistrado implements Serializable {
 	/**
 	 * Consulta los ingresos por meses de un año.
 	 *
-	 * @param año año a consultar
 	 * @return array con ingresos por mes
 	 * @throws AñoInvalidoException         si el año no es válido
 	 * @throws RangoFechasInvalidoException si hay error en fechas

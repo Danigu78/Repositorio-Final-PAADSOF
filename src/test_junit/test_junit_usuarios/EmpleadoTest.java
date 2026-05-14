@@ -3,14 +3,13 @@ package test_junit.test_junit_usuarios;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.*;
 
-import excepciones.*;
+
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-import intercambios.*;
 import productos.*;
 import tienda.*;
 import usuarios.*;
@@ -24,7 +23,7 @@ public class EmpleadoTest {
 	private Empleado empStock;
 	private Empleado empTasador;
 	private Empleado empPedidos;
-	private Empleado empSinPermisos;
+	
 	private ProductoVenta watchmen;
 	private ProductoVenta akira;
 	private Cliente cliente;
@@ -72,7 +71,7 @@ public class EmpleadoTest {
 		empStock = tienda.loginEmpleado("emp_stock_p", "Stock@1234");
 		empTasador = tienda.loginEmpleado("emp_tasador_p", "Tasador@1234");
 		empPedidos = tienda.loginEmpleado("emp_pedidos_p", "Pedidos@1234");
-		empSinPermisos = tienda.loginEmpleado("emp_sin_p", "Sin@12345");
+		
 
 		empStock.añadirProducto_nuevo("C", "Watchmen_emp", "Comic test", "w.jpg", 15.0, 20,
 				tienda.seleccionarCategorias("Anime_emp"), 400, "DC", 1987, 0, 0, 0, null, null, 0, 0, 0, 0, null);

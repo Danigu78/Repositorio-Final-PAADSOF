@@ -7,7 +7,7 @@ import org.junit.jupiter.api.*;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import tienda.Tienda;
+
 import tienda.GuardadoTienda;
 import excepciones.ProductoInvalidoException;
 

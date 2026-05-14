@@ -490,7 +490,7 @@ public class SubpanelPedidos extends AbstractPanelCliente {
 	/**
 	 * Navega al detalle de un producto desde el detalle del pedido.
 	 *
-	 * @param producto El producto a ver
+	 * @param idProducto El producto a ver
 	 */
 
 	public void verProducto(String idProducto) {

@@ -30,7 +30,12 @@ public class Estadistica implements Serializable {
 			instancia = new Estadistica();
 		return instancia;
 	}
-
+	/**
+	 * Establece una nueva instancia de la clase Estadistica.
+	 * Si la instancia recibida es null, se crea una nueva instancia vacía.
+	 *
+	 * @param nuevaInstancia nueva instancia de Estadistica
+	 */
 	public static void setInstancia(Estadistica nuevaInstancia) {
 		if (nuevaInstancia == null) {
 			instancia = new Estadistica();
