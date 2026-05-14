@@ -40,6 +40,17 @@ public class DescuentoCantidad extends Descuento {
 		this(nombre, inicio, fin, cantidadMinima, porcentaje, null);
 	}
 
+	/**
+	 * Constructor del descuento por cantidad.
+	 *
+	 * @param nombre         nombre del descuento
+	 * @param inicio         fecha y hora de inicio del descuento
+	 * @param fin            fecha y hora de fin del descuento
+	 * @param cantidadMinima cantidad mínima necesaria para aplicar el descuento
+	 * @param porcentaje     porcentaje de descuento (puede venir en formato 0-1 o
+	 *                       0-100)
+	 * @param producto       producto al que se aplica el descuento
+	 */
 	public DescuentoCantidad(String nombre, LocalDateTime inicio, LocalDateTime fin, int cantidadMinima,
 			double porcentaje, ProductoVenta producto) {
 		super(nombre, inicio, fin);
@@ -88,12 +99,17 @@ public class DescuentoCantidad extends Descuento {
 	/**
 	 * Recupera el porcentaje del descuento
 	 *
-	 * @return el porcentaje aplicado
+	 * @return porcentaje aplicado
 	 */
 	public double getPorcentaje() {
 		return porcentaje;
 	}
 
+	/**
+	 * recupera el producto
+	 * 
+	 * @return producto
+	 */
 	public ProductoVenta getProducto() {
 		return producto;
 	}

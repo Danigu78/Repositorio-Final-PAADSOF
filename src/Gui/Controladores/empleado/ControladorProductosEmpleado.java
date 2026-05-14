@@ -141,10 +141,12 @@ public class ControladorProductosEmpleado implements ActionListener {
 	}
 	
 	/**
-	 * Construye las líneas de un pack a partir de un texto.
-	 * 
+	 * Construye una lista de líneas de pack a partir de un texto.
+	 * Cada línea del texto debe seguir el formato: ID;UNIDADES.
+	 *
 	 * @param texto texto con las líneas del pack
-	 * @return lista de líneas del pack
+	 * @return lista de objetos LineaPack construidos a partir del texto
+	 * @throws Exception si el formato es incorrecto o los datos no son válidos
 	 */
 	public ArrayList<LineaPack> construirLineasPack(String texto) throws Exception {
 		ArrayList<LineaPack> lineas = new ArrayList<>();

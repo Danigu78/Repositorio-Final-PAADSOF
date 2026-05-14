@@ -608,7 +608,13 @@ public class Empleado extends UsuarioRegistrado implements Serializable {
 		System.out.println("Stock retirado correctamente para " + producto.getId());
 		return true;
 	}
-
+	/**
+	 * Elimina un producto de venta del inventario.
+	 * Si el producto es un pack, intenta retirar su stock antes de marcarlo como eliminado.
+	 *
+	 * @param idProducto identificador del producto a eliminar
+	 * @return true si el producto se eliminó correctamente, false en caso contrario
+	 */
 	public boolean eliminarProductoVenta(String idProducto) {
 		if (idProducto == null) {
 			System.out.println("El id del producto no puede ser null.");

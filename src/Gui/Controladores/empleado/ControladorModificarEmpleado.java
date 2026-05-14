@@ -129,6 +129,23 @@ public class ControladorModificarEmpleado implements ActionListener {
 	/**
 	 * Guarda los cambios realizados sobre un producto.
 	 *
+	 * @param idProducto identificador del producto
+	 * @param nombre nuevo nombre del producto
+	 * @param descripcion nueva descripción del producto
+	 * @param imagen nueva imagen del producto
+	 * @param paginasTexto número de páginas en formato texto
+	 * @param editorial editorial del producto
+	 * @param anioTexto año de publicación en formato texto
+	 * @param minJugadoresTexto número mínimo de jugadores en formato texto
+	 * @param maxJugadoresTexto número máximo de jugadores en formato texto
+	 * @param minEdadTexto edad mínima recomendada en formato texto
+	 * @param maxEdadTexto edad máxima recomendada en formato texto
+	 * @param estilo tipo o estilo del juego
+	 * @param alturaTexto altura de la figura en formato texto
+	 * @param anchoTexto ancho de la figura en formato texto
+	 * @param largoTexto largo de la figura en formato texto
+	 * @param material material de la figura
+	 * @param marca marca de la figura
 	 * @return resultado de la operación
 	 */
 	public ResultadoOperacion guardarProducto(String idProducto, String nombre, String descripcion, String imagen,

@@ -202,15 +202,15 @@ public class Tienda implements Serializable {
 		return null;
 	}
 
-	
 	public List<Producto2Mano> verCartera(String nombre) {
-		Cliente cl=buscarClientePorNickname(nombre);
-		if (cl==null) {
+		Cliente cl = buscarClientePorNickname(nombre);
+		if (cl == null) {
 			return null;
 		}
 		return cl.getCarteraIntercambio();
-		
+
 	}
+
 	/**
 	 * Busca clientes en base al nick dado devolviendo su objeto
 	 *
@@ -311,12 +311,13 @@ public class Tienda implements Serializable {
 	 * @return la categoría al que pertenece, null en cualquier otro caso
 	 */
 	public Categoria buscarCategoriaPorNombre(String nombre) {
-	    if (nombre == null || nombre.isBlank()) return null;
-	    for (Categoria c : this.categorias) {
-	        if (!c.isEliminada() && c.getNombre().equalsIgnoreCase(nombre))
-	            return c;
-	    }
-	    return null;
+		if (nombre == null || nombre.isBlank())
+			return null;
+		for (Categoria c : this.categorias) {
+			if (!c.isEliminada() && c.getNombre().equalsIgnoreCase(nombre))
+				return c;
+		}
+		return null;
 	}
 
 	/**
@@ -1058,7 +1059,7 @@ public class Tienda implements Serializable {
 	/**
 	 * Cambia la instancia única de la tienda
 	 *
-	 * @param instancia la nueva instancia
+	 * @param nuevaInstancia la nueva instancia
 	 */
 	public static void setInstancia(Tienda nuevaInstancia) {
 		if (nuevaInstancia == null) {
@@ -1498,18 +1499,19 @@ public class Tienda implements Serializable {
 			}
 		}
 	}
-	
+
 	/**
-	 * Devuelve solo las categorías activas (no eliminadas).
-	 * Lo usan los combos y filtros de la GUI.
+	 * Devuelve solo las categorías activas (no eliminadas). Lo usan los combos y
+	 * filtros de la GUI.
 	 *
 	 * @return lista de categorías activas
 	 */
 	public List<Categoria> getCategoriasActivas() {
-	    List<Categoria> activas = new ArrayList<>();
-	    for (Categoria c : categorias) {
-	        if (!c.isEliminada()) activas.add(c);
-	    }
-	    return activas;
+		List<Categoria> activas = new ArrayList<>();
+		for (Categoria c : categorias) {
+			if (!c.isEliminada())
+				activas.add(c);
+		}
+		return activas;
 	}
 }

@@ -13,7 +13,7 @@ import java.sql.Date;
 
 /**
  * Controlador del subpanel de pago. Gestiona el proceso de pago usando el
- * método pagarCarrito del cliente. 
+ * método pagarCarrito del cliente.
  *
  * @author Daniel
  * @version 1.0
@@ -151,10 +151,20 @@ public class ControladorPago implements ActionListener {
 		}
 	}
 
+	/**
+	 * Comprueba si el pedido del usuario sigue pendiente de pago y no ha caducado.
+	 *
+	 * @return true si el pedido existe, está pendiente de pago y no está caducado;
+	 *         false en caso contrario
+	 */
 	public boolean pedidoSiguePendiente() {
 		return pedido != null && pedido.getEstado() == EstadoPedido.PENDIENTE_PAGO && !pedido.isCaducado();
 	}
 
+	/**
+	 * Revisa y actualiza el estado de carritos y pedidos caducados en la tienda, y
+	 * guarda los cambios realizados.
+	 */
 	private void revisarTiempos() {
 		Tienda.getInstancia().getComprobadorTiempos().revisarCarritosCaducados();
 		Tienda.getInstancia().getComprobadorTiempos().revisarPedidosPendientesCaducados();

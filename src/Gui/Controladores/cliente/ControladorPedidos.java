@@ -36,7 +36,7 @@ public class ControladorPedidos implements ActionListener {
 	/**
 	 * Controla el perfil del cliente.
 	 *
-	 * @param subpanelPerfil vista del perfil
+	 * @param vista vista del perfil
 	 * @param cliente        cliente que edita su perfil
 	 */
 	public ControladorPedidos(SubpanelPedidos vista, Cliente cliente) {
