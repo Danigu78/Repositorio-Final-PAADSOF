@@ -19,14 +19,14 @@ historiales, notificaciones,... ya hechas.
 Además por comentarte que por consola salen algunos comentarios debido a la entrega anterior,
 ya que el DemostradorMain necesitaba de funciones específicas de escritura. Ahora mismo el 
 DemostradorMain sigue funcionando, pero al crear empleados y productos altera el .dat de 
-nuestra tienda actual, por lo que recomendamos no ejecutarlo. Por otra parte, los junit sí
+nuestra tienda actual, por lo que recomendamos que no lo ejecutes por que se cambiaría el .dat con los datos de nuestra tienda. Por otra parte, los junit sí
 que los puedes ejecutar :)
 
-Para ejecutar la página y ver la aplicación accede a src/Gui/VentanaPrincipal y si te aparecen 
+Para ejecutar la página y ver la aplicación accede a src/Gui/VentanaPrincipal, alli esta el main, y si te aparecen 
 varias formas de ejecutarlo, hazlo donde pone Java Aplication.
 
 La entrega 4 está en la carpeta de entregables, además de en la entrega de moodle de Daniel. 
-En ella tienes la matriz y el diagrama adaptado a esta nueva entrega (el diagrama sin la GUI 
+En esa carpeta tienes la matriz y el diagrama adaptado a esta nueva entrega (el diagrama sin la GUI 
 como dice el moodle). Además te añadimos un informe de nuestra implementación de  la GUI, 
 donde te resumimos un poco las decisiones de implementación de la vista y de los controladores.
 
