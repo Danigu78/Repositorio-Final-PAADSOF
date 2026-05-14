@@ -12,16 +12,36 @@ import javax.swing.JScrollPane;
 
 import utilidades.RutasImagen;
 
-/** Utilidades de interfaz para imágenes de productos. */
+/**
+ * Clase de utilidades para el manejo de imágenes de productos en la interfaz gráfica.
+ * Permite normalizar rutas de imagen y mostrar imágenes en ventanas emergentes.
+ * 
+ * @author Lucas
+ * @version 1.0
+ */
 public final class UtilidadesImagenProducto {
 
 	private UtilidadesImagenProducto() {
 	}
 
+	/**
+	 * Normaliza la ruta o nombre de un archivo de imagen de producto.
+	 *
+	 * @param rutaImagen ruta o nombre del archivo proporcionado por el usuario
+	 * @return nombre de archivo normalizado listo para ser usado en el sistema de imágenes
+	 */
 	public static String normalizarRutaImagen(String rutaImagen) {
 		return RutasImagen.normalizarNombreArchivo(rutaImagen);
 	}
 
+	/**
+	 * Muestra una imagen de producto en una ventana emergente.
+	 * La imagen se carga desde la carpeta interna "src/fotos", se valida y se escala
+	 * antes de mostrarse en pantalla.
+	 *
+	 * @param padre componente padre sobre el que se mostrará el diálogo
+	 * @param rutaImagen ruta o nombre de la imagen del producto
+	 */
 	public static void mostrarImagenProducto(Component padre, String rutaImagen) {
 		String nombreArchivo = normalizarRutaImagen(rutaImagen);
 

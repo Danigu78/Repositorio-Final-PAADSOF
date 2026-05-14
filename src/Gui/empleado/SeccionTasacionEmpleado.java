@@ -21,6 +21,9 @@ import usuarios.Empleado;
  * Muestra los productos pendientes de tasación. Para tasar uno, el empleado
  * escribe el ID, revisa la información o la imagen si quiere, y después pone el
  * precio y el estado.
+ * 
+ * @author Lucas
+ * @version 1.0
  */
 public class SeccionTasacionEmpleado extends SeccionEmpleadoBase {
 
@@ -35,6 +38,12 @@ public class SeccionTasacionEmpleado extends SeccionEmpleadoBase {
 	private JComboBox<EstadoProducto> comboEstadoProducto;
 	private ControladorTasacionEmpleado controlador;
 
+	/**
+	 * Constructor de la sección de tasación.
+	 *
+	 * @param ventana Ventana principal de la aplicación.
+	 * @param empleado Empleado autenticado que realiza las tasaciones.
+	 */
 	public SeccionTasacionEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
 		this.controlador = new ControladorTasacionEmpleado(empleado);
@@ -43,17 +52,31 @@ public class SeccionTasacionEmpleado extends SeccionEmpleadoBase {
 		construirUI();
 	}
 
+	/**
+	 * Asigna el controlador de eventos a la vista.
+	 *
+	 * @param controlador controlador asociado a la interfaz.
+	 */
 	public void setControlador(ActionListener controlador) {
 		if (controlador instanceof ControladorTasacionEmpleado) {
 			this.controlador = (ControladorTasacionEmpleado) controlador;
 		}
 	}
 
+	/**
+	 * Asocia un botón con una acción del controlador.
+	 *
+	 * @param boton botón de la interfaz.
+	 * @param accion identificador de la acción.
+	 */
 	private void conectar(JButton boton, String accion) {
 		boton.setActionCommand(accion);
 		boton.addActionListener(controlador);
 	}
 
+	/**
+	 * Construye toda la interfaz gráfica de la sección.
+	 */
 	private void construirUI() {
 		setLayout(new BorderLayout());
 
@@ -66,7 +89,12 @@ public class SeccionTasacionEmpleado extends SeccionEmpleadoBase {
 
 		add(panelBase, BorderLayout.CENTER);
 	}
-
+	
+	/**
+	 * Crea el bloque donde se muestran los productos pendientes de tasación.
+	 *
+	 * @return panel con la tabla de productos pendientes.
+	 */
 	private JPanel crearBloquePendientes() {
 		JPanel bloque = crearBloque("Productos pendientes de tasación");
 
@@ -120,6 +148,11 @@ public class SeccionTasacionEmpleado extends SeccionEmpleadoBase {
 		return bloque;
 	}
 
+	/**
+	 * Crea el bloque principal donde se consulta o tasa un producto.
+	 *
+	 * @return panel de tasación.
+	 */
 	private JPanel crearBloqueTasarProducto() {
 		JPanel bloque = crearBloque("Consultar o tasar producto");
 
@@ -138,6 +171,11 @@ public class SeccionTasacionEmpleado extends SeccionEmpleadoBase {
 		return bloque;
 	}
 
+	/**
+	 * Crea el panel con los campos de datos de tasación.
+	 *
+	 * @return panel con formulario de tasación.
+	 */
 	private JPanel crearPanelDatosTasacion() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -168,6 +206,11 @@ public class SeccionTasacionEmpleado extends SeccionEmpleadoBase {
 		return panel;
 	}
 
+	/**
+	 * Crea el panel de acciones de tasación (ver, imagen, tasar).
+	 *
+	 * @return panel con botones de acción.
+	 */
 	private JPanel crearPanelAccionesTasacion() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -209,6 +252,11 @@ public class SeccionTasacionEmpleado extends SeccionEmpleadoBase {
 		return panel;
 	}
 
+	/**
+	 * Ajusta el tamaño fijo de los botones utilizados en el panel de tasación.
+	 * 
+	 * @param boton botón al que se le aplicará el tamaño fijo
+	 */
 	private void ajustarBotonTasacion(JButton boton) {
 		Dimension tamano = new Dimension(VentanaPrincipal.escalar(230), VentanaPrincipal.escalar(40));
 
@@ -217,6 +265,9 @@ public class SeccionTasacionEmpleado extends SeccionEmpleadoBase {
 		boton.setMaximumSize(tamano);
 	}
 
+	/**
+	 * Carga la tabla de productos pendientes de tasación.
+	 */
 	public void cargarTablaPendientes() {
 		modeloPendientes.setRowCount(0);
 
@@ -226,6 +277,9 @@ public class SeccionTasacionEmpleado extends SeccionEmpleadoBase {
 		}
 	}
 
+	/**
+	 * Abre la información detallada de un producto pendiente.
+	 */
 	public void verProducto() {
 		String idProducto = campoIdProducto.getText().trim();
 
@@ -244,6 +298,9 @@ public class SeccionTasacionEmpleado extends SeccionEmpleadoBase {
 		mostrarProductoEnVentana(producto);
 	}
 
+	/**
+	 * Abre la imagen del producto seleccionado.
+	 */
 	public void verImagenProducto() {
 		String idProducto = campoIdProducto.getText().trim();
 
@@ -262,6 +319,9 @@ public class SeccionTasacionEmpleado extends SeccionEmpleadoBase {
 		abrirImagenProducto(producto);
 	}
 
+	/**
+	 * Realiza la tasación de un producto.
+	 */
 	public void tasarProducto() {
 		EstadoProducto estado = (EstadoProducto) comboEstadoProducto.getSelectedItem();
 		ResultadoOperacion resultado = controlador.tasarProducto(campoIdProducto.getText(), campoPrecioTasado.getText(),
@@ -276,10 +336,21 @@ public class SeccionTasacionEmpleado extends SeccionEmpleadoBase {
 		}
 	}
 
+	/**
+	 * Busca un producto pendiente de tasación a partir de su ID.
+	 *
+	 * @param idProducto identificador del producto a buscar
+	 * @return el producto de segunda mano pendiente de tasación, o null si no existe
+	 */
 	private Producto2Mano buscarProductoPendientePorId(String idProducto) {
 		return controlador.buscarProductoPendientePorId(idProducto);
 	}
 
+	/**
+	 * Muestra en una ventana emergente la información detallada de un producto.
+	 *
+	 * @param producto producto de segunda mano que se desea visualizar
+	 */
 	private void mostrarProductoEnVentana(Producto2Mano producto) {
 		JTextArea areaProducto = crearArea();
 		areaProducto.setEditable(false);
@@ -292,10 +363,21 @@ public class SeccionTasacionEmpleado extends SeccionEmpleadoBase {
 		JOptionPane.showMessageDialog(this, scroll, "Información del producto", JOptionPane.INFORMATION_MESSAGE);
 	}
 
+	/**
+	 * Genera el texto descriptivo formateado de un producto de segunda mano.
+	 *
+	 * @param producto producto del que se desea obtener la información en texto
+	 * @return cadena con la información formateada del producto
+	 */
 	private String crearTextoProducto(Producto2Mano producto) {
 		return controlador.crearTextoProducto(producto);
 	}
 
+	/**
+	 * Abre la imagen asociada a un producto de segunda mano en una ventana.
+	 *
+	 * @param producto producto cuya imagen se desea mostrar
+	 */
 	private void abrirImagenProducto(Producto2Mano producto) {
 		if (producto == null) {
 			mostrarError("El producto no puede ser null.");
@@ -312,10 +394,19 @@ public class SeccionTasacionEmpleado extends SeccionEmpleadoBase {
 		UtilidadesImagenProducto.mostrarImagenProducto(this, rutaImagen);
 	}
 
+	/**
+	 * Obtiene la ruta de imagen asociada a un producto de segunda mano.
+	 *
+	 * @param producto producto del que se quiere obtener la imagen
+	 * @return ruta de la imagen del producto, o null si no tiene
+	 */
 	private String obtenerRutaImagen(Producto2Mano producto) {
 		return controlador.obtenerRutaImagen(producto);
 	}
 
+	/**
+	 * Limpia los campos del formulario de tasación.
+	 */
 	private void limpiarCamposTasacion() {
 		campoIdProducto.setText("");
 		campoPrecioTasado.setText("");
@@ -325,6 +416,11 @@ public class SeccionTasacionEmpleado extends SeccionEmpleadoBase {
 		}
 	}
 
+	/**
+	 * Ajusta el estilo visual de la tabla de tasaciones.
+	 *
+	 * @param tabla tabla a estilizar.
+	 */
 	private void estilizarTablaTasaciones(JTable tabla) {
 		tabla.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 		tabla.setRowHeight(VentanaPrincipal.escalar(28));
