@@ -95,6 +95,9 @@ public class VentanaPrincipal extends JFrame {
 
 	/** Panel contenedor de todas las pantallas. */
 	private JPanel panelContenedor;
+
+	/** Panel de usuario invitado. */
+	private PanelInvitado panelInvitado;
 	/** Controlador principal de la ventana. */
 	private ControladorVentana controlador;
 
@@ -161,7 +164,7 @@ public class VentanaPrincipal extends JFrame {
 		PanelCliente panelCliente = new PanelCliente(this);
 		PanelEmpleado panelEmpleado = new PanelEmpleado(this);
 		PanelGestor panelGestor = new PanelGestor(this);
-		PanelInvitado panelInvitado = new PanelInvitado(this);
+		panelInvitado = new PanelInvitado(this);
 
 		controlador.setPantallas(pantallaLogin, panelCliente, panelEmpleado, panelGestor);
 
@@ -192,6 +195,9 @@ public class VentanaPrincipal extends JFrame {
 	 * @param nombrePantalla identificador de la pantalla
 	 */
 	public void mostrarPantalla(String nombrePantalla) {
+		if (SEC_INVITADO.equals(nombrePantalla) && panelInvitado != null) {
+			panelInvitado.refrescarCatalogo();
+		}
 		cardLayout.show(panelContenedor, nombrePantalla);
 	}
 

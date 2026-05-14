@@ -335,4 +335,11 @@ public class PanelInvitado extends JPanel {
 			break;
 		}
 	}
+
+	/**
+	 * Refresca el catálogo de invitado cuando la pantalla vuelve a mostrarse.
+	 */
+	public void refrescarCatalogo() {
+		subpanelCatalogo.actualizar(null);
+	}
 }
