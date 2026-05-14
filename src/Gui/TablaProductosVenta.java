@@ -317,6 +317,9 @@ public class TablaProductosVenta extends JPanel {
 			if (producto == null) {
 				continue;
 			}
+			if (producto.isEliminado()) {
+				continue;
+			}
 			String id = producto.getId();
 			String nombre = producto.getNombre();
 			String tipo = controlador.obtenerTipoProductoVenta(producto);
