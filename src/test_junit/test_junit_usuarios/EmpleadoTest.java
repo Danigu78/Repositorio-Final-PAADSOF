@@ -5,6 +5,9 @@ import org.junit.jupiter.api.*;
 
 import excepciones.*;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 import intercambios.*;
@@ -25,6 +28,23 @@ public class EmpleadoTest {
 	private ProductoVenta watchmen;
 	private ProductoVenta akira;
 	private Cliente cliente;
+	private static byte[] datOriginal;
+
+    @BeforeAll
+    static void guardarDat() throws Exception {
+        File fichero = new File("datos_tienda.dat");
+        if (fichero.exists()) {
+            datOriginal = Files.readAllBytes(fichero.toPath());
+        }
+    }
+
+    @AfterAll
+    static void restaurarDat() throws Exception {
+        if (datOriginal != null) {
+            Files.write(Paths.get("datos_tienda.dat"), datOriginal);
+            GuardadoTienda.cargar(); // Recarga la tienda con los datos originales
+        }
+    }
 
 	@BeforeEach
 	void setUp() {

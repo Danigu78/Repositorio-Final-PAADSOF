@@ -3,6 +3,9 @@ package test_junit.test_junit_usuarios;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.*;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 import productos.*;
@@ -17,6 +20,23 @@ public class UsuarioRegistradoTest {
 	private Cliente bob;
 	private ProductoVenta watchmen;
 	private Producto2Mano p2m;
+	private static byte[] datOriginal;
+
+	@BeforeAll
+	static void guardarDat() throws Exception {
+		File fichero = new File("datos_tienda.dat");
+		if (fichero.exists()) {
+			datOriginal = Files.readAllBytes(fichero.toPath());
+		}
+	}
+
+	@AfterAll
+	static void restaurarDat() throws Exception {
+		if (datOriginal != null) {
+			Files.write(Paths.get("datos_tienda.dat"), datOriginal);
+			GuardadoTienda.cargar(); // Recarga la tienda con los datos originales
+		}
+	}
 
 	@BeforeEach
 	void setUp() {

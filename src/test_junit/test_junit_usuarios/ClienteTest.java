@@ -5,6 +5,9 @@ import org.junit.jupiter.api.*;
 
 import excepciones.ProductoBloqueadoException;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +30,23 @@ public class ClienteTest {
 	private ProductoVenta akira;
 	private Empleado empTasador;
 	private Empleado empPedidos;
+	private static byte[] datOriginal;
+
+    @BeforeAll
+    static void guardarDat() throws Exception {
+        File fichero = new File("datos_tienda.dat");
+        if (fichero.exists()) {
+            datOriginal = Files.readAllBytes(fichero.toPath());
+        }
+    }
+
+    @AfterAll
+    static void restaurarDat() throws Exception {
+        if (datOriginal != null) {
+            Files.write(Paths.get("datos_tienda.dat"), datOriginal);
+            GuardadoTienda.cargar(); // Recarga la tienda con los datos originales
+        }
+    }
 
 	@BeforeEach
 	void setUp() {

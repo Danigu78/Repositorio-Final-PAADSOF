@@ -2,13 +2,19 @@ package test_junit.test_junit_ventas;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import productos.Categoria;
 import productos.ProductoVenta;
+import tienda.GuardadoTienda;
 import tienda.Tienda;
 import usuarios.Cliente;
 import ventas.*;
@@ -20,7 +26,23 @@ public class LineasYDescuentosTest {
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
+		private static byte[] datOriginal;
 
+	    @BeforeAll
+	    static void guardarDat() throws Exception {
+	        File fichero = new File("datos_tienda.dat");
+	        if (fichero.exists()) {
+	            datOriginal = Files.readAllBytes(fichero.toPath());
+	        }
+	    }
+
+	    @AfterAll
+	    static void restaurarDat() throws Exception {
+	        if (datOriginal != null) {
+	            Files.write(Paths.get("datos_tienda.dat"), datOriginal);
+	            GuardadoTienda.cargar(); // Recarga la tienda con los datos originales
+	        }
+	    }
 		public ProductoPrueba(String nombre, String descripcion, String imagenRuta, double precio, int stock) {
 			super(nombre, descripcion, imagenRuta, precio, stock);
 		}
