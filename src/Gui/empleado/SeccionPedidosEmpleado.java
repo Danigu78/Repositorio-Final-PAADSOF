@@ -17,21 +17,37 @@ import ventas.Pedido;
 /**
  * Pantalla para que el empleado consulte y prepare pedidos.
  * 
- * La tabla solo sirve para ver los pedidos de la tienda. Para trabajar con un
- * pedido concreto, se escribe su ID en el campo inferior.
+ * @author Lucas
+ * @version 1.0
  */
 public class SeccionPedidosEmpleado extends SeccionEmpleadoBase {
 
 	private static final long serialVersionUID = 1L;
 
+	/** Tabla que muestra los pedidos disponibles en la tienda. */
 	private JTable tablaPedidos;
+
+	/** Modelo de datos utilizado por la tabla de pedidos. */
 	private DefaultTableModel modeloPedidos;
+
+	/** Permite ordenar y filtrar las filas de la tabla de pedidos. */
 	private TableRowSorter<DefaultTableModel> ordenadorPedidos;
 
+	/** Campo donde el empleado escribe el ID del pedido. */
 	private JTextField campoIdPedido;
+
+	/** Combo para filtrar pedidos según su estado. */
 	private JComboBox<String> comboEstadoPedido;
+
+	/** Controlador encargado de gestionar las acciones de la sección. */
 	private ControladorPedidosEmpleado controlador;
 
+	/**
+	 * Crea la sección de gestión de pedidos para empleados.
+	 * 
+	 * @param ventana  ventana principal de la aplicación
+	 * @param empleado empleado que utiliza la sección
+	 */
 	public SeccionPedidosEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
 		this.controlador = new ControladorPedidosEmpleado(empleado);
@@ -40,17 +56,31 @@ public class SeccionPedidosEmpleado extends SeccionEmpleadoBase {
 		construirUI();
 	}
 
+	/**
+	 * Establece el controlador de la vista si es del tipo correcto.
+	 * 
+	 * @param controlador controlador asociado a la vista
+	 */
 	public void setControlador(ActionListener controlador) {
 		if (controlador instanceof ControladorPedidosEmpleado) {
 			this.controlador = (ControladorPedidosEmpleado) controlador;
 		}
 	}
 
+	/**
+	 * Conecta un botón con una acción del controlador.
+	 *
+	 * @param boton  botón que disparará la acción
+	 * @param accion identificador de la acción del controlador
+	 */
 	private void conectar(AbstractButton boton, String accion) {
 		boton.setActionCommand(accion);
 		boton.addActionListener(controlador);
 	}
 
+	/**
+	 * Construye toda la interfaz gráfica de la sección de pedidos.
+	 */
 	private void construirUI() {
 		setLayout(new BorderLayout());
 
@@ -64,6 +94,11 @@ public class SeccionPedidosEmpleado extends SeccionEmpleadoBase {
 		add(panelBase, BorderLayout.CENTER);
 	}
 
+	/**
+	 * Crea el bloque visual que contiene la tabla de pedidos.
+	 * 
+	 * @return panel con la tabla de pedidos
+	 */
 	private JPanel crearBloquePedidos() {
 		JPanel bloque = crearBloque("Pedidos de la tienda");
 
@@ -130,6 +165,11 @@ public class SeccionPedidosEmpleado extends SeccionEmpleadoBase {
 		return bloque;
 	}
 
+	/**
+	 * Crea el bloque inferior con las acciones disponibles sobre pedidos.
+	 * 
+	 * @return panel de acciones de pedido
+	 */
 	private JPanel crearBloqueAccionesPedido() {
 		JPanel bloque = crearBloque("Consultar o preparar pedido");
 
@@ -146,6 +186,11 @@ public class SeccionPedidosEmpleado extends SeccionEmpleadoBase {
 		return bloque;
 	}
 
+	/**
+	 * Crea el panel izquierdo con el campo para introducir el ID del pedido.
+	 * 
+	 * @return panel de datos del pedido
+	 */
 	private JPanel crearPanelDatosPedido() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -166,6 +211,11 @@ public class SeccionPedidosEmpleado extends SeccionEmpleadoBase {
 		return panel;
 	}
 
+	/**
+	 * Crea el panel derecho con los botones de acciones sobre pedidos.
+	 * 
+	 * @return panel de botones
+	 */
 	private JPanel crearPanelBotonesPedido() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -192,10 +242,18 @@ public class SeccionPedidosEmpleado extends SeccionEmpleadoBase {
 		return panel;
 	}
 
+	/**
+	 * Obtiene las opciones de filtrado de estados disponibles.
+	 * 
+	 * @return array de estados posibles
+	 */
 	private String[] crearOpcionesEstado() {
 		return controlador.crearOpcionesEstado();
 	}
 
+	/**
+	 * Carga en la tabla los pedidos filtrados por el estado seleccionado.
+	 */
 	public void cargarTablaPedidos() {
 		modeloPedidos.setRowCount(0);
 
@@ -213,6 +271,9 @@ public class SeccionPedidosEmpleado extends SeccionEmpleadoBase {
 		}
 	}
 
+	/**
+	 * Muestra la información detallada de un pedido a partir de su ID.
+	 */
 	public void verPedido() {
 		String idPedido = campoIdPedido.getText().trim();
 
@@ -231,6 +292,9 @@ public class SeccionPedidosEmpleado extends SeccionEmpleadoBase {
 		mostrarPedidoEnVentana(pedido);
 	}
 
+	/**
+	 * Marca un pedido como preparado.
+	 */
 	public void prepararPedido() {
 		ResultadoOperacion resultado = controlador.prepararPedido(campoIdPedido.getText());
 
@@ -242,10 +306,21 @@ public class SeccionPedidosEmpleado extends SeccionEmpleadoBase {
 		}
 	}
 
+	/**
+	 * Busca un pedido usando su identificador.
+	 * 
+	 * @param idPedido identificador del pedido
+	 * @return pedido encontrado o null si no existe
+	 */
 	private Pedido buscarPedidoPorId(String idPedido) {
 		return controlador.buscarPedidoPorId(idPedido);
 	}
 
+	/**
+	 * Abre una ventana emergente con toda la información del pedido.
+	 * 
+	 * @param pedido pedido que se quiere mostrar
+	 */
 	private void mostrarPedidoEnVentana(Pedido pedido) {
 		JTextArea areaPedido = crearArea();
 		areaPedido.setEditable(false);
@@ -258,10 +333,21 @@ public class SeccionPedidosEmpleado extends SeccionEmpleadoBase {
 		JOptionPane.showMessageDialog(this, scroll, "Información del pedido", JOptionPane.INFORMATION_MESSAGE);
 	}
 
+	/**
+	 * Genera el texto descriptivo de un pedido.
+	 * 
+	 * @param pedido pedido a representar
+	 * @return texto formateado con la información del pedido
+	 */
 	private String crearTextoPedido(Pedido pedido) {
 		return controlador.crearTextoPedido(pedido);
 	}
 
+	/**
+	 * Aplica estilos visuales personalizados a la tabla de pedidos.
+	 * 
+	 * @param tabla tabla que se va a estilizar
+	 */
 	private void estilizarTablaPedidos(JTable tabla) {
 		tabla.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 		tabla.setRowHeight(VentanaPrincipal.escalar(28));

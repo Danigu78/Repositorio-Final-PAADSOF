@@ -17,19 +17,38 @@ import usuarios.Empleado;
  * 
  * Muestra las ofertas de intercambio de la tienda. Para consultar o confirmar
  * una oferta concreta, el empleado escribe su ID abajo.
+ * 
+ * @author Lucas
+ * @version 1.0
  */
 public class SeccionIntercambiosEmpleado extends SeccionEmpleadoBase {
 
 	private static final long serialVersionUID = 1L;
 
+	/** Tabla con las ofertas de intercambio. */
 	private JTable tablaOfertas;
+
+	/** Modelo de datos de la tabla de ofertas. */
 	private DefaultTableModel modeloOfertas;
+
+	/** Ordenador y filtro de la tabla. */
 	private TableRowSorter<DefaultTableModel> ordenadorOfertas;
 
+	/** Campo para escribir el ID de la oferta. */
 	private JTextField campoIdOferta;
+
+	/** Combo para filtrar por estado. */
 	private JComboBox<String> comboEstadoOferta;
+
+	/** Controlador de la sección. */
 	private ControladorIntercambiosEmpleado controlador;
 
+	/**
+	 * Constructor de la sección de intercambios.
+	 * 
+	 * @param ventana  Ventana principal de la aplicación.
+	 * @param empleado Empleado que usa la sección.
+	 */
 	public SeccionIntercambiosEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
 		this.controlador = new ControladorIntercambiosEmpleado(empleado);
@@ -38,17 +57,29 @@ public class SeccionIntercambiosEmpleado extends SeccionEmpleadoBase {
 		construirUI();
 	}
 
+	/**
+	 * Cambia el controlador de la sección.
+	 * 
+	 * @param controlador Nuevo controlador.
+	 */
 	public void setControlador(ActionListener controlador) {
 		if (controlador instanceof ControladorIntercambiosEmpleado) {
 			this.controlador = (ControladorIntercambiosEmpleado) controlador;
 		}
 	}
 
+	/**
+	 * Conecta un botón con una acción del controlador.
+	 * 
+	 * @param boton  Botón a conectar.
+	 * @param accion Acción asociada.
+	 */
 	private void conectar(AbstractButton boton, String accion) {
 		boton.setActionCommand(accion);
 		boton.addActionListener(controlador);
 	}
 
+	/** Construye toda la interfaz gráfica. */
 	private void construirUI() {
 		setLayout(new BorderLayout());
 
@@ -62,6 +93,11 @@ public class SeccionIntercambiosEmpleado extends SeccionEmpleadoBase {
 		add(panelBase, BorderLayout.CENTER);
 	}
 
+	/**
+	 * Crea el bloque con la tabla de ofertas.
+	 * 
+	 * @return Panel con las ofertas.
+	 */
 	private JPanel crearBloqueOfertas() {
 		JPanel bloque = crearBloque("Ofertas de intercambio");
 
@@ -127,6 +163,11 @@ public class SeccionIntercambiosEmpleado extends SeccionEmpleadoBase {
 		return bloque;
 	}
 
+	/**
+	 * Crea el bloque de acciones sobre ofertas.
+	 * 
+	 * @return Panel de acciones.
+	 */
 	private JPanel crearBloqueAccionesOferta() {
 		JPanel bloque = crearBloque("Consultar o confirmar intercambio");
 
@@ -143,6 +184,11 @@ public class SeccionIntercambiosEmpleado extends SeccionEmpleadoBase {
 		return bloque;
 	}
 
+	/**
+	 * Crea el panel con los datos de la oferta.
+	 * 
+	 * @return Panel de datos.
+	 */
 	private JPanel crearPanelDatosOferta() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -167,6 +213,11 @@ public class SeccionIntercambiosEmpleado extends SeccionEmpleadoBase {
 		return panel;
 	}
 
+	/**
+	 * Crea el panel de botones de acciones.
+	 * 
+	 * @return Panel de botones.
+	 */
 	private JPanel crearPanelBotonesOferta() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -203,6 +254,11 @@ public class SeccionIntercambiosEmpleado extends SeccionEmpleadoBase {
 		return panel;
 	}
 
+	/**
+	 * Ajusta el tamaño de un botón.
+	 * 
+	 * @param boton Botón a ajustar.
+	 */
 	private void ajustarBotonOferta(JButton boton) {
 		Dimension tamano = new Dimension(VentanaPrincipal.escalar(225), VentanaPrincipal.escalar(42));
 
@@ -211,10 +267,16 @@ public class SeccionIntercambiosEmpleado extends SeccionEmpleadoBase {
 		boton.setMaximumSize(tamano);
 	}
 
+	/**
+	 * Crea las opciones del filtro de estados.
+	 * 
+	 * @return Array con los estados.
+	 */
 	private String[] crearOpcionesEstado() {
 		return controlador.crearOpcionesEstado();
 	}
 
+	/** Carga la tabla de ofertas. */
 	public void cargarTablaOfertas() {
 		modeloOfertas.setRowCount(0);
 
@@ -231,6 +293,7 @@ public class SeccionIntercambiosEmpleado extends SeccionEmpleadoBase {
 		}
 	}
 
+	/** Muestra la información de una oferta. */
 	public void verOferta() {
 		String idOferta = campoIdOferta.getText().trim();
 
@@ -249,6 +312,7 @@ public class SeccionIntercambiosEmpleado extends SeccionEmpleadoBase {
 		mostrarOfertaEnVentana(oferta);
 	}
 
+	/** Confirma una oferta de intercambio. */
 	public void confirmarOferta() {
 		ResultadoOperacion resultado = controlador.confirmarOferta(campoIdOferta.getText());
 
@@ -260,10 +324,21 @@ public class SeccionIntercambiosEmpleado extends SeccionEmpleadoBase {
 		}
 	}
 
+	/**
+	 * Busca una oferta por su ID.
+	 * 
+	 * @param idOferta ID de la oferta.
+	 * @return Oferta encontrada o null.
+	 */
 	private Oferta buscarOfertaPorId(String idOferta) {
 		return controlador.buscarOfertaPorId(idOferta);
 	}
 
+	/**
+	 * Muestra la información de una oferta en una ventana.
+	 * 
+	 * @param oferta Oferta a mostrar.
+	 */
 	private void mostrarOfertaEnVentana(Oferta oferta) {
 		JTextArea areaOferta = crearArea();
 		areaOferta.setEditable(false);
@@ -276,10 +351,21 @@ public class SeccionIntercambiosEmpleado extends SeccionEmpleadoBase {
 		JOptionPane.showMessageDialog(this, scroll, "Información de la oferta", JOptionPane.INFORMATION_MESSAGE);
 	}
 
+	/**
+	 * Crea el texto informativo de una oferta.
+	 * 
+	 * @param oferta Oferta a mostrar.
+	 * @return Texto con la información.
+	 */
 	private String crearTextoOferta(Oferta oferta) {
 		return controlador.crearTextoOferta(oferta);
 	}
 
+	/**
+	 * Aplica el estilo visual a la tabla.
+	 * 
+	 * @param tabla Tabla a estilizar.
+	 */
 	private void estilizarTablaOfertas(JTable tabla) {
 		tabla.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 		tabla.setRowHeight(VentanaPrincipal.escalar(28));

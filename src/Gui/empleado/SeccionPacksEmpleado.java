@@ -19,29 +19,59 @@ import usuarios.Empleado;
  * Pantalla para gestionar packs de productos.
  * 
  * Permite consultar productos, crear packs y modificar packs ya existentes.
+ * 
+ * @author Lucas
+ * @version 1.0
  */
 public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 
 	private static final long serialVersionUID = 1L;
 
+	/** Tabla de productos mostrados. */
 	private TablaVenta tablaProductos;
 
+	/** Área de texto con las líneas del pack. */
 	private JTextArea areaLineasPack;
 
+	/** Checks de categorías seleccionables para el pack. */
 	private ArrayList<JCheckBox> checksCategoriasPack;
+
+	/** Campo para el nombre del pack. */
 	private JTextField campoNombrePack;
+
+	/** Área de descripción del pack. */
 	private JTextArea areaDescripcionPack;
+
+	/** Campo de imagen del pack. */
 	private JTextField campoImagenPack;
+
+	/** Campo de precio del pack. */
 	private JTextField campoPrecioPack;
+
+	/** Campo de stock del pack. */
 	private JTextField campoStockPack;
 
+	/** Campo del ID del pack. */
 	private JTextField campoIdPack;
+
+	/** Campo del ID del producto. */
 	private JTextField campoIdProducto;
+
+	/** Campo de unidades del producto. */
 	private JTextField campoUnidades;
+
+	/** Campo del nuevo precio del pack. */
 	private JTextField campoNuevoPrecio;
 
+	/** Controlador de packs. */
 	private ControladorPacksEmpleado controlador;
 
+	/**
+	 * Constructor de la sección de packs.
+	 * 
+	 * @param ventana  Ventana principal.
+	 * @param empleado Empleado activo.
+	 */
 	public SeccionPacksEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
 		this.controlador = new ControladorPacksEmpleado(empleado);
@@ -50,17 +80,29 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		construirUI();
 	}
 
+	/**
+	 * Asigna el controlador de la sección.
+	 * 
+	 * @param controlador Nuevo controlador.
+	 */
 	public void setControlador(ActionListener controlador) {
 		if (controlador instanceof ControladorPacksEmpleado) {
 			this.controlador = (ControladorPacksEmpleado) controlador;
 		}
 	}
 
+	/**
+	 * Conecta un botón con una acción del controlador.
+	 * 
+	 * @param boton  Botón a conectar.
+	 * @param accion Acción asociada.
+	 */
 	private void conectar(JButton boton, String accion) {
 		boton.setActionCommand(accion);
 		boton.addActionListener(controlador);
 	}
 
+	/** Construye toda la interfaz gráfica. */
 	private void construirUI() {
 		setLayout(new BorderLayout());
 
@@ -76,6 +118,11 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		add(panelBase, BorderLayout.CENTER);
 	}
 
+	/**
+	 * Crea el bloque con los packs existentes.
+	 * 
+	 * @return Bloque de packs.
+	 */
 	private JPanel crearBloquePacksExistentes() {
 		tablaProductos = crearTablaProductosVenta("Packs existentes",
 				"Busca productos igual que en el resto de secciones. Por defecto se muestran los packs.", false);
@@ -97,6 +144,7 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		return tablaProductos.bloque;
 	}
 
+	/** Filtra la tabla para mostrar únicamente packs. */
 	public void dejarSoloPacks() {
 		if (tablaProductos == null) {
 			return;
@@ -117,7 +165,14 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		cargarModeloProductosVenta((DefaultTableModel) tablaProductos.tabla.getModel(), "", tipos, new ArrayList<>());
 	}
 
-	private JCheckBox buscarCheck(Component componente, String texto) {
+	private /**
+			 * Busca un checkbox por texto.
+			 * 
+			 * @param componente Componente raíz.
+			 * @param texto      Texto buscado.
+			 * @return Checkbox encontrado o null.
+			 */
+	JCheckBox buscarCheck(Component componente, String texto) {
 		if (componente instanceof JCheckBox) {
 			JCheckBox check = (JCheckBox) componente;
 
@@ -141,6 +196,11 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		return null;
 	}
 
+	/**
+	 * Desmarca todos los checks de un componente.
+	 * 
+	 * @param componente Componente raíz.
+	 */
 	private void desmarcarChecks(Component componente) {
 		if (componente instanceof JCheckBox) {
 			((JCheckBox) componente).setSelected(false);
@@ -155,6 +215,11 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		}
 	}
 
+	/**
+	 * Limpia los campos de texto de un componente.
+	 * 
+	 * @param componente Componente raíz.
+	 */
 	private void limpiarCamposDeFiltro(Component componente) {
 		if (componente instanceof JTextField) {
 			((JTextField) componente).setText("");
@@ -169,6 +234,11 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		}
 	}
 
+	/**
+	 * Crea el bloque de creación de packs.
+	 * 
+	 * @return Bloque de creación.
+	 */
 	private JPanel crearBloqueCrearPack() {
 		JPanel bloque = crearBloque("Crear pack");
 
@@ -244,6 +314,16 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		return bloque;
 	}
 
+	/**
+	 * Crea el panel de datos del pack.
+	 * 
+	 * @param campoNombre     Campo del nombre.
+	 * @param areaDescripcion Área de descripción.
+	 * @param campoImagen     Campo de imagen.
+	 * @param campoPrecio     Campo de precio.
+	 * @param campoStock      Campo de stock.
+	 * @return Panel de datos.
+	 */
 	private JPanel crearPanelDatosPack(JTextField campoNombre, JTextArea areaDescripcion, JTextField campoImagen,
 			JTextField campoPrecio, JTextField campoStock) {
 
@@ -277,6 +357,14 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		return panel;
 	}
 
+	/**
+	 * Crea un campo adaptado para packs.
+	 * 
+	 * @param etiqueta  Etiqueta del campo.
+	 * @param campo     Campo visual.
+	 * @param altoCampo Altura del campo.
+	 * @return Panel del campo.
+	 */
 	private JPanel crearCampoPack(String etiqueta, JComponent campo, int altoCampo) {
 		int alto = VentanaPrincipal.escalar(altoCampo);
 		campo.setPreferredSize(new Dimension(VentanaPrincipal.escalar(360), alto));
@@ -287,6 +375,11 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		return panelCampo;
 	}
 
+	/**
+	 * Crea el selector de imágenes del pack.
+	 * 
+	 * @return Panel selector.
+	 */
 	private JPanel crearSelectorImagenPack() {
 		JButton botonSeleccionarImagen = crearBotonSecundario("Abrir...");
 		JButton botonVerImagen = crearBotonSecundario("Ver imagen");
@@ -313,6 +406,11 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		return selector;
 	}
 
+	/**
+	 * Ajusta el tamaño de un botón de imagen.
+	 * 
+	 * @param boton Botón a ajustar.
+	 */
 	private void ajustarBotonImagenPack(JButton boton) {
 		Dimension tamano = new Dimension(VentanaPrincipal.escalar(115), VentanaPrincipal.escalar(36));
 		boton.setPreferredSize(tamano);
@@ -320,6 +418,11 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		boton.setMinimumSize(tamano);
 	}
 
+	/**
+	 * Crea el panel de categorías del pack.
+	 * 
+	 * @return Panel de categorías.
+	 */
 	private JPanel crearPanelCategoriasPack() {
 		JPanel panel = new JPanel(new GridLayout(0, 2, VentanaPrincipal.escalar(8), VentanaPrincipal.escalar(4)));
 		panel.setOpaque(false);
@@ -356,6 +459,11 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		return contenedor;
 	}
 
+	/**
+	 * Crea el panel de productos incluidos en el pack.
+	 * 
+	 * @return Panel de productos.
+	 */
 	private JPanel crearPanelProductosPack() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -375,6 +483,11 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		return panel;
 	}
 
+	/**
+	 * Crea el bloque de modificación de packs.
+	 * 
+	 * @return Bloque de modificación.
+	 */
 	private JPanel crearBloqueModificarPack() {
 		JPanel bloque = crearBloque("Modificar pack existente");
 
@@ -394,6 +507,11 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		return bloque;
 	}
 
+	/**
+	 * Crea el panel de campos de modificación.
+	 * 
+	 * @return Panel de campos.
+	 */
 	private JPanel crearPanelCamposModificar() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -416,6 +534,11 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		return panel;
 	}
 
+	/**
+	 * Crea el panel de acciones de modificación.
+	 * 
+	 * @return Panel de acciones.
+	 */
 	private JPanel crearPanelAccionesModificar() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -459,12 +582,18 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		return panel;
 	}
 
+	/**
+	 * Crea una fila de botones.
+	 * 
+	 * @return Fila de botones.
+	 */
 	private JPanel crearFilaBotones() {
 		JPanel fila = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		fila.setOpaque(false);
 		return fila;
 	}
 
+	/** Abre el selector de imagen para packs. */
 	public void seleccionarImagenPack() {
 		JFileChooser selectorImagen = new JFileChooser();
 		int opcion = selectorImagen.showOpenDialog(this);
@@ -475,6 +604,7 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		}
 	}
 
+	/** Muestra la imagen del pack. */
 	public void verImagenPack() {
 		normalizarCampoImagenPack();
 		String rutaImagen = campoImagenPack.getText().trim();
@@ -487,6 +617,7 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		UtilidadesImagenProducto.mostrarImagenProducto(this, rutaImagen);
 	}
 
+	/** Muestra la información de un pack. */
 	public void verPack() {
 		String idPack = campoIdPack.getText().trim();
 
@@ -498,6 +629,7 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		mostrarPackEnVentana(idPack);
 	}
 
+	/** Muestra el contenido escrito del pack temporal. */
 	public void verContenidoEscrito() {
 		try {
 			ArrayList<LineaPack> lineas = controlador.construirLineasPack(areaLineasPack.getText());
@@ -522,11 +654,21 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		}
 	}
 
+	/** Crea un nuevo pack. */
 	public void crearPack() {
 		normalizarCampoImagenPack();
 		crearPack(campoNombrePack, areaDescripcionPack, campoImagenPack, campoPrecioPack, campoStockPack);
 	}
 
+	/**
+	 * Crea un pack usando los campos indicados.
+	 * 
+	 * @param campoNombre     Campo nombre.
+	 * @param areaDescripcion Área descripción.
+	 * @param campoImagen     Campo imagen.
+	 * @param campoPrecio     Campo precio.
+	 * @param campoStock      Campo stock.
+	 */
 	private void crearPack(JTextField campoNombre, JTextArea areaDescripcion, JTextField campoImagen,
 			JTextField campoPrecio, JTextField campoStock) {
 
@@ -543,6 +685,11 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		}
 	}
 
+	/**
+	 * Obtiene las categorías seleccionadas.
+	 * 
+	 * @return Texto de categorías.
+	 */
 	private String obtenerCategoriasSeleccionadas() {
 		String texto = "";
 
@@ -563,10 +710,20 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		return texto;
 	}
 
+	/** Limpia el formulario de creación. */
 	public void limpiarFormularioCrear() {
 		limpiarFormularioCrear(campoNombrePack, areaDescripcionPack, campoImagenPack, campoPrecioPack, campoStockPack);
 	}
 
+	/**
+	 * Limpia el formulario indicado.
+	 * 
+	 * @param campoNombre     Campo nombre.
+	 * @param areaDescripcion Área descripción.
+	 * @param campoImagen     Campo imagen.
+	 * @param campoPrecio     Campo precio.
+	 * @param campoStock      Campo stock.
+	 */
 	private void limpiarFormularioCrear(JTextField campoNombre, JTextArea areaDescripcion, JTextField campoImagen,
 			JTextField campoPrecio, JTextField campoStock) {
 
@@ -584,10 +741,12 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		}
 	}
 
+	/** Normaliza la ruta de imagen del pack. */
 	private void normalizarCampoImagenPack() {
 		campoImagenPack.setText(UtilidadesImagenProducto.normalizarRutaImagen(campoImagenPack.getText()));
 	}
 
+	/** Añade un producto al pack. */
 	public void anadirProductoAPack() {
 		ResultadoOperacion resultado = controlador.anadirProductoAPack(campoIdProducto.getText(), campoIdPack.getText(),
 				campoUnidades.getText());
@@ -600,6 +759,7 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		}
 	}
 
+	/** Cambia las unidades de un producto del pack. */
 	public void cambiarUnidadesPack() {
 		ResultadoOperacion resultado = controlador.cambiarUnidadesPack(campoIdProducto.getText(), campoIdPack.getText(),
 				campoUnidades.getText());
@@ -612,6 +772,7 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		}
 	}
 
+	/** Quita un producto del pack. */
 	public void quitarProductoDelPack() {
 		ResultadoOperacion resultado = controlador.quitarProductoDelPack(campoIdPack.getText(),
 				campoIdProducto.getText());
@@ -624,6 +785,7 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		}
 	}
 
+	/** Cambia el precio de un pack. */
 	public void cambiarPrecioPack() {
 		ResultadoOperacion resultado = controlador.cambiarPrecioPack(campoIdPack.getText(), campoNuevoPrecio.getText());
 
@@ -635,6 +797,7 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		}
 	}
 
+	/** Elimina un pack. */
 	public void eliminarPack() {
 		ResultadoOperacion resultado = controlador.eliminarPack(campoIdPack.getText());
 
@@ -647,6 +810,11 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		}
 	}
 
+	/**
+	 * Muestra un pack en una ventana.
+	 * 
+	 * @param idPack ID del pack.
+	 */
 	private void mostrarPackEnVentana(String idPack) {
 		Pack pack = controlador.buscarPack(idPack);
 
@@ -658,10 +826,22 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		mostrarTextoLargo("Información del pack", controlador.crearTextoPack(pack));
 	}
 
+	/**
+	 * Crea el texto de las líneas de un pack.
+	 * 
+	 * @param lineas Líneas del pack.
+	 * @return Texto generado.
+	 */
 	private String crearTextoLineas(ArrayList<LineaPack> lineas) {
 		return controlador.crearTextoLineas(lineas);
 	}
 
+	/**
+	 * Muestra un texto largo en una ventana.
+	 * 
+	 * @param titulo Título de la ventana.
+	 * @param texto  Texto mostrado.
+	 */
 	private void mostrarTextoLargo(String titulo, String texto) {
 		JTextArea area = crearArea();
 		area.setEditable(false);
@@ -674,6 +854,12 @@ public class SeccionPacksEmpleado extends SeccionProductosVentaEmpleadoBase {
 		JOptionPane.showMessageDialog(this, scroll, titulo, JOptionPane.INFORMATION_MESSAGE);
 	}
 
+	/**
+	 * Formatea un precio.
+	 * 
+	 * @param precio Precio numérico.
+	 * @return Precio formateado.
+	 */
 	private String formatearPrecio(double precio) {
 		return controlador.formatearPrecio(precio);
 	}

@@ -27,18 +27,43 @@ import javax.swing.ListSelectionModel;
 import tienda.Notificacion;
 import usuarios.Empleado;
 
-/** Pantalla de notificaciones del empleado. */
+/**
+ * Pantalla de notificaciones del empleado.
+ * 
+ * Permite consultar las notificaciones recibidas, filtrarlas por estado y
+ * marcarlas como vistas.
+ * 
+ * @author Lucas
+ * @version 1.0
+ */
 public class SeccionNotificacionesEmpleado extends SeccionEmpleadoBase {
 
 	private static final long serialVersionUID = 1L;
 
+	/** Controlador de notificaciones. */
 	private ControladorNotificacionesEmpleado controlador;
+
+	/** Modelo visual de la lista de notificaciones. */
 	private DefaultListModel<String> modeloNotificaciones;
+
+	/** Lista visual de notificaciones. */
 	private JList<String> listaNotificaciones;
+
+	/** Notificaciones mostradas actualmente. */
 	private List<Notificacion> notificacionesMostradas;
+
+	/** Combo para filtrar notificaciones. */
 	private JComboBox<String> comboFiltro;
+
+	/** Etiqueta resumen de notificaciones. */
 	private JLabel labelResumen;
 
+	/**
+	 * Constructor de la sección de notificaciones.
+	 * 
+	 * @param ventana  Ventana principal.
+	 * @param empleado Empleado activo.
+	 */
 	public SeccionNotificacionesEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
 		this.controlador = new ControladorNotificacionesEmpleado(empleado);
@@ -47,17 +72,29 @@ public class SeccionNotificacionesEmpleado extends SeccionEmpleadoBase {
 		construirUI();
 	}
 
+	/**
+	 * Asigna el controlador de la sección.
+	 * 
+	 * @param controlador Controlador recibido.
+	 */
 	public void setControlador(ActionListener controlador) {
 		if (controlador instanceof ControladorNotificacionesEmpleado) {
 			this.controlador = (ControladorNotificacionesEmpleado) controlador;
 		}
 	}
 
+	/**
+	 * Conecta un botón con una acción.
+	 * 
+	 * @param boton  Botón a conectar.
+	 * @param accion Acción asociada.
+	 */
 	private void conectar(JButton boton, String accion) {
 		boton.setActionCommand(accion);
 		boton.addActionListener(controlador);
 	}
 
+	/** Construye la interfaz gráfica. */
 	private void construirUI() {
 		setLayout(new BorderLayout());
 
@@ -71,6 +108,11 @@ public class SeccionNotificacionesEmpleado extends SeccionEmpleadoBase {
 		add(panelBase, BorderLayout.CENTER);
 	}
 
+	/**
+	 * Crea el bloque de bandeja de notificaciones.
+	 * 
+	 * @return Bloque de bandeja.
+	 */
 	private JPanel crearBloqueBandeja() {
 		JPanel bloque = crearBloque("Bandeja de notificaciones");
 
@@ -116,6 +158,11 @@ public class SeccionNotificacionesEmpleado extends SeccionEmpleadoBase {
 		return bloque;
 	}
 
+	/**
+	 * Crea el bloque de acciones.
+	 * 
+	 * @return Bloque de acciones.
+	 */
 	private JPanel crearBloqueAcciones() {
 		JPanel bloque = crearBloque("Consultar notificacion");
 
@@ -130,6 +177,11 @@ public class SeccionNotificacionesEmpleado extends SeccionEmpleadoBase {
 		return bloque;
 	}
 
+	/**
+	 * Crea el panel de ayuda.
+	 * 
+	 * @return Panel de ayuda.
+	 */
 	private JPanel crearPanelAyuda() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -146,6 +198,11 @@ public class SeccionNotificacionesEmpleado extends SeccionEmpleadoBase {
 		return panel;
 	}
 
+	/**
+	 * Crea el panel de botones.
+	 * 
+	 * @return Panel de botones.
+	 */
 	private JPanel crearPanelBotones() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -175,6 +232,7 @@ public class SeccionNotificacionesEmpleado extends SeccionEmpleadoBase {
 		return panel;
 	}
 
+	/** Carga las notificaciones en pantalla. */
 	public void cargarNotificaciones() {
 		modeloNotificaciones.clear();
 		notificacionesMostradas.clear();
@@ -196,6 +254,11 @@ public class SeccionNotificacionesEmpleado extends SeccionEmpleadoBase {
 		listaNotificaciones.clearSelection();
 	}
 
+	/**
+	 * Obtiene el filtro seleccionado.
+	 * 
+	 * @return Filtro actual.
+	 */
 	private String obtenerFiltroActual() {
 		if (comboFiltro == null || comboFiltro.getSelectedItem() == null) {
 			return "Todas";
@@ -203,6 +266,12 @@ public class SeccionNotificacionesEmpleado extends SeccionEmpleadoBase {
 		return String.valueOf(comboFiltro.getSelectedItem());
 	}
 
+	/**
+	 * Actualiza el resumen de notificaciones.
+	 * 
+	 * @param totalMostradas Cantidad mostrada.
+	 * @param noVistas       Cantidad no vista.
+	 */
 	private void actualizarResumen(int totalMostradas, int noVistas) {
 		if (totalMostradas == 0) {
 			labelResumen.setText("No hay notificaciones para mostrar con este filtro.");
@@ -211,6 +280,7 @@ public class SeccionNotificacionesEmpleado extends SeccionEmpleadoBase {
 		labelResumen.setText("Mostrando " + totalMostradas + " notificaciones. No vistas: " + noVistas + ".");
 	}
 
+	/** Muestra la notificación seleccionada. */
 	public void verNotificacionSeleccionada() {
 		int posicion = listaNotificaciones.getSelectedIndex();
 
@@ -231,6 +301,7 @@ public class SeccionNotificacionesEmpleado extends SeccionEmpleadoBase {
 		cargarNotificaciones();
 	}
 
+	/** Marca todas las notificaciones como vistas. */
 	public void marcarTodasComoVistas() {
 		ResultadoOperacion resultado = controlador.marcarTodasComoVistas();
 		if (!resultado.isExito()) {
@@ -242,6 +313,11 @@ public class SeccionNotificacionesEmpleado extends SeccionEmpleadoBase {
 		mostrarMensaje(resultado.getMensaje());
 	}
 
+	/**
+	 * Muestra una notificación en una ventana emergente.
+	 * 
+	 * @param notificacion Notificación a mostrar.
+	 */
 	private void mostrarNotificacionEnVentana(Notificacion notificacion) {
 		JTextArea areaNotificacion = crearArea();
 		areaNotificacion.setEditable(false);
@@ -254,6 +330,7 @@ public class SeccionNotificacionesEmpleado extends SeccionEmpleadoBase {
 		JOptionPane.showMessageDialog(this, scroll, "Notificacion", JOptionPane.INFORMATION_MESSAGE);
 	}
 
+	/** Aplica estilo visual a la lista. */
 	private void estilizarLista() {
 		listaNotificaciones.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		listaNotificaciones.setFixedCellHeight(VentanaPrincipal.escalar(34));

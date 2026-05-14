@@ -36,38 +36,97 @@ import productos.ProductoVenta;
 import usuarios.Empleado;
 
 /**
- * Base para pantallas que usan productos de venta.
- * 
- * Aqui se deja la tabla comun para no repetirla.
+ * Base para pantallas del empleado que trabajan con productos de venta.
+ *
+ * @author Lucas
+ * @version 1.0
  */
 public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoBase {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Índices de columnas de la tabla de productos de venta.
+	 */
 	protected static final int COL_VENTA_ID = 0;
+
+	/**
+	 * Columna del nombre del producto.
+	 */
 	protected static final int COL_VENTA_NOMBRE = 1;
+
+	/**
+	 * Columna del tipo del producto.
+	 */
 	protected static final int COL_VENTA_TIPO = 2;
+
+	/**
+	 * Columna de categorías del producto.
+	 */
 	protected static final int COL_VENTA_CATEGORIAS = 3;
+
+	/**
+	 * Columna del precio del producto.
+	 */
 	protected static final int COL_VENTA_PRECIO = 4;
+
+	/**
+	 * Columna del stock disponible.
+	 */
 	protected static final int COL_VENTA_STOCK = 5;
+
+	/**
+	 * Columna de puntuación media.
+	 */
 	protected static final int COL_VENTA_PUNTUACION = 6;
 
+	/**
+	 * Controlador común de productos de venta.
+	 */
 	protected final ControladorProductosEmpleado controladorProductos = new ControladorProductosEmpleado();
 
+	/**
+	 * Contenedor que agrupa la tabla y su panel contenedor.
+	 */
 	protected static class TablaVenta {
+		/** Panel raíz del bloque visual de la tabla */
 		JPanel bloque;
+
+		/** Tabla de productos */
 		JTable tabla;
 
+		/**
+		 * Constructor del contenedor de tabla.
+		 *
+		 * @param bloque panel contenedor de la sección
+		 * @param tabla  tabla de productos
+		 */
 		TablaVenta(JPanel bloque, JTable tabla) {
 			this.bloque = bloque;
 			this.tabla = tabla;
 		}
 	}
 
+	/**
+	 * Constructor base de la sección de productos de venta.
+	 *
+	 * @param ventana  ventana principal de la aplicación
+	 * @param empleado empleado autenticado que usa la interfaz
+	 */
 	protected SeccionProductosVentaEmpleadoBase(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
 	}
 
+	/**
+	 * Crea una tabla completa de productos de venta con filtros y buscador.
+	 *
+	 * @param titulo           título del bloque visual
+	 * @param ayuda            texto explicativo para el usuario
+	 * @param incluirRefrescar indica si se muestra botón de refresco manual
+	 * @param camposId         campos de texto que se rellenarán automáticamente al
+	 *                         seleccionar un producto
+	 * @return contenedor con la tabla y su panel asociado
+	 */
 	protected TablaVenta crearTablaProductosVenta(String titulo, String ayuda, boolean incluirRefrescar,
 			JTextField... camposId) {
 
@@ -119,6 +178,11 @@ public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoB
 		return new TablaVenta(bloque, tabla);
 	}
 
+	/**
+	 * Crea el modelo de la tabla de productos de venta.
+	 *
+	 * @return modelo de tabla no editable
+	 */
 	private DefaultTableModel crearModeloTablaVenta() {
 		String[] columnas = { "ID", "Nombre", "Tipo", "Categorías", "Precio", "Stock", "Puntuación" };
 
@@ -132,6 +196,11 @@ public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoB
 		};
 	}
 
+	/**
+	 * Aplica estilo visual a la tabla de productos.
+	 *
+	 * @param tabla tabla a estilizar
+	 */
 	private void estilizarTabla(JTable tabla) {
 		tabla.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 		tabla.setRowHeight(VentanaPrincipal.escalar(28));
@@ -163,6 +232,12 @@ public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoB
 		tabla.getColumnModel().getColumn(COL_VENTA_PUNTUACION).setPreferredWidth(100);
 	}
 
+	/**
+	 * Conecta la selección de una fila con campos de texto destino.
+	 *
+	 * @param tabla    tabla de productos
+	 * @param camposId campos que recibirán el ID seleccionado
+	 */
 	private void conectarSeleccionId(JTable tabla, JTextField... camposId) {
 		tabla.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			@Override
@@ -192,6 +267,12 @@ public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoB
 		});
 	}
 
+	/**
+	 * Crea el panel de filtros (búsqueda, ordenación, tipos y categorías).
+	 *
+	 * @param modelo modelo de tabla a actualizar
+	 * @return panel de filtros
+	 */
 	private JPanel crearPanelFiltrosVenta(DefaultTableModel modelo) {
 		JPanel panelFiltros = new JPanel();
 		panelFiltros.setOpaque(false);
@@ -328,6 +409,13 @@ public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoB
 		return panelFiltros;
 	}
 
+	/**
+	 * Crea una fila visual de filtros con checkboxes.
+	 *
+	 * @param titulo título del grupo de filtros
+	 * @param checks array de checkboxes
+	 * @return panel de la fila construida
+	 */
 	private JPanel crearFilaFiltro(String titulo, JCheckBox[] checks) {
 		JPanel fila = new JPanel(new BorderLayout(VentanaPrincipal.escalar(12), 0));
 		fila.setOpaque(false);
@@ -348,6 +436,12 @@ public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoB
 		return fila;
 	}
 
+	/**
+	 * Crea un checkbox estilizado para filtros.
+	 *
+	 * @param texto texto del checkbox
+	 * @return checkbox configurado
+	 */
 	private JCheckBox crearCheckFiltro(String texto) {
 		JCheckBox check = new JCheckBox(texto);
 
@@ -359,6 +453,12 @@ public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoB
 		return check;
 	}
 
+	/**
+	 * Obtiene los textos de los checkboxes seleccionados.
+	 *
+	 * @param checks array de checkboxes
+	 * @return lista de textos seleccionados
+	 */
 	private List<String> obtenerChecksMarcados(JCheckBox[] checks) {
 		List<String> marcados = new ArrayList<>();
 
@@ -371,16 +471,38 @@ public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoB
 		return marcados;
 	}
 
+	/**
+	 * Carga todos los productos sin aplicar filtros.
+	 *
+	 * @param modelo modelo de tabla donde se insertan los datos
+	 */
 	protected void cargarModeloProductosVenta(DefaultTableModel modelo) {
 		cargarModeloProductosVenta(modelo, "", new ArrayList<>(), new ArrayList<>());
 	}
 
+	/**
+	 * Carga productos aplicando texto, tipos y categorías.
+	 *
+	 * @param modelo             modelo de tabla
+	 * @param textoBuscado       texto de búsqueda
+	 * @param tiposBuscados      tipos seleccionados
+	 * @param categoriasBuscadas categorías seleccionadas
+	 */
 	protected void cargarModeloProductosVenta(DefaultTableModel modelo, String textoBuscado, List<String> tiposBuscados,
 			List<String> categoriasBuscadas) {
 
 		cargarModeloProductosVenta(modelo, textoBuscado, tiposBuscados, categoriasBuscadas, "Sin ordenar");
 	}
 
+	/**
+	 * Carga productos aplicando filtros completos y ordenación.
+	 *
+	 * @param modelo             modelo de tabla
+	 * @param textoBuscado       texto de búsqueda
+	 * @param tiposBuscados      tipos seleccionados
+	 * @param categoriasBuscadas categorías seleccionadas
+	 * @param orden              criterio de ordenación
+	 */
 	protected void cargarModeloProductosVenta(DefaultTableModel modelo, String textoBuscado, List<String> tiposBuscados,
 			List<String> categoriasBuscadas, String orden) {
 
@@ -417,6 +539,12 @@ public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoB
 		}
 	}
 
+	/**
+	 * Ordena la lista de productos según el criterio indicado.
+	 *
+	 * @param productos lista de productos a ordenar
+	 * @param orden     criterio de ordenación seleccionado
+	 */
 	private void ordenarProductos(List<ProductoVenta> productos, String orden) {
 		final String ordenFinal;
 
@@ -475,6 +603,12 @@ public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoB
 		});
 	}
 
+	/**
+	 * Convierte un ID de producto (PV-XXX) a número entero.
+	 *
+	 * @param id identificador del producto
+	 * @return número extraído del ID o 0 si es inválido
+	 */
 	private int numeroIdProducto(String id) {
 		if (id == null || !id.startsWith("PV-")) {
 			return 0;
@@ -483,6 +617,14 @@ public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoB
 		return Integer.parseInt(id.substring(3));
 	}
 
+	/**
+	 * Carga los productos de venta en el modelo aplicando filtros simples de tipo y categoría.
+	 *
+	 * @param modelo modelo de la tabla donde se insertarán los productos
+	 * @param textoBuscado texto de búsqueda aplicado sobre ID, nombre, tipo y categorías
+	 * @param tipoBuscado tipo de producto seleccionado (puede ser "Todos" o null para no filtrar)
+	 * @param categoriaBuscada categoría seleccionada (puede ser "Todas" o null para no filtrar)
+	 */
 	protected void cargarModeloProductosVenta(DefaultTableModel modelo, String textoBuscado, String tipoBuscado,
 			String categoriaBuscada) {
 
@@ -500,6 +642,18 @@ public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoB
 		cargarModeloProductosVenta(modelo, textoBuscado, tipos, categorias);
 	}
 
+	/**
+	 * Evalúa si un producto cumple los filtros aplicados.
+	 *
+	 * @param id                 id del producto
+	 * @param nombre             nombre del producto
+	 * @param tipo               tipo del producto
+	 * @param categorias         categorías del producto
+	 * @param texto              texto de búsqueda
+	 * @param tiposBuscados      tipos seleccionados
+	 * @param categoriasBuscadas categorías seleccionadas
+	 * @return true si el producto cumple los filtros
+	 */
 	private boolean productoPasaFiltros(String id, String nombre, String tipo, String categorias, String texto,
 			List<String> tiposBuscados, List<String> categoriasBuscadas) {
 
@@ -545,35 +699,81 @@ public abstract class SeccionProductosVentaEmpleadoBase extends SeccionEmpleadoB
 		return true;
 	}
 
+	/**
+	 * Recarga la tabla a partir del modelo actual.
+	 *
+	 * @param tabla tabla que se desea recargar
+	 */
 	protected void recargarTablaProductos(JTable tabla) {
 		DefaultTableModel modelo = (DefaultTableModel) tabla.getModel();
 		cargarModeloProductosVenta(modelo);
 	}
 
+	/**
+	 * Obtiene nombres de categorías disponibles.
+	 *
+	 * @return lista de nombres de categorías
+	 */
 	private List<String> obtenerNombresCategoriasVenta() {
 		return controladorProductos.obtenerNombresCategoriasVenta();
 	}
 
+	/**
+	 * Obtiene categorías formateadas de un producto.
+	 *
+	 * @param producto producto de venta
+	 * @return texto de categorías
+	 */
 	protected String obtenerTextoCategorias(ProductoVenta producto) {
 		return controladorProductos.obtenerTextoCategorias(producto);
 	}
 
+	/**
+	 * Obtiene el tipo del producto de venta.
+	 *
+	 * @param producto producto de venta
+	 * @return tipo del producto
+	 */
 	protected String obtenerTipoProductoVenta(ProductoVenta producto) {
 		return controladorProductos.obtenerTipoProductoVenta(producto);
 	}
 
+	/**
+	 * Obtiene lista de productos ordenados por stock.
+	 *
+	 * @return lista de productos
+	 */
 	protected List<ProductoVenta> obtenerProductosOrdenadosPorStock() {
 		return controladorProductos.obtenerProductosOrdenadosPorStock();
 	}
 
+	/**
+	 * Construye líneas de pack a partir de texto.
+	 *
+	 * @param texto texto de entrada
+	 * @return lista de líneas de pack
+	 * @throws Exception si el formato es inválido
+	 */
 	protected ArrayList<LineaPack> construirLineasPack(String texto) throws Exception {
 		return controladorProductos.construirLineasPack(texto);
 	}
 
+	/**
+	 * Formatea un precio a formato visual.
+	 *
+	 * @param precio valor del precio
+	 * @return precio formateado
+	 */
 	private String formatearPrecio(double precio) {
 		return controladorProductos.formatearPrecio(precio);
 	}
 
+	/**
+	 * Formatea una puntuación media.
+	 *
+	 * @param puntuacion valor de la puntuación
+	 * @return puntuación formateada
+	 */
 	private String formatearPuntuacion(double puntuacion) {
 		return controladorProductos.formatearPuntuacion(puntuacion);
 	}

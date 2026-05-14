@@ -17,20 +17,34 @@ import ventas.Pedido;
 /**
  * Pantalla para entregar pedidos.
  * 
- * Muestra los pedidos que ya están listos para recoger. Para entregar uno, el
- * empleado escribe el código de recogida y pulsa el botón correspondiente.
+ * @author Lucas
+ * @version 1.0
  */
 public class SeccionEntregasEmpleado extends SeccionEmpleadoBase {
 
 	private static final long serialVersionUID = 1L;
 
+	/** Tabla con los pedidos listos para recoger. */
 	private JTable tablaPedidosListos;
+	
+	/** Modelo de datos de la tabla de pedidos listos. */
 	private DefaultTableModel modeloPedidosListos;
+	
+	/** Ordenador y filtro de la tabla de pedidos listos. */
 	private TableRowSorter<DefaultTableModel> ordenadorPedidosListos;
 
+	/** Campo donde se introduce el código de recogida. */
 	private JTextField campoCodigoRecogida;
+	
+	/** Controlador de la sección de entregas. */
 	private ControladorEntregasEmpleado controlador;
 
+	/**
+	 * Constructor de la sección de entregas.
+	 * 
+	 * @param ventana ventana principal de la aplicación
+	 * @param empleado empleado autenticado
+	 */
 	public SeccionEntregasEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
 		this.controlador = new ControladorEntregasEmpleado(empleado);
@@ -39,17 +53,31 @@ public class SeccionEntregasEmpleado extends SeccionEmpleadoBase {
 		construirUI();
 	}
 
+	/**
+	 * Asigna el controlador de la vista.
+	 * 
+	 * @param controlador controlador de entregas
+	 */
 	public void setControlador(ActionListener controlador) {
 		if (controlador instanceof ControladorEntregasEmpleado) {
 			this.controlador = (ControladorEntregasEmpleado) controlador;
 		}
 	}
 
+	/**
+	 * Conecta un botón con una acción del controlador.
+	 * 
+	 * @param boton botón a conectar
+	 * @param accion comando de acción
+	 */
 	private void conectar(JButton boton, String accion) {
 		boton.setActionCommand(accion);
 		boton.addActionListener(controlador);
 	}
 
+	/**
+	 * Construye toda la interfaz gráfica de la sección.
+	 */
 	private void construirUI() {
 		setLayout(new BorderLayout());
 
@@ -63,6 +91,11 @@ public class SeccionEntregasEmpleado extends SeccionEmpleadoBase {
 		add(panelBase, BorderLayout.CENTER);
 	}
 
+	/**
+	 * Crea el bloque de pedidos listos para recoger.
+	 * 
+	 * @return panel con la tabla de pedidos
+	 */
 	private JPanel crearBloquePedidosListos() {
 		JPanel bloque = crearBloque("Pedidos listos para recoger");
 
@@ -118,6 +151,11 @@ public class SeccionEntregasEmpleado extends SeccionEmpleadoBase {
 		return bloque;
 	}
 
+	/**
+	 * Crea el bloque de acciones de entrega.
+	 * 
+	 * @return panel de entrega
+	 */
 	private JPanel crearBloqueEntrega() {
 		JPanel bloque = crearBloque("Consultar o entregar pedido");
 
@@ -134,6 +172,11 @@ public class SeccionEntregasEmpleado extends SeccionEmpleadoBase {
 		return bloque;
 	}
 
+	/**
+	 * Crea el panel de datos de entrega.
+	 * 
+	 * @return panel con los campos
+	 */
 	private JPanel crearPanelDatosEntrega() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -158,6 +201,11 @@ public class SeccionEntregasEmpleado extends SeccionEmpleadoBase {
 		return panel;
 	}
 
+	/**
+	 * Crea el panel de botones de acción.
+	 * 
+	 * @return panel de botones
+	 */
 	private JPanel crearPanelBotonesEntrega() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -194,6 +242,11 @@ public class SeccionEntregasEmpleado extends SeccionEmpleadoBase {
 		return panel;
 	}
 
+	/**
+	 * Ajusta el tamaño de un botón de acción.
+	 * 
+	 * @param boton botón a ajustar
+	 */
 	private void ajustarBotonAccion(JButton boton) {
 		Dimension tamano = new Dimension(VentanaPrincipal.escalar(210), VentanaPrincipal.escalar(42));
 
@@ -202,6 +255,9 @@ public class SeccionEntregasEmpleado extends SeccionEmpleadoBase {
 		boton.setMaximumSize(tamano);
 	}
 
+	/**
+	 * Carga la tabla de pedidos listos para recoger.
+	 */
 	public void cargarTablaEntregas() {
 		modeloPedidosListos.setRowCount(0);
 
@@ -212,6 +268,9 @@ public class SeccionEntregasEmpleado extends SeccionEmpleadoBase {
 		}
 	}
 
+	/**
+	 * Muestra la información de un pedido.
+	 */
 	public void verPedido() {
 		String codigo = campoCodigoRecogida.getText().trim();
 
@@ -230,6 +289,9 @@ public class SeccionEntregasEmpleado extends SeccionEmpleadoBase {
 		mostrarPedidoEnVentana(pedido);
 	}
 
+	/**
+	 * Entrega un pedido usando el código introducido.
+	 */
 	public void entregarPedido() {
 		ResultadoOperacion resultado = controlador.entregarPedido(campoCodigoRecogida.getText());
 
@@ -242,10 +304,22 @@ public class SeccionEntregasEmpleado extends SeccionEmpleadoBase {
 		}
 	}
 
+
+	/**
+	 * Busca un pedido usando el código de recogida.
+	 * 
+	 * @param codigo código de recogida
+	 * @return pedido encontrado o null
+	 */
 	private Pedido buscarPedidoPorCodigo(String codigo) {
 		return controlador.buscarPedidoPorCodigo(codigo);
 	}
 
+	/**
+	 * Muestra un pedido en una ventana emergente.
+	 * 
+	 * @param pedido pedido a mostrar
+	 */
 	private void mostrarPedidoEnVentana(Pedido pedido) {
 		JTextArea areaPedido = crearArea();
 		areaPedido.setEditable(false);
@@ -258,10 +332,22 @@ public class SeccionEntregasEmpleado extends SeccionEmpleadoBase {
 		JOptionPane.showMessageDialog(this, scroll, "Información del pedido", JOptionPane.INFORMATION_MESSAGE);
 	}
 
+
+	/**
+	 * Genera el texto descriptivo de un pedido.
+	 * 
+	 * @param pedido pedido a mostrar
+	 * @return texto descriptivo
+	 */
 	private String crearTextoPedido(Pedido pedido) {
 		return controlador.crearTextoPedido(pedido);
 	}
 
+	/**
+	 * Aplica estilos visuales a la tabla de entregas.
+	 * 
+	 * @param tabla tabla a estilizar
+	 */
 	private void estilizarTablaEntregas(JTable tabla) {
 		tabla.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 		tabla.setRowHeight(VentanaPrincipal.escalar(28));
