@@ -14,14 +14,20 @@ Empleado - 	usuario empleado4
 			
 Obviamente puedes crear los empleados y clientes que quieras, pero por si quieres acceder
 a algunos de los ya creados, donde hicimos las pruebas y tenemos información útil, como
-historiales, notificaciones,... ya hechas. Además por comentarte que las cosas se siguien 
-imprimiendo por consola, ya que sigue funcionando el DemostradorMain, el cual necesitaba 
-funciones de escritura asociadas a funciones, por ello se siguen viendo en consola cierta
-información. Sin embargo esto no afecta en nada a la vista de la aplicación.
+historiales, notificaciones,... ya hechas. 
 
-La entrega 4 está en la carpeta de entregables. En ella tienes la matriz y el diagrama adaptado 
-a esta nueva entrega (el diagrama sin la GUI como dice el moodle). Además te añadimos un informe
-de nuestra implementación de  la GUI, donde te resumimos un poco las decisiones de implementación 
-de la vista y de los controladores.
+Además por comentarte que por consola salen algunos comentarios debido a la entrega anterior,
+ya que el DemostradorMain necesitaba de funciones específicas de escritura. Ahora mismo el 
+DemostradorMain sigue funcionando, pero al crear empleados y productos altera el .dat de 
+nuestra tienda actual, por lo que recomendamos no ejecutarlo. Por otra parte, los junit sí
+que los puedes ejecutar :)
+
+Para ejecutar la página y ver la aplicación accede a src/Gui/VentanaPrincipal y si te aparecen 
+varias formas de ejecutarlo, hazlo donde pone Java Aplication.
+
+La entrega 4 está en la carpeta de entregables, además de en la entrega de moodle de Daniel. 
+En ella tienes la matriz y el diagrama adaptado a esta nueva entrega (el diagrama sin la GUI 
+como dice el moodle). Además te añadimos un informe de nuestra implementación de  la GUI, 
+donde te resumimos un poco las decisiones de implementación de la vista y de los controladores.
 
 Esperamos que te guste mucho el proyecto!! :)
