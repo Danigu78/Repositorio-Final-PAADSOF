@@ -45,6 +45,12 @@ public class ControladorCategoriasGestor implements ActionListener {
 	/** Controlador para operaciones auxiliares sobre productos. */
 	private ControladorProductosEmpleado productos = new ControladorProductosEmpleado();
 
+	/**Comando para refrescar la tabla*/
+	public static final String REFRESCAR_TABLA = "refrescarTablaCategoria";
+
+	
+	
+	
 	/**
 	 * Constructor del controlador de categorías del gestor.
 	 *
@@ -78,6 +84,8 @@ public class ControladorCategoriasGestor implements ActionListener {
 			vista.procesarQuitarCategoriaProducto();
 		} else if (cmd != null && cmd.startsWith(ELIMINAR_CATEGORIA + ":")) {
 			vista.procesarEliminarCategoria(cmd.substring(ELIMINAR_CATEGORIA.length() + 1));
+		} else if (cmd.equals(REFRESCAR_TABLA)) {
+		    vista.refrescarTablaProductos();
 		}
 	}
 

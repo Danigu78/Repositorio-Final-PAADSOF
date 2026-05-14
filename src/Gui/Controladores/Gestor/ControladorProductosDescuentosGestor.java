@@ -40,6 +40,10 @@ public class ControladorProductosDescuentosGestor implements ActionListener {
 
 	/** Instancia única de la tienda. */
 	private Tienda tienda;
+	/** Comnado para refrescar tabla */
+	public static final String REFRESCAR_TABLA = "refrescarTablaProductos";
+
+	
 
 	/**
 	 * Constructor del controlador de productos y descuentos.
@@ -72,6 +76,8 @@ public class ControladorProductosDescuentosGestor implements ActionListener {
 
 		} else if (cmd != null && cmd.startsWith(ELIMINAR_DESCUENTO)) {
 			vista.procesarEliminarDescuento(cmd.substring(ELIMINAR_DESCUENTO.length()));
+		} else if (cmd.equals(REFRESCAR_TABLA)) {
+			vista.refrescarTablaProductos();
 		}
 	}
 
