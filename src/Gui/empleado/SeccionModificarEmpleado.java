@@ -16,48 +16,102 @@ import productos.ProductoVenta;
 import usuarios.Empleado;
 
 /**
- * Pantalla para editar los datos modificables de productos de venta.
- *
- * No permite cambiar ID, categorías, reseñas, precio oficial ni stock.
+ * Sección para modificar productos de venta.
+ * 
+ * Permite cargar y editar la información modificable de cómics,
+ * juegos y figuras.
+ * 
+ * @author Lucas
+ * @version 1.0
  */
 public class SeccionModificarEmpleado extends SeccionProductosVentaEmpleadoBase {
 
 	private static final long serialVersionUID = 1L;
 
+	/**Tipo cómic.*/
 	private static final String TIPO_COMIC = "Comic";
+	
+	/**Tipo juego de mesa.*/
 	private static final String TIPO_JUEGO = "Juego";
+	
+	/**Tipo figura.*/
 	private static final String TIPO_FIGURA = "Figura";
+	
+	/**Panel sin atributos específicos.*/
 	private static final String TIPO_SIN_ESPECIFICOS = "Sin específicos";
 
+	/**Tabla de productos.*/
 	private TablaVenta tablaProductos;
 
+	/**Campo ID producto.*/
 	private JTextField campoIdProducto;
+	
+	/**Campo tipo producto.*/
 	private JTextField campoTipoProducto;
+	
+	/**Campo nombre producto.*/
 	private JTextField campoNombre;
+	
+	/**Área descripción producto.*/
 	private JTextArea areaDescripcion;
+	
+	/**Campo ruta imagen.*/
 	private JTextField campoImagen;
 
+	/**Gestor de tarjetas para tipos.*/
 	private CardLayout cardCamposTipo;
+	
+	/**Panel de campos específicos.*/
 	private JPanel panelCamposTipo;
 
+	/**Campo páginas cómic.*/
 	private JTextField campoPaginasComic;
+	
+	/**Campo editorial cómic.*/
 	private JTextField campoEditorialComic;
+	
+	/**Campo año cómic.*/
 	private JTextField campoAnioComic;
 
+	/**Campo mínimo jugadores.*/
 	private JTextField campoMinJugadores;
+	
+	/**Campo máximo jugadores.*/
 	private JTextField campoMaxJugadores;
+	
+	/**Campo edad mínima.*/
 	private JTextField campoMinEdad;
+	
+	/**Campo edad máxima.*/
 	private JTextField campoMaxEdad;
+	
+	/**Campo estilo juego.*/
 	private JTextField campoEstiloJuego;
 
+	/**Campo altura figura.*/
 	private JTextField campoAlturaFigura;
+	
+	/**Campo ancho figura.*/
 	private JTextField campoAnchoFigura;
+	
+	/**Campo largo figura.*/
 	private JTextField campoLargoFigura;
+	
+	/**Campo material figura.*/
 	private JTextField campoMaterialFigura;
+	
+	/**Campo marca figura.*/
 	private JTextField campoMarcaFigura;
 
+	/**Controlador de modificación.*/
 	private ControladorModificarEmpleado controlador;
 
+	/**
+	 * Constructor de la sección de modificación.
+	 * 
+	 * @param ventana Ventana principal.
+	 * @param empleado Empleado activo.
+	 */
 	public SeccionModificarEmpleado(VentanaPrincipal ventana, Empleado empleado) {
 		super(ventana, empleado);
 		this.controlador = new ControladorModificarEmpleado(empleado);
@@ -66,17 +120,29 @@ public class SeccionModificarEmpleado extends SeccionProductosVentaEmpleadoBase 
 		construirUI();
 	}
 
+	/**
+	 * Asigna el controlador de la sección.
+	 * 
+	 * @param controlador Nuevo controlador.
+	 */
 	public void setControlador(ActionListener controlador) {
 		if (controlador instanceof ControladorModificarEmpleado) {
 			this.controlador = (ControladorModificarEmpleado) controlador;
 		}
 	}
 
+	/**
+	 * Conecta un botón con una acción.
+	 * 
+	 * @param boton Botón a conectar.
+	 * @param accion Acción asociada.
+	 */
 	private void conectar(JButton boton, String accion) {
 		boton.setActionCommand(accion);
 		boton.addActionListener(controlador);
 	}
 
+	/**Construye toda la interfaz.*/
 	private void construirUI() {
 		setLayout(new BorderLayout());
 
@@ -98,6 +164,7 @@ public class SeccionModificarEmpleado extends SeccionProductosVentaEmpleadoBase 
 		add(panelBase, BorderLayout.CENTER);
 	}
 
+	/**Inicializa todos los campos de formulario.*/
 	private void inicializarCampos() {
 		campoIdProducto = crearCampo();
 		campoTipoProducto = crearCampo();
@@ -129,6 +196,11 @@ public class SeccionModificarEmpleado extends SeccionProductosVentaEmpleadoBase 
 		campoMarcaFigura = crearCampo();
 	}
 
+	/**
+	 * Crea el bloque principal de edición.
+	 * 
+	 * @return Bloque de edición.
+	 */
 	private JPanel crearBloqueEditarProducto() {
 		JPanel bloque = crearBloque("Editar datos del producto");
 
@@ -156,6 +228,11 @@ public class SeccionModificarEmpleado extends SeccionProductosVentaEmpleadoBase 
 		return bloque;
 	}
 
+	/**
+	 * Crea el panel de datos comunes.
+	 * 
+	 * @return Panel de datos comunes.
+	 */
 	private JPanel crearPanelDatosComunes() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -179,6 +256,12 @@ public class SeccionModificarEmpleado extends SeccionProductosVentaEmpleadoBase 
 		return panel;
 	}
 
+
+	/**
+	 * Crea el selector de imagen.
+	 * 
+	 * @return Panel selector de imagen.
+	 */
 	private JPanel crearSelectorImagen() {
 		JButton botonSeleccionarImagen = crearBotonSecundario("Abrir...");
 		JButton botonVerImagen = crearBotonSecundario("Ver imagen");
@@ -205,6 +288,11 @@ public class SeccionModificarEmpleado extends SeccionProductosVentaEmpleadoBase 
 		return selector;
 	}
 
+	/**
+	 * Ajusta el tamaño de un botón de imagen.
+	 * 
+	 * @param boton Botón a ajustar.
+	 */
 	private void ajustarBotonImagen(JButton boton) {
 		Dimension tamano = new Dimension(VentanaPrincipal.escalar(115), VentanaPrincipal.escalar(36));
 		boton.setPreferredSize(tamano);
@@ -212,6 +300,11 @@ public class SeccionModificarEmpleado extends SeccionProductosVentaEmpleadoBase 
 		boton.setMinimumSize(tamano);
 	}
 
+	/**
+	 * Crea el panel de datos específicos.
+	 * 
+	 * @return Panel de datos específicos.
+	 */
 	private JPanel crearPanelDatosEspecificos() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -234,6 +327,11 @@ public class SeccionModificarEmpleado extends SeccionProductosVentaEmpleadoBase 
 		return panel;
 	}
 
+	/**
+	 * Crea los campos de cómic.
+	 * 
+	 * @return Panel de cómic.
+	 */
 	private JPanel crearCamposComic() {
 		JPanel panel = crearPanelCamposTipo();
 		panel.add(crearCampoFormulario("Páginas", campoPaginasComic));
@@ -244,6 +342,12 @@ public class SeccionModificarEmpleado extends SeccionProductosVentaEmpleadoBase 
 		return panel;
 	}
 
+
+	/**
+	 * Crea los campos de juego.
+	 * 
+	 * @return Panel de juego.
+	 */
 	private JPanel crearCamposJuego() {
 		JPanel panel = crearPanelCamposTipo();
 		panel.add(crearCampoFormulario("Mín. jugadores", campoMinJugadores));
@@ -258,6 +362,11 @@ public class SeccionModificarEmpleado extends SeccionProductosVentaEmpleadoBase 
 		return panel;
 	}
 
+	/**
+	 * Crea los campos de figura.
+	 * 
+	 * @return Panel de figura.
+	 */
 	private JPanel crearCamposFigura() {
 		JPanel panel = crearPanelCamposTipo();
 		panel.add(crearCampoFormulario("Altura", campoAlturaFigura));
@@ -272,12 +381,22 @@ public class SeccionModificarEmpleado extends SeccionProductosVentaEmpleadoBase 
 		return panel;
 	}
 
+	/**
+	 * Crea el panel sin atributos específicos.
+	 * 
+	 * @return Panel vacío.
+	 */
 	private JPanel crearPanelSinEspecificos() {
 		JPanel panel = crearPanelCamposTipo();
 		panel.add(crearLabel("Este producto no tiene atributos específicos editables aquí."));
 		return panel;
 	}
 
+	/**
+	 * Crea un panel base para atributos específicos.
+	 * 
+	 * @return Panel de atributos.
+	 */
 	private JPanel crearPanelCamposTipo() {
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -285,12 +404,18 @@ public class SeccionModificarEmpleado extends SeccionProductosVentaEmpleadoBase 
 		return panel;
 	}
 
+	/**
+	 * Crea una fila para botones.
+	 * 
+	 * @return Fila de botones.
+	 */
 	private JPanel crearFilaBotones() {
 		JPanel fila = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		fila.setOpaque(false);
 		return fila;
 	}
 
+	/**Carga los datos del producto indicado.*/
 	public void cargarDatosProducto() {
 		ProductoVenta producto = buscarProductoEscrito();
 		if (producto == null) {
@@ -332,6 +457,11 @@ public class SeccionModificarEmpleado extends SeccionProductosVentaEmpleadoBase 
 		mostrarMensaje("Datos cargados.");
 	}
 
+	/**
+	 * Busca el producto escrito en el campo ID.
+	 * 
+	 * @return Producto encontrado o null.
+	 */
 	private ProductoVenta buscarProductoEscrito() {
 		String idProducto = campoIdProducto.getText().trim();
 
@@ -349,6 +479,7 @@ public class SeccionModificarEmpleado extends SeccionProductosVentaEmpleadoBase 
 		return producto;
 	}
 
+	/**Abre el selector de imagen.*/
 	public void seleccionarImagen() {
 		JFileChooser selectorImagen = new JFileChooser();
 		int opcion = selectorImagen.showOpenDialog(this);
@@ -359,6 +490,7 @@ public class SeccionModificarEmpleado extends SeccionProductosVentaEmpleadoBase 
 		}
 	}
 
+	/**Muestra la imagen del producto.*/
 	public void verImagenProducto() {
 		normalizarCampoImagen();
 		String rutaImagen = campoImagen.getText().trim();
@@ -374,6 +506,7 @@ public class SeccionModificarEmpleado extends SeccionProductosVentaEmpleadoBase 
 		UtilidadesImagenProducto.mostrarImagenProducto(this, rutaImagen);
 	}
 
+	/**Guarda los cambios realizados en el producto.*/
 	public void guardarCambios() {
 		normalizarCampoImagen();
 		ResultadoOperacion resultado = controlador.guardarProducto(campoIdProducto.getText(), campoNombre.getText(),
@@ -391,10 +524,12 @@ public class SeccionModificarEmpleado extends SeccionProductosVentaEmpleadoBase 
 		}
 	}
 
+	/**Normaliza la ruta escrita en el campo imagen.*/
 	private void normalizarCampoImagen() {
 		campoImagen.setText(UtilidadesImagenProducto.normalizarRutaImagen(campoImagen.getText()));
 	}
 
+	/**Limpia todos los campos específicos.*/
 	private void limpiarCamposEspecificos() {
 		campoPaginasComic.setText("");
 		campoEditorialComic.setText("");
